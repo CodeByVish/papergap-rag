@@ -1,0 +1,20 @@
+# Starter dependency ranges; not yet installation-tested or locked.
+# Python 3.11. Freeze resolved versions on the team's target machine.
+numpy>=1.26,<3
+pandas>=2.2,<3
+pydantic>=2.7,<3
+PyYAML>=6,<7
+python-dotenv>=1,<2
+datasets>=3,<5
+rank-bm25>=0.2.2,<0.3
+sentence-transformers>=3,<6
+faiss-cpu>=1.8,<2
+torch>=2.2,<3
+transformers>=4.51,<5
+accelerate>=1,<2
+langgraph>=1,<2
+streamlit>=1.40,<2
+scikit-learn>=1.5,<2
+rouge-score>=0.1.2,<0.2
+ragas>=0.4,<0.5
+# vLLM / quantization / GPU FAISS: decide after target GPU is confirmed.
