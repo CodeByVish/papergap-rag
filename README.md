@@ -18,7 +18,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | --- | --- | --- | --- |
 | P1 | Junlin Yin | BM25 and dense retrieval; standard retrieval API | BM25 vs dense |
 | P2 | Vishakha | Hybrid fusion and reranking | Hybrid and reranking ablations |
-| P3 | Pending | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
+| P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
 | P5 | Pending | Generation, citations and answer API | QA and grounding |
 | P6 | Pending | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
