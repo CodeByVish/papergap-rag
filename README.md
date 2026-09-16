@@ -65,6 +65,6 @@ results/              Local experiment outputs (ignored except README)
 
 ## Assignment delivery
 
-Deadline supplied: **7 November, 11:59 PM SGT**. The supplied schedule is tracked for 2026; confirm the official assignment year in Blackboard. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
+Deadline supplied: **7 November, 11:59 PM SGT**. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
 
 **Rubric clarification confirmed by the team:** passage chunks count toward 10,000 documents, and query–passage pairs count toward 1,000 evaluation records. Actual corpus size and annotation agreement still need verification; see [requirements](docs/REQUIREMENTS.md).
