@@ -1,0 +1,26 @@
+# Proposal only: no application currently consumes this file.
+seed: 42
+data:
+  dataset: allenai/qasper
+  passages_path: data/processed/passages.jsonl
+  chunk_words: 200
+  overlap_words: 40
+  split_policy: null  # P3/P5/P6 to freeze
+retrieval:
+  paper_scoped: true
+  dense_model: null  # P1 to select exact BGE checkpoint
+  reranker_model: BAAI/bge-reranker-base
+  sparse_candidates: 20
+  dense_candidates: 20
+  top_k: 5
+  rrf_k: 60  # starting value; tune on development only
+agent:
+  max_retries: 2  # initial retrieval + two retries = at most three rounds
+generation:
+  model: Qwen/Qwen3-8B
+  backend: null  # pending compute feasibility
+  model_revision: null
+  abstain_on_insufficient_evidence: true
+evaluation:
+  judge_model: null
+  held_out_manifest: null
