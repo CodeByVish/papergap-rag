@@ -1,20 +1,8 @@
 # PaperGap: Week-by-Week Execution Plan
 
-> Working plan based on the supplied schedule. Names: P1 = Junlin Yin, P2 = Vishakha, P4 = Ananya; P3/P5/P6 pending. Dates follow the supplied September–November schedule (2026 tracking year; confirm in Blackboard).
->
-> The team confirmed instructor acceptance of passage documents and query–passage evaluation records on 16 September 2026. See [requirements and decisions](REQUIREMENTS.md). The following clarifications take precedence over draft examples below:
->
-> - Run the annotation pilot on development records in Week 3; Week 5 is a readiness check before full annotation.
-> - Week 2 corpus is provisional. Freeze chunking and final passage IDs in Week 3 before final evidence mapping/annotation.
-> - Use the distinct retrieval and generation comparisons in [the evaluation protocol](EVALUATION.md), replacing the overlapping experiment ladder below.
-> - Report Cohen's kappa per fixed annotator pair and raw agreement before adjudication. Budget adjudication beyond the 2,000 initial judgments.
-> - Citation validation checks passage IDs; semantic support needs separate evaluation. At budget exhaustion, abstain if evidence remains insufficient.
-> - P6 coordinates; each module owner supplies tested integration and report material. Confirm GPU and RAGAS backend access in Week 1.
-> - A maximum of two retries is a maximum of three retrieval rounds. Final schemas and model revisions remain Week 1 decisions.
-> - Confirm any required group-number filename with Blackboard; it was not specified in the supplied assignment instructions.
+> Working plan based on the supplied schedule. Names: P1 = Junlin Yin, P2 = Vishakha, P4 = Ananya; P3/P5/P6 pending. Dates follow the supplied September–November schedule.
 
 
-This schedule uses the controlled scope you selected:
 
 ### Mandatory components
 
