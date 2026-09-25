@@ -34,3 +34,7 @@ dist/
 *.pt
 *.pth
 *.log
+
+# Local reference files
+Instruction.pdf
+ProjectPlan.pdf

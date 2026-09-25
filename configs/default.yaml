@@ -5,7 +5,24 @@ data:
   passages_path: data/processed/passages.jsonl
   chunk_words: 200
   overlap_words: 40
-  split_policy: null  # P3/P5/P6 to freeze
+  normalization_version: text-normalization-v1
+  chunking_version: word-chunking-v1
+  source_kinds:
+    - full_text
+  split_policy:
+    version: qasper-official-paper-disjoint-v0-proposed
+    unit: paper
+    official_to_project_role:
+      train: development
+      validation: validation
+      test: held_out
+    held_out_usage:
+      index_paper_text: true
+      forbidden_purposes:
+        - tuning
+        - prompt_design
+        - chunk_selection
+      require_frozen_for_final_evaluation: true
 retrieval:
   paper_scoped: true
   dense_model: null  # P1 to select exact BGE checkpoint
@@ -23,4 +40,4 @@ generation:
   abstain_on_insufficient_evidence: true
 evaluation:
   judge_model: null
-  held_out_manifest: null
+  held_out_manifest: null  # Final held-out question pool is not frozen or created.

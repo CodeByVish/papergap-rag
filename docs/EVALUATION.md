@@ -43,3 +43,13 @@ Define normalization, multiple reference-answer handling, answer-type scoring an
 Citation-ID validation establishes that a cited passage was supplied to the generator. It does **not** establish entailment or that numbers are supported. Evaluate citation correctness/grounding separately using manual checks and the chosen faithfulness metric. Do not claim the validator prevents all unsupported factual statements.
 
 Tune only on development/validation data. Freeze all prompts, retrieval settings and optional variants before evaluating held-out labels. Log genuine post-freeze bug fixes and rerun affected comparisons consistently.
+
+## Held-out freeze sequence
+
+The observed official QASPER splits are paper-disjoint, but their mapping to the project roles remains the proposal recorded as `P3-D004` and is pending team review. The current safe default is `train -> development`, `validation -> validation`, and `test -> held_out`; this mapping must not be treated as confirmed until reviewed by the affected owners.
+
+Use only `development` and `validation` assets to choose among the `$150`/`$200`/`$250` chunk sizes, overlap and boundary settings, retrieval rules, model settings, prompts, few-shot examples, and stopping rules. Keep the held-out paper text available only through the approved inference index, and do not use held-out questions, answers, evidence, or labels to make these choices.
+
+Before reading any held-out question, record the final Git commit and configuration, then freeze the chunker, prompts, retrieval settings, model settings, and evaluation protocol. After that freeze, run the held-out questions as final evaluation queries; read held-out answers and labels only afterward for scoring and reporting.
+
+The final question pool must be kept separate from development experiments. `evaluation.held_out_manifest: null` remains unchanged until the question and annotation pool is actually frozen under `P3-D005`. The post-freeze bug-fix and rerun rule remains the proposal in `P3-D006`: a genuine bug fix must record its cause and rerun every affected configuration consistently; a held-out result must never drive a targeted improvement.
