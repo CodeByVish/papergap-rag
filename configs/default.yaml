@@ -2,6 +2,9 @@
 seed: 42
 data:
   dataset: allenai/qasper
+  papers_path: data/processed/papers.jsonl
+  qa_path: data/processed/qa.jsonl
+  qasper_export_manifest: data/processed/qasper_export.manifest.json
   passages_path: data/processed/passages.jsonl
   chunk_words: 200
   overlap_words: 40

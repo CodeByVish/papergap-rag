@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
@@ -22,7 +23,7 @@ from src.data.chunking import (
     validate_built_passages,
 )
 from src.data.passage_ids import PassageIdContext
-from src.data.qasper import QASPER_DATASET_ID
+from src.data.qasper_export import load_verified_papers
 from src.data.split_policy import OFFICIAL_TO_PROJECT_ROLE
 
 TARGET_PASSAGE_COUNT = 100
@@ -52,78 +53,9 @@ class PassageGroup:
         )
 
 
-def _load_json_object(path: Path) -> dict[str, Any]:
-    """Read one UTF-8 JSON object."""
-
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(f"{path} must contain a JSON object")
-    return value
-
-
-def _read_jsonl(path: Path) -> list[dict[str, object]]:
-    """Read non-empty JSON object lines in source order."""
-
-    records: list[dict[str, object]] = []
-    with path.open("r", encoding="utf-8", newline="") as handle:
-        for line_number, line in enumerate(handle, start=1):
-            if not line.strip():
-                raise ValueError(f"blank line in {path} at line {line_number}")
-            value = json.loads(line)
-            if not isinstance(value, dict):
-                raise TypeError(f"non-object record in {path} at line {line_number}")
-            records.append(value)
-    return records
-
-
-def _manifest_value(manifest: Mapping[str, object], *keys: str) -> object:
-    """Read a required nested manifest value."""
-
-    value: object = manifest
-    for key in keys:
-        if not isinstance(value, Mapping) or key not in value:
-            raise ValueError(f"manifest is missing {'.'.join(keys)}")
-        value = value[key]
-    return value
-
-
-def _split_file(manifest: Mapping[str, object], split_name: str) -> str:
-    """Return one split filename from the acquisition manifest list."""
-
-    splits = manifest.get("splits")
-    if not isinstance(splits, list):
-        raise TypeError("manifest splits must be a list")
-    for entry in splits:
-        if not isinstance(entry, Mapping):
-            raise TypeError("manifest split entries must be objects")
-        if entry.get("name") == split_name:
-            file_name = entry.get("file")
-            if type(file_name) is not str:
-                raise ValueError(f"manifest split file for {split_name} must be a string")
-            return file_name
-    raise ValueError(f"manifest is missing split {split_name}")
-
-
-def _source_manifest(manifest: Mapping[str, object]) -> tuple[str, str, int]:
-    """Return the dataset ID, resolved revision, and parser version."""
-
-    dataset_id = _manifest_value(manifest, "dataset", "id")
-    resolved_revision = _manifest_value(manifest, "dataset", "resolved_revision")
-    parser_version = _manifest_value(manifest, "dataset", "local_parser_version")
-    if type(dataset_id) is not str or dataset_id != QASPER_DATASET_ID:
-        raise ValueError("manifest dataset ID is not allenai/qasper")
-    if type(resolved_revision) is not str:
-        raise ValueError("manifest resolved revision must be a string")
-    if type(parser_version) is not int:
-        raise ValueError("manifest local parser version must be an integer")
-    return dataset_id, resolved_revision, parser_version
-
-
 def _build_groups(
     *,
-    input_dir: Path,
-    manifest: Mapping[str, object],
+    papers: Sequence[dict[str, Any]],
     context: PassageIdContext,
     config: ChunkingConfig,
 ) -> tuple[tuple[PassageGroup, ...], NormalizationReport, dict[str, int]]:
@@ -134,8 +66,7 @@ def _build_groups(
     paper_counts: dict[str, int] = {}
     seen_paper_ids: set[str] = set()
     for split_name in SUPPORTED_SPLITS:
-        split_file = _split_file(manifest, split_name)
-        records = _read_jsonl(input_dir / split_file)
+        records = [record for record in papers if record["source_split"] == split_name]
         result = build_passages_from_records(
             records,
             context=context,
@@ -273,33 +204,62 @@ def _passage_bytes(passages: Iterable[BuiltPassage]) -> bytes:
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
-def _write_bytes_safely(destination: Path, payload: bytes, *, force: bool) -> None:
-    """Publish one generated file through a temporary sibling file."""
+def _publish_outputs(
+    output: Path, manifest_output: Path, payload: bytes, manifest: bytes
+) -> None:
+    """Stage both sample files and publish the manifest last without overwriting."""
 
-    if destination.exists() and not force:
-        raise FileExistsError(f"output already exists: {destination}")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_name(f"tmp_{destination.name}")
-    if temporary.exists():
-        temporary.unlink()
-    temporary.write_bytes(payload)
-    temporary.replace(destination)
+    if output.resolve(strict=False) == manifest_output.resolve(strict=False):
+        raise ValueError("sample and manifest output paths must differ")
+    targets = (output, manifest_output)
+    if any(path.exists() or path.is_symlink() for path in targets):
+        raise FileExistsError("sample or manifest output already exists")
+    temporary_paths = (
+        output.with_name(f"tmp_{output.name}"),
+        manifest_output.with_name(f"tmp_{manifest_output.name}"),
+    )
+    if any(path.exists() or path.is_symlink() for path in temporary_paths):
+        raise FileExistsError("a temporary sample output already exists")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    manifest_output.parent.mkdir(parents=True, exist_ok=True)
+    created: list[Path] = []
+    try:
+        for path, content in zip(temporary_paths, (payload, manifest), strict=True):
+            with path.open("xb") as handle:
+                created.append(path)
+                handle.write(content)
+        if temporary_paths[0].read_bytes() != payload:
+            raise OSError("staged sample bytes differ from generated bytes")
+        if temporary_paths[1].read_bytes() != manifest:
+            raise OSError("staged sample manifest bytes differ from generated bytes")
+        os.replace(temporary_paths[0], output)
+        created.remove(temporary_paths[0])
+        os.replace(temporary_paths[1], manifest_output)
+        created.remove(temporary_paths[1])
+    except Exception:
+        for path in created:
+            try:
+                path.unlink(missing_ok=True)
+            except OSError:
+                pass
+        raise
 
 
 def build_sample(
     *,
-    input_dir: Path,
+    papers: Path,
+    export_manifest: Path,
     output: Path,
     manifest_output: Path,
     chunk_size_words: int = 200,
     chunk_overlap_words: int = 40,
-    force: bool = False,
 ) -> dict[str, object]:
     """Build and publish the deterministic sample and its manifest."""
 
-    input_dir = Path(input_dir)
-    manifest = _load_json_object(input_dir / "manifest.json")
-    dataset_id, resolved_revision, parser_version = _source_manifest(manifest)
+    export, paper_records = load_verified_papers(
+        papers_path=Path(papers), manifest_path=Path(export_manifest)
+    )
+    source = export["source"]
     config = ChunkingConfig(
         chunk_size_words=chunk_size_words,
         chunk_overlap_words=chunk_overlap_words,
@@ -307,17 +267,16 @@ def build_sample(
         chunking_version=CHUNKING_VERSION,
     )
     context = PassageIdContext(
-        dataset_id=dataset_id,
-        resolved_revision=resolved_revision,
-        local_parser_version=parser_version,
+        dataset_id=source["dataset_id"],
+        resolved_revision=source["resolved_revision"],
+        local_parser_version=source["local_parser_version"],
         normalization_version=config.normalization_version,
         chunking_version=config.chunking_version,
         chunk_size_words=config.chunk_size_words,
         chunk_overlap_words=config.chunk_overlap_words,
     )
     groups, report, paper_counts = _build_groups(
-        input_dir=input_dir,
-        manifest=manifest,
+        papers=paper_records,
         context=context,
         config=config,
     )
@@ -328,7 +287,6 @@ def build_sample(
     validate_built_passages(passages)
     output_bytes = _passage_bytes(passages)
     output_sha256 = hashlib.sha256(output_bytes).hexdigest()
-    _write_bytes_safely(Path(output), output_bytes, force=force)
 
     selected_papers = sorted({group.paper_id for group in selected_groups})
     selected_sections = sorted(
@@ -341,14 +299,17 @@ def build_sample(
         "manifest_schema_version": 1,
         "artifact": "sample_passages_100",
         "source": {
-            "dataset_id": dataset_id,
-            "resolved_revision": resolved_revision,
-            "local_parser_version": parser_version,
+            "dataset_id": source["dataset_id"],
+            "resolved_revision": source["resolved_revision"],
+            "local_parser_version": source["local_parser_version"],
+            "export_papers_file": export["outputs"]["papers"]["file"],
+            "export_papers_sha256": export["outputs"]["papers"]["sha256"],
             "source_splits": [
                 {
                     "name": split_name,
                     "project_role": OFFICIAL_TO_PROJECT_ROLE[split_name],
                     "input_paper_count": paper_counts[split_name],
+                    "source_sha256": export["source"]["split_files"][split_name]["sha256"],
                 }
                 for split_name in SUPPORTED_SPLITS
             ],
@@ -402,7 +363,7 @@ def build_sample(
         )
         + "\n"
     ).encode("utf-8")
-    _write_bytes_safely(Path(manifest_output), manifest_bytes, force=force)
+    _publish_outputs(Path(output), Path(manifest_output), output_bytes, manifest_bytes)
     return manifest_payload
 
 
@@ -410,12 +371,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Build exactly 100 deterministic schema-valid QASPER passages."
     )
-    parser.add_argument(
-        "--input-dir",
-        required=True,
-        type=Path,
-        help="Directory containing the verified QASPER JSONL files and manifest.",
-    )
+    parser.add_argument("--papers", required=True, type=Path)
+    parser.add_argument("--export-manifest", required=True, type=Path)
     parser.add_argument(
         "--output",
         required=True,
@@ -430,11 +387,6 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--chunk-size-words", type=int, default=200)
     parser.add_argument("--chunk-overlap-words", type=int, default=40)
-    parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Replace existing generated outputs after successful construction.",
-    )
     return parser
 
 
@@ -444,12 +396,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
         payload = build_sample(
-            input_dir=args.input_dir,
+            papers=args.papers,
+            export_manifest=args.export_manifest,
             output=args.output,
             manifest_output=args.manifest_output,
             chunk_size_words=args.chunk_size_words,
             chunk_overlap_words=args.chunk_overlap_words,
-            force=args.force,
         )
     except (FileExistsError, OSError, ValueError, TypeError, json.JSONDecodeError) as error:
         print(f"error: {error}", file=sys.stderr)

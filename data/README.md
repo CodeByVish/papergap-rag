@@ -73,35 +73,47 @@ The word rule is the number of Unicode-aware non-whitespace runs matched by `\\S
 
 `build_passages_from_records` produces a deterministic order by `paper_id`, source kind, original section index, and chunk index. The private coordinate is `(paper_id, source_kind, section_index, chunk_index)`, while the public `Passage` remains the eight-field contract. Neighbor links are filled only within one `(paper_id, source_kind, section_index)` sequence, and `validate_built_passages` rejects duplicate IDs, empty text, missing chunk numbers, dangling links, and non-mutual or cross-container adjacency. The builder never infers boundaries from output order or display section names.
 
-## 100-passage dependency sample
+## Unified paper and QA exports
 
-The reproducible sample command is:
+The local data flow is: verify the fixed-revision download; export one combined paper file, one combined question file, and a manifest; build development passages, the 100-passage sample, or an all-paper-text inference index from the paper file; then select questions and answers from the QA file under the evaluation protocol. The source `data/raw/qasper/` files and manifest remain unchanged.
+
+`papers.jsonl` has one record per paper in `train`, `validation`, `test` order and preserves every original top-level field except `qas`; it adds only `source_split`. `qa.jsonl` has one record per question, retains the complete original question object and `answers` array, and adds `paper_id` and `source_split`. It contains all three source splits. Neither the paper builder nor the paper loader opens `qa.jsonl`.
+
+`qasper_export.manifest.json` records the pinned source metadata, source manifest hash, input split hashes and row counts, output filenames and hashes, counts by source split, and the current `v0-proposed` split policy version. Output filenames in the manifest are basenames and all three export files share one directory. The JSONL outputs use deterministic compact JSON, UTF-8 without a BOM, and LF line endings. Generated files under `data/processed/` are ignored by Git.
+
+Export and independently verify the combined files with:
 
 ```powershell
-python -m scripts.build_sample_passages `
-  --input-dir data/raw/qasper `
-  --output data/processed/sample_passages_100.jsonl `
-  --manifest-output data/processed/sample_passages_100.manifest.json
+python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
+python -m scripts.check_qasper_export --papers data/processed/papers.jsonl --qa data/processed/qa.jsonl --manifest data/processed/qasper_export.manifest.json
 ```
 
-The builder reads the verified `train` and `validation` source files, excludes `test` from this development dependency artifact, uses only `full_text`, selects complete source-container sequences with a stable paper-ordered subset-sum rule, and validates each output record with `Passage`. The generated JSONL contains exactly `100` passages from `100` papers; the current pinned source revision is `fdc9d8214fbab5dd782958601db4d678e6934a54`, and the observed output SHA-256 is `d017b7937d2e9a54ee653c8a3a94f37afa2819d548c0f79eacc93f08832bdb42`. Both generated files are ignored under `data/`; share the command and the manifest rather than committing generated data.
+The export command and structural checker may read `test` records mechanically to project fields, calculate hashes and counts, and verify links. Their summaries contain no question or answer text. People and experiment code must not preview or use `test` questions, answers, evidence, or labels before the evaluation freeze. A future evaluation entry point must first expose only `question_id`, `paper_id`, and `question` to RAG, persist query results, and read `answers` and evidence separately for scoring after inference.
 
-If either output already exists, add `--force` to replace it only after the new sample and manifest have been built and validated.
+The export command refuses any existing target. If publication is interrupted before the manifest is present, inspect the partial files manually before choosing new output names. It uses `tmp_` sibling files while staging; it does not silently replace an existing export.
 
-The sample command requires `--input-dir`, `--output`, and `--manifest-output`. Optional `--chunk-size-words` and `--chunk-overlap-words` default to `200` and `40`; `--force` replaces existing generated outputs only after successful construction. The builder fails when the source manifest or required split files are invalid, when source papers overlap, when the selected result is not exactly `100` passages, or when schema and collection-level adjacency validation fails. It writes the JSONL output and its deterministic manifest to the two paths supplied by the caller.
+## 100-passage dependency sample
+
+Build the sample from the verified paper-only export:
+
+```powershell
+python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
+```
+
+The builder selects only `train` and `validation`, uses `full_text`, selects complete source-container sequences with a stable paper-ordered subset-sum rule, and validates each output record with `Passage`. The generated JSONL contains exactly `100` passages from `100` papers. For the pinned source revision and default $200$-word chunks with $40$-word overlap, its expected SHA-256 is `d017b7937d2e9a54ee653c8a3a94f37afa2819d548c0f79eacc93f08832bdb42`. The manifest records the export papers hash and source split hashes. Existing outputs are rejected; choose new output names when rebuilding for comparison.
 
 ## Full development corpus and rubric check
 
-Run these commands after downloading the pinned QASPER source:
+Build the default development corpus and independently check its published passage file:
 
 ```powershell
-python -m scripts.build_corpus --input-dir data/raw/qasper --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
 python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
 ```
 
-The builder verifies the source manifest, chunks only `full_text` from `train` and `validation`, validates the complete `Passage` collection, and refuses to publish a corpus with fewer than $10{,}000$ passages or $100{,}000$ source words. It excludes `test` under the `v0-proposed` split policy. Existing output paths are never overwritten. The checker rereads every published passage, validates its schema and unique ID, recounts passages, papers, words, and word types, and compares those results and the SHA-256 hash with the manifest. The source-word count removes chunk overlap by counting each indexed source paragraph once; the checker can verify this count against the manifest but cannot reconstruct it from the passage file alone.
+The default `development` scope processes only `train` and `validation`. The alternate `--scope all-paper-text` also processes `test` paper bodies and labels its output purpose as `index_for_inference`; use distinct output filenames and never use that corpus as tuning or prompt-design material. Both scopes enforce at least $10{,}000$ passages and $100{,}000$ source words. The manifest records the chosen scope, export papers SHA-256, and paper and passage counts by official source split. The checker validates the generated passage file and its manifest without needing the export inputs.
 
-For the pinned source revision and default $200$-word chunks with $40$-word overlap, the local result is $1{,}169$ source papers, $1{,}168$ indexed papers, $32{,}073$ unique passages, $4{,}262{,}446$ source words, $4{,}897{,}846$ passage words, and $174{,}636$ case-folded passage word types. Word counts use Unicode non-whitespace runs. The generated files remain ignored by Git; reproduce them locally and rerun the checker after any corpus change. These counts describe the current development corpus and do not freeze the team's split or source-kind decisions.
+For the pinned source revision and default $200$-word chunks with $40$-word overlap, the current development baseline is $1{,}169$ source papers, $1{,}168$ indexed papers, $32{,}073$ unique passages, $4{,}262{,}446$ source words, $4{,}897{,}846$ passage words, and $174{,}636$ case-folded passage word types. Its expected passage SHA-256 is `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790`. Word counts use Unicode non-whitespace runs. Existing output paths are never overwritten; use new filenames to compare a rebuild. These counts describe the current development scope and do not freeze the team's split or source-kind decisions.
 
 ## Proposed split policy
 
@@ -148,9 +160,10 @@ Run the following commands from the repository root in order. The commands use r
 
 1. Download the pinned acquisition: `python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54`.
 2. Inspect the existing acquisition without network access: `python -m scripts.inspect_qasper --input-dir data/raw/qasper --output data/processed/qasper_inspection.json`.
-3. Build the 100-passage dependency sample using the command in [100-passage dependency sample](#100-passage-dependency-sample).
+3. Export and structurally verify the combined files using the commands in [Unified paper and QA exports](#unified-paper-and-qa-exports).
+4. Build the 100-passage dependency sample using the command in [100-passage dependency sample](#100-passage-dependency-sample), or build a passage corpus as described in [Full development corpus and rubric check](#full-development-corpus-and-rubric-check).
 
-The download command requires `--output-dir`; `--revision` defaults to the pinned commit SHA and `--force` is required to replace an existing acquisition directory. The inspection command requires `--input-dir` and `--output`, creates the report parent directory, and replaces the report at the requested output path; it has no `--force` flag. Before writing a report, it requires exactly `manifest.json`, `train.jsonl`, `validation.jsonl`, and `test.jsonl`, verifies split hashes and row counts, and stops on invalid JSON or critical nested structure errors. The sample command has the required and optional arguments documented above.
+The download command requires `--output-dir`; `--revision` defaults to the pinned commit SHA and `--force` is required to replace an existing acquisition directory. The inspection command requires `--input-dir` and `--output`, creates the report parent directory, and replaces the report at the requested output path; it has no `--force` flag. Before writing a report, it requires exactly `manifest.json`, `train.jsonl`, `validation.jsonl`, and `test.jsonl`, verifies split hashes and row counts, and stops on invalid JSON or critical nested structure errors. `download_qasper` and `inspect_qasper` still take the raw acquisition directory. The `build_corpus` and `build_sample_passages` commands now take `--papers` and `--export-manifest`; their former `--input-dir` form has been replaced. Generated export, sample, and passage outputs reject existing names, so use new names when rebuilding for comparison.
 
 The acquisition requires network access to the Hugging Face Hub and the official QASPER source archives. QASPER is public data; do not configure or provide a Hugging Face token for this command.
 
@@ -237,7 +250,7 @@ dataset = datasets.load_dataset(
 
 At this point the records are still paper-level raw QASPER records. They are not passage-cleaned, passage-chunked, or converted into the project's later retrieval corpus.
 
-The offline inspection report is a deterministic validation artifact at `data/processed/qasper_inspection.json`. It contains provenance, split counts, field and nested-structure anomalies, answer types, evidence observations, duplicate-paragraph observations, and split-overlap results. The sample builder publishes `data/processed/sample_passages_100.jsonl` and `data/processed/sample_passages_100.manifest.json`; both are generated artifacts and remain outside Git.
+The offline inspection report is a deterministic validation artifact at `data/processed/qasper_inspection.json`. It contains provenance, split counts, field and nested-structure anomalies, answer types, evidence observations, duplicate-paragraph observations, and split-overlap results. The exporter publishes `data/processed/papers.jsonl`, `data/processed/qa.jsonl`, and `data/processed/qasper_export.manifest.json`; the corpus and sample builders publish their passage JSONL files and manifests. All are generated artifacts and remain outside Git.
 
 ## Git ignore check and cleanup
 
