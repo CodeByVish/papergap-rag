@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** planning and repository setup. Retrieval, generation and the UI are not implemented yet.
+**Status:** P2 Week 1 fusion, reranking and mock integration are implemented. Real corpus retrieval, generation and the UI are still pending. See [P2 setup and handoff](docs/P2_WEEK1.md).
 
 ## Start here
 

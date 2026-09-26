@@ -1,0 +1,6 @@
+# Small P2 environment; no full-project dependencies required.
+pydantic>=2.7,<3
+pytest>=8,<10
+transformers>=4.51,<5
+torch>=2.2,<3
+sentencepiece>=0.2,<1
