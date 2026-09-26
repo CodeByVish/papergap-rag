@@ -90,6 +90,19 @@ If either output already exists, add `--force` to replace it only after the new 
 
 The sample command requires `--input-dir`, `--output`, and `--manifest-output`. Optional `--chunk-size-words` and `--chunk-overlap-words` default to `200` and `40`; `--force` replaces existing generated outputs only after successful construction. The builder fails when the source manifest or required split files are invalid, when source papers overlap, when the selected result is not exactly `100` passages, or when schema and collection-level adjacency validation fails. It writes the JSONL output and its deterministic manifest to the two paths supplied by the caller.
 
+## Full development corpus and rubric check
+
+Run these commands after downloading the pinned QASPER source:
+
+```powershell
+python -m scripts.build_corpus --input-dir data/raw/qasper --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
+python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
+```
+
+The builder verifies the source manifest, chunks only `full_text` from `train` and `validation`, validates the complete `Passage` collection, and refuses to publish a corpus with fewer than $10{,}000$ passages or $100{,}000$ source words. It excludes `test` under the `v0-proposed` split policy. Existing output paths are never overwritten. The checker rereads every published passage, validates its schema and unique ID, recounts passages, papers, words, and word types, and compares those results and the SHA-256 hash with the manifest. The source-word count removes chunk overlap by counting each indexed source paragraph once; the checker can verify this count against the manifest but cannot reconstruct it from the passage file alone.
+
+For the pinned source revision and default $200$-word chunks with $40$-word overlap, the local result is $1{,}169$ source papers, $1{,}168$ indexed papers, $32{,}073$ unique passages, $4{,}262{,}446$ source words, $4{,}897{,}846$ passage words, and $174{,}636$ case-folded passage word types. Word counts use Unicode non-whitespace runs. The generated files remain ignored by Git; reproduce them locally and rerun the checker after any corpus change. These counts describe the current development corpus and do not freeze the team's split or source-kind decisions.
+
 ## Proposed split policy
 
 The split policy is `qasper-official-paper-disjoint-v0-proposed` and applies at the whole-paper level. The proposal maps the official source splits exactly as `train -> development`, `validation -> validation`, and `test -> held_out`. The official split name and project role are both retained in corpus or experiment manifests; neither `source_split` nor the project role is part of a single `Passage` identity.

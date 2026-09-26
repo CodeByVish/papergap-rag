@@ -4,7 +4,7 @@
 
 | Requirement supplied | Proposed evidence | Owner | Status |
 | --- | --- | --- | --- |
-| Knowledge base: ≥10,000 documents and ≥100,000 words (20 pts with annotation) | Corpus manifest, source-paper count, unique passage count, word counts and cleaning/chunking commands | P3 | Passage-document interpretation confirmed; counts pending |
+| Knowledge base: ≥10,000 documents and ≥100,000 words (20 pts with annotation) | Corpus manifest, source-paper count, unique passage count, word counts and cleaning/chunking commands | P3 | Current development corpus verified: 32,073 unique passages and 4,262,446 source words; split mapping remains `v0-proposed` |
 | Manually label ≥1,000 held-out records, ≥80% agreement | Proposed 1,000 unique query–passage pairs, two blind labels each, pre-adjudication agreement and preserved labels | Everyone; P6 coordinates | Query–passage interpretation confirmed; annotation pending |
 | Hybrid retrieval (40 pts) | BM25, dense, RRF; Precision@K, Recall@K, MRR, nDCG; Streamlit UI | P1/P2/P6 | Planned |
 | Evidence-conditioned downstream task (40 pts) | QA with EM/token F1/ROUGE-L and RAGAS Faithfulness/Relevance | P5/P6 | Planned |
