@@ -21,3 +21,7 @@ Update this file after the weekly meeting. Link to concrete issues, PRs, artifac
 | Confirm rubric document/record units | Team | Week 1 | Instructor clarification | Both interpretations confirmed; see REQUIREMENTS.md | No | Confirmed 16 Sep |
 | Confirm compute and evaluator access | P5/P6 | Week 1 | GPU access and judge backend | Feasibility note | Yes: inference setup | Open |
 | Fill remaining names and backup owner | Team | Week 1 | Member agreement | Updated README | No | Open |
+
+## P2 Week 1 progress
+
+Fusion, deduplication, proposed schemas, mock handoff and BGE CPU smoke test are implemented on `p2/week1-fusion-reranking`. See [P2 handoff](P2_WEEK1.md). 17 tests passed. Interface agreement with P1/P3/P4 remains pending; this does not mark the whole team checkpoint complete.
