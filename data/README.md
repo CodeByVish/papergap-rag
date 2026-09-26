@@ -1,5 +1,86 @@
 # Local QASPER data
 
+## Directory structure
+
+The tree below shows the local layout after acquisition and export. Raw and processed data files are downloaded or generated locally and remain out of Git.
+
+```text
+data/
+├── README.md                                # Acquisition, processing, data contracts, and usage guide
+├── raw/                                     # Downloaded source data; ignored by Git
+│   └── qasper/
+│       ├── manifest.json                    # Pinned source metadata, split inventory, and checksums
+│       ├── train.jsonl                      # Raw training-split paper records
+│       ├── validation.jsonl                 # Raw development split, named validation locally
+│       └── test.jsonl                       # Raw held-out paper records
+└── processed/                               # Generated local exports; ignored by Git
+    ├── papers.jsonl                         # Paper-only records from all three splits
+    ├── passages_all_paper_text.jsonl        # Passages from all paper text; inference index
+    ├── passages_all_paper_text.manifest.json # Inference corpus scope, counts, and hashes
+    ├── qa.jsonl                             # Questions with answer and evidence annotations
+    ├── qasper_export.manifest.json          # Paper and Q&A export provenance, counts, and hashes
+    ├── sample_passages_100.jsonl            # 100-passage reproducibility sample
+    └── sample_passages_100.manifest.json    # Sample selection details and hashes
+```
+
+Keep the three manifests beside their JSONL files: they preserve provenance and checksums, and the export manifest is required by the passage and sample builders. `passages_all_paper_text.jsonl` includes held-out paper text and is for inference indexing only; do not use held-out questions, answers, evidence, or labels for tuning or prompt design. This compact layout omits the diagnostic inspection report and duplicate development-passage and sample exports.
+
+## JSONL record examples
+
+Each JSONL physical line contains one compact JSON object. The examples below show one representative record for every JSONL file; placeholder values such as `<paper-id>` are illustrative. The examples are kept on one line to match the file format, and the notes below explain each key.
+
+### `data/raw/qasper/train.jsonl`
+
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
+```
+
+### `data/raw/qasper/validation.jsonl`
+
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
+```
+
+### `data/raw/qasper/test.jsonl`
+
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
+```
+
+The three raw split files share this structure. `id` identifies the paper; `title` and `abstract` hold its title and abstract; `full_text` is an ordered list of source sections, each with a `section_name` and a list of `paragraphs`; `figures_and_tables` is a list of items with `caption` and `file`; and `qas` is a list of questions and annotations. Each Q&A item has `question_id`, `question`, and the question context fields `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background`. Each entry in `answers` has an `annotation_id`, a `worker_id`, and an `answer` object. That object contains `evidence`, `extractive_spans`, `free_form_answer`, `highlighted_evidence`, the `unanswerable` flag, and `yes_no` (a boolean or `null`). The source split is determined by the filename and is not a raw record key.
+
+### `data/processed/papers.jsonl`
+
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"source_split":"train"}
+```
+
+This keeps the paper fields described above, omits `qas`, and adds `source_split` to identify `train`, `validation`, or `test`. Each line is one paper record.
+
+### `data/processed/qa.jsonl`
+
+```json
+{"question_id":"<question-id>","paper_id":"<paper-id>","source_split":"train","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}
+```
+
+Each line represents one question. `question_id` identifies it; `paper_id` links it to `papers.jsonl`; `source_split` records its source split; `question` is the query text; and `answers` contains the QASPER annotations described above. `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background` preserve the corresponding question context fields.
+
+### `data/processed/passages_all_paper_text.jsonl`
+
+```json
+{"passage_id":"qasper-passage-v1-<64-lowercase-hex-characters>","paper_id":"<paper-id>","title":"Example title","section":"Introduction","chunk_number":1,"text":"<passage text>","previous_passage_id":"qasper-passage-v1-<previous-id>","next_passage_id":"qasper-passage-v1-<next-id>"}
+```
+
+`passage_id` is the stable passage identifier; `paper_id` and `title` identify the source paper; `section` is the display section name; `chunk_number` is the zero-based position within its source section; `text` is the passage content; and `previous_passage_id` and `next_passage_id` link to adjacent passages in that section, or are `null` at its boundaries.
+
+### `data/processed/sample_passages_100.jsonl`
+
+```json
+{"passage_id":"qasper-passage-v1-<64-lowercase-hex-characters>","paper_id":"<paper-id>","title":"Example title","section":"Introduction","chunk_number":0,"text":"<passage text>","previous_passage_id":null,"next_passage_id":null}
+```
+
+This sample uses the same eight-key `Passage` structure and key meanings as `passages_all_paper_text.jsonl`. The example shows a one-passage section, so both neighbor links are `null`.
+
 Generated or downloaded data stays out of Git. Do not commit `data/raw/`, source archives, Hugging Face cache files, staging directories, or other locally generated data.
 
 ## Scope and data shape
