@@ -1,5 +1,7 @@
 # Week 1 Work Report: QASPER Data Foundation
 
+**English** | [简体中文](week-1-report-zn.md)
+
 As of September $26$, $2026$
 
 ## 1. Overview and Scope
