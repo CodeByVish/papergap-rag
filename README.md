@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P2 Week 1 fusion, reranking and mock integration are implemented. Real corpus retrieval, generation and the UI are still pending. See [P2 setup and handoff](docs/P2_WEEK1.md).
+**Status:** P1 independent BM25 and dense/FAISS retrieval are implemented and verified with synthetic passages. P2 Week 1 fusion, reranking and mock integration are implemented. P3 real corpus integration is still pending. Generation and the UI are also pending. See [P2 setup and handoff](docs/P2_WEEK1.md).
 
 ## Start here
 
@@ -45,6 +45,45 @@ python -m pip install -r requirements-dev.txt
 Windows activation: `.venv\Scripts\activate`.
 
 The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No application launch command exists yet.
+
+## P1 retrieval: Week 1 / Week 2
+
+Use Python 3.11 with the dependencies from `requirements-dev.txt` installed as described above. For an existing Conda environment, run `conda activate papergap` and check `python --version`; a VS Code interpreter selection does not change every terminal's Python. Run all commands below from the repository root.
+
+`BM25Retriever` and `DenseRetriever` share this interface:
+
+```python
+retrieve(query: str, paper_id: str, top_k: int) -> list[RetrievalHit]
+```
+
+Both use the existing `Passage` and `RetrievalHit` schemas. Results preserve the original Passage fields and IDs, use continuous ranks starting at 1, and contain at most K distinct passages from the selected paper. Unknown papers return `[]`; invalid queries, paper IDs and K values raise `ValueError`. Each paper has its own index, so retrieval selects the top K within that paper. Equal scores are ordered by passage ID.
+
+Dense retrieval uses `BAAI/bge-small-en-v1.5`. The commands below pin revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a` and default to CPU. Only queries receive `Represent this sentence for searching relevant passages: `, including the trailing space; passages use their original text. Both embedding types receive L2 normalization, and FAISS `IndexFlatIP` computes cosine similarity. This embedding model is separate from P2's `BAAI/bge-reranker-base` cross-encoder.
+
+Build the dense index from an explicit Passage JSONL input:
+
+```bash
+python -B -m scripts.build_indexes --passages tests/fixtures/mock_passages.jsonl --output-dir indexes/p1-week2-synthetic --local-files-only
+```
+
+The output directory must be new or empty. The saved artifacts contain the per-paper FAISS indexes, complete row-to-Passage mappings, and checked model/encoding metadata; loading them does not re-encode passages. BM25 is built in memory from the JSONL input and is not persisted by this command. `--model-name` accepts only the selected BGE model; `--revision`, `--device` and `--cache-folder` are available when an explicit setting is needed. `--revision` must be a 40-character lowercase commit SHA; branch and tag names such as `main` are rejected. Use the same revision when building and loading. The default model cache is `.cache/huggingface`. `--local-files-only` requires the pinned model to be cached; omit it to allow a first model download.
+
+Run a sample query against BM25 and the saved dense index:
+
+```bash
+python -B -m scripts.demo_p1 --passages tests/fixtures/mock_passages.jsonl --dense-index-dir indexes/p1-week2-synthetic --paper-id synthetic-ir --query "Which method uses sparse term matching for passage retrieval?" --top-k 3 --local-files-only
+```
+
+Without `--dense-index-dir`, the demo builds dense indexes in memory from the supplied JSONL. The demo reports both rankings and times `retrieve` with `time.perf_counter` after one warm-up call per retriever. Loading, passage encoding and index construction are excluded; dense query encoding is included. The bundled fixture has eight synthetic passages across two papers. These timings are only a local smoke measurement, not real-corpus performance results.
+
+Run the offline regression tests with the same Python 3.11 interpreter:
+
+```bash
+python -B -m pytest tests/test_p1.py -v
+python -B -m pytest -q
+```
+
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate smoke check. See the [P1 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the completed CLI run, regression results and preliminary synthetic timings. P3 real corpus integration is still pending. Week 3 retrieval metrics and failure analysis are outside these commands. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
 
 ## Repository layout
 

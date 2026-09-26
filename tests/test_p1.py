@@ -736,3 +736,221 @@ def test_dense_rejects_loaded_model_revision_drift(monkeypatch, passages):
     )
     with pytest.raises(ValueError):
         DenseRetriever(passages, revision="a" * 40, local_files_only=True)
+
+
+def test_p1_script_load_passages_accepts_bom_and_blank_lines(tmp_path, passages):
+    from scripts.build_indexes import load_passages
+
+    path = tmp_path / "passages.jsonl"
+    path.write_text(
+        "\n" + "\n\n".join(p.model_dump_json() for p in passages) + "\n",
+        encoding="utf-8-sig",
+    )
+    assert load_passages(path) == passages
+
+
+@pytest.mark.parametrize("problem", ["json", "schema", "duplicate", "empty"])
+def test_p1_script_load_passages_reports_input_errors(tmp_path, passages, problem):
+    from scripts.build_indexes import load_passages
+
+    path = tmp_path / "invalid-passages.jsonl"
+    invalid_passage = passages[1].model_dump()
+    del invalid_passage["text"]
+    second_line = {
+        "json": "{not-valid-json}",
+        "schema": json.dumps(invalid_passage),
+        "duplicate": passages[0].model_dump_json(),
+    }
+    content = (
+        "\n \n"
+        if problem == "empty"
+        else passages[0].model_dump_json() + "\n" + second_line[problem] + "\n"
+    )
+    path.write_text(content, encoding="utf-8")
+    with pytest.raises(ValueError) as error:
+        load_passages(path)
+    message = str(error.value)
+    assert str(path) in message
+    if problem != "empty":
+        assert f"{path}:2:" in message
+
+
+def test_p1_build_script_reports_missing_input(tmp_path, capsys):
+    from scripts import build_indexes
+
+    missing = tmp_path / "missing.jsonl"
+    with pytest.raises(SystemExit) as error:
+        build_indexes.main(
+            ["--passages", str(missing), "--output-dir", str(tmp_path / "index")]
+        )
+    assert error.value.code == 2
+    assert str(missing) in capsys.readouterr().err
+    assert not (tmp_path / "index").exists()
+
+
+def test_p1_build_script_uses_existing_retrievers_and_saves_index(
+    monkeypatch, tmp_path, passages, capsys
+):
+    from scripts import build_indexes
+
+    bm25_inputs = []
+    dense_inputs = []
+
+    def make_bm25(corpus):
+        bm25_inputs.append(list(corpus))
+        return BM25Retriever(corpus)
+
+    def make_dense(corpus, **kwargs):
+        dense_inputs.append((list(corpus), kwargs))
+        return DenseRetriever(corpus, encoder=DenseFakeEncoder(passages))
+
+    monkeypatch.setattr(build_indexes, "BM25Retriever", make_bm25)
+    monkeypatch.setattr(build_indexes, "DenseRetriever", make_dense)
+    fixture = Path(__file__).parent / "fixtures/mock_passages.jsonl"
+    directory = tmp_path / "index"
+    build_indexes.main(
+        [
+            "--passages", str(fixture),
+            "--output-dir", str(directory),
+            "--local-files-only",
+        ]
+    )
+    summary = json.loads(capsys.readouterr().out)
+    assert bm25_inputs == [passages]
+    assert len(dense_inputs) == 1
+    assert dense_inputs[0][0] == passages
+    assert dense_inputs[0][1]["revision"] == build_indexes.PINNED_REVISION
+    assert dense_inputs[0][1]["device"] == "cpu"
+    assert dense_inputs[0][1]["local_files_only"] is True
+    assert summary["paper_count"] == 2
+    assert summary["passage_count"] == 8
+    assert summary["embedding_dimension"] == 3
+    assert summary["model_name"] == "test/deterministic"
+    assert summary["revision"] == "v1"
+    assert Path(summary["output_dir"]) == directory
+    metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
+    assert len(metadata["papers"]) == 2
+    assert len(list(directory.glob("*.faiss"))) == 2
+    restored = DenseRetriever.load(directory, encoder=DenseFakeEncoder(passages))
+    assert restored.retrieve("dense ranking", "synthetic-ir", 1)[0].passage == passages[2]
+
+
+@pytest.mark.parametrize("reuse_index", [False, True])
+def test_p1_demo_script_scopes_results_and_times_only_retrieval(
+    monkeypatch, tmp_path, passages, capsys, reuse_index
+):
+    import re
+
+    from scripts import demo_p1
+
+    events = []
+    dense_calls = []
+
+    class RecordedRetriever:
+        def __init__(self, name, retriever):
+            self.name = name
+            self.retriever = retriever
+
+        def retrieve(self, query, paper_id, top_k):
+            events.append(self.name)
+            return self.retriever.retrieve(query, paper_id, top_k)
+
+    def make_bm25(corpus):
+        events.append("build-bm25")
+        return RecordedRetriever("bm25", BM25Retriever(corpus))
+
+    class OfflineDenseFactory:
+        def __new__(cls, corpus, **kwargs):
+            events.append("build-dense")
+            dense_calls.append(("build", kwargs))
+            return RecordedRetriever(
+                "dense", DenseRetriever(corpus, encoder=DenseFakeEncoder(passages))
+            )
+
+        @staticmethod
+        def load(directory, **kwargs):
+            events.append("load-dense")
+            dense_calls.append(("load", kwargs))
+            return RecordedRetriever(
+                "dense",
+                DenseRetriever.load(directory, encoder=DenseFakeEncoder(passages)),
+            )
+
+    clock_values = iter([10.0, 10.002, 20.0, 20.005])
+
+    def clock():
+        events.append("clock")
+        return next(clock_values)
+
+    monkeypatch.setattr(demo_p1, "BM25Retriever", make_bm25)
+    monkeypatch.setattr(demo_p1, "DenseRetriever", OfflineDenseFactory)
+    monkeypatch.setattr(demo_p1.time, "perf_counter", clock)
+    fixture = Path(__file__).parent / "fixtures/mock_passages.jsonl"
+    arguments = [
+        "--passages", str(fixture),
+        "--paper-id", "synthetic-ir",
+        "--query", "dense ranking",
+        "--top-k", "2",
+        "--local-files-only",
+    ]
+    if reuse_index:
+        directory = tmp_path / "index"
+        DenseRetriever(passages, encoder=DenseFakeEncoder(passages)).save(directory)
+        arguments.extend(["--dense-index-dir", str(directory)])
+    demo_p1.main(arguments)
+    output = capsys.readouterr().out
+    assert "BM25 results:" in output
+    assert "Dense results:" in output
+    assert "synthetic-ir-003" in output
+    assert "synthetic-energy-" not in output
+    assert "8" in output
+    assert "synthetic" in output.lower() or "合成" in output
+    assert "P3" in output
+    assert re.search(r"BM25 retrieval latency:\s*2(?:\.0+)?\s*ms", output)
+    assert re.search(r"Dense retrieval latency:\s*5(?:\.0+)?\s*ms", output)
+    assert events.count("bm25") == events.count("dense") == 2
+    clock_positions = [index for index, event in enumerate(events) if event == "clock"]
+    assert len(clock_positions) == 4
+    assert events[clock_positions[0] + 1:clock_positions[1]] == ["bm25"]
+    assert events[clock_positions[2] + 1:clock_positions[3]] == ["dense"]
+    assert events.index("bm25") < clock_positions[0]
+    assert events.index("dense") < clock_positions[2]
+    assert len(dense_calls) == 1
+    assert dense_calls[0][0] == ("load" if reuse_index else "build")
+    if reuse_index:
+        assert dense_calls[0][1]["model_name"] == DEFAULT_MODEL_NAME
+        assert dense_calls[0][1]["revision"] == demo_p1.PINNED_REVISION
+
+
+def test_p1_demo_rejects_changed_passages_for_saved_mapping(
+    monkeypatch, tmp_path, passages, capsys
+):
+    from scripts import demo_p1
+
+    directory = tmp_path / "index"
+    DenseRetriever(passages, encoder=DenseFakeEncoder(passages)).save(directory)
+    changed = [p.model_dump() for p in passages]
+    changed[0]["title"] = "Changed metadata with the same stable passage ID"
+    path = tmp_path / "changed-passages.jsonl"
+    path.write_text("\n".join(json.dumps(p) for p in changed), encoding="utf-8")
+    encoder = DenseFakeEncoder(passages)
+
+    class OfflineDenseFactory:
+        @staticmethod
+        def load(directory, **kwargs):
+            return DenseRetriever.load(directory, encoder=encoder)
+
+    monkeypatch.setattr(demo_p1, "DenseRetriever", OfflineDenseFactory)
+    with pytest.raises(SystemExit) as error:
+        demo_p1.main(
+            [
+                "--passages", str(path),
+                "--paper-id", "synthetic-ir",
+                "--query", "dense ranking",
+                "--dense-index-dir", str(directory),
+                "--local-files-only",
+            ]
+        )
+    assert error.value.code == 2
+    assert "passage" in capsys.readouterr().err.lower()
+    assert encoder.calls == []
