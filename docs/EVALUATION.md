@@ -43,3 +43,19 @@ Define normalization, multiple reference-answer handling, answer-type scoring an
 Citation-ID validation establishes that a cited passage was supplied to the generator. It does **not** establish entailment or that numbers are supported. Evaluate citation correctness/grounding separately using manual checks and the chosen faithfulness metric. Do not claim the validator prevents all unsupported factual statements.
 
 Tune only on development/validation data. Freeze all prompts, retrieval settings and optional variants before evaluating held-out labels. Log genuine post-freeze bug fixes and rerun affected comparisons consistently.
+
+## Held-out freeze sequence
+
+The observed official QASPER splits are paper-disjoint, but their mapping to the project roles remains the proposal recorded as `P3-D004` and is pending team review. The current safe default is `train -> development`, `validation -> validation`, and `test -> held_out`; this mapping must not be treated as confirmed until reviewed by the affected owners.
+
+Use only `development` and `validation` assets to choose among the `$150`/`$200`/`$250` chunk sizes, overlap and boundary settings, retrieval rules, model settings, prompts, few-shot examples, and stopping rules. Keep the held-out paper text available only through the approved inference index, and do not use held-out questions, answers, evidence, or labels to make these choices.
+
+Before reading any held-out question, record the final Git commit and configuration, then freeze the chunker, prompts, retrieval settings, model settings, and evaluation protocol. After that freeze, run the held-out questions as final evaluation queries; read held-out answers and labels only afterward for scoring and reporting.
+
+The final question pool must be kept separate from development experiments. `evaluation.held_out_manifest: null` remains unchanged until the question and annotation pool is actually frozen under `P3-D005`. The post-freeze bug-fix and rerun rule remains the proposal in `P3-D006`: a genuine bug fix must record its cause and rerun every affected configuration consistently; a held-out result must never drive a targeted improvement.
+
+## Unified QA export and access boundary
+
+`data/processed/qa.jsonl` is a physical union of the official `train`, `validation`, and `test` questions. Every row preserves its original question object and complete answer annotation array, with `paper_id` and `source_split` added for linkage. The export and a structural integrity check may read every row before the freeze only to copy fields, count records, hash files, and verify paper links; their summaries must not include question or answer content. This mechanical handling does not authorize people or experiment code to preview or use `test` questions, answers, evidence, or labels.
+
+After the evaluation freeze, an evaluation entry point must select rows by `source_split` and purpose. During query execution, it may expose only `question_id`, `paper_id`, and `question` to the RAG system. It must persist query inputs and results before separately reading `answers` and evidence for scoring. Passing a complete QA row to the model is prohibited because the row contains annotations and evidence alongside the query. The export remains local under `data/processed/` and is not committed.

@@ -4,7 +4,7 @@
 
 | Requirement supplied | Proposed evidence | Owner | Status |
 | --- | --- | --- | --- |
-| Knowledge base: ≥10,000 documents and ≥100,000 words (20 pts with annotation) | Corpus manifest, source-paper count, unique passage count, word counts and cleaning/chunking commands | P3 | Passage-document interpretation confirmed; counts pending |
+| Knowledge base: ≥10,000 documents and ≥100,000 words (20 pts with annotation) | Corpus manifest, source-paper count, unique passage count, word counts and cleaning/chunking commands | P3 | Current development corpus verified: 32,073 unique passages and 4,262,446 source words; split mapping remains `v0-proposed` |
 | Manually label ≥1,000 held-out records, ≥80% agreement | Proposed 1,000 unique query–passage pairs, two blind labels each, pre-adjudication agreement and preserved labels | Everyone; P6 coordinates | Query–passage interpretation confirmed; annotation pending |
 | Hybrid retrieval (40 pts) | BM25, dense, RRF; Precision@K, Recall@K, MRR, nDCG; Streamlit UI | P1/P2/P6 | Planned |
 | Evidence-conditioned downstream task (40 pts) | QA with EM/token F1/ROUGE-L and RAGAS Faithfulness/Relevance | P5/P6 | Planned |
@@ -18,8 +18,24 @@
 - **P5: compute.** University GPU access is available (team confirmation). GPU type, VRAM, quotas/booking limits, serving method and feasible Qwen3-8B context length remain pending. Verify with a small run in Week 1; access alone does not establish model capacity or experiment throughput.
 - **P1/P5: model choices.** Exact BGE embedding checkpoint is pending. Proposed reranker is `BAAI/bge-reranker-base`; proposed generator is `Qwen/Qwen3-8B`. Freeze revisions and inference settings after feasibility checks.
 - **P6: RAGAS.** Confirm judge/embedding backend, access, cost budget and metric definitions early. Do not wait until final experiment week to test the evaluator.
-- **P3/P5/P6: splits.** Record official split availability and adopt paper-disjoint development/validation/held-out evaluation. Held-out paper text can be indexed as inference evidence; its questions, answers and labels must not enter tuning or prompts.
+- **P3/P5/P6: splits.** The proposal is paper-disjoint development/validation/held-out evaluation; official split availability is recorded, but the project-role mapping remains pending `P3-D004`. Held-out paper text can be indexed as inference evidence; its questions, answers and labels must not enter tuning or prompts.
 - **Team: submission metadata.** Confirm official deadline year, group number, report filename, member details and final cloud locations. The supplied instructions do not specify a filename convention.
+
+## P3 data-contract decisions pending team review
+
+The following entries are proposals for the shared data and evaluation boundary. Each status is `pending team review`; no entry records a confirmed team decision.
+
+- **P3-D001 — Deferred provenance fields.** Status: `pending team review`. Proposal: keep the public eight-field `Passage` unchanged for this proposal, and record source split, project role, policy version, chunking configuration, and output hashes in corpus manifests. Affected roles: P1, P2, P4, P5, and P6. Blocked outputs: the shared Passage contract and corpus-manifest schema. Owner: `TBD at team meeting`. Update locations: `data/README.md` and the relevant schema or manifest documentation after review.
+
+- **P3-D002 — Abstract and figure/table passages.** Status: `pending team review`. Safe default: generate `full_text` passages only; keep abstract and `figure_table` source kinds reserved but unindexed. Affected roles: P1, P2, P4, P5, and P6. Blocked outputs: corpus scope, passage counts, retrieval indexing, and citation inputs. Owner: `TBD at team meeting`. Update locations: `data/README.md`, the chunking configuration, and corpus statistics documentation after review.
+
+- **P3-D003 — `FLOAT SELECTED` mapping.** Status: `pending team review`. Safe default: retain the observed `FLOAT SELECTED: ` prefix as evidence text and do not infer a figure/table index. Affected roles: P3, P5, and P6. Blocked outputs: evidence-to-passage mapping, evidence-level metrics, and citation analysis. Owner: `TBD at team meeting`. Update locations: `docs/QASPER_DATASET_INSPECTION.md`, `docs/EVALUATION.md`, and the mapping implementation after review.
+
+- **P3-D004 — Official split to project-role mapping.** Status: `pending team review`. Proposal: map `train -> development`, `validation -> validation`, and `test -> held_out` at the whole-paper level, subject to P5/P6 review and a repeated leakage check. A single physical papers file and QA file may each contain all official splits while every row retains `source_split`; this storage choice does not approve or freeze the project-role mapping or held-out pool. Affected roles: P3, P5, and P6. Blocked outputs: split policy, experiment manifests, and held-out usage controls. Owner: `TBD at team meeting`. Update locations: `data/README.md`, `docs/EVALUATION.md`, `configs/default.yaml`, and the split-policy implementation after review.
+
+- **P3-D005 — Held-out freeze record and manifest.** Status: `pending team review`. Safe default: keep `evaluation.held_out_manifest: null` and do not create or tune on a final held-out question or annotation pool. Affected roles: P3, P5, and P6. Blocked outputs: the held-out question/annotation manifest, freeze record, and final-evaluation handoff. Owner: `TBD at team meeting`. Update locations: `docs/EVALUATION.md`, `configs/default.yaml`, and the future held-out manifest documentation after review.
+
+- **P3-D006 — Post-freeze bug-fix and rerun rule.** Status: `pending team review`. Proposal: permit only genuine post-freeze bug fixes, record the cause and affected configurations, and rerun every affected comparison consistently; never use held-out results to target an improvement. Affected roles: P3, P5, and P6. Blocked outputs: the final evaluation protocol and reproducible result records. Owner: `TBD at team meeting`. Update locations: `docs/EVALUATION.md` and the experiment-record schema after review.
 
 ## Scope priority
 
