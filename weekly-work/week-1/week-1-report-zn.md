@@ -121,7 +121,7 @@ $100$ 条依赖样本只使用 `train` 与 `validation` 的论文正文，按稳
 
 | 语料范围 | 来源 split | 用途 | 来源论文数 | 实际产生 passage 的论文数 | 唯一 passage 数 | 去重叠来源词数 | 含重叠 passage 词数 | SHA-256 |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `development` | `train` + `validation` | 开发语料 | $1{,}169$ | $1{,}168$ | $32{,}073$ | $4{,}262{,}446$ | $4{,}897{,}846$ | `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790` |
+| `development` | `train` + `validation` | 由 `train` 和 `validation` 两个 split 的论文正文构建的用于开发的 Passage 集合 | $1{,}169$ | $1{,}168$ | $32{,}073$ | $4{,}262{,}446$ | $4{,}897{,}846$ | `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790` |
 | `all-paper-text` | 三个官方 split 的论文正文 | `index_for_inference` | $1{,}585$ | $1{,}584$ | $42{,}719$ | $5{,}659{,}921$ | $6{,}495{,}041$ | `32fa43714d6be6822636fd8513af8358cfff78474d50f7c310a1b90d28a868fa` |
 
 “来源论文数”是进入该语料范围的论文数；“实际产生 passage 的论文数”只计至少生成一个正文块的论文；两者差 $1$，但现有统计没有逐篇对应证据，不能断言缺少 passage 的论文就是那篇 `full_text` 为空的论文。“唯一 passage 数”按 `passage_id` 去重。去重叠来源词数对实际参与生成 passage 的来源段落每段只计一次；含重叠 passage 词数对输出块逐块计数，因此包含相邻窗口的重复词。计数使用 Unicode 非空白词串。
@@ -150,14 +150,23 @@ $100$ 条依赖样本只使用 `train` 与 `validation` 的论文正文，按稳
 完整字段和运行细节见 [`data/README.md`](../../data/README.md)。下列命令从仓库根目录运行，展示从固定输入到样本及两种语料的完整复现链。示例使用新的输出名称；下载目录、导出文件、样本和语料输出均要求目标不存在。再次复现时为所有输出改用尚未使用的名称。复现会下载并生成本地数据；本周报告编辑没有运行这些命令。
 
 ```powershell
+# 下载固定修订版的 QASPER 数据。
 python -m scripts.download_qasper --output-dir data/raw/qasper-week1-reproduction --revision fdc9d8214fbab5dd782958601db4d678e6934a54
+# 检查原始数据结构并保存报告。
 python -m scripts.inspect_qasper --input-dir data/raw/qasper-week1-reproduction --output data/processed/qasper_inspection_week1_reproduction.json
+# 分离导出论文、问答及清单。
 python -m scripts.export_qasper --input-dir data/raw/qasper-week1-reproduction --papers-output data/processed/papers_week1_reproduction.jsonl --qa-output data/processed/qa_week1_reproduction.jsonl --manifest-output data/processed/qasper_export_week1_reproduction.manifest.json
+# 核验导出文件、计数和关联。
 python -m scripts.check_qasper_export --papers data/processed/papers_week1_reproduction.jsonl --qa data/processed/qa_week1_reproduction.jsonl --manifest data/processed/qasper_export_week1_reproduction.manifest.json
+# 构建 100 条 Passage 样本。
 python -m scripts.build_sample_passages --papers data/processed/papers_week1_reproduction.jsonl --export-manifest data/processed/qasper_export_week1_reproduction.manifest.json --output data/processed/sample_passages_100_week1_reproduction.jsonl --manifest-output data/processed/sample_passages_100_week1_reproduction.manifest.json
+# 构建由 train 和 validation 两个 split 的论文正文生成、用于开发的 Passage 集合。
 python -m scripts.build_corpus --papers data/processed/papers_week1_reproduction.jsonl --export-manifest data/processed/qasper_export_week1_reproduction.manifest.json --scope development --output data/processed/passages_development_week1_reproduction.jsonl --manifest-output data/processed/passages_development_week1_reproduction.manifest.json
+# 核验 development 语料。
 python -m scripts.check_corpus --corpus data/processed/passages_development_week1_reproduction.jsonl --manifest data/processed/passages_development_week1_reproduction.manifest.json
+# 构建全论文正文语料。
 python -m scripts.build_corpus --papers data/processed/papers_week1_reproduction.jsonl --export-manifest data/processed/qasper_export_week1_reproduction.manifest.json --scope all-paper-text --output data/processed/passages_all_paper_text_week1_reproduction.jsonl --manifest-output data/processed/passages_all_paper_text_week1_reproduction.manifest.json
+# 核验全论文正文语料。
 python -m scripts.check_corpus --corpus data/processed/passages_all_paper_text_week1_reproduction.jsonl --manifest data/processed/passages_all_paper_text_week1_reproduction.manifest.json
 ```
 

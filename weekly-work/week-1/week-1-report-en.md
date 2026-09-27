@@ -121,7 +121,7 @@ The 100-passage dependency sample uses paper text from `train` and `validation` 
 
 | Corpus scope | Source splits | Purpose | Source papers | Papers producing passages | Unique passages | Source words excluding overlap | Passage words including overlap | SHA-256 |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `development` | `train` + `validation` | Development | $1{,}169$ | $1{,}168$ | $32{,}073$ | $4{,}262{,}446$ | $4{,}897{,}846$ | `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790` |
+| `development` | `train` + `validation` | Passage collection built from paper text in the `train` and `validation` splits for development | $1{,}169$ | $1{,}168$ | $32{,}073$ | $4{,}262{,}446$ | $4{,}897{,}846$ | `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790` |
 | `all-paper-text` | Paper text from all three official splits | `index_for_inference` | $1{,}585$ | $1{,}584$ | $42{,}719$ | $5{,}659{,}921$ | $6{,}495{,}041$ | `32fa43714d6be6822636fd8513af8358cfff78474d50f7c310a1b90d28a868fa` |
 
 “Source papers” counts papers included in the scope; “papers producing passages” counts papers that generated at least one body passage. The difference is one, but the available aggregate counts do not identify that paper, so it cannot be asserted to be the paper with an empty `full_text`. “Unique passages” is counted by distinct `passage_id`. Source-word count counts each source paragraph that contributed to a passage once; passage-word count counts output chunks separately and therefore includes repeated words in overlapping windows. Counts use Unicode non-whitespace runs.
@@ -150,14 +150,23 @@ Paper `full_text` sometimes repeats individual table facts but does not guarante
 The complete field and command details are in [`data/README.md`](../../data/README.md). Run the following commands from the repository root to reproduce the pinned inputs, sample, and both corpus scopes. The example uses new output names; the acquisition directory, export files, sample, and corpus output paths must not already exist. Use unused names for another reproduction. Reproduction downloads and generates local data; these commands were not run while editing this report.
 
 ```powershell
+# Download the pinned QASPER revision.
 python -m scripts.download_qasper --output-dir data/raw/qasper-week1-reproduction --revision fdc9d8214fbab5dd782958601db4d678e6934a54
+# Inspect the raw data structure and save a report.
 python -m scripts.inspect_qasper --input-dir data/raw/qasper-week1-reproduction --output data/processed/qasper_inspection_week1_reproduction.json
+# Export papers, questions, and the manifest separately.
 python -m scripts.export_qasper --input-dir data/raw/qasper-week1-reproduction --papers-output data/processed/papers_week1_reproduction.jsonl --qa-output data/processed/qa_week1_reproduction.jsonl --manifest-output data/processed/qasper_export_week1_reproduction.manifest.json
+# Check the export files, counts, and links.
 python -m scripts.check_qasper_export --papers data/processed/papers_week1_reproduction.jsonl --qa data/processed/qa_week1_reproduction.jsonl --manifest data/processed/qasper_export_week1_reproduction.manifest.json
+# Build the 100-passage sample.
 python -m scripts.build_sample_passages --papers data/processed/papers_week1_reproduction.jsonl --export-manifest data/processed/qasper_export_week1_reproduction.manifest.json --output data/processed/sample_passages_100_week1_reproduction.jsonl --manifest-output data/processed/sample_passages_100_week1_reproduction.manifest.json
+# Build the Passage collection for development from paper text in `train` and `validation`.
 python -m scripts.build_corpus --papers data/processed/papers_week1_reproduction.jsonl --export-manifest data/processed/qasper_export_week1_reproduction.manifest.json --scope development --output data/processed/passages_development_week1_reproduction.jsonl --manifest-output data/processed/passages_development_week1_reproduction.manifest.json
+# Check the development corpus.
 python -m scripts.check_corpus --corpus data/processed/passages_development_week1_reproduction.jsonl --manifest data/processed/passages_development_week1_reproduction.manifest.json
+# Build the all-paper-text corpus.
 python -m scripts.build_corpus --papers data/processed/papers_week1_reproduction.jsonl --export-manifest data/processed/qasper_export_week1_reproduction.manifest.json --scope all-paper-text --output data/processed/passages_all_paper_text_week1_reproduction.jsonl --manifest-output data/processed/passages_all_paper_text_week1_reproduction.manifest.json
+# Check the all-paper-text corpus.
 python -m scripts.check_corpus --corpus data/processed/passages_all_paper_text_week1_reproduction.jsonl --manifest data/processed/passages_all_paper_text_week1_reproduction.manifest.json
 ```
 
