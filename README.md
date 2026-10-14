@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1 independent BM25 and dense/FAISS retrieval are implemented and verified with synthetic passages. P2 Week 1 fusion, reranking and mock integration are implemented. P3 real corpus integration is still pending. Generation and the UI are also pending. See [P2 setup and handoff](docs/P2_WEEK1.md).
+**Status:** P1/P2/P3 retrieval integration now runs on real QASPER passages, including hybrid RRF and BGE reranking. A small training-only ranking/latency pilot is complete; labelled retrieval evaluation, the agent, generation and the UI remain pending. See [P2 real-data integration and results](docs/P2_WEEK2.md).
 
 ## Start here
 
@@ -83,7 +83,7 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate smoke check. See the [P1 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the completed CLI run, regression results and preliminary synthetic timings. P3 real corpus integration is still pending. Week 3 retrieval metrics and failure analysis are outside these commands. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate smoke check. See the [P1 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the completed CLI run, regression results and preliminary synthetic timings. P3 real corpus integration is now verified in the [P2 real-data handoff](docs/P2_WEEK2.md). Labelled retrieval metrics and formal failure analysis remain separate work. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
 
 ## Repository layout
 
