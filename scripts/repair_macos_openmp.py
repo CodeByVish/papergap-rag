@@ -9,6 +9,7 @@ import argparse
 import importlib.metadata
 import platform
 import shutil
+import sys
 from pathlib import Path
 
 
@@ -18,6 +19,8 @@ def main():
     mode.add_argument("--apply", action="store_true")
     mode.add_argument("--restore", action="store_true")
     args = parser.parse_args()
+    if sys.prefix == sys.base_prefix:
+        parser.error("Run this with the affected virtual environment's Python")
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("This repair applies only to macOS ARM64")
     try:
