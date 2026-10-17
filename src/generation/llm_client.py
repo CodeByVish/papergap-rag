@@ -10,7 +10,7 @@ def generate(provider, config, system_prompt, user_prompt):
     )
     model = config["model"]
 
-    if provider == "qwen":
+    if provider in ("qwen", "groq"):
         result = client.chat.completions.create(
             model=model,
             messages=[

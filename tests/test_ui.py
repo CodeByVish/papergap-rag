@@ -24,7 +24,7 @@ PASSAGES = [
 ]
 
 
-def configured_app(monkeypatch, passages=None, answer="Recall improved [E1]."):
+def configured_app(monkeypatch, passages=None, answer="Recall improved [E1].", provider="qwen"):
     retriever = Mock()
     retriever.retrieve.return_value = PASSAGES if passages is None else passages
     generate = Mock(return_value=answer)
@@ -33,21 +33,25 @@ def configured_app(monkeypatch, passages=None, answer="Recall improved [E1]."):
     monkeypatch.setattr("src.generation.llm_client.generate", generate)
     app = AppTest.from_file(str(APP))
     app.secrets["llm"] = {
-        "qwen": {
+        provider: {
             "api_key": "test-secret",
             "base_url": "https://example.com/v1",
             "model": "test",
         }
     }
     app.run()
+    if provider != "qwen":
+        app.selectbox[0].select(provider).run()
     assert not app.exception
     return app, retriever, generate
 
 
 def test_missing_configuration_opens_without_loading_models():
-    app = AppTest.from_file(str(APP)).run()
+    app = AppTest.from_file(str(APP))
+    app.secrets["llm"] = {}
+    app.run()
     assert not app.exception
-    assert app.chat_input[0].disabled
+    assert not app.chat_input[0].disabled
     assert any("setup" in item.value.lower() for item in app.info)
 
 
@@ -142,12 +146,15 @@ def test_missing_artifacts_disable_submission(monkeypatch):
         "src.ui.services.missing_artifacts", lambda cfg: ["indexes/dense/chunks.faiss"]
     )
     app.run()
-    assert app.chat_input[0].disabled
+    assert not app.chat_input[0].disabled
+    app.radio[0].set_value("Paper RAG").run()
     assert "indexes/dense/chunks.faiss" in app.code[0].value
+    app.chat_input[0].set_value("Question").run()
+    assert "requires the missing artifacts" in app.error[0].value
     generate.assert_not_called()
 
 
-@pytest.mark.parametrize("provider", ["qwen", "grok"])
+@pytest.mark.parametrize("provider", ["qwen", "grok", "groq"])
 def test_provider_adapter_routes_requests(monkeypatch, provider):
     from src.generation.llm_client import generate
 
@@ -168,7 +175,40 @@ def test_provider_adapter_routes_requests(monkeypatch, provider):
     )
     method = (
         client.chat.completions.create
-        if provider == "qwen"
+        if provider in ("qwen", "groq")
         else client.responses.create
     )
     method.assert_called_once()
+
+
+def test_groq_selection_sends_configured_provider(monkeypatch):
+    app, _, generate = configured_app(monkeypatch, provider="groq")
+    assert not app.chat_input[0].disabled
+    app.chat_input[0].set_value("What improved?").run()
+    assert not app.exception
+    generate.assert_called_once()
+    assert generate.call_args.args[0] == "groq"
+    assert generate.call_args.args[1]["api_key"] == "test-secret"
+    assert any("Recall improved [E1]" in item.value for item in app.markdown)
+
+
+def test_direct_chat_without_indexes(monkeypatch):
+    app, retriever, generate = configured_app(monkeypatch, provider="groq")
+    monkeypatch.setattr("src.ui.services.missing_artifacts", lambda cfg: ["data/chunks.jsonl"])
+    app.run()
+    app.radio[0].set_value("Direct chat").run()
+    app.chat_input[0].set_value("Explain attention").run()
+    assert not app.exception
+    generate.assert_called_once()
+    retriever.retrieve.assert_not_called()
+    assert generate.call_args.args[0] == "groq"
+    assert not app.warning
+
+
+def test_missing_credentials_submission_is_actionable(monkeypatch):
+    app, _, generate = configured_app(monkeypatch)
+    app.selectbox[0].select("grok").run()
+    app.chat_input[0].set_value("Hello").run()
+    assert not app.exception
+    assert "Configure the API key" in app.error[0].value
+    generate.assert_not_called()

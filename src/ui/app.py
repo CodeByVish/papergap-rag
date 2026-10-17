@@ -19,11 +19,12 @@ def render_result(result, diagnostics):
         st.error(result["error"])
     if result.get("answer"):
         st.chat_message("assistant").markdown(result["answer"])
-        for warning in citation_warnings(result["answer"], result["passages"]):
+        for warning in (citation_warnings(result["answer"], result["passages"]) if result.get("use_rag", True) else []):
             st.warning(warning)
-        st.caption(
-            "Citation labels are checked; support for each claim still needs review."
-        )
+        if result.get("use_rag", True):
+            st.caption("Citation labels are checked; support for each claim still needs review.")
+        else:
+            st.caption("Direct chat · no paper retrieval or evidence citations")
     passages = result.get("passages", [])
     st.caption(
         f"{result['provider']} · {result['model']} · {len(passages)} passages · {result['seconds']:.2f}s"
@@ -56,6 +57,15 @@ def render_result(result, diagnostics):
             )
 
 
+def provider_configured(config):
+    return isinstance(config, dict) and all(
+        isinstance(config.get(k), str)
+        and config[k].strip()
+        and not config[k].strip().startswith(("replace-", "configure-"))
+        for k in ("api_key", "base_url", "model")
+    )
+
+
 def main():
     st.title("📄 PaperRAG")
     st.caption("Ask about NLP papers. Follow every answer back to the evidence.")
@@ -69,8 +79,14 @@ def main():
 
     with st.sidebar:
         st.header("Settings")
-        provider = st.selectbox("LLM provider", ["qwen", "grok"])
         providers = secrets.get("llm", {})
+        choices = ["qwen", "grok", "groq"]
+        default = next(
+            (i for i, name in enumerate(choices)
+             if isinstance(providers, dict) and provider_configured(providers.get(name))),
+            0,
+        )
+        provider = st.selectbox("LLM provider", choices, index=default)
         config = providers.get(provider, {}) if isinstance(providers, dict) else {}
         if not isinstance(config, dict):
             config = {}
@@ -83,19 +99,20 @@ def main():
             "Only the latest answer is kept in this browser session. Questions are independent."
         )
 
-    configured = all(
-        isinstance(config.get(k), str)
-        and config[k].strip()
-        and not config[k].startswith(("replace-", "configure-"))
-        for k in ("api_key", "base_url", "model")
-    )
+    configured = provider_configured(config)
     try:
         cfg = rag_config(secrets.get("rag", {}))
         missing = missing_artifacts(cfg)
     except (TypeError, ValueError):
         st.error("Invalid [rag] configuration. Use the supplied secrets example.")
         return
-    ready = configured and not missing
+    mode = st.sidebar.radio(
+        "Answer mode", ["Paper RAG", "Direct chat"], index=1 if missing else 0
+    )
+    use_rag = mode == "Paper RAG"
+    if not use_rag:
+        st.info("Direct chat: answers use the model's knowledge, without paper retrieval or evidence citations.")
+    ready = configured and (not use_rag or not missing)
     if not ready:
         st.info("Finish setup to start asking questions.")
         with st.expander("Setup checklist", expanded=True):
@@ -103,7 +120,7 @@ def main():
                 st.write(
                     f"Configure the API key, endpoint and model for {provider} in .streamlit/secrets.toml."
                 )
-            if missing:
+            if use_rag and missing:
                 st.write("Build the indexes offline. Missing artifacts:")
                 st.code("\n".join(missing), language=None)
             st.write("See src/ui/README.md for setup and index-build commands.")
@@ -113,33 +130,46 @@ def main():
         )
 
     question = st.chat_input(
-        "Ask about methods, experiments, findings, or limitations", disabled=not ready
+        "Ask about methods, experiments, findings, or limitations"
     )
     if question and question.strip():
         started = time.perf_counter()
         result = {
             "question": question.strip(),
             "provider": provider,
-            "model": config["model"],
+            "model": config.get("model", "Not configured"),
             "passages": [],
         }
-        if len(question) > 4000:
+        if not ready:
+            result["error"] = (
+                f"Configure the API key, endpoint and model for {provider} in .streamlit/secrets.toml."
+                if not configured else
+                "Paper RAG requires the missing artifacts listed above. Select Direct chat to ask without retrieval."
+            )
+        elif len(question) > 4000:
             result["error"] = (
                 "Please shorten your question to 4,000 characters or fewer."
             )
         else:
             try:
-                with st.spinner("Retrieving evidence…"):
-                    passages = get_retriever(cfg).retrieve(
-                        question.strip(), top_k=top_k
-                    )
-                if not passages:
-                    result["error"] = (
-                        "No evidence was retrieved. Try another question or check your indexes."
-                    )
+                if use_rag:
+                    with st.spinner("Retrieving evidence…"):
+                        passages = get_retriever(cfg).retrieve(question.strip(), top_k=top_k)
                 else:
-                    system, user, evidence = build_messages(question.strip(), passages)
-                    result["passages"] = evidence
+                    passages = []
+                if use_rag and not passages:
+                    result["error"] = "No evidence was retrieved. Try another question or check your indexes."
+                else:
+                    if use_rag:
+                        system, user, evidence = build_messages(question.strip(), passages)
+                        result["passages"] = evidence
+                    else:
+                        system = (
+                            "You are a helpful assistant. Paper retrieval is disabled. "
+                            "Do not invent evidence citations or claim to have searched the paper corpus."
+                        )
+                        user = question.strip()
+                    result["use_rag"] = use_rag
                     with st.spinner("Generating answer…"):
                         answer = generate(provider, config, system, user)
                     if not answer.strip():

@@ -21,9 +21,12 @@ shows a setup checklist. It does not invent sample answers. Stop with Ctrl+C.
 ## Enable real answers
 
 1. Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`.
-   Set `api_key`, `base_url`, and `model` for at least one provider (`qwen` or
-   `grok`). Use the endpoint and model available to your account. Keep this
+   Set `api_key`, `base_url`, and `model` for at least one provider (`qwen`,
+   `grok`, or `groq`). Use the endpoint and model available to your account. Keep this
    ignored file private. The sidebar displays the configured model.
+   For Groq, configure `[llm.groq]` using the example endpoint and a model
+   available to your account, then select **groq** in the sidebar.
+   Groq is separate from **grok**, which uses xAI.
 2. Install the retrieval dependencies:
    `python -m pip install -r requirements-indexes.txt`.
    Pyserini also needs Java 21; consult
@@ -65,7 +68,11 @@ answer** removes the displayed result. Failed generation retains retrieved
 sources. No persistent chat history, uploads, adaptive agent loop, or reranker
 is enabled in this baseline.
 
-Missing artifacts disable submission. Authentication, rate limits, connection
+The app selects the first configured provider. Without indexes, it defaults to
+**Direct chat**, which calls the selected model without paper evidence or citations.
+Choose **Paper RAG** for retrieval-backed answers after building the indexes.
+The input stays editable during setup; submitting with incomplete configuration
+shows an actionable message without calling the provider. Authentication, rate limits, connection
 failures and empty responses produce UI messages without raw exception details
 or credentials. Dense retrieval always finds nearest neighbors, so inspect the
 evidence even if a question is outside the corpus.
