@@ -96,3 +96,21 @@ Owner: Ananya. Merged: [#6](https://github.com/CodeByVish/papergap-rag/pull/6) L
 | Handoff to P5/P6 | Implemented | `AgentState.question_id`; `src/agent/export.py` writes one JSON record per question including passage text. |
 
 Open items: Qwen call details from P5 (needed for the real critic adapter); refusal rule for P5 (proposed: refuse only on `INSUFFICIENT_INFORMATION` or empty retrieval, otherwise generate and keep `sufficient` as metadata); P2's section-scoped retrieval branch (`p2/agent-sections-cache`) needs a rebase onto main before it can be used; real-data traces on development examples. Passage and state schemas remain `v0-proposed`.
+
+## P2 evaluation and annotation preparation — 17 October 2026
+
+Prepared four-system inference grids, independent-label scoring with judged
+coverage and explicit pool/full-paper distinctions, paired fusion/reranking
+contributions, error categories, deterministic blinded candidate pooling and
+blank P2 annotation batch exports gated on a complete frozen pool and P6
+assignment approval. Added a report methodology/latency draft with pending
+quality results clearly marked. Real-model workflow smoke: three training
+questions, candidate sizes 10/20, RRF 60, all four methods; c20 pooling produced
+30 unique pairs without shortfalls. This is not the held-out annotation pool.
+
+Repository/local-data audit found no agreed relevance-label file or frozen
+held-out manifest; final quality scoring, development parameter selection,
+held-out pooling, 334 proposed P2 human judgments, agreement and report quality
+conclusions require P3/P6 inputs. No labels or approvals were manufactured.
+See [evaluation commands and required inputs](P2_EVALUATION_HANDOFF.md) and
+[report contribution draft](P2_REPORT_CONTRIBUTION.md).
