@@ -21,7 +21,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
 | P5 | Pending | Generation, citations and answer API | QA and grounding |
-| P6 | Pending | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
+| P6 | Changyan Xu | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.
 
