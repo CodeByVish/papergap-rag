@@ -2,8 +2,7 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
-> Current P1 delivery: [Phase 3](#p1-phase-3-git-delivery). Earlier local-only,
-> uncommitted and deferred-delivery statements describe their original phases.
+> Current P1 delivery: [18 October main integration](#p1-main-integration-after-p2-merge-18-october-2026). P2 PR #5 is merged. Earlier open-PR, local-only, uncommitted and deferred-delivery statements describe their original checkpoints.
 
 | Week | Dates | Exit checkpoint | Status |
 | --- | --- | --- | --- |
@@ -74,7 +73,7 @@ Local ignored artifacts are `results/p1-week2-build.json` and `results/p1-week2-
 
 ## P1 Week 3 / Week 4 progress
 
-Latest status: see [17 October integration checkpoint](#p1-dependency-integration-checkpoint-17-october-2026). The earlier runs below retain their original evidence and dependency status.
+Current status: see [18 October main integration](#p1-main-integration-after-p2-merge-18-october-2026). The earlier runs below retain their original evidence and dependency status.
 
 Owner: Junlin Yin. Work is on `p1/week3-week4`, based on the complete P1 Week
 1/2 implementation at `5d3f4477f42887067bb4b3f8bd9231f1bc9289e9`. The upstream
@@ -419,3 +418,38 @@ human review**. P2 acknowledgment, P3 gold mapping/coverage, P6 metric backend/
 protocol and outer section/parameter decisions remain follow-ups; real quality
 metrics are unavailable and the protocol provisional. They do not automatically
 block opening the scoped P1 PR. No PR merge or automatic merge is authorized.
+
+## P2 real-data integration — 14 October 2026
+
+P1 #4 and P3 #2 are merged. Vishakha's P2 integration now connects their real
+QASPER passage pipeline and pinned BGE/FAISS index to RRF and optional BGE
+reranking. The corpus check reproduced 32,073 passages / 1,168 indexed papers
+and the expected hash. A complete 384-dimensional dense index was built on Metal.
+
+The training-only pilot compares 10/20 candidates per retriever at final top-5
+on six fixed training papers. See [P2 commands and measured results](P2_WEEK2.md).
+No held-out question content or answer annotations were used for this comparison.
+The local native-runtime repair permits the full suite to run without exclusions.
+This resolves the earlier real-corpus integration dependency, but does not establish
+retrieval quality or mark the team's weekly exit checkpoint complete. Passage/split
+contracts and the final evaluation protocol still need affected-owner agreement.
+
+## P1 main integration after P2 merge: 18 October 2026
+
+P2 PR #5 is now merged. Main `f3d7ecdfd68445b5e02f34774ac3b9f6157878bf`
+was brought into the existing `p1/week3-week4` branch for
+[PR #8](https://github.com/CodeByVish/papergap-rag/pull/8).
+Only `README.md` and this tracker conflicted: their shared status text and
+end-of-file additions were reconciled by content, retaining both P1 and P2
+records. Main's P2 source, dependencies, CLI and tests remain unchanged.
+The merged P4 control flow is available, with keyword mock policies.
+
+P1's original 2,593 train questions, 12,941 rows per independent method and
+candidate-count audit remain separate historical evidence. Its 100-question
+package is still RRF-only; P2's subsequent independent reranked export does
+not alter P1's original provenance or null reranker fields. The eight cases
+retain **Codex-assisted qualitative analysis — pending human review**.
+Gold mapping/coverage and P6 metric backend/protocol remain pending: quality
+metrics are unavailable and the evaluation convention provisional. New checks
+for this main-plus-P1 combination are recorded in [the P1 report](P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026);
+historical 13/4/51/76/264/279 totals retain their original version boundaries.

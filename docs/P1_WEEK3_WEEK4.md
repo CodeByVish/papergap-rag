@@ -4,7 +4,7 @@ Owner: Junlin Yin. This workflow reuses the Week 1/2 BM25 and BGE/FAISS
 retrievers. P3 produces the data in a separate worktree; no P3 branch merge is
 required. P2 fusion/reranking and the P3/P4/P5/P6 implementations are unchanged.
 
-> Current delivery: [Phase 3 Git delivery and final code validation](#phase-3-git-delivery-and-final-code-validation). Earlier statements that work is uncommitted, the branch is unmerged, or Git delivery is deferred describe their original checkpoints; Phase 3 supersedes those delivery restrictions. Experimental provenance is unchanged. [Phase 2 source review](#phase-2-p2-source-review-and-delivery-entry-points) remains an unpublished P2 review draft, and [eight qualitative cases](#fixed-sample-qualitative-analysis-of-saved-baselines) remain pending human review.
+> Current delivery: [18 October main integration after P2 merge](#main-integration-after-p2-merge-18-october-2026). PR #5 is now merged. Earlier open-PR, separate-checkout, uncommitted or deferred-delivery statements describe their original checkpoints, including [Phase 3](#phase-3-git-delivery-and-final-code-validation). Experimental provenance is unchanged. [Phase 2 source review](#phase-2-p2-source-review-and-delivery-entry-points) remains an unpublished P2 review draft, and [eight qualitative cases](#fixed-sample-qualitative-analysis-of-saved-baselines) remain pending human review.
 
 ## Data and development convention
 
@@ -1394,3 +1394,56 @@ metrics remain unavailable and the evaluation convention provisional. P3 gold
 mapping/coverage, P6 metric backend/protocol, P2 acknowledgment, outer section
 forwarding/dynamic strategy, real reranking and parameter agreement remain
 follow-ups, not automatic preconditions to this P1 PR.
+
+## Main integration after P2 merge: 18 October 2026
+
+P2 PR #5 has merged into main at
+`f3d7ecdfd68445b5e02f34774ac3b9f6157878bf`. Its final head was
+`891e1dc88191e515dff081b3b62da7da317e3ae0`, which incorporated the preceding
+main into the previously reviewed P2 `0046e680...` implementation.
+This update keeps [PR #8](https://github.com/CodeByVish/papergap-rag/pull/8)
+on `p1/week3-week4` with base `main` and normally merges the new main; shared
+history is not rewritten. The pre-merge P1 head was
+`41f30c8e6e838bcb24b6e3e7819d48bf7113c6e4`, matching the remote branch.
+
+Only `README.md` and `docs/WEEKLY_TRACKER.md` had content conflicts. README's
+status and retrieval notes now retain P1 experiments/section filtering/index
+persistence/evaluation/Agent entry points alongside P2's merged real-data
+RRF/reranker commands and documentation. The tracker retains both sets of
+progress entries and one historical Week 1/2 artifact paragraph. Current
+summaries supersede earlier PR-open notes without changing their dated evidence.
+P4 control flow remains backed by keyword mock policies, not a validated real
+critic or dynamic section strategy.
+
+`scripts.demo_hybrid`, `benchmark_p2` and their matching dependencies/tests are
+now available from main; a separate PR #5 checkout is no longer required for
+the current combination. Its CLI still has no section flag. P1 can bind fixed
+sections in request callbacks; outer forwarding/dynamic policy remains an
+owner-level decision. No other-owner implementation or shared schema was
+changed to resolve the documentation conflicts.
+
+### Separate P1 and P2 artifacts
+
+The existing P1 ZIP remains local at
+`results/p1-retrieval-handoff-20261017.zip`. Its source is still `5d3f447...`
+plus then-uncommitted files, with actual source hashes/snapshots in its manifest.
+It used real RRF, no reranker, and null reranker fields; neither this merge nor
+P2's later results change that provenance.
+
+P2's separate local `results/p2-batch-reranking-handoff-20261017.zip` records
+completed exports in `rrf/` and `bge/`; `bge/retrieval.jsonl` is the reranked
+result. Its `bge/run_manifest.json` and `bge/validation.json` record 100 questions,
+three empty results and 485 passages, using `BAAI/bge-reranker-base` revision
+`2cfc18c9415c912f9d8155881c133215df768a70`. That package identifies P2
+`0046e680...` plus its then-untracked batch source, not the entire new main.
+The archived batch entry point is not claimed to have entered main through #5.
+These are local evidence locations, not downloadable repository assets.
+Only stored metadata was read for this update: neither archive was rebuilt,
+re-exported or subjected to another full CRC/hash audit. The independent P2
+export does not belong to P1's original baseline or establish quality gains.
+
+All eight qualitative cases remain **Codex-assisted qualitative analysis — pending
+human review**, without an assigned reviewer/date. Real quality metrics remain
+unavailable and the protocol provisional; P3 gold mapping/coverage and P6 metric
+backend/protocol inputs are still required. P2 handoff acknowledgment and the
+P2/P4/P6 outer section/parameter agreement remain separate follow-ups.

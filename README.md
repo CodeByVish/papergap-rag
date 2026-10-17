@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1 BM25 and BGE/FAISS retrieval are verified on P3's real development corpus. The latest P1 check connects real Hybrid retrieval to the merged P4 Agent control flow; P4 planning/criticism/rewriting remain keyword mocks. P1/P3/P4 foundations are merged; P2's real CLI and P6's independent UI are still open PRs at the 17 October checkpoint. Gold mapping and real quality metrics remain pending. See [P1 evidence and handoff](docs/P1_WEEK3_WEEK4.md#latest-dependency-integration-17-october-2026) and [P2 setup](docs/P2_WEEK1.md).
+**Status:** P1 BM25/Dense experiments use P3's real development corpus. P2 PR #5 is merged, providing real-data Hybrid/RRF, optional BGE reranking and pilot commands. P4 Agent control flow is also merged; its planner, mapper, critic and rewriter remain keyword mocks. Real quality metrics remain unavailable. See [P1 experiments and integration](docs/P1_WEEK3_WEEK4.md) and [P2 real-data commands and results](docs/P2_WEEK2.md).
 
 ## Start here
 
@@ -83,7 +83,7 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the historical synthetic runs, and the Week 3/4 workflow below for real-corpus integration. Retrieval quality metrics remain pending gold mappings and P6 metric functions. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending gold mappings and P6 metric functions. Keep real data, model weights, caches, indexes and generated results in ignored local directories; only small synthetic fixtures belong in Git.
 
 ## P1 retrieval: Week 3 / Week 4
 
@@ -102,6 +102,8 @@ limits queries only; the full corpus remains indexed. Zero-hit questions are
 retained. The run records input hashes, model revision, code state, source
 hashes and retrieval latency. BM25 loading rebuilds its in-memory term index;
 Dense loading reuses the stored passage vectors without re-encoding them.
+The `evaluate` subcommand audits saved rankings and adapts independently supplied
+labels; see the [provisional evaluation contract](docs/P1_EVALUATION.md).
 
 The original `retrieve(query, paper_id, top_k)` callback remains supported.
 Both independent retrievers also accept keyword-only `section="Results"`
@@ -116,13 +118,25 @@ missing from the inspected upstream code. This workflow exports real retrieval
 candidates and latency; it does not fabricate relevance labels or quality
 metrics. See the linked verification record for actual results and limitations.
 
-The Week 3/4 delivery branch includes merged main and its P4 Agent API.
+The Week 3/4 delivery branch includes main's merged P2 and P4 APIs.
 `python -B -m scripts.run_p1_integration --help` describes the bounded integration
-check using existing artifacts; it does not require P2 PR #5's CLI or reranker
-extensions. See the [Phase 3 delivery checks](docs/P1_WEEK3_WEEK4.md#phase-3-git-delivery-and-final-code-validation)
-for current validation. The optional real `scripts.demo_hybrid` workflow in the
-historical report requires the complete P2 PR #5 checkout and is not an entry
-point supplied by this P1 increment.
+check using existing artifacts and fixed request sections. It does not establish
+dynamic section selection or real critic quality. See the [18 October main integration](docs/P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026)
+for the latest delivery checkpoint.
+
+## P2 real-data Hybrid and reranking
+
+`python -B -m scripts.demo_hybrid --help` is now available from main. The CLI
+loads the supplied Passage JSONL and saved Dense index, checks their mapping,
+and runs RRF; `--bge` enables optional BGE reranking. See [P2 commands, model
+revisions and measured pilot](docs/P2_WEEK2.md) for inputs, offline cache controls
+and `scripts.benchmark_p2`. Use dependencies appropriate to your platform;
+the documented macOS ARM64 lock and repair procedure are platform-specific.
+
+P1's 100-question handoff remains RRF-only with null reranker fields. P2's later
+independent reranked export is recorded separately and does not change the P1
+package's provenance or establish a retrieval-quality gain. See the [separate
+artifact records](docs/P1_WEEK3_WEEK4.md#separate-p1-and-p2-artifacts).
 
 ## Repository layout
 
