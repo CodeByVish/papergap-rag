@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P2 Week 1 fusion, reranking and mock integration are implemented. Real corpus retrieval, generation and the UI are still pending. See [P2 setup and handoff](docs/P2_WEEK1.md).
+**Status:** P2 Week 1 fusion, reranking and mock integration are implemented. The Streamlit UI, API generation adapters and prebuilt-index loader are implemented; real corpus/index artifacts and provider configuration are still required. See [P2 setup and handoff](docs/P2_WEEK1.md).
 
 ## Start here
 
@@ -44,7 +44,7 @@ python -m pip install -r requirements-dev.txt
 
 Windows activation: `.venv\Scripts\activate`.
 
-The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No application launch command exists yet.
+The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
 
 ## Repository layout
 

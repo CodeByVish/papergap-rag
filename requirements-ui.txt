@@ -1,0 +1,4 @@
+# Lightweight UI and AppTest setup; no model weights or Java required.
+streamlit>=1.40,<2
+openai>=1.66,<3
+pydantic>=2.7,<3
