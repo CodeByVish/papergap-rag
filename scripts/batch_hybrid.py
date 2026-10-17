@@ -26,6 +26,8 @@ def read_questions(path):
         path.read_text(encoding="utf-8").splitlines(), 1
     ):
         row = json.loads(line)
+        if not isinstance(row, dict):
+            raise ValueError(f"Line {line_number}: question must be an object")
         for key in ("question_id", "question", "paper_id"):
             if not isinstance(row.get(key), str) or not row[key].strip():
                 raise ValueError(f"Line {line_number}: nonempty {key} required")
@@ -161,7 +163,7 @@ def run_batch(
         manifest["output_sha256"] = hashlib.sha256(
             (output_dir / "retrieval.jsonl").read_bytes()
         ).hexdigest()
-    except Exception as error:
+    except BaseException as error:
         manifest.update(status="failed", error=str(error))
         raise
     finally:
