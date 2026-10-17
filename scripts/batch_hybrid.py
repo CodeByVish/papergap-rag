@@ -27,7 +27,7 @@ def read_questions(path):
     ):
         row = json.loads(line)
         if not isinstance(row, dict):
-            raise ValueError(f"Line {line_number}: question must be an object")
+            raise ValueError(f"Line {line_number}: question must be an object")  # noqa: TRY004
         for key in ("question_id", "question", "paper_id"):
             if not isinstance(row.get(key), str) or not row[key].strip():
                 raise ValueError(f"Line {line_number}: nonempty {key} required")
