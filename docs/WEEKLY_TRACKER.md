@@ -81,3 +81,21 @@ The local native-runtime repair permits the full suite to run without exclusions
 This resolves the earlier real-corpus integration dependency, but does not establish
 retrieval quality or mark the team's weekly exit checkpoint complete. Passage/split
 contracts and the final evaluation protocol still need affected-owner agreement.
+
+## P2 evaluation and annotation preparation — 17 October 2026
+
+Prepared four-system inference grids, independent-label scoring with judged
+coverage and explicit pool/full-paper distinctions, paired fusion/reranking
+contributions, error categories, deterministic blinded candidate pooling and
+blank P2 annotation batch exports gated on a complete frozen pool and P6
+assignment approval. Added a report methodology/latency draft with pending
+quality results clearly marked. Real-model workflow smoke: three training
+questions, candidate sizes 10/20, RRF 60, all four methods; c20 pooling produced
+30 unique pairs without shortfalls. This is not the held-out annotation pool.
+
+Repository/local-data audit found no agreed relevance-label file or frozen
+held-out manifest; final quality scoring, development parameter selection,
+held-out pooling, 334 proposed P2 human judgments, agreement and report quality
+conclusions require P3/P6 inputs. No labels or approvals were manufactured.
+See [evaluation commands and required inputs](P2_EVALUATION_HANDOFF.md) and
+[report contribution draft](P2_REPORT_CONTRIBUTION.md).
