@@ -1447,3 +1447,52 @@ human review**, without an assigned reviewer/date. Real quality metrics remain
 unavailable and the protocol provisional; P3 gold mapping/coverage and P6 metric
 backend/protocol inputs are still required. P2 handoff acknowledgment and the
 P2/P4/P6 outer section/parameter agreement remain separate follow-ups.
+
+### Checks rerun on the new main-plus-P1 combination
+
+Normal merge commit: `650886abd975f6e792beec160792f926b13264d3`.
+Its parents are P1 `41f30c8...` and main `f3d7ecd...`. All runtime checks below
+ran on that commit with `E:\Miniconda\py311\envs\papergap\python.exe`,
+`HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`; later edits only record results.
+
+```powershell
+$p1Python = 'E:\Miniconda\py311\envs\papergap\python.exe'
+$env:HF_HUB_OFFLINE = '1'
+$env:TRANSFORMERS_OFFLINE = '1'
+& $p1Python -B -m pytest tests/test_p1.py tests/test_p1_week4.py tests/test_p1_experiment.py tests/test_p1_evaluation.py tests/test_p1_agent_integration.py tests/test_agent.py tests/test_p2.py tests/test_hybrid_cli.py tests/test_p2_benchmark.py tests/test_p2_pilot.py -q -p no:cacheprovider
+```
+
+Actual result: **287 passed in 24.81 s**, zero failures/skips. All ten test
+files were checked for existence before execution. This includes the eight
+newly merged P2 CLI/cache-policy, benchmark and train-pilot cases. Tests use
+synthetic data, fake encoders and mocked model loaders; they do not execute
+real-model reranking or establish quality. This is a new scoped run, not a
+full-repository run or a sum of historical 13/4/51/76/264/279 counts.
+
+Ruff `check --no-cache` and `format --check --no-cache` both passed on the
+19 Python files comprising the existing P1 increment and incoming P2 changes.
+All 19 were already formatted; no Python file was edited. The macOS repair
+script was linted as source, not executed or applied to Windows.
+
+All seven help/import commands exited successfully:
+
+```powershell
+& $p1Python -B -m scripts.run_p1_experiment --help
+& $p1Python -B -m scripts.run_p1_experiment evaluate --help
+& $p1Python -B -m scripts.run_p1_integration --help
+& $p1Python -B -m scripts.demo_p1 --help
+& $p1Python -B -m scripts.demo_hybrid --help
+& $p1Python -B -m scripts.benchmark_p2 --help
+& $p1Python -B -m scripts.prepare_p2_pilot --help
+```
+
+Unmerged-path and tracked conflict-marker checks were empty; document
+formatting/relative links and `git diff --check` passed. The complete upstream
+P2 tracker entry is retained. Relative to latest main, the PR still contains
+only the 15 expected P1 paths, while P2 source, tests, docs and dependencies
+match main. No production repair was needed, and no real corpus retrieval,
+passage encoding, real-index rebuilding, model download or archive generation
+was performed. Existing experiments and both handoff ZIPs were left unchanged.
+Local command/output records are `results/p1-main-merge-20261018/pytest.json`
+and `lint-entry-checks.json` in that directory; these are ignored local records,
+not repository downloads.

@@ -453,3 +453,13 @@ Gold mapping/coverage and P6 metric backend/protocol remain pending: quality
 metrics are unavailable and the evaluation convention provisional. New checks
 for this main-plus-P1 combination are recorded in [the P1 report](P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026);
 historical 13/4/51/76/264/279 totals retain their original version boundaries.
+
+Normal merge commit: `650886abd975f6e792beec160792f926b13264d3`.
+The new scoped run on that commit completed with **287 passed in 24.81 s**,
+zero failures/skips, including eight incoming P2 CLI/benchmark/pilot cases.
+Ruff check and format check passed for 19 Python files; all seven P1/P2 CLI
+help/import checks passed. Unmerged-path/conflict-marker scans and
+`git diff --check` passed. No Python repair, real retrieval, model download,
+real-index build or ZIP generation was needed. Detailed commands and local
+record paths are in the linked report. These results supersede neither the
+original experiment provenance nor earlier version-specific test records.
