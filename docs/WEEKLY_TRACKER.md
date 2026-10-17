@@ -66,3 +66,18 @@ The separate real-model check ran the exact build and demo commands in the [READ
 The demo used `time.perf_counter` for one measured `retrieve` after one warm-up per retriever: BM25 **0.088 ms**, dense **7.636 ms**. Dense timing includes query encoding; both timings exclude model loading, passage encoding and index construction. These single-query synthetic measurements do not establish performance on P3's real corpus.
 
 Local ignored artifacts are `results/p1-week2-build.json` and `results/p1-week2-demo.txt`; rerun the README commands to regenerate the outputs. P3 real corpus integration is still pending. No real-corpus retrieval metrics or Week 3 evaluation have been completed.
+
+## P2 real-data integration — 14 October 2026
+
+P1 #4 and P3 #2 are merged. Vishakha's P2 integration now connects their real
+QASPER passage pipeline and pinned BGE/FAISS index to RRF and optional BGE
+reranking. The corpus check reproduced 32,073 passages / 1,168 indexed papers
+and the expected hash. A complete 384-dimensional dense index was built on Metal.
+
+The training-only pilot compares 10/20 candidates per retriever at final top-5
+on six fixed training papers. See [P2 commands and measured results](P2_WEEK2.md).
+No held-out question content or answer annotations were used for this comparison.
+The local native-runtime repair permits the full suite to run without exclusions.
+This resolves the earlier real-corpus integration dependency, but does not establish
+retrieval quality or mark the team's weekly exit checkpoint complete. Passage/split
+contracts and the final evaluation protocol still need affected-owner agreement.

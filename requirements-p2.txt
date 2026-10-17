@@ -1,6 +1,13 @@
-# Small P2 environment; no full-project dependencies required.
+# P2 fusion/reranking plus P1/P3 integration commands; no UI/generation packages.
 pydantic>=2.7,<3
 pytest>=8,<10
 transformers>=4.51,<5
 torch>=2.2,<3
 sentencepiece>=0.2,<1
+numpy>=1.26,<3
+rank-bm25>=0.2.2,<0.3
+sentence-transformers>=3,<6
+faiss-cpu>=1.8,<2
+PyYAML>=6,<7
+huggingface-hub>=0.25,<2
+ruff>=0.9,<1

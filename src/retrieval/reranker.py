@@ -20,11 +20,14 @@ class BGEReranker:
         device: str = "cpu",
         batch_size: int = 8,
         max_length: int = 512,
+        cache_folder: str | None = None,
+        local_files_only: bool = False,
     ):
         if batch_size < 1 or not 1 <= max_length <= 512:
             raise ValueError("batch_size must be positive; max_length must be 1..512")
         self.model_name, self.revision, self.device = model_name, revision, device
         self.batch_size, self.max_length = batch_size, max_length
+        self.cache_folder, self.local_files_only = cache_folder, local_files_only
         self._tokenizer = self._model = None
 
     def score(self, query: str, texts: Sequence[str]) -> list[float]:
@@ -35,10 +38,16 @@ class BGEReranker:
 
         if self._model is None:
             self._tokenizer = AutoTokenizer.from_pretrained(
-                self.model_name, revision=self.revision
+                self.model_name,
+                revision=self.revision,
+                cache_dir=self.cache_folder,
+                local_files_only=self.local_files_only,
             )
             self._model = AutoModelForSequenceClassification.from_pretrained(
-                self.model_name, revision=self.revision
+                self.model_name,
+                revision=self.revision,
+                cache_dir=self.cache_folder,
+                local_files_only=self.local_files_only,
             ).to(self.device)
             self._model.eval()
         scores = []
