@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1 independent BM25 and dense/FAISS retrieval are implemented and verified with synthetic passages. P2 Week 1 fusion, reranking and mock integration are implemented. P3 real corpus integration is still pending. Generation and the UI are also pending. See [P2 setup and handoff](docs/P2_WEEK1.md).
+**Status:** P1 BM25 and BGE/FAISS retrieval are verified on P3's real development corpus. The latest P1 check connects real Hybrid retrieval to the merged P4 Agent control flow; P4 planning/criticism/rewriting remain keyword mocks. P1/P3/P4 foundations are merged; P2's real CLI and P6's independent UI are still open PRs at the 17 October checkpoint. Gold mapping and real quality metrics remain pending. See [P1 evidence and handoff](docs/P1_WEEK3_WEEK4.md#latest-dependency-integration-17-october-2026) and [P2 setup](docs/P2_WEEK1.md).
 
 ## Start here
 
@@ -44,7 +44,7 @@ python -m pip install -r requirements-dev.txt
 
 Windows activation: `.venv\Scripts\activate`.
 
-The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No application launch command exists yet.
+The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No integrated Streamlit entry point exists on the inspected main; the separate P6 UI remains in PR #7.
 
 ## P1 retrieval: Week 1 / Week 2
 
@@ -83,7 +83,38 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate smoke check. See the [P1 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the completed CLI run, regression results and preliminary synthetic timings. P3 real corpus integration is still pending. Week 3 retrieval metrics and failure analysis are outside these commands. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the historical synthetic runs, and the Week 3/4 workflow below for real-corpus integration. Retrieval quality metrics remain pending gold mappings and P6 metric functions. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
+
+## P1 retrieval: Week 3 / Week 4
+
+The real-data workflow and reproducible PowerShell commands are documented in
+[P1 Week 3 / Week 4](docs/P1_WEEK3_WEEK4.md). It runs P3's pinned data preparation
+in a separate worktree and validates its Passage JSONL and manifests before
+using the existing P1 retrievers. The recorded development convention indexes
+train plus validation paper text and queries **train only**; the split policy
+remains `v0-proposed`.
+
+`python -B -m scripts.run_p1_experiment --help` describes the experiment entry
+point. It loads the saved Dense index, saves/reloads a reproducible BM25 JSON
+snapshot, verifies both complete Passage mappings, and writes `results.jsonl`,
+`queries.jsonl` and `run.json` to a new or empty output directory. `--limit`
+limits queries only; the full corpus remains indexed. Zero-hit questions are
+retained. The run records input hashes, model revision, code state, source
+hashes and retrieval latency. BM25 loading rebuilds its in-memory term index;
+Dense loading reuses the stored passage vectors without re-encoding them.
+
+The original `retrieve(query, paper_id, top_k)` callback remains supported.
+Both independent retrievers also accept keyword-only `section="Results"`
+with exact matching before top-K selection. Callers can supply a rewritten
+query directly. P2/P4 forwarding of section filters remains a separate
+application-contract task; their code is unchanged. The latest isolated-main
+check verifies fixed request bindings through real Hybrid retrieval and P4
+control flow; it does not implement dynamic section selection.
+
+Gold evidence-to-chunk mapping and P6 retrieval metric functions are still
+missing from the inspected upstream code. This workflow exports real retrieval
+candidates and latency; it does not fabricate relevance labels or quality
+metrics. See the linked verification record for actual results and limitations.
 
 ## Repository layout
 
