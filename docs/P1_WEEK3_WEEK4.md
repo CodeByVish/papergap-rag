@@ -1288,6 +1288,18 @@ Repository: `CodeByVish/papergap-rag`; delivery branch: `p1/week3-week4`.
 Fresh fetch/API checks found no existing remote branch or open PR for this head.
 P2 PR #5 remained open at `0046e680fd361f90b608a949d2dd132d55db71aa`.
 
+Delivery PR: [#8 — Deliver P1 Week 3/4 retrieval and agent integration](https://github.com/CodeByVish/papergap-rag/pull/8),
+opened from `p1/week3-week4` into `main` after an ordinary push with upstream
+tracking. It is open and not a draft; it has not been merged and automatic
+merge is disabled. The first remote inspection confirmed all 15 intended
+Files changed and no requested reviewers. The PR metadata records the current
+head, including subsequent documentation-only commits linking this PR.
+
+No workflow files are present in the inspected repository. GitHub reported
+zero check runs and zero commit statuses; its aggregate status was `pending`
+with no reported jobs. This is not a CI pass or evidence of a running job.
+Local test results below remain the executed validation evidence.
+
 - P1 feature commit: `bb064c130f54e3fe1c0c4ba7cc339c0104670749`,
   `feat(retrieval): add P1 development experiments and evaluation handoff`.
 - Merged main: `6fa06b5ae89a270bc7e5e9b407b998fce3d10e8c`.

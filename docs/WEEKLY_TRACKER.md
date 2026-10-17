@@ -384,6 +384,13 @@ staged, committed, pushed or published in this phase.
 
 ## P1 Phase 3: Git delivery
 
+[PR #8: Deliver P1 Week 3/4 retrieval and agent integration](https://github.com/CodeByVish/papergap-rag/pull/8)
+is open, non-draft, from `p1/week3-week4` into `main`. The branch was pushed
+normally and tracks `origin/p1/week3-week4`; no reviewer was requested, no
+automatic merge was enabled and the PR was not merged. Remote Files changed
+confirmed the intended 15 P1 paths. GitHub reported no check runs or commit
+statuses (aggregate `pending`); no CI pass is claimed.
+
 On 17 October 2026, the complete 15-file P1 increment was saved as
 `bb064c130f54e3fe1c0c4ba7cc339c0104670749`. Main
 `6fa06b5ae89a270bc7e5e9b407b998fce3d10e8c` was merged normally into
