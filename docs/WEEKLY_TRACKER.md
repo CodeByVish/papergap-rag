@@ -81,3 +81,16 @@ The local native-runtime repair permits the full suite to run without exclusions
 This resolves the earlier real-corpus integration dependency, but does not establish
 retrieval quality or mark the team's weekly exit checkpoint complete. Passage/split
 contracts and the final evaluation protocol still need affected-owner agreement.
+
+## P2 batch handoff — 17 October 2026
+
+Added a fixed-question JSONL batch entry point with shared model/index loading,
+RRF-only and BGE modes, original query order/IDs, explicit offline operation,
+run manifests and failure reporting. Completed both real-model exports on P1's
+unchanged 100 training questions: each contains 485 passages and three genuine
+empty results. The local corpus hash matches P1; RRF top-five IDs/order match
+all 100 records. Independent schema/provenance validation passed. All 423 tests
+passed. See [batch commands, snapshot comparison and results](P2_BATCH_HANDOFF.md).
+These are integration artifacts; held-out quality evaluation and team interface
+agreement remain pending. Changes are local on `p2/batch-hybrid-handoff`, pending
+review; no PR or merge is recorded.
