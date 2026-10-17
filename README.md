@@ -116,6 +116,14 @@ missing from the inspected upstream code. This workflow exports real retrieval
 candidates and latency; it does not fabricate relevance labels or quality
 metrics. See the linked verification record for actual results and limitations.
 
+The Week 3/4 delivery branch includes merged main and its P4 Agent API.
+`python -B -m scripts.run_p1_integration --help` describes the bounded integration
+check using existing artifacts; it does not require P2 PR #5's CLI or reranker
+extensions. See the [Phase 3 delivery checks](docs/P1_WEEK3_WEEK4.md#phase-3-git-delivery-and-final-code-validation)
+for current validation. The optional real `scripts.demo_hybrid` workflow in the
+historical report requires the complete P2 PR #5 checkout and is not an entry
+point supplied by this P1 increment.
+
 ## Repository layout
 
 ```text

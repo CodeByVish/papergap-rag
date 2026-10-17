@@ -2,6 +2,9 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
+> Current P1 delivery: [Phase 3](#p1-phase-3-git-delivery). Earlier local-only,
+> uncommitted and deferred-delivery statements describe their original phases.
+
 | Week | Dates | Exit checkpoint | Status |
 | --- | --- | --- | --- |
 | 1 | 14–20 Sep | Rubric interpretation, owners, compute, interfaces and split policy | Not recorded |
@@ -378,3 +381,34 @@ follow-ups; real quality metrics are unavailable. They are not automatic
 preconditions to opening a scoped P1 PR. No new deterministic delivery blocker
 was found. Branch integration and Git delivery remain for Phase 3; nothing was
 staged, committed, pushed or published in this phase.
+
+## P1 Phase 3: Git delivery
+
+On 17 October 2026, the complete 15-file P1 increment was saved as
+`bb064c130f54e3fe1c0c4ba7cc339c0104670749`. Main
+`6fa06b5ae89a270bc7e5e9b407b998fce3d10e8c` was merged normally into
+`p1/week3-week4` as `bea053db9c785000307d0e528cb3fcff02a0cd27`, without conflicts
+or production-code fixes. Relative to main, only the reviewed P1 source,
+scripts, tests and documentation differ. Other-owner implementations and
+shared schemas match main; the unmerged P2 PR #5 was not imported.
+
+Actual validation on the integrated code: **279 affected P1/Agent/Hybrid tests
+passed in 11.14 s**, Ruff check/format passed on all 11 changed Python files,
+four default P1 CLI help checks passed, and the existing synthetic Agent demo
+passed its recovery, budget-exhaustion and empty-result scenarios. These are
+new scoped checks, not a full-suite claim or aggregated historical totals.
+No real retrieval, corpus encoding, index rebuilding, model download or
+packaging was repeated. Commands, exact scope and preserved historical evidence
+are in [the Phase 3 report](P1_WEEK3_WEEK4.md#phase-3-git-delivery-and-final-code-validation).
+
+The existing ZIP and results remain ignored, unchanged and local. Their source
+is still `5d3f447...` plus the then-uncommitted files, not this delivery commit
+or the full P2 PR. Hybrid package results are RRF-only with null reranker fields;
+20/5/60 are recorded run settings, not agreed optimal parameters. No package
+upload, teammate message, P2 review/comment or reviewer request is implied.
+
+Eight qualitative cases remain **Codex-assisted qualitative analysis — pending
+human review**. P2 acknowledgment, P3 gold mapping/coverage, P6 metric backend/
+protocol and outer section/parameter decisions remain follow-ups; real quality
+metrics are unavailable and the protocol provisional. They do not automatically
+block opening the scoped P1 PR. No PR merge or automatic merge is authorized.

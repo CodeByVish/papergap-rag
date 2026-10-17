@@ -4,7 +4,7 @@ Owner: Junlin Yin. This workflow reuses the Week 1/2 BM25 and BGE/FAISS
 retrievers. P3 produces the data in a separate worktree; no P3 branch merge is
 required. P2 fusion/reranking and the P3/P4/P5/P6 implementations are unchanged.
 
-> Latest additions: [Phase 2 P2 source review and delivery entry points](#phase-2-p2-source-review-and-delivery-entry-points), [fixed-sample qualitative analysis](#fixed-sample-qualitative-analysis-of-saved-baselines), pending human review, and [17 October dependency integration](#latest-dependency-integration-17-october-2026). Earlier runs and handoff statements below retain their historical scope.
+> Current delivery: [Phase 3 Git delivery and final code validation](#phase-3-git-delivery-and-final-code-validation). Earlier statements that work is uncommitted, the branch is unmerged, or Git delivery is deferred describe their original checkpoints; Phase 3 supersedes those delivery restrictions. Experimental provenance is unchanged. [Phase 2 source review](#phase-2-p2-source-review-and-delivery-entry-points) remains an unpublished P2 review draft, and [eight qualitative cases](#fixed-sample-qualitative-analysis-of-saved-baselines) remain pending human review.
 
 ## Data and development convention
 
@@ -505,7 +505,8 @@ The interpreter remains the explicit papergap Python 3.11.16 above.
 
 ### Reviewable files and local artifacts
 
-The complete uncommitted Week 3/4 delivery, relative to the Week 1/2 base, is:
+At this historical pre-Agent checkpoint, the uncommitted Week 3/4 delivery,
+relative to the Week 1/2 base, was:
 
 | Files suitable for code review | Purpose |
 | --- | --- |
@@ -759,6 +760,9 @@ implementation needed no new compatibility fix; this checkpoint adds only
 existing uncommitted Week 3/4 work.
 
 ### Proposed commit and PR handoff
+
+Historical pre-delivery proposal: the actual saved commit, main merge and
+final-code checks are recorded in [Phase 3](#phase-3-git-delivery-and-final-code-validation).
 
 For the subsequent read-only P2 review and the existing 100-question package,
 see [Phase 2](#phase-2-p2-source-review-and-delivery-entry-points).
@@ -1138,6 +1142,7 @@ All paths in this table are relative to the expanded directory:
 | `provenance/qasper_export.manifest.json` | Stored QA export manifest |
 | `execution_trace.jsonl` | Recorded execution trace |
 | `validation.json` | Existing package validation; not rerun in Phase 2 |
+| `export_handoff.py`, `verify_handoff.py`, `package_handoff.py` | Archived helper scripts used for this historical package; retained with its provenance, not promoted to new production entry points or rerun during delivery |
 
 Join each result file to the questions by original **`question_id`**, checking
 `paper_id` and unchanged question text as well. Do not rely on row positions.
@@ -1173,8 +1178,9 @@ team configuration, optimized parameters or a reranking experiment.
 
 ### Unpublished English P2 review draft
 
-The complete reusable draft follows. It has not been posted to GitHub or sent
-to another person; no review request or recipient acceptance is implied.
+The complete reusable draft follows. It has not been submitted as a GitHub
+review/comment or sent separately to another person. Its inclusion in P1
+repository documentation does not imply a review request or recipient acceptance.
 
 ```markdown
 Codex-assisted P1 interface review — unpublished draft
@@ -1267,3 +1273,112 @@ P3/P6 gold/metric inputs and application/parameter decisions are explicit
 follow-ups, not automatic prerequisites to creating that P1 PR. No staging,
 commit, push, PR/review/comment publication, reviewer request or external
 message was performed. This phase ends with local uncommitted changes.
+
+## Phase 3: Git delivery and final code validation
+
+Date: 17 October 2026. This phase was explicitly authorized to commit the
+complete P1 increment, merge main normally, push the P1 branch and create/update
+a PR into main. The earlier no-delivery checkpoints are historical records.
+No merge into main, automatic merge, force push, P2 review publication, reviewer
+request or separate teammate message is part of this delivery.
+
+### Saved scope and main integration
+
+Repository: `CodeByVish/papergap-rag`; delivery branch: `p1/week3-week4`.
+Fresh fetch/API checks found no existing remote branch or open PR for this head.
+P2 PR #5 remained open at `0046e680fd361f90b608a949d2dd132d55db71aa`.
+
+- P1 feature commit: `bb064c130f54e3fe1c0c4ba7cc339c0104670749`,
+  `feat(retrieval): add P1 development experiments and evaluation handoff`.
+- Merged main: `6fa06b5ae89a270bc7e5e9b407b998fce3d10e8c`.
+- Normal merge commit: `bea053db9c785000307d0e528cb3fcff02a0cd27`.
+  The merge had no conflicts and required no production-code repair.
+
+The reviewed difference from main consists of exactly these 15 P1 files:
+
+| Files | Delivered change |
+| --- | --- |
+| `src/retrieval/bm25_retriever.py`, `dense_retriever.py` | Exact section filtering before truncation; BM25 JSON persistence and validation; reuse of saved Dense vectors |
+| `src/retrieval/experiment.py`, `evaluation.py` | Manifest-checked train input, experiment export/audit, independent label adaptation and provisional metrics boundary |
+| `src/retrieval/agent_integration.py` | Bounded real-retrieval to mock-Agent control-flow check and trace |
+| `scripts/run_p1_experiment.py`, `run_p1_integration.py` | Experiment/evaluation and existing-artifact integration entry points |
+| `tests/test_p1_week4.py`, `test_p1_experiment.py`, `test_p1_evaluation.py`, `test_p1_agent_integration.py` | Offline regression and interface coverage |
+| `README.md`, `docs/P1_EVALUATION.md`, `P1_WEEK3_WEEK4.md`, `WEEKLY_TRACKER.md` | Usage, evaluation boundary, historical evidence, qualitative summaries, handoff and unpublished P2 review draft |
+
+The complete source tree for other owners remains identical to main, including
+P2 Hybrid/fusion/reranker/schema and P3/P4 implementations. No P2 PR #5 commits,
+CLI, lockfile, repair scripts or exclusive dependencies were brought in.
+The generated ZIP, full results, detailed cases, corpus, indexes and model
+cache remain ignored. Archived package helpers remain inside the ignored
+package; their accurate entry points are documented above.
+
+### Checks actually run on the integrated code
+
+Interpreter: `E:\Miniconda\py311\envs\papergap\python.exe`.
+Runtime checks used merge commit `bea053db9c785000307d0e528cb3fcff02a0cd27`;
+subsequent delivery edits are documentation only. No real corpus retrieval,
+passage encoding, real-index rebuilding, model download, parameter scan,
+artifact re-export or ZIP repackaging was performed.
+
+```powershell
+$p1Python = 'E:\Miniconda\py311\envs\papergap\python.exe'
+$env:HF_HUB_OFFLINE = '1'
+$env:TRANSFORMERS_OFFLINE = '1'
+& $p1Python -B -m pytest tests/test_p1.py tests/test_p1_week4.py tests/test_p1_experiment.py tests/test_p1_evaluation.py tests/test_p1_agent_integration.py tests/test_agent.py tests/test_p2.py -q -p no:cacheprovider
+```
+
+Result: **279 passed in 11.14 s**, zero failures/skips. These are the actual
+affected P1 tests and main's Agent/Hybrid boundary tests on the merged code,
+not a full-repository test run or a sum of historical counts. Dense tests use
+fake encoders and synthetic data with real FAISS. No new tests were needed.
+
+```powershell
+$p1ChangedPython = @(
+  'src/retrieval/bm25_retriever.py', 'src/retrieval/dense_retriever.py',
+  'src/retrieval/agent_integration.py', 'src/retrieval/evaluation.py',
+  'src/retrieval/experiment.py', 'scripts/run_p1_experiment.py',
+  'scripts/run_p1_integration.py', 'tests/test_p1_week4.py',
+  'tests/test_p1_experiment.py', 'tests/test_p1_evaluation.py',
+  'tests/test_p1_agent_integration.py'
+)
+& $p1Python -B -m ruff check @p1ChangedPython
+& $p1Python -B -m ruff format --check @p1ChangedPython
+& $p1Python -B -m scripts.run_p1_experiment --help
+& $p1Python -B -m scripts.run_p1_experiment evaluate --help
+& $p1Python -B -m scripts.run_p1_integration --help
+& $p1Python -B -m scripts.demo_p1 --help
+& $p1Python -B -m scripts.run_agent_demo
+```
+
+Ruff check passed; all 11 changed Python files were already formatted. All four
+help commands exited successfully, verifying default imports without unmerged
+P2 dependencies. The existing synthetic Agent demo passed its three scenarios:
+recovery in two rounds, exhausted budget in three, and empty retrieval in three.
+This demo is controlled evidence, not a new real-retrieval experiment.
+Local entry logs are in `results/p1-git-delivery-20261017/entry-checks.json`.
+
+The staged inventory was checked explicitly before commit. Relative-to-main
+file/tree checks confirmed no omitted P1 paths, generated artifacts or modified
+other-owner implementations. Ignore rules and `git diff --check` passed.
+Historical 13/4/51/76/264 counts remain attached to their original versions;
+the earlier real main-plus-P1 and full-P2-plus-P1 runs were not repeated.
+The optional `demo_hybrid` CLI still requires the full PR #5 combination;
+the default P1/Agent commands above do not.
+
+### Evidence and review status retained
+
+The 100-question package remains from `5d3f4477f42887067bb4b3f8bd9231f1bc9289e9`
+plus then-uncommitted sources. Its stored manifest/source snapshot, rather than
+any new delivery commit, identifies its generation. It used real RRF with
+per-source `candidate_k=20`, final `top_k=5`, `rrf_k=60`, no section restriction
+and no reranker; null reranker fields and original provenance are unchanged.
+The package was not uploaded, resent or acknowledged by a recipient here.
+
+Eight purposively selected train cases retain
+**Codex-assisted qualitative analysis — pending human review**; no human
+reviewer or date was assigned. The P2 English draft is included for review as
+P1 documentation, not published as a P2 GitHub review/comment. Real quality
+metrics remain unavailable and the evaluation convention provisional. P3 gold
+mapping/coverage, P6 metric backend/protocol, P2 acknowledgment, outer section
+forwarding/dynamic strategy, real reranking and parameter agreement remain
+follow-ups, not automatic preconditions to this P1 PR.
