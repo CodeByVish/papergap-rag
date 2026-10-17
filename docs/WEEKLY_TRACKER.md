@@ -92,5 +92,5 @@ empty results. The local corpus hash matches P1; RRF top-five IDs/order match
 all 100 records. Independent schema/provenance validation passed. All 423 tests
 passed. See [batch commands, snapshot comparison and results](P2_BATCH_HANDOFF.md).
 These are integration artifacts; held-out quality evaluation and team interface
-agreement remain pending. Changes are local on `p2/batch-hybrid-handoff`, pending
-review; no PR or merge is recorded.
+agreement remain pending. PR #5 was reviewed and merged on 17 October (431 tests passed against current
+main). Batch changes are on `p2/batch-hybrid-handoff`, pending review.
