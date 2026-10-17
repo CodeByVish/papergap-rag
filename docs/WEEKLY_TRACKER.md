@@ -81,3 +81,14 @@ The local native-runtime repair permits the full suite to run without exclusions
 This resolves the earlier real-corpus integration dependency, but does not establish
 retrieval quality or mark the team's weekly exit checkpoint complete. Passage/split
 contracts and the final evaluation protocol still need affected-owner agreement.
+
+## P2 agent/filter/cache increment — 17 October 2026
+
+PR #5 is merged. Added optional exact-section forwarding with a legacy P1
+adapter, caller-selected per-round agent sections, full per-round score traces
+and persistent content/config-keyed reranker scoring. The new real-agent CLI
+passed a pinned CPU section-scoped three-round check: first process eight unique
+pair misses/four hits; second process zero misses/12 hits. The planner and critic
+remain P4 mocks. All 436 tests pass; lint and changed-file formatting pass.
+See [interface and cache commands](P2_AGENT_CACHE.md). P1/P4 interface review is
+pending; this does not freeze proposed shared schemas or evaluation policy.

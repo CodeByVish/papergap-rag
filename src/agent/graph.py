@@ -1,8 +1,8 @@
 """LangGraph agent for PaperGap adaptive retrieval (P4).
 
-    plan_question -> retrieve -> map_evidence -> critic
-        -> [sufficient or retry budget spent] -> END
-        -> [otherwise] -> gap_classifier -> rewrite_query -> retrieve (loop)
+plan_question -> retrieve -> map_evidence -> critic
+    -> [sufficient or retry budget spent] -> END
+    -> [otherwise] -> gap_classifier -> rewrite_query -> retrieve (loop)
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ def build_agent_graph(
     retriever: Retriever,
     max_retries: int = MAX_RETRIES,
     top_k: int = DEFAULT_TOP_K,
+    section_selector=None,
 ) -> CompiledStateGraph:
     """Compile the agent around `retriever(query, paper_id, top_k)`.
 
@@ -44,7 +45,7 @@ def build_agent_graph(
 
     graph = StateGraph(AgentState)
     graph.add_node("plan_question", plan_question)
-    graph.add_node("retrieve", make_retrieve_node(retriever, top_k))
+    graph.add_node("retrieve", make_retrieve_node(retriever, top_k, section_selector))
     graph.add_node("map_evidence", map_evidence)
     graph.add_node("critic", critic)
     graph.add_node("gap_classifier", gap_classifier)
