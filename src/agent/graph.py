@@ -20,9 +20,9 @@ from src.agent.nodes import (
     make_retrieve_node,
     map_evidence,
     plan_question,
-    rewrite_query,
     route_after_critic,
 )
+from src.agent.rewriter import rewrite_query
 from src.agent.schemas import AgentState
 
 

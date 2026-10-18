@@ -1,8 +1,8 @@
 """Node implementations for the LangGraph agent.
 
 The planner (src/agent/planner.py), evidence mapper and gap classifier are
-rule-based; the critic lives in src/agent/critic.py. The query rewriter is still
-a keyword-based mock, to be replaced by real logic in later weeks (see docs/EXECUTION_PLAN.md). Retrieval is real: `make_retrieve_node` wraps any
+rule-based; the critic lives in src/agent/critic.py and the query rewriter in
+src/agent/rewriter.py. Retrieval is real: `make_retrieve_node` wraps any
 callable with P2's signature `retrieve(query, paper_id, top_k)`, e.g.
 `HybridRetriever(...).retrieve`.
 
@@ -26,17 +26,6 @@ MAX_ROUNDS = MAX_RETRIES + 1  # initial retrieval + retries
 DEFAULT_TOP_K = 5
 
 Retriever = Callable[[str, str, int], list[RetrievedPassage]]
-
-_GAP_QUERY_HINTS: dict[GapLabel, str] = {
-    GapLabel.MISSING_METHOD: "method approach architecture",
-    GapLabel.MISSING_EXPERIMENT_CONTEXT: "dataset setup experimental configuration",
-    GapLabel.MISSING_RESULT: "results experimental findings",
-    GapLabel.MISSING_COMPARISON: "baseline comparison outperform",
-    GapLabel.TERMINOLOGY_MISMATCH: "",
-    GapLabel.WEAK_EVIDENCE: "additional detail",
-    GapLabel.INSUFFICIENT_INFORMATION: "",
-}
-
 
 def plan_question(state: AgentState) -> dict:
     """Classify the question and derive its structured evidence requirements."""
@@ -111,12 +100,6 @@ def gap_classifier(state: AgentState) -> dict:
         if not state.evidence_map.get(requirement.name):
             return {"gap_label": requirement.gap_if_missing}
     return {"gap_label": GapLabel.WEAK_EVIDENCE}
-
-
-def rewrite_query(state: AgentState) -> dict:
-    """Mock query rewriter: append a gap-specific search hint."""
-    hint = _GAP_QUERY_HINTS.get(state.gap_label, "")
-    return {"rewritten_query": f"{state.question} {hint}".strip()}
 
 
 def route_after_critic(
