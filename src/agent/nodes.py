@@ -1,8 +1,8 @@
 """Node implementations for the LangGraph agent.
 
 The planner (src/agent/planner.py), evidence mapper and gap classifier are
-rule-based. The critic and query rewriter are still keyword-based mocks, to be
-replaced by real logic in later weeks (see docs/EXECUTION_PLAN.md). Retrieval is real: `make_retrieve_node` wraps any
+rule-based; the critic lives in src/agent/critic.py. The query rewriter is still
+a keyword-based mock, to be replaced by real logic in later weeks (see docs/EXECUTION_PLAN.md). Retrieval is real: `make_retrieve_node` wraps any
 callable with P2's signature `retrieve(query, paper_id, top_k)`, e.g.
 `HybridRetriever(...).retrieve`.
 
@@ -105,15 +105,6 @@ def map_evidence(state: AgentState) -> dict:
     }
 
 
-def critic(state: AgentState) -> dict:
-    """Mock single critic: sufficient iff every component has evidence."""
-    sufficient = all(bool(ids) for ids in state.evidence_map.values())
-    update: dict = {"sufficient": sufficient}
-    if sufficient:
-        update["gap_label"] = GapLabel.NONE
-    return update
-
-
 def gap_classifier(state: AgentState) -> dict:
     """Label the first unmet requirement with its `gap_if_missing` label."""
     for requirement in state.evidence_requirements:
@@ -131,7 +122,11 @@ def rewrite_query(state: AgentState) -> dict:
 def route_after_critic(
     state: AgentState, max_rounds: int = MAX_ROUNDS
 ) -> Literal["retry", "stop"]:
-    """Deterministic stop: sufficient evidence or retrieval budget spent."""
-    if state.sufficient or state.retrieval_round >= max_rounds:
+    """Deterministic stop: sufficient, out of budget, or the paper cannot answer."""
+    if (
+        state.sufficient
+        or state.gap_label is GapLabel.INSUFFICIENT_INFORMATION
+        or state.retrieval_round >= max_rounds
+    ):
         return "stop"
     return "retry"
