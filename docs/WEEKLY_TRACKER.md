@@ -81,3 +81,18 @@ The local native-runtime repair permits the full suite to run without exclusions
 This resolves the earlier real-corpus integration dependency, but does not establish
 retrieval quality or mark the team's weekly exit checkpoint complete. Passage/split
 contracts and the final evaluation protocol still need affected-owner agreement.
+
+## P4 agent progress — 18 October 2026
+
+Owner: Ananya. Merged: [#6](https://github.com/CodeByVish/papergap-rag/pull/6) LangGraph loop on the P2 retrieval API, [#12](https://github.com/CodeByVish/papergap-rag/pull/12) planner and evidence mapper, [#13](https://github.com/CodeByVish/papergap-rag/pull/13) critic, `question_id` and export record. This branch adds the gap-driven query rewriter. 91 agent tests pass with fake retrievers and a fake LLM client; the agent has **not** yet run on real P1/P2 retrieval or a real Qwen endpoint.
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| Loop and stopping | Implemented | Plan, retrieve, map, critic, rewrite; at most 2 retries (3 rounds); stops early on `INSUFFICIENT_INFORMATION`; every round logged. |
+| Planner | Rule-based | Five question types and structured evidence requirements. `unanswerable` is never predicted from the question text. |
+| Evidence mapper | Rule-based, weak | `scripts/evaluate_planner.py` on QASPER train (2,593 questions): the plan is satisfied by gold evidence 55.6% of the time but by the five closest non-evidence paragraphs 79.2% (validation: 58.8% vs 79.5%). It cannot separate real evidence from lookalikes, so `evidence_map` is advisory. |
+| Critic | Implemented against a fake client | Prompt, JSON parsing, deterministic validation and rule-based fallback; `critic_log` records `llm`, `rules` or `fallback` per round. The prompt is unvalidated until a real Qwen call exists. |
+| Query rewriter | Implemented | One action per gap label; reuses the paper's own terms and the LLM critic's missing components; never repeats an earlier query. Section-scoped retrieval is not wired in. |
+| Handoff to P5/P6 | Implemented | `AgentState.question_id`; `src/agent/export.py` writes one JSON record per question including passage text. |
+
+Open items: Qwen call details from P5 (needed for the real critic adapter); refusal rule for P5 (proposed: refuse only on `INSUFFICIENT_INFORMATION` or empty retrieval, otherwise generate and keep `sufficient` as metadata); P2's section-scoped retrieval branch (`p2/agent-sections-cache`) needs a rebase onto main before it can be used; real-data traces on development examples. Passage and state schemas remain `v0-proposed`.
