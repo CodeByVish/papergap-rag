@@ -72,10 +72,13 @@ class AgentState(BaseModel):
     `retrieved_passages` accumulates across rounds, de-duplicated by the opaque
     `passage_id`. `retrieval_log` has one entry per retrieval round
     (`round`, `query`, `triggered_by`, `passage_ids`) so passages stay traceable.
+    `critic_log` has one entry per critic call (`round`, `source` = llm / rules /
+    fallback, `sufficient`, `gap_label`, `errors`).
     """
 
     question: str
     paper_id: str
+    question_id: str | None = None  # join key for P5/P6; the agent never reads it
     question_type: QuestionType | None = None
     required_components: list[str] = Field(default_factory=list)
     evidence_requirements: list[EvidenceRequirement] = Field(default_factory=list)
@@ -85,4 +88,7 @@ class AgentState(BaseModel):
     rewritten_query: str | None = None
     retrieval_round: int = 0
     sufficient: bool = False
+    missing_components: list[str] = Field(default_factory=list)
+    critic_reason: str = ""
+    critic_log: list[dict[str, Any]] = Field(default_factory=list)
     retrieval_log: list[dict[str, Any]] = Field(default_factory=list)
