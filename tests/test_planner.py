@@ -12,6 +12,7 @@ EXAMPLES = [
     ("What accuracy did the model achieve on the test set?", QuestionType.RESULT),
     ("What F1 score does the proposed system obtain?", QuestionType.RESULT),
     ("How well does it perform on low-resource languages?", QuestionType.RESULT),
+    ("How accurate is their predictive model?", QuestionType.RESULT),
     ("How did they induce the CFG?", QuestionType.METHOD),
     ("What architecture is used for the encoder?", QuestionType.METHOD),
     ("Does the approach use pretrained embeddings?", QuestionType.METHOD),
