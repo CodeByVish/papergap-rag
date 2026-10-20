@@ -12,9 +12,8 @@ return `[]`, with normal agent retry limits.
 
 P4's `build_agent_graph(..., section_selector=callable)` optionally chooses an
 exact section from the current AgentState each round. With no selector, behavior
-is unchanged. The retrieval log now includes section, elapsed time and full
-serialized per-round hits so repeat passages' updated scores are traceable even
-though the agent's accumulated evidence list remains deduplicated.
+is unchanged. The retrieval log includes passage IDs, section and elapsed time. Full passage
+objects remain in the existing agent export and are not duplicated in the log.
 
 ```bash
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
@@ -29,8 +28,9 @@ python -m scripts.run_hybrid_agent \
 Use actual exact section names. Omit `--section` for unrestricted retrieval.
 Alternatively `--gap-sections policy.json` accepts caller-reviewed mappings such
 as `{"MISSING_RESULT":"Results"}`. Unmapped labels use all sections. This is an
-injection mechanism, not a claim that P4's keyword policies are a real critic.
-The existing agent still uses its mock planner/critic and at most two retries.
+injection mechanism that preserves P4's planner, evidence critic and rewriter.
+The CLI uses the rule-based critic fallback without an LLM client; the graph also
+accepts P4's critic client. The retry budget remains at most two retries.
 Install the main requirements' `langgraph>=1,<2` for the agent runner.
 
 `BGEReranker(..., revision=PINNED_SHA).cached(path)` returns a persistent SQLite

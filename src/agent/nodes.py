@@ -28,6 +28,7 @@ DEFAULT_TOP_K = 5
 
 Retriever = Callable[[str, str, int], list[RetrievedPassage]]
 
+
 def plan_question(state: AgentState) -> dict:
     """Classify the question and derive its structured evidence requirements."""
     plan = build_plan(state.question)

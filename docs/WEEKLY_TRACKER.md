@@ -100,10 +100,10 @@ Open items: Qwen call details from P5 (needed for the real critic adapter); refu
 ## P2 agent/filter/cache increment — 17 October 2026
 
 PR #5 is merged. Added optional exact-section forwarding with a legacy P1
-adapter, caller-selected per-round agent sections, full per-round score traces
+adapter, caller-selected per-round agent sections, compact per-round ID traces
 and persistent content/config-keyed reranker scoring. The new real-agent CLI
 passed a pinned CPU section-scoped three-round check: first process eight unique
-pair misses/four hits; second process zero misses/12 hits. The planner and critic
-remain P4 mocks. All 436 tests pass; lint and changed-file formatting pass.
+pair misses/four hits; second process zero misses/12 hits. The branch is rebased onto P4's current planner/critic/rewriter; full passages
+remain in the export, not the retrieval log. All 436 tests pass; lint and changed-file formatting pass.
 See [interface and cache commands](P2_AGENT_CACHE.md). P1/P4 interface review is
 pending; this does not freeze proposed shared schemas or evaluation policy.

@@ -79,7 +79,8 @@ def test_section_filters_before_candidate_cutoff_and_agent_trace():
     result = app.invoke(AgentState(question="lexical", paper_id=passages[2].paper_id))
     log = result["retrieval_log"][0]
     assert log["section"] == section
-    assert log["retrieved_passages"][0]["source_scores"]
+    assert log["passage_ids"]
+    assert "retrieved_passages" not in log
     json.dumps(log)
 
 
@@ -127,5 +128,71 @@ def test_agent_cli_writes_serializable_round_provenance(tmp_path, monkeypatch):
     run_hybrid_agent.main()
     result = json.loads(output.read_text())
     assert result["retrieved_passages"]
-    assert result["retrieval_log"][0]["retrieved_passages"][0]["source_scores"]
+    assert result["retrieved_passages"][0]["source_scores"]
+    assert all("retrieved_passages" not in entry for entry in result["retrieval_log"])
     assert result["retrieval_log"][0]["retrieval_ms"] >= 0
+
+
+def test_critic_gap_reaches_section_retry_without_classifier_override():
+    from src.agent.export import export_record
+    from src.agent.schemas import GapLabel
+
+    passages = load_passages(Path("tests/fixtures/mock_passages.jsonl"))
+    sparse = BM25Retriever(passages)
+    scoped = SectionScopedRetriever(sparse.retrieve, passages)
+    hybrid = HybridRetriever(scoped, scoped)
+    selected = []
+
+    class Critic:
+        def __init__(self):
+            self.calls = 0
+
+        def complete(self, prompt):
+            self.calls += 1
+            if self.calls == 1:
+                return json.dumps(
+                    {
+                        "sufficient": False,
+                        "gap_label": "MISSING_EXPERIMENT_CONTEXT",
+                        "missing_components": ["dataset setup"],
+                        "reason": "Need setup details.",
+                    }
+                )
+            return json.dumps(
+                {
+                    "sufficient": True,
+                    "gap_label": "NONE",
+                    "missing_components": [],
+                    "reason": "Setup evidence is now present.",
+                }
+            )
+
+    def selector(state):
+        selected.append(state.gap_label)
+        return (
+            "methods"
+            if state.gap_label == GapLabel.MISSING_EXPERIMENT_CONTEXT
+            else None
+        )
+
+    critic = Critic()
+    graph = build_agent_graph(
+        hybrid.retrieve, critic_client=critic, section_selector=selector
+    )
+    assert "gap_classifier" not in graph.get_graph().nodes
+    result = graph.invoke(
+        AgentState(
+            question="What accuracy did the model achieve?", paper_id="synthetic-ir"
+        )
+    )
+    assert result["sufficient"] is True
+    assert result["retrieval_round"] == 2
+    assert selected == [GapLabel.NONE, GapLabel.MISSING_EXPERIMENT_CONTEXT]
+    retry = result["retrieval_log"][1]
+    assert retry["triggered_by"] == "MISSING_EXPERIMENT_CONTEXT"
+    assert retry["section"] == "methods"
+    assert retry["query"] != result["question"]
+    assert retry["passage_ids"]
+    record = export_record(result)
+    assert record["retrieved_passages"][0]["passage"]["text"]
+    assert all("retrieved_passages" not in entry for entry in record["retrieval_log"])

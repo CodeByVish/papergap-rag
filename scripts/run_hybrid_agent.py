@@ -87,7 +87,7 @@ def main():
             {"hits": cache.hits, "misses": cache.misses} if cache else None
         )
         result["policy"] = (
-            "P4 keyword planner/critic mocks; real retrieval; caller-supplied exact section policy"
+            "P4 planner/rewriter and rule-based critic fallback; real retrieval; caller-supplied exact section policy"
         )
         rendered = json.dumps(result, indent=2, allow_nan=False) + "\n"
         args.output.parent.mkdir(parents=True, exist_ok=True)
