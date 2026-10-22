@@ -14,6 +14,7 @@ the retry budget is spent.
 from __future__ import annotations
 
 import re
+import time
 from collections.abc import Callable
 from typing import Literal
 
@@ -27,6 +28,7 @@ DEFAULT_TOP_K = 5
 
 Retriever = Callable[[str, str, int], list[RetrievedPassage]]
 
+
 def plan_question(state: AgentState) -> dict:
     """Classify the question and derive its structured evidence requirements."""
     plan = build_plan(state.question)
@@ -37,12 +39,18 @@ def plan_question(state: AgentState) -> dict:
     }
 
 
-def make_retrieve_node(retriever: Retriever, top_k: int = DEFAULT_TOP_K):
+def make_retrieve_node(
+    retriever: Retriever, top_k: int = DEFAULT_TOP_K, section_selector=None
+):
     """Build the retrieve node around an injected retrieval callable."""
 
     def retrieve_node(state: AgentState) -> dict:
         query = state.rewritten_query or state.question
-        hits = retriever(query, state.paper_id, top_k)
+        section = section_selector(state) if section_selector is not None else None
+        scope = {} if section is None else {"section": section}
+        started = time.perf_counter()
+        hits = retriever(query, state.paper_id, top_k, **scope)
+        elapsed_ms = (time.perf_counter() - started) * 1000
 
         merged = list(state.retrieved_passages)
         seen = {hit.passage.passage_id for hit in merged}
@@ -57,6 +65,8 @@ def make_retrieve_node(retriever: Retriever, top_k: int = DEFAULT_TOP_K):
             "query": query,
             "triggered_by": state.gap_label.value,
             "passage_ids": [hit.passage.passage_id for hit in hits],
+            "section": section,
+            "retrieval_ms": elapsed_ms,
         }
         return {
             "retrieved_passages": merged,
