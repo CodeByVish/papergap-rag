@@ -83,6 +83,15 @@ _STOPWORDS = frozenset({
     "they", "their", "them", "with", "by", "as", "at", "from", "and", "or", "not",
     "can", "could", "would", "should", "will", "have", "has", "had", "than",
     "there", "paper", "authors", "author", "used", "use", "using",
+    "also", "such", "only", "other", "some", "any", "each", "many", "much", "few",
+    "more", "most", "very", "both", "over", "into", "then", "about", "between",
+    "during", "after", "before", "under", "again", "further", "here", "while",
+    "through", "above", "below", "just", "now", "same", "own", "too", "but", "all",
+    "one", "two", "may", "might", "must", "shall", "being", "else",
+    "however", "thus", "therefore", "since", "because", "although", "whether",
+    "show", "shown", "shows", "given", "based", "make", "made", "like", "well",
+    "first", "second", "new", "different", "several", "various", "often",
+    "relate", "related", "within", "without", "across", "around", "per",
 })
 
 _METHOD = EvidenceRequirement(
