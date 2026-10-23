@@ -23,7 +23,7 @@ from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from src.agent.critic import LLMClient
+from src.agent.critic import CriticClient
 from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
 from src.agent.nodes import DEFAULT_TOP_K, MAX_RETRIES, Retriever
@@ -51,7 +51,7 @@ def run_system(
     retriever: Retriever,
     *,
     adaptive: bool,
-    critic_client: LLMClient | None = None,
+    critic_client: CriticClient | None = None,
     max_retries: int = MAX_RETRIES,
     top_k: int = DEFAULT_TOP_K,
     answer_fn: AnswerFn | None = None,
