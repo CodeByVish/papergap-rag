@@ -29,6 +29,11 @@ from src.agent.graph import build_agent_graph
 from src.agent.nodes import DEFAULT_TOP_K, MAX_RETRIES, Retriever
 from src.agent.schemas import AgentState, GapLabel
 
+AnswerFn = Callable[[dict[str, Any]], dict[str, Any]]
+"""`answer_fn(record) -> answer`: P5's generation step. It receives the exported
+agent record (`src/agent/export.py`, passages with text included) and returns a
+JSON-safe dict, stored as `record["answer"]`. Both arms get the same function."""
+
 
 @dataclass(frozen=True)
 class ExperimentItem:
@@ -49,11 +54,14 @@ def run_system(
     critic_client: LLMClient | None = None,
     max_retries: int = MAX_RETRIES,
     top_k: int = DEFAULT_TOP_K,
+    answer_fn: AnswerFn | None = None,
 ) -> list[dict[str, Any]]:
     """Run every item and return one exported record each.
 
     The static system never retries and never calls the LLM critic. A failure on
     one question is recorded as `{"question_id", "error"}` and does not stop the run.
+    With `answer_fn`, each successful record also gets `answer` (or `answer_error`
+    if generation raised) and `answer_s`; `elapsed_s` still times the agent alone.
     """
     graph = build_agent_graph(
         retriever,
@@ -79,6 +87,13 @@ def run_system(
             continue
         record = export_record(result)
         record["elapsed_s"] = time.perf_counter() - started
+        if answer_fn is not None:
+            answer_started = time.perf_counter()
+            try:
+                record["answer"] = answer_fn(record)
+            except Exception as error:  # noqa: BLE001 - keep a long run going
+                record["answer_error"] = f"{type(error).__name__}: {error}"
+            record["answer_s"] = time.perf_counter() - answer_started
         records.append(record)
     return records
 
@@ -162,6 +177,7 @@ def compute_metrics(
     return {
         "questions": len(records),
         "errors": len(records) - len(ok),
+        "answer_errors": sum("answer_error" in r for r in ok),
         "mean_rounds": _mean(rounds),
         "questions_with_gold": with_gold,
         "recall_before_retries": _mean(recall_before),

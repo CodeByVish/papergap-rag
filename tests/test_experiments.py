@@ -173,3 +173,37 @@ def test_format_table(static_records, adaptive_records):
     assert lines[0] == "| metric | static | adaptive |"
     assert any(line.startswith("| mean_rounds | 1.000 |") for line in lines)
     assert "n/a" in table
+
+
+def test_answer_fn_gets_the_exported_record_and_runs_for_both_arms():
+    seen = []
+
+    def answer_fn(record):
+        seen.append((record["question_id"], len(record["retrieved_passages"])))
+        return {"answer": f"for {record['question_id']}", "refused": False}
+
+    static = run_system(ITEMS, retriever, adaptive=False, answer_fn=answer_fn)
+    adaptive = run_system(ITEMS, retriever, adaptive=True, critic_client=OracleCritic(),
+                          answer_fn=answer_fn)
+    assert [r["answer"]["answer"] for r in static] == ["for q1", "for q2", "for q3"]
+    assert all("answer_s" in r and "answer_error" not in r for r in adaptive)
+    # Same question ids in both arms; the adaptive arm handed over more passages for q1.
+    assert [qid for qid, _ in seen[:3]] == [qid for qid, _ in seen[3:]]
+    assert seen[3][1] > seen[0][1]
+    json.dumps(adaptive)  # records stay JSON-safe with answers attached
+
+
+def test_answer_errors_are_recorded_and_counted_without_stopping_the_run():
+    def flaky(record):
+        if record["question_id"] == "q2":
+            raise RuntimeError("model OOM")
+        return {"answer": "ok"}
+
+    records = run_system(ITEMS, retriever, adaptive=False, answer_fn=flaky)
+    assert "RuntimeError" in records[1]["answer_error"] and "answer" not in records[1]
+    assert records[0]["answer"] == {"answer": "ok"} and records[2]["answer"] == {"answer": "ok"}
+    assert compute_metrics(records, ITEMS)["answer_errors"] == 1
+
+
+def test_without_answer_fn_records_have_no_answer_keys(static_records):
+    assert all("answer" not in r and "answer_s" not in r for r in static_records)
