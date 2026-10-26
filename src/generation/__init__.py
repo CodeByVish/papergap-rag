@@ -16,6 +16,7 @@ from src.generation.citations import (
     ValidationViolation,
     ViolationCode,
 )
+from src.generation.harness import answer_record, make_answer_fn
 from src.generation.pipeline import GroundedQAPipeline, PipelineOutput, run_batch_to_jsonl
 from src.generation.prompts.grounded_qa import (
     PROMPT_VERSION,
@@ -55,8 +56,10 @@ __all__ = [
     "ValidationReport",
     "ValidationViolation",
     "ViolationCode",
+    "answer_record",
     "build_messages",
     "build_prompt",
+    "make_answer_fn",
     "run_batch_to_jsonl",
 ]
 
