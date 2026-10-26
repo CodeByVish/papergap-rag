@@ -210,6 +210,74 @@ def diagnostics_violations(diagnostics: ParseDiagnostics) -> list[ValidationViol
     return violations
 
 
+def derive_provenance(
+    report: ValidationReport,
+    request: GenerationRequest,
+    scope: PromptScope,
+    prompt_config: Optional[PromptConfig] = None,
+) -> ValidationReport:
+    """Map claims to cited passages when the model returned no provenance.
+
+    The frozen contract makes ``provenance`` optional, and an 8B model that
+    has already spent its JSON budget on the answer often omits it. Making the
+    field mandatory in the prompt would trade JSON adherence for a feature the
+    pipeline can produce deterministically instead - so it does.
+
+    **Runs after validation, never before**, and both reasons are load-bearing:
+
+    1. :meth:`CitationValidator._check_claim_coverage` changes what it
+       compares against when ``provenance`` is non-empty. A derived claim is
+       the answer sentence itself, so injecting earlier would make R2 score
+       every sentence against itself - recall 1.0, check permanently silent.
+       A capability regression disguised as a feature.
+    2. ``ValidationReport.raw_result`` is the model's own parsed output.
+       Enriching before it is snapshotted would make the audit trail assert
+       the model said something it never said.
+
+    Only the final object is touched, and only for answers that survived
+    validation: a refusal makes no claims and must not appear to.
+
+    Module-level so the Week-5 replay tool (:mod:`scripts.revalidate_run`) can
+    reproduce a recorded run exactly without constructing a pipeline or a
+    generator it will never call.
+    """
+    prompt_config = prompt_config or PromptConfig()
+    final = report.final_result
+    if final.is_refusal or final.provenance:
+        return report
+
+    cited_ids = set(final.citations)
+    cited = [
+        passage
+        for passage in select_passages(request, prompt_config)
+        if passage.passage_id in cited_ids
+    ]
+    derived = map_claims_to_passages(final.answer, cited)
+    if not derived:
+        return report
+
+    violations = list(report.violations) + [
+        ValidationViolation(
+            code=ViolationCode.PROVENANCE_DERIVED,
+            severity=Severity.WARNING,
+            message=(
+                "the model returned no provenance; "
+                f"{len(derived)} claim(s) were mapped to cited passages "
+                "deterministically by src.generation.provenance"
+            ),
+        )
+    ]
+    # `cited` is drawn from the cited set, so the filled-in map can only ever
+    # name passages the model also cited - which is the invariant that keeps
+    # a derived map from tripping CITATION_PROVENANCE_MISMATCH.
+    return report.model_copy(
+        update={
+            "final_result": final.model_copy(update={"provenance": derived}),
+            "violations": violations,
+        }
+    )
+
+
 class GroundedQAPipeline:
     """Generate, parse and validate grounded answers.
 
@@ -426,62 +494,8 @@ class GroundedQAPipeline:
         request: GenerationRequest,
         scope: PromptScope,
     ) -> ValidationReport:
-        """Map claims to cited passages when the model returned no provenance.
-
-        The frozen contract makes ``provenance`` optional, and an 8B model that
-        has already spent its JSON budget on the answer often omits it. Making
-        the field mandatory in the prompt would trade JSON adherence for a
-        feature the pipeline can produce deterministically instead - so it does.
-
-        **Runs after validation, never before**, and both reasons are
-        load-bearing:
-
-        1. :meth:`CitationValidator._check_claim_coverage` changes what it
-           compares against when ``provenance`` is non-empty. A derived claim is
-           the answer sentence itself, so injecting earlier would make R2 score
-           every sentence against itself - recall 1.0, check permanently silent.
-           A capability regression disguised as a feature.
-        2. ``ValidationReport.raw_result`` is the model's own parsed output.
-           Enriching before it is snapshotted would make the audit trail assert
-           the model said something it never said.
-
-        Only the final object is touched, and only for answers that survived
-        validation: a refusal makes no claims and must not appear to.
-        """
-        final = report.final_result
-        if final.is_refusal or final.provenance:
-            return report
-
-        cited_ids = set(final.citations)
-        cited = [
-            passage
-            for passage in select_passages(request, self.config.prompt)
-            if passage.passage_id in cited_ids
-        ]
-        derived = map_claims_to_passages(final.answer, cited)
-        if not derived:
-            return report
-
-        violations = list(report.violations) + [
-            ValidationViolation(
-                code=ViolationCode.PROVENANCE_DERIVED,
-                severity=Severity.WARNING,
-                message=(
-                    "the model returned no provenance; "
-                    f"{len(derived)} claim(s) were mapped to cited passages "
-                    "deterministically by src.generation.provenance"
-                ),
-            )
-        ]
-        # `cited` is drawn from the cited set, so the filled-in map can only ever
-        # name passages the model also cited - which is the invariant that keeps
-        # a derived map from tripping CITATION_PROVENANCE_MISMATCH.
-        return report.model_copy(
-            update={
-                "final_result": final.model_copy(update={"provenance": derived}),
-                "violations": violations,
-            }
-        )
+        """Delegate to :func:`derive_provenance` with this pipeline's budget."""
+        return derive_provenance(report, request, scope, self.config.prompt)
 
 
 def resume_state(path: str | Path) -> tuple[int, int]:

@@ -231,19 +231,16 @@ def token_overlap_recall(needle: str, haystack: str) -> float:
 
 #: Coordinators that join two separately-answerable requests. Only these split a
 #: question: "in order to" joins one request, "and" between two nouns does not.
-_CLAUSE_SPLIT_RE = re.compile(
-    r"\s*(?:;|,\s*and\s+|\s+and\s+|\s+or\s+)\s*", re.IGNORECASE
-)
-
-#: Minimum content tokens a fragment must carry to count as its own clause.
 #:
-#: Two, not three, and the difference is measured rather than guessed. At three,
-#: ``b07``'s second request - ``"what is its inference latency"`` - reduces to
-#: ``{inference, latency}`` and is discarded as a modifier, which is precisely
-#: the case the clause check exists to catch. At two it survives, while a true
-#: modifier like ``"and by how much"`` reduces to no content tokens at all and
-#: is still correctly absorbed into the clause it follows.
-MIN_CLAUSE_TOKENS = 2
+#: ``or`` is deliberately **not** here. Week 5 measured it: an either/or question
+#: ("Is this library implemented into Torch or is framework agnostic?") split into
+#: two "clauses", and an answer that resolves the choice - "implemented into
+#: Torch, following the distributions API used by both TensorFlow and PyTorch" -
+#: was then flagged for not repeating the words of the branch it did not take.
+#: Alternatives are one request, not two.
+_CLAUSE_SPLIT_RE = re.compile(
+    r"\s*(?:;|,\s*and\s+|\s+and\s+)\s*", re.IGNORECASE
+)
 
 #: A fragment that opens with an interrogative is a request in its own right
 #: however few content words it carries.
@@ -261,17 +258,45 @@ _INTERROGATIVE_START_RE = re.compile(
     re.IGNORECASE,
 )
 
+#: A finite auxiliary anywhere in the fragment is the other way a fragment can
+#: prove it is a clause rather than a coordinated noun phrase.
+#:
+#: Week 5 replaced the old ">= 2 content tokens" test with this. The token count
+#: could not tell a second request from a coordinated object: ``"At which
+#: interval do they extract video and audio frames?"`` split at "and", promoted
+#: ``"audio frames"`` (two content tokens, no verb), and then reported the
+#: answer as missing the audio half even though it had answered both halves with
+#: one interval. The auxiliary test separates ``"..., and on how many pairs was
+#: it trained?"`` (``was``) from ``"..., and concepts separately"`` (nothing),
+#: which is the distinction the check actually needs.
+_AUXILIARY_RE = re.compile(
+    r"\b(?:is|are|was|were|am|be|been|being|do|does|did|has|have|had"
+    r"|can|could|should|would|will|may|might|must)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_request_clause(fragment: str) -> bool:
+    """Whether a coordinated fragment is a request in its own right."""
+    return bool(
+        _INTERROGATIVE_START_RE.match(fragment)
+        or _AUXILIARY_RE.search(fragment)
+    )
+
 
 def question_clauses(question: str) -> list[str]:
     """Split a question into the separate things it asks for.
 
     Conservative by construction. This feeds a check that reports a *missing*
     answer, so a spurious clause costs a false warning on a good answer - the
-    expensive direction. A fragment is only promoted to its own clause when it
-    either carries at least :data:`MIN_CLAUSE_TOKENS` content tokens or opens
-    with an interrogative. That keeps ``"..., and by how much?"`` attached to the
-    clause it belongs to while still separating ``"...have, and on how many ...
-    trained?"``.
+    expensive direction. The text before the first coordinator is always one
+    clause; after it, a fragment must look like a finite clause (see
+    :func:`_is_request_clause`) to count.
+
+    That keeps ``"..., and by how much?"`` attached to the clause it belongs to,
+    separates ``"...have, and on how many ... trained?"``, and - the Week-5 fix -
+    refuses to promote coordinated noun phrases such as ``"audio frames"`` or
+    ``"concepts separately"``.
 
     Returns ``[question]`` unchanged when the question asks one thing, and the
     caller can treat a single-element result as "not a multi-part question".
@@ -281,12 +306,8 @@ def question_clauses(question: str) -> list[str]:
         return []
 
     parts = [part.strip() for part in _CLAUSE_SPLIT_RE.split(stripped)]
-    clauses = [
-        part
-        for part in parts
-        if len(content_tokens(part)) >= MIN_CLAUSE_TOKENS
-        or _INTERROGATIVE_START_RE.match(part)
-    ]
+    clauses = [parts[0]] + [part for part in parts[1:] if _is_request_clause(part)]
+    clauses = [clause for clause in clauses if clause]
     return clauses or [stripped]
 
 

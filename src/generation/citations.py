@@ -78,6 +78,10 @@ class ViolationCode(str, Enum):
 
     # R3 - unsupported numerical claims are prohibited.
     UNSUPPORTED_NUMERIC_CLAIM = "UNSUPPORTED_NUMERIC_CLAIM"
+    #: The number was in a passage the model was shown but not in its citation
+    #: list, so the passage was added. A warning, not an error: the answer is
+    #: grounded in evidence the model read; only the citation was incomplete.
+    CITATION_REPAIRED_FOR_NUMBER = "CITATION_REPAIRED_FOR_NUMBER"
 
     # R4 - insufficient evidence must produce a refusal.
     SUFFICIENT_WITHOUT_CITATION = "SUFFICIENT_WITHOUT_CITATION"
@@ -131,6 +135,17 @@ class ValidationConfig(BaseModel):
     normalize_refusal: bool = True
 
     check_numeric_grounding: bool = True
+    #: Repair an uncited-but-rendered number by adding the passage that contains
+    #: it to ``citations``, instead of discarding the answer as an error.
+    #:
+    #: Week 5, record 43: the model answered "31 categories ... 2 top ..." and
+    #: cited one passage, while 31 and 2 were in another passage it had been
+    #: shown. The answer was correct and the omission was a citation defect, not
+    #: a hallucination. Repair keeps the guarantee that every number is in a
+    #: passage the model read *and* in a cited passage, while not throwing away
+    #: a grounded answer. A number absent from every rendered passage is still
+    #: an ERROR and still downgrades.
+    repair_numeric_citations: bool = True
     check_claim_coverage: bool = True
 
     #: Report question clauses the cited evidence does not cover. Only runs when
@@ -280,6 +295,12 @@ class CitationValidator:
             result, request, scope, valid_citations, violations
         )
 
+        # Snapshot the model's own parsed output before R3, which may add a
+        # passage to ``citations`` in place. ``raw_result`` is the audit trail of
+        # what the model said; a repaired citation belongs only in the final
+        # result, or a reviewer would think the model cited a passage it omitted.
+        raw_result = result.model_copy(deep=True)
+
         if self.config.check_numeric_grounding:
             checks.append("R3_numeric_grounding")
             self._check_numeric_grounding(
@@ -298,7 +319,7 @@ class CitationValidator:
 
         return ValidationReport(
             final_result=final_result,
-            raw_result=result,
+            raw_result=raw_result,
             violations=violations,
             downgraded=downgraded,
             downgrade_reason=reason,
@@ -698,6 +719,39 @@ class CitationValidator:
                     for pid in visible_ids
                     if number in number_index(self._text_of(pid, retrieved, scope))
                 )
+
+                if self.config.repair_numeric_citations:
+                    # The number is in evidence the model actually read; the
+                    # omission is in the citation list. Add the holder(s) and
+                    # keep the answer. The final citation set still satisfies
+                    # "every number is in a cited passage", and the raw result
+                    # (snapshotted before this check) still shows what the model
+                    # itself cited.
+                    added = []
+                    for holder in holders:
+                        if holder not in cited_ids:
+                            cited_ids.append(holder)
+                            valid_citations.append(holder)
+                            result.citations.append(holder)
+                            added.append(holder)
+                    cited_numbers |= number_index(
+                        " ".join(self._text_of(pid, retrieved, scope) for pid in holders)
+                    )
+                    violations.append(
+                        ValidationViolation(
+                            code=ViolationCode.CITATION_REPAIRED_FOR_NUMBER,
+                            severity=Severity.WARNING,
+                            message=(
+                                f"number {number} appears in rendered passage(s) "
+                                f"{', '.join(holders)} but was not cited; the "
+                                "passage(s) were added to citations "
+                                f"({', '.join(added) or 'already present'})"
+                            ),
+                            subject=number,
+                        )
+                    )
+                    continue
+
                 message = (
                     f"number {number} appears in retrieved passage(s) "
                     f"{', '.join(holders)} but in none of the cited passages "

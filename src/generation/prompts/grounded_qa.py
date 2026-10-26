@@ -52,7 +52,32 @@ from src.generation.text_utils import truncate
 #: agent evidence-map section in the user turn. v2 remains the Week-3 baseline
 #: recorded in docs/WEEK3_EVIDENCE_BINDING.md; do not compare a v3 run to it as
 #: if only the backend changed.
-PROMPT_VERSION = "p5-grounded-qa-v3"
+#: v4 (Week 5) targeted three measured Week-3 defects: derived arithmetic that
+#: the validator then rejects (record 18), a long answer that was truncated
+#: mid-JSON at the 768-token budget (record 78), and provenance entries marked
+#: "direct" without a stated definition (23 warnings).
+#:
+#: v5 was the measured revision of v4 (job 45512): it reverted the provenance
+#: label definitions and added an R3 sentence about citing the passage that
+#: contains a number, hoping to fix record 43. Job 45520 showed neither helped:
+#: record 43 still cited the wrong passage, record 67 still refused, and four
+#: responses hit the 768-token limit (one new PARSE_ERROR). The only prompt
+#: change with a measured benefit, across both runs, is the three-sentence
+#: answer limit.
+#:
+#: v6 was v3's R2/R3 plus the length limit. The v6 run showed the length limit
+#: was not free either: record 96, which v3 answered, produced a PARSE_ERROR,
+#: and record 67 still refused, so answered fell to 83. The numeric repair did
+#: work (record 43 kept its answer with the missing citation added).
+#:
+#: v7 is the fallback the team agreed on: **v3's prompt verbatim**, with no
+#: length instruction and no extra R3 sentences. The prompt is not where these
+#: failures can be fixed on an 8B model. The two deterministic improvements stay
+#: in the validator (clause splitter, numeric citation repair) and the run
+#: budget is 1024; both are recorded separately from the prompt version. The v7
+#: string exists so the run is distinguishable from the Week-4 v3 runs, not
+#: because the wording differs from v3.
+PROMPT_VERSION = "p5-grounded-qa-v7"
 
 #: The JSON skeleton shown to the model. Keys must match
 #: :data:`src.generation.schema.ANSWER_KEYS`.
