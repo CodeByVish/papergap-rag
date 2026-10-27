@@ -13,7 +13,7 @@
 
 ## 评估过程中需要保存什么
 
-以下输出约定为 `v0-proposed`，尚待代码实现和团队确认。所有路径都相对于项目根目录。每轮比较使用新的 `run_id`，避免覆盖已有结果。`run_id` 标识一轮比较；配置目录分别命名为 `chunk_size_150`、`chunk_size_200`、`chunk_size_250`。每种配置的文件保存在 `results/chunk_size/<run_id>/chunk_size_<size>/` 下，将 `<size>` 替换为 `150`、`200` 或 `250`。生成文件不提交到 Git。
+以下输出约定已实现，仍为 `v0-proposed`，待团队确认；运行命令见 `experiments/chunk_size/README.md`。所有路径都相对于项目根目录。每轮比较使用新的 `run_id`，避免覆盖已有结果。`run_id` 标识一轮比较；配置目录分别命名为 `chunk_size_150`、`chunk_size_200`、`chunk_size_250`。每种配置的文件保存在 `results/chunk_size/<run_id>/chunk_size_<size>/` 下，将 `<size>` 替换为 `150`、`200` 或 `250`。生成文件不提交到 Git。
 
 | 指标 | 代码需要保存的内容 | 配置目录下的文件 |
 | --- | --- | --- |

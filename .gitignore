@@ -29,6 +29,7 @@ dist/
 /cache/
 .cache/
 /logs/
+/tmp/
 *.faiss
 *.safetensors
 *.pt

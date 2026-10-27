@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** planning and repository setup. Retrieval, generation and the UI are not implemented yet.
+**Status:** P3 data preparation and chunk-size evaluation are available. Shared retrieval, generation and the UI are not integrated yet.
 
 ## Start here
 
@@ -11,6 +11,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
+- [Chunk-size experiment](experiments/chunk_size/README.md): compare word-based chunks and export evidence and readability reviews using a local BM25 baseline.
 
 ## Team
 

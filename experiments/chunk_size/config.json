@@ -1,1 +1,9 @@
-{"candidates": [150, 200, 250]}
+{
+  "candidates": [150, 200, 250],
+  "overlap_words": 40,
+  "top_k": 5,
+  "question_sample_count": 50,
+  "readability_sample_count": 10,
+  "question_seed": 42,
+  "readability_seed": 43
+}
