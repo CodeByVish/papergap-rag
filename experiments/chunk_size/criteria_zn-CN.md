@@ -4,12 +4,52 @@
 
 | 指标 | 衡量什么 | 怎么判断分块大小的好坏 |
 | --- | --- | --- |
-| 可读性通过率（Readability pass rate） | 对每种配置，人工抽查相同原文位置对应的分块。如果不看前后分块，也能理解当前分块表达的意思，就算通过。通过率为通过的分块数除以抽查的分块数。 | 越高越好。通过率低，说明分块可能太小，把解释切碎了。 |
+| 可读性通过率（Readability pass rate） | 对每种配置，人工抽查相同原文位置对应的分块，按[可读性判定标准](#可读性判定标准)检查语义完整、必要上下文充分及逻辑连贯。通过率为通过的分块数除以抽查的分块数。 | 越高越好。通过率低，说明分块可能太小，把解释切碎了。 |
 | 证据命中率（Evidence Hit@$5$） | 在有可用文字证据的问题中，前 $5$ 个检索分块合起来，包含至少一个完整人工标注证据段落的问题占比。证据段落被切到多个分块中，只要这些分块都被检索到、合起来覆盖完整段落，也算命中。 | 越高越好，说明更多问题能找到有用证据。命中一个证据段落，不代表已经找全回答所需的证据。 |
 | 完整证据率（Complete evidence rate@$5$） | 在同一批问题中，前 $5$ 个检索分块合起来，包含至少一份答案标注所列全部文字证据段落的问题占比。 | 越高越好，说明证据找得更全，尤其适合判断需要多处证据的问题。 |
 | 检索词数（Retrieved word count） | 每个问题检索到的前 $5$ 个分块的总词数，再对所有问题取平均。重叠文字如果被重复传给回答模型，就重复计数。 | 越低，模型需要阅读的文字越少。在证据检索效果和可读性接近时，优先选择词数更少的配置；不能只凭词数少判断质量更好。 |
 
 两个证据指标都要核对证据所属的论文和原文段落，不能只看是否有几个词相同。抽样前，若问题没有答案标注，或任一标注缺少非空、全部可唯一定位的文字证据，就排除整个问题。排除数量记录在 `manifest.json` 的 `filtering_counts.invalid_answer_evidence` 中。
+
+## 可读性评审人员、是否隐藏分块大小及分歧处理方式
+
+1. 我、队友都会审核；如果工作量很大，考虑 Codex 审核
+2. 暂定不必隐藏分块大小，直接展示 `experiments\chunk_size\criteria_zn-CN.md` 提到的可读性方面保存的 `.md` 文件即可
+3. 分歧只能看情况再说，无法制定处理方案
+
+## 可读性判定标准
+
+本实验的可读性指分块能否独立理解并保留完整语义。假定评审员具备基本 NLP 背景，先只阅读当前分块，不阅读相邻分块或原文；作出初步判断后，再对照原文核实切分造成的缺失，不能用原文补足后的理解代替分块自身的可理解性。
+
+| 判断指标 | 判定问题 | 不通过的典型情况 |
+| --- | --- | --- |
+| 语义完整 | 分块中的陈述是否表达完整，关键条件、对象或结论是否被切断？ | 结尾停在 “The model outperforms the baseline when…”；或切掉了决定陈述含义的限制条件。 |
+| 必要上下文充分 | 能否识别核心陈述中的研究对象、方法和关键指代？ | 只有 “This method improves it significantly.”，块内无法识别方法和改进对象。 |
+| 逻辑连贯 | 能否理解块内句子之间的关系，是否存在影响理解的突兀拼接？ | 尚在介绍一种方法就突然进入另一项实验，缺少理解两者关系所需的结构或过渡。 |
+
+三项均满足时标记为 `pass`；任一项存在影响理解的问题时标记为 `fail`。不通过时，在现有 `Reason` 栏写明不满足的指标、具体文字及缺失内容，例如“必要上下文不足：`This method` 的指代对象位于前一块，当前块无法识别”。三项是同一通过／不通过判断的检查维度，不新增独立汇总指标或评分字段。
+
+判断边界如下：
+
+- 出现 BM25、Transformer 等背景术语不自动判为不通过；论文自定义且理解当前陈述必需的符号、缩写或对象需要足够说明。
+- 出现引用或图表编号不自动判为不通过。“Table 2 shows that model A outperforms model B.” 已表达主要结论；若只有 “The results are shown in Table 2.”，且不查看表格就无法知道所述结果，则必要上下文不足。
+- 以 “However” 等连接词开头不自动判为不通过；仅当缺失的对比或承接内容影响当前陈述的理解时才判为不通过。
+- 不要求每块回答完整问题或包含全部实验细节；回答所需证据是否齐全由证据指标衡量。
+
+以下为自拟的简化示例：
+
+| 分块文本 | 结果 | 理由 |
+| --- | --- | --- |
+| “We evaluate BM25 on QASPER. BM25 retrieves five passages for each question.” | `pass` | 对象、操作和陈述完整，句间关系清楚。 |
+| “It performs better under these settings.” | `fail` | 必要上下文不足：无法识别对象、比较基准和设置。 |
+| “BM25 retrieves five passages for each question. We exclude questions without” | `fail` | 语义不完整：末尾的筛选条件被切断。 |
+
+### 参考文献与借鉴范围
+
+以上标准是针对本实验改编的人工评审规则，不是下列论文原有的标准量表。
+
+1. Arihant Jain, Purav Aggarwal, and Anoop Saladi. 2025. [AutoChunker: Structured Text Chunking and its Evaluation](https://aclanthology.org/2025.acl-industry.69/). In *Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 6: Industry Track)*, pages 983–995. DOI: [10.18653/v1/2025.acl-industry.69](https://doi.org/10.18653/v1/2025.acl-industry.69). 第 4.2 节及附录 B.2 的 Prompt 3 以自包含、完整意思、必要上下文和非突兀边界判断分块完整性；本文借鉴其维度，将 LLM 二元判断改为人工评审。
+2. Eunsol Choi, Jennimaria Palomaki, Matthew Lamm, Tom Kwiatkowski, Dipanjan Das, and Michael Collins. 2021. [Decontextualization: Making Sentences Stand-Alone](https://aclanthology.org/2021.tacl-1.27/). *Transactions of the Association for Computational Linguistics*, 9:447–461. DOI: [10.1162/tacl_a_00377](https://doi.org/10.1162/tacl_a_00377). 该文研究句子在保留原意的前提下脱离上下文后能否被理解；本文借鉴其对必要上下文和指代清晰性的关注，不执行句子改写。
 
 ## 实验配置与优先级
 

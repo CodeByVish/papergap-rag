@@ -4,12 +4,52 @@ Compare $150$, $200$, and $250$ words per chunk using the same sampled questions
 
 | Metric | What it measures | How it helps choose a chunk size |
 | --- | --- | --- |
-| Readability pass rate | Manually inspect the same source locations for each size. Count a chunk as a pass when it expresses an understandable idea without needing the previous or next chunk. The rate is passing chunks divided by inspected chunks. | Higher is better. A low rate suggests the chunks cut explanations into pieces that are too small to understand. |
+| Readability pass rate | Manually inspect the same source locations for each size, checking semantic completeness, sufficient necessary context and logical coherence against the [readability assessment criteria](#readability-assessment-criteria). The rate is passing chunks divided by inspected chunks. | Higher is better. A low rate suggests the chunks cut explanations into pieces that are too small to understand. |
 | Evidence Hit@$5$ | Among questions with usable text evidence, the percentage whose first $5$ retrieved chunks together contain at least one complete annotated evidence paragraph. A paragraph split across retrieved chunks still counts. | Higher is better: more questions retrieve useful evidence. A hit does not mean that all evidence needed to answer the question was found. |
 | Complete evidence rate@$5$ | Among the same questions, the percentage whose first $5$ chunks together contain every text evidence paragraph from at least one answer annotation. | Higher is better, especially for questions needing several pieces of evidence. This checks whether useful evidence is complete. |
 | Retrieved word count | Average total words in the first $5$ retrieved chunks per question, counting overlapping text again if it is passed to the answer model again. | Lower means less text for the model to read. Prefer fewer words when evidence retrieval and readability are similar; fewer words alone do not mean better quality. |
 
 For both evidence metrics, match evidence to its source paper and paragraph; a few matching words are insufficient. Before sampling, exclude an entire question if it has no answer annotations or any annotation lacks nonempty, fully and uniquely located text evidence. Record these exclusions in `manifest.json` under `filtering_counts.invalid_answer_evidence`.
+
+## Readability reviewers, chunk-size visibility and disagreements
+
+1. The experiment owner and teammates will review the chunks; if the workload is large, review by Codex may be considered.
+2. The tentative plan is to show chunk sizes and directly display the readability `.md` files described in this document.
+3. Disagreements will be considered case by case; no resolution procedure has been defined.
+
+## Readability assessment criteria
+
+Readability in this experiment means that a chunk can be understood independently while retaining complete meaning. Assume reviewers have basic NLP knowledge. First read only the current chunk, without adjacent chunks or source text. After making a preliminary judgment, consult the source to verify omissions caused by splitting; understanding supplemented by the source must not substitute for the chunk's own interpretability.
+
+| Criterion | Assessment question | Typical failure |
+| --- | --- | --- |
+| Semantic completeness | Are statements complete, without cutting off essential conditions, objects or conclusions? | Ending with “The model outperforms the baseline when…” or omitting a qualification essential to the statement's meaning. |
+| Sufficient necessary context | Can the reader identify the research objects, methods and essential referents in the central statements? | Only “This method improves it significantly.” appears, without identifying the method or what it improves. |
+| Logical coherence | Are relationships between sentences understandable, without abrupt combinations that impede understanding? | A method description suddenly switches to another experiment without the structure or transition needed to understand their relationship. |
+
+Assign `pass` when all three criteria are met; assign `fail` when any criterion has a problem that impedes understanding. For failures, use the existing `Reason` column to identify the criterion, specific text and missing content, for example: “Insufficient necessary context: the referent of `This method` is in the previous chunk and cannot be identified here.” These are dimensions of the same pass/fail judgment, not additional aggregate metrics or scoring fields.
+
+Apply the following boundaries:
+
+- Background terms such as BM25 and Transformer do not automatically cause failure. Paper-specific symbols, abbreviations or objects essential to understanding the current statement need sufficient explanation.
+- Citations and figure or table references do not automatically cause failure. “Table 2 shows that model A outperforms model B.” conveys the main conclusion; “The results are shown in Table 2.” lacks necessary context if the results cannot be understood without the table.
+- Starting with a connective such as “However” does not automatically cause failure. Fail only when the missing contrast or preceding content affects understanding of the current statement.
+- A chunk need not answer an entire question or contain every experimental detail. Evidence metrics assess whether the evidence needed for an answer is complete.
+
+The following are simplified examples written for this experiment:
+
+| Chunk text | Result | Reason |
+| --- | --- | --- |
+| “We evaluate BM25 on QASPER. BM25 retrieves five passages for each question.” | `pass` | Objects, operations and statements are complete, with clear sentence relationships. |
+| “It performs better under these settings.” | `fail` | Insufficient necessary context: the object, comparison baseline and settings cannot be identified. |
+| “BM25 retrieves five passages for each question. We exclude questions without” | `fail` | Incomplete semantics: the final selection condition is cut off. |
+
+### References and scope of adaptation
+
+These are manual review rules adapted for this experiment, not a standardized scale provided by the following papers.
+
+1. Arihant Jain, Purav Aggarwal, and Anoop Saladi. 2025. [AutoChunker: Structured Text Chunking and its Evaluation](https://aclanthology.org/2025.acl-industry.69/). In *Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 6: Industry Track)*, pages 983–995. DOI: [10.18653/v1/2025.acl-industry.69](https://doi.org/10.18653/v1/2025.acl-industry.69). Section 4.2 and Appendix B.2, Prompt 3 assess chunk completeness through self-containment, complete ideas, necessary context and non-abrupt boundaries. This experiment adapts those dimensions from LLM binary judgments to manual review.
+2. Eunsol Choi, Jennimaria Palomaki, Matthew Lamm, Tom Kwiatkowski, Dipanjan Das, and Michael Collins. 2021. [Decontextualization: Making Sentences Stand-Alone](https://aclanthology.org/2021.tacl-1.27/). *Transactions of the Association for Computational Linguistics*, 9:447–461. DOI: [10.1162/tacl_a_00377](https://doi.org/10.1162/tacl_a_00377). This paper studies whether sentences can be understood outside their original context while preserving meaning. This experiment draws on its treatment of necessary context and clear references, without rewriting sentences.
 
 ## Experiment configuration and precedence
 
