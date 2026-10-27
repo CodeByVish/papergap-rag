@@ -1,7 +1,8 @@
 # P2 status — verified 27 October 2026
 
-Latest audited main: `fc1e76c`. P4 PRs #16/#17/#18 are merged. P1 #8, P2 #9/#10/#11,
-P5 #15 and P6 #7 are still open. All three P2 branches were brought up to latest
+Latest integrated main: `9b0aa57`. P4 PRs #16/#17/#18 and P2 #9/#10 are merged.
+This PR (#11) supplies the evaluation tooling/report preparation. P1 #8,
+P5 #15 and P6 #7 remain separate open integration work. All three P2 branches were brought up to latest
 main without rewriting history; weekly tracker conflicts were resolved by keeping
 both the latest P4 status and each P2 progress entry. No teammate PR was merged.
 
@@ -36,7 +37,7 @@ both the latest P4 status and each P2 progress entry. No teammate PR was merged.
   It contains 100 training integration questions, separate RRF/BGE outputs,
   485 passages per method and three empty questions. Keep BGE output separate
   from `runs/week3/`; this artifact is not a frozen held-out set. The ZIP is
-  still local/ignored and must be forwarded or uploaded to an agreed destination.
+  local/ignored, with a verified [team Drive copy](https://drive.google.com/file/d/1XM84LDukvCmQaNXFOBFfAW_j_JkkpWV3/view).
 
 ## Checks completed
 
@@ -46,6 +47,9 @@ both the latest P4 status and each P2 progress entry. No teammate PR was merged.
 - All three P2 branches + P5 #15 + latest main: **566 tests passed**.
 - The P5 suite is not included in its PR; these counts refer to the shared suite,
   supplemented by the explicit mock bridge check above. No real Qwen run occurred.
+
+The report now includes a reproducible descriptive summary of the historical
+100-question timing rows, with cold-start and empty-query limitations explicit.
 
 ## Can P2 continue?
 
@@ -63,7 +67,7 @@ Final quantitative conclusions remain blocked on these shared inputs:
 | Common 1,000-pair pool order and allocation manifest | P6 | Export blinded batches and collect 2,000 independent judgments |
 | Per-paper selector + same-round fallback | P4 after #10 integration | Reliable scoped retries without wasting rewrite budget |
 | Real Qwen critic/generator cluster check | P4/P5 | Mock bridge success does not establish model behavior |
-| Shared destination for handoff ZIP | Vishakha/team | Local filesystem path is not accessible to teammates |
+| Handoff ZIP delivery | Completed by P2 | Uploaded to the team Drive folder; link above |
 
 The 25 October freeze target has passed according to the client date. Record the
 actual freeze date once the inputs are agreed; do not backdate it. Prioritize the

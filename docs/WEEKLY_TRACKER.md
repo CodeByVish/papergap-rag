@@ -127,3 +127,34 @@ generation bridge check. Section-map limitations and P2/P5 double annotation
 are clarified. Final labels, held-out/configuration freeze, P6 pool allocation,
 P5's unpublished relevance guideline and real Qwen validation remain outstanding.
 See [current P2 audit](P2_STATUS.md). No held-out approval or human labels were invented.
+## P2 agent/filter/cache increment — 17 October 2026
+
+PR #5 is merged. Added optional exact-section forwarding with a legacy P1
+adapter, caller-selected per-round agent sections, compact per-round ID traces
+and persistent content/config-keyed reranker scoring. The new real-agent CLI
+passed a pinned CPU section-scoped three-round check: first process eight unique
+pair misses/four hits; second process zero misses/12 hits. The branch is rebased onto P4's current planner/critic/rewriter; full passages
+remain in the export, not the retrieval log. All 436 tests pass; lint and changed-file formatting pass.
+See [interface and cache commands](P2_AGENT_CACHE.md). P1/P4 interface review is
+pending; this does not freeze proposed shared schemas or evaluation policy.
+## P2 batch handoff — 17 October 2026
+
+Added a fixed-question JSONL batch entry point with shared model/index loading,
+RRF-only and BGE modes, original query order/IDs, explicit offline operation,
+run manifests and failure reporting. Completed both real-model exports on P1's
+unchanged 100 training questions: each contains 485 passages and three genuine
+empty results. The local corpus hash matches P1; RRF top-five IDs/order match
+all 100 records. Independent schema/provenance validation passed. All 423 tests
+passed. See [batch commands, snapshot comparison and results](P2_BATCH_HANDOFF.md).
+These are integration artifacts; held-out quality evaluation and team interface
+agreement remain pending. PR #5 was reviewed and merged on 17 October (431 tests passed against current
+main). Batch changes are on `p2/batch-hybrid-handoff`, pending review.
+
+## P2 release and report preparation — 27 October 2026
+
+P2 #9 and #10 merged after review and integration testing. #11 combines those
+changes with the evaluation/pooling tools; protocol approvals remain distinct
+from merging implementation. The verified 100-question handoff is uploaded
+to the team Drive folder (link in P2_BATCH_HANDOFF.md). Report text now reflects
+P4's implemented LLM critic interface and includes reproducible historical
+100-question timing summaries, explicitly not final quality results.

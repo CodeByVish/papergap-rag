@@ -20,9 +20,11 @@ empty/short rather than being padded.
 Returned records preserve the full passage, final rank, source ranks and raw
 scores, RRF score and nullable reranker score. RRF-only output has null reranker
 scores. Exact-section forwarding, per-round agent trace and persistent
-content/configuration-keyed score caching are proposed in PR #10. P4's current
-planner/critic are keyword mocks, so retrieval integration does not establish
-adaptive critic quality.
+content/configuration-keyed score caching are implemented in merged PR #10.
+P4 has a rule-based planner/evidence mapper and an LLM critic interface with
+rule-based fallback, including a Qwen-compatible adapter. Real Qwen critic
+behavior has not been validated in this P2 work. Per-paper section selection
+and same-round unscoped fallback remain P4 follow-ups.
 
 ## Reproducibility and integration evidence
 
@@ -76,3 +78,39 @@ recall is not exhaustive full-paper recall; unjudged passages are unknown.
 Use the execution scripts to populate this section after inputs arrive. Do not
 replace missing metrics with the synthetic test fixture, ranking-change counts,
 LLM-generated relevance judgments, or the three-question workflow smoke run.
+
+## 100-question integration timing (historical run, not a warmed benchmark)
+
+The [shared ZIP](https://drive.google.com/file/d/1XM84LDukvCmQaNXFOBFfAW_j_JkkpWV3/view) preserves the 17 October executed source,
+configuration and timing records. Using all 100 per-question timing rows:
+
+| Method | p50 ms | p95 ms | Sum of recorded retrieval seconds |
+| --- | ---: | ---: | ---: |
+| RRF | 17.57 | 21.34 | 7.61 |
+| RRF + BGE | 2387.34 | 3768.72 | 243.92 |
+
+Percentiles use linear interpolation at `(n-1)*q`. These rows include three
+empty retrievals per method and first-use costs: first-question times were
+5904.84 ms (RRF) and 9280.55 ms (BGE). No warm-up was performed. The sum is
+retrieval-call time, not whole-process wall time; model/index setup outside the
+call is excluded. Do not mix these figures with the warmed six-question pilot,
+claim causal speedup, or treat ranking changes as quality improvements.
+
+Reproduce from the downloaded ZIP without models or labels:
+
+```python
+import json
+import statistics
+import zipfile
+
+with zipfile.ZipFile("p2-batch-reranking-handoff-20261017.zip") as archive:
+    for method in ("rrf", "bge"):
+        values = sorted(
+            json.loads(line)["elapsed_ms"]
+            for line in archive.read(f"{method}/latency.jsonl").splitlines()
+        )
+        position = (len(values) - 1) * 0.95
+        lower = int(position)
+        p95 = values[lower] + (values[min(lower + 1, len(values) - 1)] - values[lower]) * (position - lower)
+        print(method, len(values), statistics.median(values), p95, sum(values) / 1000)
+```

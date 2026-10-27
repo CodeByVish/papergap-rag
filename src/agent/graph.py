@@ -32,6 +32,7 @@ def build_agent_graph(
     top_k: int = DEFAULT_TOP_K,
     critic_client: CriticClient | None = None,
     critic_attempts: int = DEFAULT_ATTEMPTS,
+    section_selector=None,
 ) -> CompiledStateGraph:
     """Compile the agent around `retriever(query, paper_id, top_k)`.
 
@@ -50,7 +51,7 @@ def build_agent_graph(
 
     graph = StateGraph(AgentState)
     graph.add_node("plan_question", plan_question)
-    graph.add_node("retrieve", make_retrieve_node(retriever, top_k))
+    graph.add_node("retrieve", make_retrieve_node(retriever, top_k, section_selector))
     graph.add_node("map_evidence", map_evidence)
     graph.add_node("critic", make_critic_node(critic_client, critic_attempts))
     graph.add_node("rewrite_query", rewrite_query)
