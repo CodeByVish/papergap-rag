@@ -118,3 +118,12 @@ held-out pooling, 334 proposed P2 human judgments, agreement and report quality
 conclusions require P3/P6 inputs. No labels or approvals were manufactured.
 See [evaluation commands and required inputs](P2_EVALUATION_HANDOFF.md) and
 [report contribution draft](P2_REPORT_CONTRIBUTION.md).
+
+## P2 dependency audit — 27 October 2026
+
+Latest main is integrated into P2 #9/#10/#11 with tracker conflicts resolved.
+An isolated combination with P5 #15 passed 566 shared tests and a two-arm mock
+generation bridge check. Section-map limitations and P2/P5 double annotation
+are clarified. Final labels, held-out/configuration freeze, P6 pool allocation,
+P5's unpublished relevance guideline and real Qwen validation remain outstanding.
+See [current P2 audit](P2_STATUS.md). No held-out approval or human labels were invented.
