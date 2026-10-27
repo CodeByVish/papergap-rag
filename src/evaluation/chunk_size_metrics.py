@@ -179,9 +179,16 @@ def evaluate_question(
 ) -> dict[str, Any]:
     """Compute both evidence decisions and the repeated-overlap word total.
 
-    Retrieved records carry text and paragraph spans. All located evidence can
-    contribute a hit; only a fully usable annotation can satisfy completeness.
+    Retrieved records carry text and paragraph spans. Every annotation must have
+    fully located, nonempty evidence before any evidence can contribute a hit.
+    Complete evidence still requires covering only one full annotation's set.
+
+    Raises:
+        ValueError: No annotations exist or any annotation is unusable. Such
+            questions must be excluded before sampling, rather than scored.
     """
+    if not annotations or not all(annotation["usable"] for annotation in annotations):
+        raise ValueError("all answer annotations must have fully located text evidence")
     locations = {loc for annotation in annotations for loc in annotation["locations"]}
     missing = {}
     for location in sorted(locations):

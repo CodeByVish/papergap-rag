@@ -145,6 +145,8 @@ def select_questions(
 
     Every input question receives exactly one filtering outcome. Paper and QA
     split consistency has already been checked by the verified export loader.
+    Require at least one answer and fully located, nonempty text evidence for
+    every annotation; a single unusable annotation excludes the whole question.
     """
     counts: Counter[str] = Counter()
     eligible = []
@@ -166,8 +168,8 @@ def select_questions(
             counts["paper_not_in_every_corpus"] += 1
             continue
         located = locate_annotations(question, paragraphs[paper_id])
-        if not any(annotation["usable"] for annotation in located):
-            counts["no_usable_text_evidence"] += 1
+        if not located or not all(annotation["usable"] for annotation in located):
+            counts["invalid_answer_evidence"] += 1
             continue
         annotations[question["question_id"]] = located
         eligible.append(question)

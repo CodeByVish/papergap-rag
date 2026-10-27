@@ -26,6 +26,7 @@ from src.evaluation.run_chunk_size import (
     load_config,
     retrieve_question,
     run_comparison,
+    select_questions,
     select_readability_samples,
 )
 
@@ -54,7 +55,7 @@ def synthetic_paper(split: str = "train") -> dict:
 
 
 def synthetic_question(split: str = "train") -> dict:
-    """Return grouped alternative evidence sets plus a deliberately empty answer.
+    """Return grouped alternative evidence sets that are all fully locatable.
 
     One annotation requires two paragraphs; another requires just the first.
     """
@@ -71,7 +72,6 @@ def synthetic_question(split: str = "train") -> dict:
                 "answer": {"evidence": [evidence[0], evidence[2]]},
             },
             {"annotation_id": "first", "answer": {"evidence": [evidence[0]]}},
-            {"annotation_id": "empty", "answer": {"evidence": []}},
         ],
     }
 
@@ -102,7 +102,7 @@ def chunk_paper(paper: dict, size: int, overlap: int) -> list[dict]:
 def test_combined_coverage_and_annotation_groups() -> None:
     """Several partial chunks can cover one paragraph and an alternative answer.
 
-    Empty evidence never counts as complete; retrieved word totals include overlap.
+    All answers are usable; retrieved word totals include overlap.
     """
     paper = synthetic_paper()
     paragraphs = source_paragraphs(paper)
@@ -117,7 +117,71 @@ def test_combined_coverage_and_annotation_groups() -> None:
     assert combined["total_retrieved_words"] == 8
     complete = evaluate_question(annotations, paragraphs, chunks)
     assert complete["fully_covered_annotations"] == ["both", "first"]
-    assert not complete["missing_by_annotation"]["empty"]["usable"]
+
+
+@pytest.mark.parametrize(
+    "evidence",
+    [
+        [],
+        [""],
+        ["missing paragraph"],
+        ["FLOAT SELECTED: Figure 1"],
+        ["eta theta iota kappa", "missing paragraph"],
+        None,
+    ],
+)
+def test_invalid_annotation_excludes_whole_question(evidence: list | None) -> None:
+    """Reject a question even when another answer has fully located evidence.
+
+    Empty, missing, float-only and partially resolved evidence must contribute
+    neither sampled questions nor per-question evidence metrics.
+    """
+    paper = synthetic_paper()
+    paragraphs = source_paragraphs(paper)
+    invalid = synthetic_question()
+    invalid["question_id"] = "invalid"
+    answer = {} if evidence is None else {"evidence": evidence}
+    invalid["answers"].append({"annotation_id": "invalid", "answer": answer})
+    selected, counts, annotations = select_questions(
+        [invalid, synthetic_question()],
+        {paper["id"]: paper},
+        {paper["id"]: paragraphs},
+        {paper["id"]},
+        {"seed": 42, "question_sample_count": 50},
+    )
+    assert [question["question_id"] for question in selected] == ["question-train"]
+    assert set(annotations) == {"question-train"}
+    assert counts == {"eligible": 1, "invalid_answer_evidence": 1, "total": 2}
+    with pytest.raises(ValueError, match="all answer annotations"):
+        evaluate_question(
+            locate_annotations(invalid, paragraphs), paragraphs, chunk_paper(paper, 4, 2)
+        )
+
+
+def test_empty_answers_and_ambiguous_evidence_exclude_questions() -> None:
+    """Exclude absent answers and repeated evidence before seeded sampling.
+
+    An unambiguous alternative answer cannot rescue an ambiguous annotation;
+    an empty eligible pool raises instead of producing zero-valued metrics.
+    """
+    paper = synthetic_paper()
+    paper["full_text"][0]["paragraphs"].append("eta theta iota kappa")
+    paragraphs = source_paragraphs(paper)
+    ambiguous = synthetic_question()
+    located = locate_annotations(ambiguous, paragraphs)
+    assert [annotation["usable"] for annotation in located] == [False, True]
+    empty = {**synthetic_question(), "question_id": "empty", "answers": []}
+    for question in (ambiguous, empty):
+        with pytest.raises(ValueError, match="no eligible"):
+            select_questions(
+                [question],
+                {paper["id"]: paper},
+                {paper["id"]: paragraphs},
+                {paper["id"]},
+                {"seed": 42, "question_sample_count": 50},
+            )
+        with pytest.raises(ValueError, match="all answer annotations"):
+            evaluate_question(locate_annotations(question, paragraphs), paragraphs, [])
 
 
 def test_zero_overlap_and_repeated_paragraphs() -> None:
@@ -235,7 +299,8 @@ def test_readability_small_pool_and_exclusions() -> None:
 def exported_inputs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
     """Create verified paper and QA exports containing all three official splits.
 
-    The extra train question has no usable evidence and must be filtered out.
+    Extra train questions have absent or partially unresolved evidence; neither
+    may enter reports or metric denominators despite valid alternative answers.
     """
     source = tmp_path / "tmp_source"
     source.mkdir()
@@ -251,6 +316,12 @@ def exported_inputs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
             paper["qas"].append(
                 {"question_id": "no-evidence", "question": "why?", "answers": []}
             )
+            partial = synthetic_question(split)
+            partial.pop("paper_id")
+            partial.pop("source_split")
+            partial["question_id"] = "partial-evidence"
+            partial["answers"][0]["answer"]["evidence"].append("missing paragraph")
+            paper["qas"].append(partial)
         payload = (json.dumps(paper) + "\n").encode("utf-8")
         (source / f"{split}.jsonl").write_bytes(payload)
         splits.append(
@@ -318,8 +389,8 @@ def test_runner_and_manual_summary(exported_inputs: tuple, tmp_path: Path) -> No
     assert manifest["filtering_counts"] == {
         "eligible": 2,
         "held_out": 1,
-        "no_usable_text_evidence": 1,
-        "total": 4,
+        "invalid_answer_evidence": 2,
+        "total": 5,
     }
     assert manifest["question_sample_count_actual"] == 2
     assert manifest["config"]["overlap_words"] == 1
@@ -336,6 +407,8 @@ def test_runner_and_manual_summary(exported_inputs: tuple, tmp_path: Path) -> No
         review = run / f"chunk_size_{size}" / "readability.md"
         evidence = (review.parent / "evidence_review.md").read_text(encoding="utf-8")
         assert evidence.count("## Question:") == 2
+        assert "partial-evidence" not in evidence
+        assert "no-evidence" not in evidence
         assert "source_split" not in evidence
         assert "Word count:" in evidence and "Total retrieved words:" in evidence
         assert not (review.parent / "retrieval.jsonl").exists()
