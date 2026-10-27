@@ -12,7 +12,7 @@ from __future__ import annotations
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from src.agent.critic import DEFAULT_ATTEMPTS, LLMClient, make_critic_node
+from src.agent.critic import DEFAULT_ATTEMPTS, CriticClient, make_critic_node
 from src.agent.nodes import (
     DEFAULT_TOP_K,
     MAX_RETRIES,
@@ -30,7 +30,7 @@ def build_agent_graph(
     retriever: Retriever,
     max_retries: int = MAX_RETRIES,
     top_k: int = DEFAULT_TOP_K,
-    critic_client: LLMClient | None = None,
+    critic_client: CriticClient | None = None,
     critic_attempts: int = DEFAULT_ATTEMPTS,
     section_selector=None,
 ) -> CompiledStateGraph:

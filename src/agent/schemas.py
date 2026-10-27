@@ -73,7 +73,7 @@ class AgentState(BaseModel):
     `passage_id`. `retrieval_log` has one entry per retrieval round
     (`round`, `query`, `triggered_by`, `passage_ids`) so passages stay traceable.
     `critic_log` has one entry per critic call (`round`, `source` = llm / rules /
-    fallback, `sufficient`, `gap_label`, `errors`).
+    fallback, `sufficient`, `gap_label`, `errors`, `raw_replies`).
     """
 
     question: str
