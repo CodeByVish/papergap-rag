@@ -55,7 +55,7 @@ def main() -> int:
         else:
             summarize_readability(arguments["run_dir"])
             print(arguments["run_dir"] / "summary.json")
-    except (ValueError, TypeError, KeyError, OSError) as error:
+    except (ValueError, TypeError, KeyError, OSError, ImportError, RuntimeError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 0

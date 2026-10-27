@@ -1,7 +1,7 @@
 """Run reproducible, development-only comparisons of word-based chunk sizes.
 
-The runner reuses P3's verified exports and chunker. Its local paper-filtered
-BM25 baseline can be replaced through an explicit retriever factory in Python;
+The runner reuses P3's verified exports and chunker. Configured P1/P2 static
+retrieval can be replaced through an explicit retriever factory in Python;
 it does not require a generator, model service or held-out tuning data.
 """
 
@@ -45,6 +45,13 @@ from src.evaluation.chunk_size_reports import (
     readability_report,
     write_json,
 )
+from src.evaluation.chunk_size_retrieval import (
+    make_retriever_factory,
+    normalize_retrieval,
+)
+from src.evaluation.chunk_size_retrieval import (
+    retriever_metadata as configured_metadata,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULTS = {
@@ -66,7 +73,11 @@ def load_config(path: Path) -> dict[str, Any]:
     defaults. All sizes are words; top_k is fixed to five by the metric contract.
     """
     supplied = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(supplied, dict) or set(supplied) - {"candidates", *DEFAULTS}:
+    if not isinstance(supplied, dict) or set(supplied) - {
+        "candidates",
+        "retrieval",
+        *DEFAULTS,
+    }:
         raise ValueError("configuration must be an object with known keys")
     config = {**DEFAULTS, **supplied}
     candidates = config.get("candidates")
@@ -89,6 +100,9 @@ def load_config(path: Path) -> dict[str, Any]:
         ChunkingConfig(
             chunk_size_words=size, chunk_overlap_words=config["overlap_words"]
         )
+    config["retrieval"] = normalize_retrieval(
+        supplied.get("retrieval", {}), config["top_k"]
+    )
     return config
 
 
@@ -105,40 +119,12 @@ def file_hash(path: Path) -> str:
 
 
 def local_bm25(passages: list[dict[str, Any]]) -> Retriever:
-    """Build a paper-filtered rank-bm25 baseline with deterministic score ties.
+    """Keep the former local factory API as a compatibility wrapper for P1.
 
     Tokens are casefolded Unicode word runs. Each paper has its own BM25 index;
     model parameters follow rank-bm25 defaults and are recorded in the manifest.
     """
-    from rank_bm25 import BM25Okapi
-
-    groups: dict[str, list[dict[str, Any]]] = {}
-    for passage in passages:
-        groups.setdefault(passage["paper_id"], []).append(passage)
-    indexes = {}
-    for paper_id, items in groups.items():
-        items.sort(key=lambda item: item["passage_id"])
-        tokens = [re.findall(r"\w+", item["text"].casefold()) for item in items]
-        # A punctuation-only paper cannot produce a nonempty lexical vocabulary.
-        indexes[paper_id] = (items, BM25Okapi(tokens) if any(tokens) else None)
-
-    def retrieve(query: str, paper_id: str, top_k: int) -> list[tuple[str, float]]:
-        """Return up to top_k scored IDs from the selected paper.
-
-        Empty lexical vocabularies return deterministic zero-score rankings.
-        """
-        items, index = indexes[paper_id]
-        scores = (
-            index.get_scores(re.findall(r"\w+", query.casefold()))
-            if index
-            else [0.0] * len(items)
-        )
-        ranked = sorted(
-            zip(items, scores), key=lambda pair: (-pair[1], pair[0]["passage_id"])
-        )
-        return [(item["passage_id"], float(score)) for item, score in ranked[:top_k]]
-
-    return retrieve
+    return make_retriever_factory({"mode": "bm25"})(passages)
 
 
 def select_questions(
@@ -281,7 +267,9 @@ def run_comparison(
     config = load_config(config_path)
     if retriever_factory is not None and not retriever_metadata:
         raise ValueError("custom retrievers require explicit metadata")
-    factory = retriever_factory or local_bm25
+    if retriever_factory is None and retriever_metadata is not None:
+        raise ValueError("retriever metadata requires a custom factory")
+    factory = retriever_factory or make_retriever_factory(config["retrieval"])
     check_qasper_export(
         papers_path=papers_path, qa_path=qa_path, manifest_path=export_manifest
     )
@@ -334,18 +322,11 @@ def run_comparison(
     status = subprocess.check_output(
         ["git", "status", "--porcelain"], cwd=ROOT, text=True
     )
-    metadata = retriever_metadata or {
-        "id": "experiment-local-paper-bm25-v1",
-        "package": "rank-bm25",
-        "version": importlib.metadata.version("rank-bm25"),
-        "model_revision": None,
-        "tokenizer": "casefold + Unicode word runs",
-        "scope": "selected paper",
-        "k1": 1.5,
-        "b": 0.75,
-        "epsilon": 0.25,
-        "tie_break": "passage_id ascending",
-    }
+    metadata = (
+        {**retriever_metadata, "selection_source": "custom_factory"}
+        if retriever_factory is not None
+        else configured_metadata(config["retrieval"])
+    )
     manifest = {
         "schema_version": "v0-proposed",
         "run_id": run_id,
@@ -393,7 +374,11 @@ def run_comparison(
         "python": platform.python_version(),
         "prompts": None,
         "generator": None,
-        "timing_policy": "perf_counter wall seconds; per-query excludes index build and report rendering",
+        "timing_policy": (
+            "perf_counter wall seconds; index_seconds includes factory construction, "
+            "model initialization and passage encoding; per-query includes full retrieval "
+            "and lazy first BGE scoring load; no hidden warm-up; excludes report rendering"
+        ),
         "build_seconds": build_seconds,
     }
     summary: dict[str, Any] = {
@@ -479,6 +464,8 @@ def run_comparison(
             "index_seconds": index_seconds,
             "questions": results,
         }
+        # Drop the closure before constructing the next candidate's model/index.
+        del retrieve
     write_json(run_dir / "summary.json", summary)
     write_json(run_dir / "manifest.json", manifest)
     return run_dir

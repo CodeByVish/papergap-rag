@@ -5,5 +5,6 @@
   "question_sample_count": 50,
   "readability_sample_count": 10,
   "question_seed": 42,
-  "readability_seed": 43
+  "readability_seed": 43,
+  "retrieval": {"mode": "bm25"}
 }

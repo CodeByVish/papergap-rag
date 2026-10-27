@@ -12,6 +12,7 @@ sentence-transformers>=3,<6
 faiss-cpu>=1.8,<2
 torch>=2.2,<3
 transformers>=4.51,<5
+sentencepiece>=0.2,<1
 accelerate>=1,<2
 langgraph>=1,<2
 streamlit>=1.40,<2
