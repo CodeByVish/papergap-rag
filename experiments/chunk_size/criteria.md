@@ -11,6 +11,34 @@ Compare $150$, $200$, and $250$ words per chunk using the same sampled questions
 
 For both evidence metrics, match evidence to its source paper and paragraph; a few matching words are insufficient. Filter out questions without usable text evidence before sampling and record filtering counts in `manifest.json`.
 
+## Experiment configuration and precedence
+
+Use `experiments/chunk_size/config.json` as this experiment's configuration authority. Its settings take precedence over settings with the same purpose in `configs/default.yaml` when they overlap or conflict. The current runner reads only the experiment JSON; it does not read or merge `configs/default.yaml`. Omitted values use experiment-code defaults, without falling back to YAML. Selecting another experiment JSON with `--config` makes that file authoritative for the run.
+
+`configs/default.yaml` is a project-level configuration proposal. Git history shows that it was created in the project execution plan and collaboration starter commit `b564db7` on 2026/09/16, then extended by P3 data foundation and unified export commits `1697e10` and `fa19dfc` on 2026/09/26. The available history does not show it being integrated from another part. It covers data, retrieval, Agent, generation and evaluation modules; that scope does not establish it as any individual part's runtime configuration.
+
+| Setting in `configs/default.yaml` | Corresponding experiment setting | Overlap or difference and handling |
+| --- | --- | --- |
+| `data.overlap_words`: $40$ | `overlap_words`: $40$ | Same chunk overlap setting and current value; use the experiment configuration. |
+| `retrieval.top_k`: $5$ | `top_k`: $5$ | Same retrieval result limit and current value; use the experiment configuration. |
+| `data.chunk_words`: $200$ | `candidates`: $150$, $200$, $250$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
+| `seed`: $42$ | `question_seed`: $42$; `readability_seed`: $43$ | The general YAML seed and separate experiment sampling seeds have related purposes; use each experiment seed independently rather than replacing both with the YAML seed. |
+
+The YAML `retrieval` section proposes dense models, a reranker, candidate counts and RRF settings, whereas the experiment JSON currently specifies only `retrieval.mode` as `bm25`. These are not equivalent complete retrieval configurations. The experiment does not inherit YAML model or fusion settings. See `experiments/chunk_size/README.md` for experiment retrieval-code defaults and optional modes.
+
+The following lists every current experiment JSON setting except `candidates`, already listed above. Keep these settings fixed across candidate chunk sizes.
+
+| Experiment setting | Current value | Meaning and constraints |
+| --- | --- | --- |
+| `overlap_words` | $40$ | Overlap in words between adjacent chunks; every candidate size must exceed this value. |
+| `top_k` | $5$ | Maximum retrieved chunks per question; the current metrics require $5$, with fewer returned when fewer chunks are available. |
+| `question_sample_count` | $50$ | Requested question count after applying the eligibility rules below; use all eligible questions when fewer are available and record the actual count. |
+| `question_sampling_method` | `simple_random_without_replacement` | Simple random sampling without replacement from the filtered question pool; currently the only supported method. All candidate configurations share the selected questions. |
+| `readability_sample_count` | $10$ | Requested source paragraph count from papers common to all candidate corpora; use all available paragraphs when fewer are available. Share source locations across configurations; this count is not the final number of unique chunks to score. |
+| `question_seed` | $42$ | Random seed for question sampling. |
+| `readability_seed` | $43$ | Random seed for readability source-location sampling, independent of question sampling. |
+| `retrieval.mode` | `bm25` | Use P1's `BM25Retriever` within the question's paper, with independent indexes for each chunk size and paper; no model weights are required. |
+
 ## What to save during evaluation
 
 The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. The `run_id` identifies the comparison run; the configuration directory names are `chunk_size_150`, `chunk_size_200`, and `chunk_size_250`. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, replacing `<size>` with `150`, `200`, or `250`. Generated files stay out of Git.

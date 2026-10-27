@@ -11,6 +11,34 @@
 
 两个证据指标都要核对证据所属的论文和原文段落，不能只看是否有几个词相同。抽样前过滤没有可用文字证据的问题，过滤数量记录在 `manifest.json` 中。
 
+## 实验配置与优先级
+
+本实验以 `experiments/chunk_size/config.json` 为配置依据；与 `configs/default.yaml` 中用途相同的设置重复或冲突时，实验配置优先。当前运行器只读取实验 JSON 配置，不读取或合并 `configs/default.yaml`；缺省值由实验代码提供，不从 YAML 回退。通过 `--config` 指定其他实验 JSON 文件时，以该文件为准。
+
+`configs/default.yaml` 是项目级配置提案。Git 历史显示，它在 2026/09/16 的项目执行计划与协作初始文件提交 `b564db7` 中创建，随后在 2026/09/26 的 P3 数据基础与统一导出提交 `1697e10`、`fa19dfc` 中补充数据设置。现有历史未显示它由其他 part 整合而来；它覆盖数据、检索、Agent、生成与评估多个模块，不能据此认定为某个 part 的运行配置。
+
+| `configs/default.yaml` 设置 | 实验配置中的对应项 | 重复或差异及处理方式 |
+| --- | --- | --- |
+| `data.overlap_words`：$40$ | `overlap_words`：$40$ | 同一分块重叠设置，当前值相同；以实验配置为准。 |
+| `retrieval.top_k`：$5$ | `top_k`：$5$ | 同一检索返回数量，当前值相同；以实验配置为准。 |
+| `data.chunk_words`：$200$ | `candidates`：$150$、$200$、$250$ | 用途相关但结构不同；实验逐一比较候选大小，不采用 YAML 的单一大小。 |
+| `seed`：$42$ | `question_seed`：$42$；`readability_seed`：$43$ | YAML 的通用种子与实验的独立抽样种子用途相关；分别使用实验配置中的两个种子，不用 YAML 种子统一替代。 |
+
+YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 等提案设置，实验 JSON 当前仅指定 `retrieval.mode` 为 `bm25`。两者不是同一完整检索配置；本实验不会继承 YAML 的模型或融合参数。实验检索代码的缺省值和可选模式见 `experiments/chunk_size/README.md`。
+
+除开头已列出的 `candidates` 外，当前实验 JSON 的全部设置如下；比较各候选分块大小时保持这些设置一致。
+
+| 实验配置项 | 当前值 | 含义与约束 |
+| --- | --- | --- |
+| `overlap_words` | $40$ | 相邻分块重叠词数；每个候选分块大小必须大于该值。 |
+| `top_k` | $5$ | 每个问题最多返回的分块数；当前指标约定要求固定为 $5$，可用分块不足时返回实际数量。 |
+| `question_sample_count` | $50$ | 按下方筛选规则形成可用问题池后，计划抽取的问题数；不足时使用全部可用问题，并记录实际数量。 |
+| `question_sampling_method` | `simple_random_without_replacement` | 从筛选后的问题池简单随机无放回抽样；当前唯一支持的方法。各候选配置共用抽中问题。 |
+| `readability_sample_count` | $10$ | 从各候选语料共同包含的论文中抽查的原文段落数；不足时使用全部可用段落。各候选配置共用原文位置；该数量不是最终评分的唯一分块数。 |
+| `question_seed` | $42$ | 问题抽样随机种子。 |
+| `readability_seed` | $43$ | 可读性原文位置抽样随机种子，与问题抽样独立。 |
+| `retrieval.mode` | `bm25` | 使用 P1 的 `BM25Retriever`，按问题所属论文检索；每种分块大小、每篇论文独立建索引，无需模型权重。 |
+
 ## 评估过程中需要保存什么
 
 以下输出约定已实现，仍为 `v0-proposed`，待团队确认；运行命令见 `experiments/chunk_size/README.md`。所有路径都相对于项目根目录。每轮比较使用新的 `run_id`，避免覆盖已有结果。`run_id` 标识一轮比较；配置目录分别命名为 `chunk_size_150`、`chunk_size_200`、`chunk_size_250`。每种配置的文件保存在 `results/chunk_size/<run_id>/chunk_size_<size>/` 下，将 `<size>` 替换为 `150`、`200` 或 `250`。生成文件不提交到 Git。
