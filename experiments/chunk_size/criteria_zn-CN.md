@@ -22,7 +22,7 @@
 | `data.overlap_words`：$40$ | `overlap_words`：$40$ | 同一分块重叠设置，当前值相同；以实验配置为准。 |
 | `retrieval.top_k`：$5$ | `top_k`：$5$ | 同一检索返回数量，当前值相同；以实验配置为准。 |
 | `data.chunk_words`：$200$ | `candidates`：$150$、$200$、$250$ | 用途相关但结构不同；实验逐一比较候选大小，不采用 YAML 的单一大小。 |
-| `seed`：$42$ | `question_seed`：$42$；`readability_seed`：$43$ | YAML 的通用种子与实验的独立抽样种子用途相关；分别使用实验配置中的两个种子，不用 YAML 种子统一替代。 |
+| `seed`：$42$ | `seed`：$42$ | 用途和值相同；所有抽样过程使用实验配置中的种子，不读取 YAML。 |
 
 YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 等提案设置，实验 JSON 当前仅指定 `retrieval.mode` 为 `bm25`。两者不是同一完整检索配置；本实验不会继承 YAML 的模型或融合参数。实验检索代码的缺省值和可选模式见 `experiments/chunk_size/README.md`。
 
@@ -34,10 +34,22 @@ YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 
 | `top_k` | $5$ | 每个问题最多返回的分块数；当前指标约定要求固定为 $5$，可用分块不足时返回实际数量。 |
 | `question_sample_count` | $50$ | 按下方筛选规则形成可用问题池后，计划抽取的问题数；不足时使用全部可用问题，并记录实际数量。 |
 | `question_sampling_method` | `simple_random_without_replacement` | 从筛选后的问题池简单随机无放回抽样；当前唯一支持的方法。各候选配置共用抽中问题。 |
-| `readability_sample_count` | $10$ | 从各候选语料共同包含的论文中抽查的原文段落数；不足时使用全部可用段落。各候选配置共用原文位置；该数量不是最终评分的唯一分块数。 |
-| `question_seed` | $42$ | 问题抽样随机种子。 |
-| `readability_seed` | $43$ | 可读性原文位置抽样随机种子，与问题抽样独立。 |
+| `n_paper` | $5$ | 可读性抽样的计划论文数；可用论文不足时全部抽取。 |
+| `n_paragraph` | $2$ | 每篇抽中论文的计划段落数；可用段落不足时全部抽取。 |
+| `seed` | $42$ | 问题、论文及区间内段落抽样共用的种子；问题和可读性抽样各自用该值初始化随机生成器。 |
 | `retrieval.mode` | `bm25` | 使用 P1 的 `BM25Retriever`，按问题所属论文检索；每种分块大小、每篇论文独立建索引，无需模型权重。 |
+
+## 可读性抽样方案
+
+从已核验的 `data/processed/papers.jsonl` 导出中，随机无放回抽取最多 `n_paper` 篇论文。仅使用原始 `train/validation` 中出现在全部候选语料、且包含非空可分块段落的论文；不要求论文出现在抽中的问题中。抽样前按论文 ID 排序。空段落和无名称章节按分块器规则排除。
+
+每篇抽中论文按章节、段落索引排列可用段落，再划分为 `n_paragraph` 个连续区间；边界为 $\lfloor iL/k\rfloor$，其中 $i=0,\ldots,k$，$L$ 为可用段落数，$k=\min(L,\texttt{n\_paragraph})$。每个区间随机抽取一个段落，不足时全部抽取。各候选分块大小共用这批原文位置，使样本分散在少量论文的不同位置，无需覆盖每篇论文。
+
+默认预算为 $5\times2=10$ 个原文段落。整批样本尽量兼顾长短段落，不要求每篇论文都覆盖。抽样后查看 `manifest.json` 中的 `readability_sampling.paragraph_word_counts` 和 `length_check`：不超过 $150$ 个空白分隔词记为短段落，超过则记为长段落。这只是覆盖检查分类，不是通过／不通过标准；代码不会自动重抽或保证数量相等。若覆盖或工作量不合适，在保存的新配置中调整样本量，保持统一种子并使用新 run ID。
+
+审核工作量以 `manifest.json` 中的 `readability_review_chunk_counts` 和 `readability_review_chunk_count_total` 为准，不以原文段落数代替。每种大小纳入触及抽中段落的全部分块，并按 passage ID 去重；总量为各候选大小待评数量之和，各候选分别审核。`readability_sampling` 还记录计划／实际论文数、抽中论文 ID 和各篇实际段落数。人工审核前，标签均保留 `pending`。
+
+旧配置键 `readability_sample_count`、`question_seed`、`readability_seed` 不再接受。自定义运行配置须迁移到 `n_paper`、`n_paragraph` 和 `seed`；已完成的历史运行仍可使用 `summarize`。
 
 ## 评估过程中需要保存什么
 

@@ -91,9 +91,9 @@
   "overlap_words": 40,
   "top_k": 5,
   "question_sample_count": 50,
-  "readability_sample_count": 10,
-  "question_seed": 42,
-  "readability_seed": 43,
+  "n_paper": 5,
+  "n_paragraph": 2,
+  "seed": 42,
   "retrieval": {
     "mode": "hybrid_rerank",
     "candidate_k": 20,

@@ -58,9 +58,9 @@ DEFAULTS = {
     "overlap_words": 40,
     "top_k": 5,
     "question_sample_count": 50,
-    "readability_sample_count": 10,
-    "question_seed": 42,
-    "readability_seed": 43,
+    "n_paper": 5,
+    "n_paragraph": 2,
+    "seed": 42,
 }
 Retriever = Callable[[str, str, int], list[tuple[str, float]]]
 RetrieverFactory = Callable[[list[dict[str, Any]]], Retriever]
@@ -101,7 +101,7 @@ def load_config(path: Path) -> dict[str, Any]:
         raise ValueError(
             "top_k must be 5 for Evidence Hit@5 and complete evidence rate@5"
         )
-    if not config["question_sample_count"] or not config["readability_sample_count"]:
+    if any(not config[key] for key in ("question_sample_count", "n_paper", "n_paragraph")):
         raise ValueError("sample counts must be positive")
     for size in candidates:
         ChunkingConfig(
@@ -174,12 +174,62 @@ def select_questions(
         counts["eligible"] += 1
     if not eligible:
         raise ValueError("no eligible development/validation questions")
-    sample = random.Random(config["question_seed"]).sample(
+    sample = random.Random(config["seed"]).sample(
         eligible,
         min(config["question_sample_count"], len(eligible)),
     )
     counts["total"] = len(questions)
     return sample, dict(counts), annotations
+
+
+def select_readability_samples(
+    paragraphs: dict[str, dict[str, dict[str, Any]]],
+    common_papers: set[str],
+    config: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Sample papers, then one paragraph per contiguous source-order interval.
+
+    Args:
+        paragraphs: Nonempty chunkable paragraphs indexed by paper and location.
+        common_papers: Development papers present in every candidate corpus.
+        config: Validated paper/paragraph counts and the shared random seed.
+
+    Returns:
+        Shared source samples and batch length diagnostics. Lengths are inspected
+        after sampling; no rejection sampling or per-paper length quota is used.
+    """
+    rng = random.Random(config["seed"])
+    eligible = sorted(paper_id for paper_id in common_papers if paragraphs[paper_id])
+    paper_ids = rng.sample(eligible, min(config["n_paper"], len(eligible)))
+    samples = []
+    for paper_id in paper_ids:
+        ordered = sorted(
+            paragraphs[paper_id].values(),
+            key=lambda item: (item["section_index"], item["paragraph_index"]),
+        )
+        count = min(config["n_paragraph"], len(ordered))
+        # Integer boundaries cover the entire paper with nonempty intervals whose
+        # sizes differ by at most one. Short papers contribute all paragraphs.
+        for index in range(count):
+            start = index * len(ordered) // count
+            stop = (index + 1) * len(ordered) // count
+            samples.append(rng.choice(ordered[start:stop]))
+    lengths = [len(sample["normalized"].split()) for sample in samples]
+    return samples, {
+        "method": "random_papers_then_contiguous_paragraph_intervals",
+        "paper_count_requested": config["n_paper"],
+        "paper_count_actual": len(paper_ids),
+        "paper_ids": paper_ids,
+        "paragraphs_per_paper_requested": config["n_paragraph"],
+        "paragraph_count_requested": config["n_paper"] * config["n_paragraph"],
+        "paragraph_count_by_paper": dict(Counter(sample["paper_id"] for sample in samples)),
+        "paragraph_word_counts": lengths,
+        "length_check": {
+            "threshold_words": 150,
+            "short_count": sum(length <= 150 for length in lengths),
+            "long_count": sum(length > 150 for length in lengths),
+        },
+    }
 
 
 def build_candidate(
@@ -314,14 +364,8 @@ def run_comparison(
         common_papers,
         config,
     )
-    locations = [
-        paragraph
-        for paper_id in sorted(common_papers)
-        for paragraph in paragraphs[paper_id].values()
-    ]
-    samples = random.Random(config["readability_seed"]).sample(
-        locations,
-        min(config["readability_sample_count"], len(locations)),
+    samples, sampling = select_readability_samples(
+        paragraphs, common_papers, config
     )
     commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
@@ -368,7 +412,9 @@ def run_comparison(
             for sample in samples
         ],
         "readability_sample_count_actual": len(samples),
+        "readability_sampling": sampling,
         "readability_passage_ids": {},
+        "readability_review_chunk_counts": {},
         "dependencies": sorted(
             f"{dist.metadata['Name']}=={dist.version}"
             for dist in importlib.metadata.distributions()
@@ -437,6 +483,7 @@ def run_comparison(
         review, review_ids = readability_report(samples, papers, corpus)
         (directory / "readability.md").write_text(review, encoding="utf-8")
         manifest["readability_passage_ids"][str(size)] = review_ids
+        manifest["readability_review_chunk_counts"][str(size)] = len(review_ids)
         count = len(results)
         hits = sum(result["evidence_hit_at_5"] for result in results)
         complete = sum(result["complete_evidence_at_5"] for result in results)
@@ -473,6 +520,9 @@ def run_comparison(
         }
         # Drop the closure before constructing the next candidate's model/index.
         del retrieve
+    manifest["readability_review_chunk_count_total"] = sum(
+        manifest["readability_review_chunk_counts"].values()
+    )
     write_json(run_dir / "summary.json", summary)
     write_json(run_dir / "manifest.json", manifest)
     return run_dir

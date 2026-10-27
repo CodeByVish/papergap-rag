@@ -22,7 +22,7 @@ Use `experiments/chunk_size/config.json` as this experiment's configuration auth
 | `data.overlap_words`: $40$ | `overlap_words`: $40$ | Same chunk overlap setting and current value; use the experiment configuration. |
 | `retrieval.top_k`: $5$ | `top_k`: $5$ | Same retrieval result limit and current value; use the experiment configuration. |
 | `data.chunk_words`: $200$ | `candidates`: $150$, $200$, $250$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
-| `seed`: $42$ | `question_seed`: $42$; `readability_seed`: $43$ | The general YAML seed and separate experiment sampling seeds have related purposes; use each experiment seed independently rather than replacing both with the YAML seed. |
+| `seed`: $42$ | `seed`: $42$ | Same purpose and value; use the experiment seed for every sampling stage, without reading YAML. |
 
 The YAML `retrieval` section proposes dense models, a reranker, candidate counts and RRF settings, whereas the experiment JSON currently specifies only `retrieval.mode` as `bm25`. These are not equivalent complete retrieval configurations. The experiment does not inherit YAML model or fusion settings. See `experiments/chunk_size/README.md` for experiment retrieval-code defaults and optional modes.
 
@@ -34,10 +34,22 @@ The following lists every current experiment JSON setting except `candidates`, a
 | `top_k` | $5$ | Maximum retrieved chunks per question; the current metrics require $5$, with fewer returned when fewer chunks are available. |
 | `question_sample_count` | $50$ | Requested question count after applying the eligibility rules below; use all eligible questions when fewer are available and record the actual count. |
 | `question_sampling_method` | `simple_random_without_replacement` | Simple random sampling without replacement from the filtered question pool; currently the only supported method. All candidate configurations share the selected questions. |
-| `readability_sample_count` | $10$ | Requested source paragraph count from papers common to all candidate corpora; use all available paragraphs when fewer are available. Share source locations across configurations; this count is not the final number of unique chunks to score. |
-| `question_seed` | $42$ | Random seed for question sampling. |
-| `readability_seed` | $43$ | Random seed for readability source-location sampling, independent of question sampling. |
+| `n_paper` | $5$ | Requested paper count for readability sampling; use all eligible papers if fewer are available. |
+| `n_paragraph` | $2$ | Requested paragraphs per sampled paper; use all eligible paragraphs if fewer are available. |
+| `seed` | $42$ | Shared seed for question, paper and interval sampling. Question and readability samplers each initialize their own random generator with this value. |
 | `retrieval.mode` | `bm25` | Use P1's `BM25Retriever` within the question's paper, with independent indexes for each chunk size and paper; no model weights are required. |
+
+## Readability sampling
+
+Randomly select up to `n_paper` papers without replacement from the verified `data/processed/papers.jsonl` export. Only original `train/validation` papers present in every candidate corpus and containing nonempty chunkable paragraphs are eligible; this pool is independent of the sampled questions. Sort eligible paper IDs before seeded sampling. Empty paragraphs and unnamed sections are excluded consistently with the chunker.
+
+Within each sampled paper, order eligible paragraphs by section and paragraph index. Divide this sequence into `n_paragraph` contiguous intervals, with boundaries $\lfloor iL/k\rfloor$ for $i=0,\ldots,k$, where $L$ is the eligible paragraph count and $k=\min(L,\texttt{n\_paragraph})$. Randomly select one paragraph per interval. If there are fewer paragraphs than requested, select all. Share these source locations across all chunk sizes. This spreads samples across a few papers without requiring every paper to be reviewed.
+
+The default budget is $5\times2=10$ source paragraphs. Aim for roughly balanced short and long paragraphs across the whole batch, without a per-paper quota. After sampling, inspect `readability_sampling.paragraph_word_counts` and `length_check` in `manifest.json`: short means at most $150$ whitespace-separated words, long means more than $150$. These are diagnostic categories, not pass/fail criteria; sampling does not automatically rebalance or guarantee equal counts. If coverage or workload is unsuitable, adjust the sample counts in a saved configuration and use a new run ID; retain the shared seed.
+
+Estimate review workload from `readability_review_chunk_counts` and `readability_review_chunk_count_total` in `manifest.json`, not from the paragraph budget. Each size includes every chunk touching a sampled paragraph, deduplicated by passage ID within that size. The total adds the counts across sizes, since each candidate needs a separate review. `readability_sampling` also records requested/actual paper counts, selected paper IDs and actual paragraphs per paper. All labels remain `pending` until manual review.
+
+The old `readability_sample_count`, `question_seed` and `readability_seed` configuration keys are rejected. Migrate custom run configurations to `n_paper`, `n_paragraph` and `seed`; completed historical runs remain readable by `summarize`.
 
 ## What to save during evaluation
 

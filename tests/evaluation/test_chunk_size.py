@@ -22,7 +22,12 @@ from src.evaluation.chunk_size_metrics import (
     source_paragraphs,
 )
 from src.evaluation.chunk_size_reports import read_readability, summarize_readability
-from src.evaluation.run_chunk_size import load_config, retrieve_question, run_comparison
+from src.evaluation.run_chunk_size import (
+    load_config,
+    retrieve_question,
+    run_comparison,
+    select_readability_samples,
+)
 
 
 def synthetic_paper(split: str = "train") -> dict:
@@ -142,6 +147,11 @@ def test_zero_overlap_and_repeated_paragraphs() -> None:
         {"top_k": 3},
         {"unknown": 1},
         {"question_sample_count": 0},
+        {"n_paper": 0},
+        {"n_paragraph": True},
+        {"n_paragraph": -1},
+        {"seed": "42"},
+        {"readability_seed": 43},
         {"question_sampling_method": "with_replacement"},
     ],
 )
@@ -157,6 +167,68 @@ def test_invalid_configuration(tmp_path: Path, patch: dict) -> None:
     )
     with pytest.raises((ValueError, TypeError)):
         load_config(path)
+
+
+def test_readability_intervals_and_paper_budget() -> None:
+    """Cover disjoint intervals without requiring every eligible paper.
+
+    Reversing input mappings must preserve seeded output, while a different seed
+    can change source locations. Length diagnostics describe the selected batch.
+    """
+    paragraphs = {}
+    for paper_index in range(8):
+        paper = synthetic_paper()
+        paper["id"] = f"paper-{paper_index}"
+        paper["full_text"] = [
+            {"section_name": "First", "paragraphs": ["short"] * 5},
+            {"section_name": "Second", "paragraphs": ["long " * 200] * 6},
+        ]
+        paragraphs[paper["id"]] = source_paragraphs(paper)
+    config = {"n_paper": 3, "n_paragraph": 2, "seed": 42}
+    samples, metadata = select_readability_samples(paragraphs, set(paragraphs), config)
+    assert len(samples) == len({item["location"] for item in samples}) == 6
+    assert metadata["paper_count_actual"] == 3
+    assert set(metadata["paragraph_count_by_paper"].values()) == {2}
+    for offset in range(0, len(samples), 2):
+        assert samples[offset]["section_index"] == 0
+        assert samples[offset + 1]["section_index"] == 1
+    assert metadata["length_check"] == {
+        "threshold_words": 150, "short_count": 3, "long_count": 3
+    }
+    reversed_paragraphs = {
+        key: dict(reversed(list(value.items())))
+        for key, value in reversed(list(paragraphs.items()))
+    }
+    assert select_readability_samples(reversed_paragraphs, set(paragraphs), config) == (
+        samples, metadata
+    )
+    changed, _ = select_readability_samples(
+        paragraphs, set(paragraphs), {**config, "seed": 7}
+    )
+    assert [item["location"] for item in changed] != [item["location"] for item in samples]
+
+
+def test_readability_small_pool_and_exclusions() -> None:
+    """Use every eligible paragraph when budgets exceed available data.
+
+    Empty and unnamed sections are excluded by the shared source index; papers
+    absent from the common corpus cannot enter the readability sample.
+    """
+    paper = synthetic_paper()
+    paper["full_text"].append({"section_name": " ", "paragraphs": ["excluded"]})
+    paragraphs = {
+        "paper-train": source_paragraphs(paper),
+        "empty": {},
+        "not-common": source_paragraphs(synthetic_paper("test")),
+    }
+    samples, metadata = select_readability_samples(
+        paragraphs, {"paper-train", "empty"},
+        {"n_paper": 5, "n_paragraph": 8, "seed": 42},
+    )
+    assert [item["paragraph_index"] for item in samples] == [0, 2]
+    assert metadata["paper_count_actual"] == 1
+    assert metadata["paragraph_count_requested"] == 40
+    assert metadata["paragraph_count_by_paper"] == {"paper-train": 2}
 
 
 @pytest.fixture
@@ -217,7 +289,8 @@ def exported_inputs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
                 "candidates": [4, 6],
                 "overlap_words": 1,
                 "question_sample_count": 10,
-                "readability_sample_count": 3,
+                "n_paper": 2,
+                "n_paragraph": 2,
             }
         ),
         encoding="utf-8",
@@ -250,6 +323,10 @@ def test_runner_and_manual_summary(exported_inputs: tuple, tmp_path: Path) -> No
     }
     assert manifest["question_sample_count_actual"] == 2
     assert manifest["config"]["overlap_words"] == 1
+    assert manifest["readability_sample_count_actual"] == 4
+    assert set(manifest["readability_sampling"]["paper_ids"]) == {
+        "paper-train", "paper-validation"
+    }
     pending = summarize_readability(run)
     assert all(
         value["readability_pass_rate"]["value"] is None
@@ -265,6 +342,11 @@ def test_runner_and_manual_summary(exported_inputs: tuple, tmp_path: Path) -> No
         text = review.read_text(encoding="utf-8")
         review.write_text(text.replace("| pending |", "| pass |"), encoding="utf-8")
     summary = summarize_readability(run)
+    counts = manifest["readability_review_chunk_counts"]
+    assert manifest["readability_review_chunk_count_total"] == sum(counts.values())
+    for size, count in counts.items():
+        assert count == len(manifest["readability_passage_ids"][size])
+        assert count == summary["sizes"][size]["readability_pass_rate"]["denominator"]
     assert all(
         value["readability_pass_rate"]["value"] == 1
         for value in summary["sizes"].values()
