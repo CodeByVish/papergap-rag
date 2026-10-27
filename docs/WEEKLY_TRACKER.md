@@ -111,3 +111,15 @@ pair misses/four hits; second process zero misses/12 hits. The branch is rebased
 remain in the export, not the retrieval log. All 436 tests pass; lint and changed-file formatting pass.
 See [interface and cache commands](P2_AGENT_CACHE.md). P1/P4 interface review is
 pending; this does not freeze proposed shared schemas or evaluation policy.
+## P2 batch handoff — 17 October 2026
+
+Added a fixed-question JSONL batch entry point with shared model/index loading,
+RRF-only and BGE modes, original query order/IDs, explicit offline operation,
+run manifests and failure reporting. Completed both real-model exports on P1's
+unchanged 100 training questions: each contains 485 passages and three genuine
+empty results. The local corpus hash matches P1; RRF top-five IDs/order match
+all 100 records. Independent schema/provenance validation passed. All 423 tests
+passed. See [batch commands, snapshot comparison and results](P2_BATCH_HANDOFF.md).
+These are integration artifacts; held-out quality evaluation and team interface
+agreement remain pending. PR #5 was reviewed and merged on 17 October (431 tests passed against current
+main). Batch changes are on `p2/batch-hybrid-handoff`, pending review.
