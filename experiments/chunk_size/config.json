@@ -3,6 +3,7 @@
   "overlap_words": 40,
   "top_k": 5,
   "question_sample_count": 50,
+  "question_sampling_method": "simple_random_without_replacement",
   "readability_sample_count": 10,
   "question_seed": 42,
   "readability_seed": 43,

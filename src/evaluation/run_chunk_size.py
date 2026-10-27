@@ -71,15 +71,22 @@ def load_config(path: Path) -> dict[str, Any]:
 
     The original candidates-only configuration remains supported using explicit
     defaults. All sizes are words; top_k is fixed to five by the metric contract.
+    Question sampling supports only simple random sampling without replacement.
     """
     supplied = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(supplied, dict) or set(supplied) - {
         "candidates",
         "retrieval",
+        "question_sampling_method",
         *DEFAULTS,
     }:
         raise ValueError("configuration must be an object with known keys")
     config = {**DEFAULTS, **supplied}
+    config.setdefault("question_sampling_method", "simple_random_without_replacement")
+    if config["question_sampling_method"] != "simple_random_without_replacement":
+        raise ValueError(
+            "question_sampling_method must be simple_random_without_replacement"
+        )
     candidates = config.get("candidates")
     if not isinstance(candidates, list) or not candidates:
         raise ValueError("candidates must be a nonempty list")

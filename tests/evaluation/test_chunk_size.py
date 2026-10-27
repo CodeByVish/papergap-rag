@@ -142,6 +142,7 @@ def test_zero_overlap_and_repeated_paragraphs() -> None:
         {"top_k": 3},
         {"unknown": 1},
         {"question_sample_count": 0},
+        {"question_sampling_method": "with_replacement"},
     ],
 )
 def test_invalid_configuration(tmp_path: Path, patch: dict) -> None:
