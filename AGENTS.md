@@ -8,4 +8,4 @@
 - Keep credentials, raw datasets, generated corpora, model weights and indexes out of Git.
 - Reproduce QASPER data locally using data/README.md.
 - Keep personal weekly-work notes local; shared milestones belong in docs/WEEKLY_TRACKER.md.
-- Keep the published bilingual Week 1 and Week 2 reports under `weekly-work/week-1/` and `weekly-work/week-2/` tracked as shared P3 deliverables; they are separate from personal work notes.
+- Keep the published bilingual Week 1 and Week 2 reports under `weekly-work/week-1/` and `weekly-work/week-2/`, and the user-approved Week 3 documents under `weekly-work/week-3/`, tracked as shared P3 deliverables; they are separate from personal work notes.
