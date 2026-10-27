@@ -87,3 +87,18 @@ question list, manifests, validation report, source snapshots and these
 instructions, with no model weights or indexes. The executed batch snapshot and
 the current linted version differ only in import ordering; the executed snapshot
 matches the source hash recorded in the reranked run manifest.
+
+## Artifact verification — 27 October 2026
+
+The local ZIP `results/p2-batch-reranking-handoff-20261017.zip` exists (about
+531 KiB); every entry listed in its checksum manifest passed SHA-256 verification.
+ZIP SHA-256: `194bf9fa15a68ea7de64af945b495dba9e6988781974178793bd9c950fa7dae3`.
+It contains 100 question records and separate `rrf/` and `bge/` outputs, with
+485 returned passages and three empty questions per method. These are P1's
+training integration questions, not the frozen held-out evaluation set.
+
+P5 should consume `bge/retrieval.jsonl` for the reranked integration and preserve
+the fusion-only Week-3 baseline separately. Do not overwrite `runs/week3/`.
+A local path is not a team-accessible URL: forwarding/uploading the ZIP is still
+required. No shared-cloud upload is claimed. The bundle preserves the historical
+executed source and manifests; do not relabel it as a run of newer code.

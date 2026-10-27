@@ -151,7 +151,8 @@ def test_node_uses_llm_verdict_when_valid():
     assert update["missing_components"] == ["reported accuracy"]
     assert update["critic_reason"] == "No numbers."
     assert update["critic_log"][0] == {"round": 1, "source": "llm", "sufficient": False,
-                                       "gap_label": "MISSING_RESULT", "errors": []}
+                                       "gap_label": "MISSING_RESULT", "errors": [],
+                                       "raw_replies": [reply()]}
 
 
 def test_node_llm_can_override_rule_based_mapper():

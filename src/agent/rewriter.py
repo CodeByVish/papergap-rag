@@ -26,7 +26,7 @@ from src.agent.schemas import AgentState, GapLabel
 MAX_PAPER_TERMS = 4
 MAX_MISSING_PHRASES = 2
 MAX_QUERY_WORDS = 60
-_MIN_TERM_LENGTH = 4
+_MIN_TERM_LENGTH = 5
 
 _GAP_VOCABULARY: dict[GapLabel, str] = {
     GapLabel.MISSING_METHOD: "method approach architecture we propose",
