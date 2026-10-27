@@ -1,6 +1,7 @@
 # Project collaboration
 
-- Write shared source code, documentation and reports in English.
+- Write shared source code in English.
+- Shared documentation and reports may be English-only or have both English and Chinese versions. Keep bilingual versions consistent and include both in shared commits.
 - Follow CONTRIBUTING.md for task branches, review and pull requests into main.
 - Preserve shared interfaces; involve affected module owners when changing them.
 - Keep passage schemas and split mappings marked `v0-proposed` until the team confirms them.
