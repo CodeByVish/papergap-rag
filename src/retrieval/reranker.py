@@ -30,6 +30,29 @@ class BGEReranker:
         self.cache_folder, self.local_files_only = cache_folder, local_files_only
         self._tokenizer = self._model = None
 
+    def cached(self, path):
+        """Return a persistent scorer using the exact pinned inference settings."""
+        from importlib.metadata import version
+
+        from .score_cache import CachedPairScorer
+
+        return CachedPairScorer(
+            self,
+            path,
+            identity={
+                "model_name": self.model_name,
+                "revision": self.revision,
+                "device": self.device,
+                "batch_size": self.batch_size,
+                "max_length": self.max_length,
+                "truncation": True,
+                "padding": True,
+                "raw_logits": True,
+                "torch": version("torch"),
+                "transformers": version("transformers"),
+            },
+        )
+
     def score(self, query: str, texts: Sequence[str]) -> list[float]:
         if not texts:
             return []
