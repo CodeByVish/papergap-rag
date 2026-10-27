@@ -109,7 +109,7 @@ python -m scripts.prepare_p2_annotations \
 ```
 
 The assignment approval must identify `approved_by`, matching `pool_sha256`,
-`p2_first: [168,334]`, and `p2_second: [668,834]`, or P6's revised disjoint ranges.
+`p2_first: [168,334]`, and `p2_second: [668,834]`, or P6's revised ranges that are disjoint within P2's own assignment.
 Those proposed ranges amount to 334 independent judgments. Export requires a
 complete held-out pool of 1,000 unique pairs. CSV label and note columns remain
 blank; other annotators' labels and system scores are absent. Agreement and
@@ -129,3 +129,30 @@ created 30 unique pairs for three questions with no shortfalls, under
 not a final held-out pool or a labelled experiment. The real run preceded
 latency-summary/error-category reporting additions; saved timing rows remain
 available for descriptive summaries. Generated artifacts remain ignored.
+
+## Annotation pairing clarification — 27 October
+
+The execution-plan allocation is shared double annotation, not six globally
+disjoint assignments. P2 labels 168–334 first and 668–834 second; P5 labels
+668–834 first and 168–334 second. Both independently label the same 334 pairs.
+"First" and "second" identify allocation batches, not access to earlier labels.
+Each person must submit without seeing the other's decisions. The exporter’s
+disjointness check only prevents P2 labeling one record twice. Its single approval
+manifest identifies P2’s allocation on the common hashed pool, not the whole
+team’s completed annotation or agreement. P6 must preserve both annotator IDs,
+verify exactly two different annotators per record and compute pre-adjudication
+agreement. Do not give all members globally disjoint records.
+
+P5 refers to `docs/WEEK5_QUALITY.md` section 4, but that file is absent from both
+current main and fetched P5 PR #15 (head `11b3639`); that PR explicitly excludes
+handoff documents. Exact compatibility cannot yet be certified. P2’s scorer
+accepts binary labels, distinguishes judged negatives from unjudged passages,
+and does not treat incomplete pool coverage as exhaustive relevance.
+
+Proposed rule for P3/P5/P6 review: label 1 when a passage directly supplies evidence
+for at least one requested answer component, even if other components require
+other passages; label 0 for merely topical mentions without answer evidence.
+Partial evidence can therefore be retrieval-relevant without being sufficient
+for generation. Keep uncertain cases in notes for independent adjudication; do
+not turn unknown judgments into 0. This is a proposal pending comparison with
+P5’s actual guideline, not a claim of team approval or a generated gold label.
