@@ -1,15 +1,21 @@
 > 只记录当前最新完成的工作和下一步。
 
-最新完成：2026/10/28 按 `EXPERIMENT_GAPS.md` 第 $5$ 条实现问题级严格证据筛选。所有答案标注都必须具有非空、全部可唯一定位到原文段落的文字证据；问题没有标注或任一标注不满足条件，就在抽样前排除整个问题，其已定位段落也不参与命中统计。`select_questions` 执行筛选，`evaluate_question` 拒绝对不合格问题计分。完整证据率仍要求完整覆盖至少一份标注。README、中英文 criteria、回归测试和待完善清单已同步。
+最新完成：2026/10/28 执行 `TODO.md` 的 $2.4.2.1$（Round 1），将 `experiments/chunk_size/config.json` 改为 $100/200/400$ words/chunk，使用项目环境 `D:/Apps/Programming/Anaconda/virtue_envs/papergap-rag/python.exe` 重新运行全部三组，未复用旧结果。命令为 `python -m scripts.evaluate_chunk_size run --run-id round1_bm25_20261028_01`。固定重叠 $40$ words、BM25、`top_k=5`、$50$ 个问题、$5$ 篇论文各 $2$ 个段落、`seed=42`；候选依据及本轮范围已同步中英文 criteria 和实验 README。
 
-`manifest.json` 的排除计数改用 `filtering_counts.invalid_answer_evidence`，替代旧的 `no_usable_text_evidence`。历史产物可以继续汇总，但汇总不会重新筛选问题；必须使用新 run ID 重跑才能得到新规则下的结果。
+结果保存于 `results/chunk_size/round1_bm25_20261028_01/`：`manifest.json`、`summary.json`，以及每个 `chunk_size_<size>/` 下的 `evidence_review.md`、`readability.md`。完成标记 `manifest.json` 记录配置、代码提交、运行时工作区状态、输入哈希、依赖、硬件、抽样及检索设置。运行时有配置和文档修改，未修改运行代码；生成结果与 `tmp/` 均保持 Git 忽略。
 
-当前抽样实现：默认 `n_paper=5`、`n_paragraph=2`，从各候选语料共同包含的原始 `train/validation` 论文中随机抽取论文，再按原文段落顺序划分连续区间，每区间抽一个段落；不足时全部抽取。问题、论文及段落抽样统一使用 `seed=42`。旧配置键 `readability_sample_count`、`question_seed`、`readability_seed` 已移除，自定义运行配置需迁移；历史完成产物仍可汇总。
+| Words/chunk | Evidence Hit@5 | 完整证据率@5 | 平均检索词数 | 语料 chunk 数 | 待审核 chunk 数 |
+| --- | --- | --- | --- | --- | --- |
+| $100$ | $15/50=30\%$ | $12/50=24\%$ | $469.16$ | $69344$ | $24$ |
+| $200$ | $25/50=50\%$ | $20/50=40\%$ | $832.88$ | $32073$ | $13$ |
+| $400$ | $30/50=60\%$ | $26/50=52\%$ | $1332.72$ | $20490$ | $11$ |
 
-`manifest.json` 记录整批段落词数及长短覆盖检查、计划／实际论文数、每篇实际段落数、各候选大小实际待评唯一 chunk 数及总量。长短检查使用 $150$ words 分界，仅供抽样后检查，不自动重抽，不设置逐篇配额。默认 $10$ 个原文段落不等于人工审核 chunk 数。正式检索已确认 `bm25`、`top_k=5`，BM25 参数沿用库默认值；说明见 `experiments/chunk_size/BM25.md` 及英文版。第 $1$、$2$、$5$ 条已完成，第 $3$、$4$ 条仍待完善。
+问题筛选：总计 $5049$ 个问题，排除原始 `test` 的 $1451$ 个、论文不在所有候选语料中的 $3$ 个、任一答案标注证据不合格的 $1129$ 个；合格池 $2466$ 个，实际抽取 $50$ 个，三组问题及顺序一致。每份答案标注均须具有非空、全部可唯一定位的文字证据；完整证据指标要求完整覆盖至少一份标注。原始导出核验与留出策略见 `data/README.md`，本轮不使用原始 `test` 调参。
 
-验证：本次修改通过字符扫描、Python 语法、Ruff 和 `git diff --check` 检查；`python -m pytest -q tests/evaluation --basetemp tmp/tmp_pytest_all_annotations_01` 的 $72$ 项测试通过，包含四种检索模式的合成数据集成测试。本次使用项目环境 `D:/Apps/Programming/Anaconda/virtue_envs/papergap-rag/python.exe`，未重跑项目完整测试，未执行正式实验、人工评分、提交或推送。
+粗筛仅使用定量检索结果；可读性样本已导出，实际覆盖 $5$ 篇论文、$10$ 个原文段落，共 $48$ 个唯一分块待审核。以 $150$ words 为界，短段落 $8$ 个、长段落 $2$ 个；覆盖偏短，未自动重抽。全部可读性标签保持 `pending`，通过率为 `null`。$400$ words 的证据覆盖最高，平均检索词数也最高；本轮固定 top-$5$ 而非固定文字预算，尚未确定最优值，也未执行 Round 2 或最终可读性评估。
 
-已有真实 BM25 试跑 `results/chunk_size/smoke_p1_bm25_01/` 保留，使用旧抽样配置和种子，只证明此前流水线可运行，不能作为本次抽样方案的正式结果。原始导出复现与核验见 `data/README.md`；代码整合来源与固定 SHA、可选模型准备见 `INTEGRATION_PLAN.md`；现行实验配置、采样和输出定义见 `experiments/chunk_size/criteria.md` 及中文版。生成数据、结果和 `tmp/` 均保持 Git 忽略。共享接口、split policy 和输出仍为 `v0-proposed`；真实 dense／hybrid／hybrid_rerank 权重、设备和 tokenizer 截断尚未验证。
+旧实验作废：按用户本次指示，此前无充分依据的 $150/200/250$ 比较全部退出选值，包括旧 $200$ words 结果。`results/chunk_size/formal_bm25_20261028_01/` 和 `results/chunk_size/smoke_p1_bm25_01/` 均已添加 `INVALIDATED.md`；保留原始产物只供追溯，不合并、不复用其指标。旧 manifest 与 summary 保持原样。
 
-下一步：继续完善 `EXPERIMENT_GAPS.md` 第 $3$、$4$ 条的可读性判定和评审规则；确认后，按 `TODO.md` 的 $2.4$ 使用新 run ID 正式运行，先检查证据筛选计数、整批长短覆盖及实际 chunk 审核工作量，再完成人工评分与汇总。保留 `TODO.md` 的正式实验和方案完善任务未完成状态。
+验证：正式运行和 `python -m scripts.evaluate_chunk_size summarize --run-dir results/chunk_size/round1_bm25_20261028_01` 均正常退出。`tmp/tmp_verify_round1.ps1` 独立核验全部输入 SHA-256、三组配置及控制量、三组问题与顺序、每组 $50$ 个问题报告、所需文件非空、逐问题指标与汇总分子分母一致、待审核数与 `null` 通过率，全部通过。PowerShell 默认脚本策略阻止直接执行核验脚本，改用进程级 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tmp/tmp_verify_round1.ps1` 完成，未修改系统策略。本次未改代码、未重复运行测试套件，未提交或推送。
+
+下一步：执行 `TODO.md` 的 $2.4.2.2$，根据本轮证据覆盖和检索词数确定 Round 2，每个候选值说明理由；若扩展或细化 $400$ words 端点，不能据本轮宣称其为全局最优。完整结果评估及简洁 `report.md` 仍属于待完成的 $2.4.3$。最终定版前再完成可读性审核；评审人员、大小可见性及分歧约定见中英文 criteria。共享接口、split policy 和输出仍为 `v0-proposed`；本轮只运行 BM25，真实 dense / hybrid / reranker 模型及截断检查尚未执行。整合来源及固定 SHA、可选模型准备见 `INTEGRATION_PLAN.md` 和 `experiments/chunk_size/README.md`。

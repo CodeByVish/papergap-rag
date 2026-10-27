@@ -10,6 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from src.evaluation.chunk_size_artifacts import generate_reports
 from src.evaluation.chunk_size_reports import summarize_readability
 from src.evaluation.run_chunk_size import run_comparison
 
@@ -47,15 +48,30 @@ def main() -> int:
     run.add_argument("--run-id", required=True)
     summarize = commands.add_parser("summarize")
     summarize.add_argument("--run-dir", type=Path, required=True)
+    regenerate = commands.add_parser(
+        "regenerate", help="recompute structured evidence reports without retrieval"
+    )
+    regenerate.add_argument("--run-dir", type=Path, required=True)
+    regenerate.add_argument("--word-budgets", nargs="+", type=int)
     arguments = vars(parser.parse_args())
     command = arguments.pop("command")
     try:
         if command == "run":
             print(run_comparison(**arguments))
-        else:
+        elif command == "summarize":
             summarize_readability(arguments["run_dir"])
             print(arguments["run_dir"] / "summary.json")
-    except (ValueError, TypeError, KeyError, OSError, ImportError, RuntimeError) as error:
+        else:
+            generate_reports(arguments["run_dir"], arguments["word_budgets"])
+            print(arguments["run_dir"] / "summary.json")
+    except (
+        ValueError,
+        TypeError,
+        KeyError,
+        OSError,
+        ImportError,
+        RuntimeError,
+    ) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 0

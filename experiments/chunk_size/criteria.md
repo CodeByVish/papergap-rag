@@ -1,6 +1,56 @@
 # Chunk Size Evaluation Criteria
 
-Compare $150$, $200$, and $250$ words per chunk using the same sampled questions from `data/processed/qa.jsonl`, retriever, overlap in words, and top-$5$ retrieval setting. Apply the question-selection rules below before sampling.
+Round 1 uses `config.json` to compare $100$, $200$, and $400$ words per chunk, following `weekly-work/week-3/TODO.md` item $2.4.2.1$. Use the same sampled questions from `data/processed/qa.jsonl`, retriever and overlap in words; retain the completed top-$5$ comparison and add the fixed-word-budget comparison below. Apply the question-selection rules below before sampling. Previous $150/200/250$ experiments are void by the experiment owner's decision and must not contribute to selection or be pooled with this round.
+
+## Candidate-size rationale and proposal
+
+### What the execution plan establishes
+
+[`docs/EXECUTION_PLAN.md`](../../docs/EXECUTION_PLAN.md), Week 2 / P3, suggests approximately $200$ words with $40$ words of overlap and section boundaries. Week 3 / P3 lists $150/200/250$ words as examples, using “such as”, and requires selection using development retrieval results and readability. It supplies no citations, QASPER length analysis or model-budget justification for those values and does not establish their optimality.
+
+Interpreting this as a local sensitivity check within $25\%$ of $200$ words is our inference. It can test the current default's neighborhood while missing useful shorter or longer windows.
+
+### Research and project evidence
+
+These primary sources motivate a search range; their settings do not establish an optimum for this project. Words, model tokens, domains and retrieval methods must remain distinct.
+
+| Source | Original setting or finding | Project implication | Limitation |
+| --- | --- | --- | --- |
+| DPR, EMNLP 2020, Section 4.1 [S1] | Disjoint Wikipedia passages of $100$ words. | Add a $100$-word short-window control. | QASPER differs; retaining our $40$-word overlap does not reproduce DPR. |
+| Wang et al., EMNLP 2024, Section 3.2, Appendix A.2, Table 3 [S2] | Tests $128/256/512/1024/2048$ chunk scales; intermediate scales perform well in its Lyft-report experiment, using long-input embeddings, generation evaluation and $20$-token overlap. | Borrow broad, multiplicative screening. | Its token settings cannot be copied as word counts or assumed optimal here. |
+| QASPER, NAACL 2021 [S3] | Scientific full-paper questions can require information from different locations; supporting evidence is annotated. | Keep complete-evidence evaluation and test a longer window for context. | No fixed word-count recommendation; longer chunks cannot replace cross-section retrieval. |
+| Official BAAI `bge-small-en-v1.5` card [S4] and local `src/retrieval/reranker.py` | Embedding sequence length is $512$ tokens; the local reranker defaults to truncating question–passage pairs to $512$ tokens. | Check actual tokenizer lengths before final dense / hybrid / reranker selection. | A word count below $512$ does not guarantee no truncation. |
+
+### Proposed values and reasons
+
+**Round 1 runs $100/200/400$ words with $40$-word overlap using BM25.** This is a `v0-proposed` project design, not a literature-standard combination or a frozen corpus. Screen using the two evidence metrics and retrieved word count; export readability samples but leave their labels pending in this round.
+
+| Candidate | Reason | Main question |
+| --- | --- | --- |
+| $100$ words | Same-unit precedent from DPR [S1]; half the current default. | Does concentrated matching reduce reading cost, or do fragmented evidence and readability suffer? |
+| $200$ words | Existing project default, rerun as the control in Round 1; not a published optimum. | Does the current cost–completeness compromise remain competitive? |
+| $400$ words | Double the default, completing a multiplicative range inspired by broad screening [S2] and QASPER context requirements [S3]. This exact value is our design choice. | Does added context improve complete evidence enough to offset extra text, noise and truncation? |
+
+Set Round 2 candidates after inspecting Round 1's quantitative results, with an explicit reason for each value. Do not reuse the void experiments, including their $200$-word result. If an endpoint wins, extend or refine within feasible limits before claiming an optimum. Round 1 execution does not select or run Round 2.
+
+Words remain Unicode non-whitespace spans counted by `\S+` in `src/data/chunking.py`; do not convert published token sizes using a fixed ratio. Token-based splitting, sentence-boundary adjustment and different paragraph-merging rules belong in separate experiments.
+
+### Interpretation and selection limits
+
+- **Absolute overlap is fixed**: $40$ words means $40\%/20\%/10\%$ overlap for $100/200/400$. This tests window size at fixed overlap words, without isolating overlap ratio. A fixed-ratio comparison would be separate.
+- **Fixed top-$5$ is not a fixed text budget**: approximate maxima are $500/1000/2000$ words, subject to short tails and fewer available chunks. Longer windows also favor full-paragraph coverage mechanically. Compare all four existing metrics and failure cases. An equal-input-budget claim needs the separate fixed-budget control implemented for new BM25 runs below.
+- **BM25 selection is conditional on BM25**: $400$ words is a long-window stress point, not guaranteed BGE compatibility. Before formal model-based comparisons, record untruncated token-length distributions and overflow rates for passages and question–passage pairs using the actual checkpoints and tokenizers. With truncation, full-text evidence coverage does not prove model-visible coverage. These checks have not been run and are not existing automatic report fields.
+- **Tune on development / validation only**: retain paper-level splits, evidence eligibility and the same question sample. Do not use held-out final labels to choose values or expand the range. The current $50$ questions support screening; inspect small differences per question and do not claim statistical significance without a defined criterion.
+- **Final adoption**: verify corpus quantity and quality requirements, then select using the metrics and failure cases. Freezing a project-wide setting requires P3 and affected owners such as P1/P2 to confirm and synchronize configuration, corpus versions and bilingual documents. Round 1 screening does not freeze a project-wide setting.
+
+### References: candidate-size rationale
+
+1. [S1] Vladimir Karpukhin, Barlas Oguz, Sewon Min, Patrick Lewis, Ledell Wu, Sergey Edunov, Danqi Chen, and Wen-tau Yih. 2020. [Dense Passage Retrieval for Open-Domain Question Answering](https://aclanthology.org/2020.emnlp-main.550/). *EMNLP 2020*, pp. 6769–6781. DOI: [10.18653/v1/2020.emnlp-main.550](https://doi.org/10.18653/v1/2020.emnlp-main.550). Section 4.1 supplies the passage-size precedent.
+2. [S2] Xiaohua Wang et al. 2024. [Searching for Best Practices in Retrieval-Augmented Generation](https://aclanthology.org/2024.emnlp-main.981/). *EMNLP 2024*, pp. 17716–17736. DOI: [10.18653/v1/2024.emnlp-main.981](https://doi.org/10.18653/v1/2024.emnlp-main.981). Published Section 3.2, Appendix A.2 and Table 3 supply the screening precedent.
+3. [S3] Pradeep Dasigi, Kyle Lo, Iz Beltagy, Arman Cohan, Noah A. Smith, and Matt Gardner. 2021. [A Dataset of Information-Seeking Questions and Answers Anchored in Research Papers](https://aclanthology.org/2021.naacl-main.365/). *NAACL-HLT 2021*, pp. 4599–4610. DOI: [10.18653/v1/2021.naacl-main.365](https://doi.org/10.18653/v1/2021.naacl-main.365). Task and evidence motivation, not a fixed-length recommendation.
+4. [S4] BAAI. [bge-small-en-v1.5: Official Model Card](https://huggingface.co/BAAI/bge-small-en-v1.5). `Evaluation`, `Sequence Length` column; accessed 2026/10/28. Input constraints, not evidence of an optimal chunk size.
+
+## Evaluation metrics
 
 | Metric | What it measures | How it helps choose a chunk size |
 | --- | --- | --- |
@@ -8,8 +58,91 @@ Compare $150$, $200$, and $250$ words per chunk using the same sampled questions
 | Evidence Hit@$5$ | Among questions with usable text evidence, the percentage whose first $5$ retrieved chunks together contain at least one complete annotated evidence paragraph. A paragraph split across retrieved chunks still counts. | Higher is better: more questions retrieve useful evidence. A hit does not mean that all evidence needed to answer the question was found. |
 | Complete evidence rate@$5$ | Among the same questions, the percentage whose first $5$ chunks together contain every text evidence paragraph from at least one answer annotation. | Higher is better, especially for questions needing several pieces of evidence. This checks whether useful evidence is complete. |
 | Retrieved word count | Average total words in the first $5$ retrieved chunks per question, counting overlapping text again if it is passed to the answer model again. | Lower means less text for the model to read. Prefer fewer words when evidence retrieval and readability are similar; fewer words alone do not mean better quality. |
+| Evidence coverage at the same word budget | Read at most $B$ words per question and compute evidence hit rate and complete evidence rate using the definitions above, without a chunk-count limit. | Higher coverage at the same budget is better; compare several budgets to assess cost versus coverage without rewarding larger chunks merely for supplying more text. |
 
 For both evidence metrics, match evidence to its source paper and paragraph; a few matching words are insufficient. Before sampling, exclude an entire question if it has no answer annotations or any annotation lacks nonempty, fully and uniquely located text evidence. Record these exclusions in `manifest.json` under `filtering_counts.invalid_answer_evidence`.
+
+## Evidence coverage at a fixed word budget: execution plan
+
+This `v0-proposed` workflow is implemented for new BM25 runs with `word_budgets` in `config.json`; historical summaries are not retroactively extended. A fixed budget means the same word allowance, not a preselected source interval; configurations may retrieve different text. It measures evidence supplied for reading, not generated-answer quality. Implementation is not a claim that a new Round 1 comparison has been executed.
+
+### Budgets and metric definitions
+
+Predefine $B\in\{500,1000,2000\}$ words and apply all three budgets to every chunk size; do not select only a favorable budget after inspecting results. These correspond to the nominal top-$5$ maxima of $100/200/400$-word chunks and are project controls, not literature recommendations. Reuse the valid Round 1's same $50$ questions, order, evidence eligibility, paper scope, BM25 parameters, overlap and seed. Do not resample or use void experiments.
+
+- **Budgeted evidence hit rate**: questions whose retained text jointly covers at least one complete annotated evidence paragraph, divided by all questions in the shared sample.
+- **Budgeted complete evidence rate**: questions whose retained text jointly covers every evidence paragraph of at least one answer annotation, divided by all questions in that sample. These retain the two existing coverage decisions rather than introducing an undefined percentage of evidence covered.
+- **Actual reading words**: words actually retained per question. Repeated overlap consumes budget again; merge source spans for evidence coverage without double counting evidence. Count chunk body text only, excluding headings, IDs, prompts and separators; do not convert words to model tokens.
+
+### Per-question execution
+
+1. Run BM25 independently within the question's paper for each configuration, sorting by score descending and passage ID ascending for ties. Do not use answers or evidence labels in ranking; preserve text order inside each chunk.
+2. Append chunks in rank order until reaching $B$ words. The original top-$5$ limit does not apply: obtain enough ranked chunks for the largest budget, or every available chunk in the paper. Stopping at five must not be mistaken for corpus exhaustion. All three budgets use prefixes of the same ranking.
+3. If the final chunk exceeds the remaining allowance, retain only its first $r$ words, where $r$ is the allowance. Do not skip it to fit a later shorter chunk or select text using evidence locations. Count Unicode non-whitespace spans with `\S+`; cut immediately after the last retained word, preserving preceding original text. Append nothing when the allowance is $0$.
+4. Recompute source character coverage from the retained text. Evidence beyond the cut does not count; multiple retained spans may jointly cover a complete paragraph, using the existing whitespace-gap rule. Do not reuse full-chunk `full/partial` labels or top-$5$ Boolean results as budgeted decisions.
+5. If all available chunks supply fewer than $B$ words, use their actual text and record actual words, `corpus_exhausted` and unused allowance. Do not pad or exclude that question. The allowance is shared, but actual reading lengths can differ in this case; report exhausted-question counts per size and budget rather than claiming every question reads exactly the budget.
+6. Aggregate both coverage rates by size and budget, together with mean actual words and exhausted-question counts. Larger-budget retained text must contain the smaller-budget prefix; per-question coverage must not decrease as budget increases within a configuration. Review readability on full chunks, without scoring the artificial final budget cut.
+
+### Reusing existing `evidence_review.md`
+
+Reuse the report's ranking, full chunk text, answer groups, source evidence and locations as review material. However, existing files contain only five chunks, and their coverage tables give evidence-paragraph offsets without a complete mapping from chunk character offsets to source positions. They are not sufficient standalone inputs for every budget. No additional retrieval is needed only when a question's saved ranking prefix fills the budget or is confirmed to contain every chunk in that paper. Reaching the end of a report does not prove corpus exhaustion. For example, five $100$-word chunks supply at most $500$ words, insufficient for full $1000/2000$-word results; short chunks may even prevent filling $500$ words.
+
+For reliable execution, read the valid run's `manifest.json` and verify configuration, code, input hashes and question IDs. Reconstruct chunks with source positions using the same inputs and chunking implementation, and extend the BM25 ranking as needed. Recompute coverage after truncation through the source mapping, rather than inferring it from string similarity or the old table. Use the original top-$5$ reports to check reconstruction; do not use void results as inputs.
+
+The expanded results can still use `evidence_review.md`: retain the original top-$5$ content, append necessary later chunks in rank order under the existing `### Retrieved chunks`, and add budget tables under the existing `### Evaluation results`. For each budget save the allowance, actual words, included passage IDs/ranks, retained words and chunk-local character interval of the last chunk, budgeted source evidence spans, both Boolean outcomes, fully covered annotations and missing evidence, and exhaustion status. Keep full chunk text and separately identify retained intervals so cuts can be reviewed.
+
+Implementation must save per-question budget results and per-size/budget numerators, denominators, rates, mean actual words and exhausted-question counts in `summary.json`. Record budgets, word-count convention, truncation policy, ranking depth, source run ID and input hashes in `manifest.json`. Save the extension under a new `run_id` without overwriting Round 1. Label top-$5$ and budgeted results separately; do not name budgeted results `@5`. Implement and validate the budget list and new fields before execution; this plan is not an existing result.
+
+Compare coverage and actual words at the same budget first, then consider the original top-$5$ cost/coverage tradeoff and full-chunk readability when choosing later candidates. Higher top-$5$ coverage alone does not establish $400$ words as optimal.
+
+## Structured data storage and report generation
+
+This `v0-proposed` output contract is implemented for new BM25 runs. Store questions and evidence independently rather than parsing Markdown as computational input: JSONL holds the calculation inputs, `summary.json` holds results, and `evidence_review.md` displays those same results. Changing budgets or presentation requires no repeated BM25 execution or parsing of Markdown headings, tables and fences when the saved ranking supports the requested budget. Commands and schema field paths are documented in `README.md`; other retrieval modes retain their existing top-$5$ workflow.
+
+### File responsibilities
+
+All paths are under `results/chunk_size/<run_id>/`. Generated data stays out of Git.
+
+| Path | Contents and purpose |
+| --- | --- |
+| `questions.jsonl` | One eligible sampled question per line, including answer groups and full evidence; shared by all chunk sizes in the run. |
+| `chunk_size_<size>/ranked_chunks.jsonl` | One BM25 result for one question per line, including full chunk text; input for all quantitative retrieval metrics. |
+| `manifest.json` | Configuration, provenance, file hashes and per-question ranking retention status, establishing sufficiency or actual exhaustion. |
+| `summary.json`, `chunk_size_<size>/evidence_review.md` | Generated from structured inputs for programmatic results and human review respectively; not original inputs to quantitative metrics. |
+
+### Shared questions: `questions.jsonl`
+
+Each record contains at least `question_id`, `paper_id`, `question`, `annotations` and `evidence_paragraphs`. Each annotation retains its original `annotation_id`, `answer` and `evidence_locations`; do not combine different answers' evidence into one set. Store deduplicated evidence paragraphs for that question with `location`, `section_index`, `paragraph_index` and full original `text`. Locations retain the existing `paper_id:section_index:paragraph_index` format with zero-based indices.
+
+Write exactly one record per sampled eligible question in shared sample order. Source splits, exclusions and input hashes remain in the manifest/upstream exports; reports still omit source splits. Do not duplicate this file per chunk size. Later coverage calculations read its original evidence text without reopening raw data or parsing Markdown.
+
+### Ranked results: `ranked_chunks.jsonl`
+
+| Field | Meaning |
+| --- | --- |
+| `question_id`, `paper_id` | Link to the shared question and its paper. |
+| `rank`, `score` | Contiguous ranks starting at $1$ and finite raw BM25 scores; score descending, passage ID ascending for ties. |
+| `passage_id`, `text`, `word_count` | Chunk identity, full untruncated body and word count using `\S+`. |
+| `source_spans` | Mapping chunk-local character ranges to source positions; each entry contains at least `chunk_start`, `chunk_end`, `location`, `source_start`, `source_end`. |
+
+Map all original-source text in each chunk, not only the current answer's evidence. Character ranges are zero-based and end-exclusive; inserted separators do not become source evidence. The mapping must project any budget cut onto the original paragraph. Where normalization changes character positions, retain finer segments or an equivalent exact mapping rather than assuming both intervals always have equal lengths.
+
+Write records in shared question order, then rank order. Passage IDs must be unique within each question and belong to its paper. Ranking must not use answers or evidence; do not add score thresholds excluding zero or negative scores. Both JSONL files use UTF-8 with one JSON object per line, joined by `question_id`, not line number or Markdown display order.
+
+### Retention and completeness
+
+Save the shortest ranked prefix satisfying both conditions: at least the first $5$ results and cumulative full-chunk words reaching the largest budget $B_{\max}=2000$ words. If the paper's available chunks run out first, save all of them. Save the entire final boundary chunk and truncate only during calculation. There is no need to save exactly $100$ results or impose a count cap that prevents filling the budget. If resources force an early stop, mark it incomplete and reject unsupported metrics rather than treating missing ranks as exhaustion or zero coverage.
+
+In `manifest.json`, record `saved_count`, `available_count`, `saved_word_count`, `ranking_complete` and `retention_satisfied` for each size and question. `ranking_complete` means all available chunks in that paper were saved; `retention_satisfied` means the top-$5$ and maximum-budget requirements are met, or all available chunks were saved. Questions with no available chunks must still appear in the shared question file and status records. Budget-level `corpus_exhausted` is true only when all available chunks were consumed without filling that budget, not merely when the JSONL ends.
+
+### Shared calculation and rendering workflow
+
+1. Retrieval saves shared questions, per-size rankings and the manifest, recording file SHA-256 hashes, schema version, question order, chunk configuration, BM25 parameters, budgets, truncation policy and ranking retention status.
+2. Calculation validates file hashes, question sets, continuous ranks, sorting, unique IDs, word counts and source mappings. Use the first $5$ results per question for Evidence Hit@5, complete evidence rate@5 and retrieved word count, and prefixes of that same ranking for both budgeted coverage rates and actual words. Fewer than five results require verified complete-ranking status.
+3. Calculate coverage from question evidence and chunk source mappings, recomputing after truncation. Generate `summary.json` and `evidence_review.md` from the same per-question calculation results rather than implementing two decision paths. Markdown retains questions, answers, rankings, evidence spans and outcomes, adding budgeted results.
+4. When saved rankings support a changed budget, recalculate and render directly from JSONL without retrieval. If more ranks are needed, extend using the same inputs and BM25 settings and save under a new run ID; missing ranks are not misses. Migration from original Round 1 first reconstructs and verifies artifacts as described above, without guessing source mappings from old Markdown.
+
+Readability still uses independently sampled full chunks and manual labels. Those samples may not occur in question rankings, so ranked results alone cannot generate readability samples. These shared inputs serve quantitative retrieval reports through `run` and `regenerate`; `summarize` continues to import manual readability labels. `source_spans` additionally stores each segment's `source_text` for standalone validation, splitting CRLF into exact unequal-length segments. Manifest field `structured_inputs` records file hashes, schema, rules, `source_run_id` (null for fresh runs), and `ranking_states` indexed by size and question ID.
 
 ## Readability reviewers, chunk-size visibility and disagreements
 
@@ -61,7 +194,7 @@ Use `experiments/chunk_size/config.json` as this experiment's configuration auth
 | --- | --- | --- |
 | `data.overlap_words`: $40$ | `overlap_words`: $40$ | Same chunk overlap setting and current value; use the experiment configuration. |
 | `retrieval.top_k`: $5$ | `top_k`: $5$ | Same retrieval result limit and current value; use the experiment configuration. |
-| `data.chunk_words`: $200$ | `candidates`: $150$, $200$, $250$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
+| `data.chunk_words`: $200$ | `candidates`: $100$, $200$, $400$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
 | `seed`: $42$ | `seed`: $42$ | Same purpose and value; use the experiment seed for every sampling stage, without reading YAML. |
 
 The YAML `retrieval` section proposes dense models, a reranker, candidate counts and RRF settings, whereas the experiment JSON currently specifies only `retrieval.mode` as `bm25`. This experiment has confirmed that mode and `top_k=5`. These are not equivalent complete retrieval configurations. The experiment does not inherit YAML model or fusion settings. BM25 algorithm parameters use the implementation's library defaults and remain retriever implementation details, outside the configuration choices or tuning scope of this experiment. See `experiments/chunk_size/BM25.en.md` for BM25 inputs, outputs, workflow and current parameters. See `experiments/chunk_size/README.md` for experiment retrieval-code defaults and optional modes.
@@ -72,6 +205,7 @@ The following lists every current experiment JSON setting except `candidates`, a
 | --- | --- | --- |
 | `overlap_words` | $40$ | Overlap in words between adjacent chunks; every candidate size must exceed this value. |
 | `top_k` | $5$ | Maximum retrieved chunks per question; the current metrics require $5$, with fewer returned when fewer chunks are available. |
+| `word_budgets` | $500/1000/2000$ | Unique positive word limits for BM25; save enough ranks for the largest budget, independently of top-$5$. |
 | `question_sample_count` | $50$ | Requested question count after applying the eligibility rules below; use all eligible questions when fewer are available and record the actual count. |
 | `question_sampling_method` | `simple_random_without_replacement` | Simple random sampling without replacement from the filtered question pool; currently the only supported method. All candidate configurations share the selected questions. |
 | `n_paper` | $5$ | Requested paper count for readability sampling; use all eligible papers if fewer are available. |
@@ -93,7 +227,7 @@ The old `readability_sample_count`, `question_seed` and `readability_seed` confi
 
 ## What to save during evaluation
 
-The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. The `run_id` identifies the comparison run; the configuration directory names are `chunk_size_150`, `chunk_size_200`, and `chunk_size_250`. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, replacing `<size>` with `150`, `200`, or `250`. Generated files stay out of Git.
+The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. The `run_id` identifies the comparison run; the configuration directory names are `chunk_size_100`, `chunk_size_200`, and `chunk_size_400`. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, replacing `<size>` with `100`, `200`, or `400`. Generated files stay out of Git.
 
 | Metric | What the code must save | File under the size directory |
 | --- | --- | --- |
@@ -134,7 +268,7 @@ The code initially writes `pending`; the reviewer replaces it with `pass` or `fa
 
 ### Evidence review layout and question selection
 
-Save both evidence metrics and retrieved word counts in `results/chunk_size/<run_id>/chunk_size_<size>/evidence_review.md`; no separate retrieval detail file is needed. Sample questions from `data/processed/qa.jsonl`, not raw data. Before sampling, require the question's paper to be present in every compared retrieval corpus, at least one answer annotation, and nonempty text evidence in every annotation, with every evidence item uniquely located in an original paragraph. Empty evidence, missing text, ambiguous repeated paragraphs or `FLOAT SELECTED` evidence in any annotation excludes the entire question; even its located evidence cannot contribute a hit. Excluded questions do not enter either evidence metric or retrieved word counts. Keep the same sampled question IDs across sizes. Show only selected usable questions; do not display source splits, eligibility flags, or exclusion reasons in this report. Preserve source metadata in `qa.jsonl`.
+Save both evidence metrics and retrieved word counts in `results/chunk_size/<run_id>/chunk_size_<size>/evidence_review.md`; the planned calculation inputs are JSONL files defined in the structured-data section. Sample questions from `data/processed/qa.jsonl`, not raw data. Before sampling, require the question's paper to be present in every compared retrieval corpus, at least one answer annotation, and nonempty text evidence in every annotation, with every evidence item uniquely located in an original paragraph. Empty evidence, missing text, ambiguous repeated paragraphs or `FLOAT SELECTED` evidence in any annotation excludes the entire question; even its located evidence cannot contribute a hit. Excluded questions do not enter either evidence metric or retrieved word counts. Keep the same sampled question IDs across sizes. Show only selected usable questions; do not display source splits, eligibility flags, or exclusion reasons in this report. Preserve source metadata in `qa.jsonl`.
 
 Removing source splits from the report does not change the existing held-out policy. The current default corpus contains only the original `train/validation` papers. Using all of `qa.jsonl`, including original `test` questions, for chunk selection requires a matching corpus and an explicit update to that project policy. Questions used to select chunk size are not an independent final test set.
 

@@ -1,7 +1,8 @@
 {
-  "candidates": [150, 200, 250],
+  "candidates": [100, 200, 400],
   "overlap_words": 40,
   "top_k": 5,
+  "word_budgets": [500, 1000, 2000],
   "question_sample_count": 50,
   "question_sampling_method": "simple_random_without_replacement",
   "n_paper": 5,

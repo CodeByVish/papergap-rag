@@ -34,6 +34,16 @@ from src.data.split_policy import (
     assert_data_use_allowed,
     project_role_for_official_split,
 )
+from src.evaluation.chunk_size_artifacts import (
+    DEFAULT_BUDGETS,
+    SCHEMA,
+    generate_reports,
+    question_record,
+    ranked_record,
+    retained_ranking,
+    validate_budgets,
+    write_jsonl,
+)
 from src.evaluation.chunk_size_metrics import (
     evaluate_question,
     locate_annotations,
@@ -78,10 +88,14 @@ def load_config(path: Path) -> dict[str, Any]:
         "candidates",
         "retrieval",
         "question_sampling_method",
+        "word_budgets",
         *DEFAULTS,
     }:
         raise ValueError("configuration must be an object with known keys")
     config = {**DEFAULTS, **supplied}
+    config["word_budgets"] = validate_budgets(
+        supplied.get("word_budgets", DEFAULT_BUDGETS)
+    )
     config.setdefault("question_sampling_method", "simple_random_without_replacement")
     if config["question_sampling_method"] != "simple_random_without_replacement":
         raise ValueError(
@@ -101,7 +115,9 @@ def load_config(path: Path) -> dict[str, Any]:
         raise ValueError(
             "top_k must be 5 for Evidence Hit@5 and complete evidence rate@5"
         )
-    if any(not config[key] for key in ("question_sample_count", "n_paper", "n_paragraph")):
+    if any(
+        not config[key] for key in ("question_sample_count", "n_paper", "n_paragraph")
+    ):
         raise ValueError("sample counts must be positive")
     for size in candidates:
         ChunkingConfig(
@@ -224,7 +240,9 @@ def select_readability_samples(
         "paper_ids": paper_ids,
         "paragraphs_per_paper_requested": config["n_paragraph"],
         "paragraph_count_requested": config["n_paper"] * config["n_paragraph"],
-        "paragraph_count_by_paper": dict(Counter(sample["paper_id"] for sample in samples)),
+        "paragraph_count_by_paper": dict(
+            Counter(sample["paper_id"] for sample in samples)
+        ),
         "paragraph_word_counts": lengths,
         "length_check": {
             "threshold_words": 150,
@@ -366,9 +384,7 @@ def run_comparison(
         common_papers,
         config,
     )
-    samples, sampling = select_readability_samples(
-        paragraphs, common_papers, config
-    )
+    samples, sampling = select_readability_samples(paragraphs, common_papers, config)
     commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
@@ -444,6 +460,30 @@ def run_comparison(
     # Reserve the ID only after validation and sampling. An interrupted run stays
     # visible and cannot be mistaken for a completed comparison without a manifest.
     run_dir.mkdir(parents=True, exist_ok=False)
+    # The proposed independent replay contract currently applies to BM25 only.
+    structured = config["retrieval"]["mode"] == "bm25"
+    if structured:
+        question_rows = [
+            question_record(
+                question,
+                annotations[question["question_id"]],
+                paragraphs[question["paper_id"]],
+            )
+            for question in selected
+        ]
+        manifest["structured_inputs"] = {
+            "schema_version": SCHEMA,
+            "source_run_id": None,
+            "word_count_rule": r"Unicode non-whitespace runs: \S+; body only; overlap counted repeatedly",
+            "truncation_rule": "ranked prefix; last chunk ends at the final retained word; no skipping",
+            "ranking_depth_rule": "shortest prefix with >=5 chunks and maximum budget words, or all available",
+            "files": {
+                "questions.jsonl": write_jsonl(
+                    run_dir / "questions.jsonl", question_rows
+                )
+            },
+            "ranking_states": {},
+        }
     for size, corpus in corpora.items():
         directory = run_dir / f"chunk_size_{size}"
         directory.mkdir()
@@ -453,13 +493,36 @@ def run_comparison(
         by_id = {item["passage_id"]: item for item in corpus}
         reports = ["# Evidence Review\n"]
         results = []
+        ranked_rows = []
+        ranking_states = {}
+        available_counts = Counter(item["paper_id"] for item in corpus)
         for question in selected:
+            available = available_counts[question["paper_id"]]
             retrieved, seconds = retrieve_question(
                 retrieve,
                 question,
                 by_id,
-                config["top_k"],
+                max(1, available) if structured else config["top_k"],
             )
+            if structured:
+                rows = [
+                    ranked_record(
+                        question, item, rank, paragraphs[question["paper_id"]]
+                    )
+                    for rank, item in enumerate(retrieved, 1)
+                ]
+                kept, state = retained_ranking(
+                    rows, available, max(config["word_budgets"])
+                )
+                ranked_rows.extend(kept)
+                ranking_states[question["question_id"]] = state
+                results.append(
+                    {
+                        "question_id": question["question_id"],
+                        "retrieval_seconds": seconds,
+                    }
+                )
+                continue
             located = annotations[question["question_id"]]
             paper_paragraphs = paragraphs[question["paper_id"]]
             metrics = evaluate_question(located, paper_paragraphs, retrieved)
@@ -479,17 +542,24 @@ def run_comparison(
                     ],
                 }
             )
-        (directory / "evidence_review.md").write_text(
-            "\n".join(reports), encoding="utf-8"
-        )
+        if not structured:
+            (directory / "evidence_review.md").write_text(
+                "\n".join(reports), encoding="utf-8"
+            )
         review, review_ids = readability_report(samples, papers, corpus)
         (directory / "readability.md").write_text(review, encoding="utf-8")
         manifest["readability_passage_ids"][str(size)] = review_ids
         manifest["readability_review_chunk_counts"][str(size)] = len(review_ids)
+        if structured:
+            name = f"chunk_size_{size}/ranked_chunks.jsonl"
+            manifest["structured_inputs"]["files"][name] = write_jsonl(
+                run_dir / name, ranked_rows
+            )
+            manifest["structured_inputs"]["ranking_states"][str(size)] = ranking_states
         count = len(results)
-        hits = sum(result["evidence_hit_at_5"] for result in results)
-        complete = sum(result["complete_evidence_at_5"] for result in results)
-        words = sum(result["total_retrieved_words"] for result in results)
+        hits = sum(result.get("evidence_hit_at_5", 0) for result in results)
+        complete = sum(result.get("complete_evidence_at_5", 0) for result in results)
+        words = sum(result.get("total_retrieved_words", 0) for result in results)
         corpus_bytes = "\n".join(
             json.dumps(item, sort_keys=True, ensure_ascii=False) for item in corpus
         ).encode("utf-8")
@@ -526,5 +596,7 @@ def run_comparison(
         manifest["readability_review_chunk_counts"].values()
     )
     write_json(run_dir / "summary.json", summary)
+    if structured:
+        generate_reports(run_dir, manifest=manifest)
     write_json(run_dir / "manifest.json", manifest)
     return run_dir
