@@ -1,0 +1,341 @@
+{
+  "build_seconds": {
+    "150": 7.865320300013991,
+    "200": 8.162528800021391,
+    "250": 8.308946900011506
+  },
+  "chunking": {
+    "150": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 150,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "200": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 200,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "250": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 250,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    }
+  },
+  "code_commit": "a67458ac5f9d808cbf2c481f34d391ca21ac8446",
+  "config": {
+    "candidates": [
+      150,
+      200,
+      250
+    ],
+    "overlap_words": 40,
+    "question_sample_count": 3,
+    "question_seed": 42,
+    "readability_sample_count": 2,
+    "readability_seed": 43,
+    "retrieval": {
+      "candidate_k": 20,
+      "dense": {
+        "batch_size": 32,
+        "cache_folder": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\.cache\\huggingface",
+        "device": "cpu",
+        "local_files_only": true,
+        "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+      },
+      "mode": "bm25",
+      "reranker": {
+        "batch_size": 8,
+        "cache_folder": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\.cache\\huggingface",
+        "device": "cpu",
+        "local_files_only": true,
+        "max_length": 512,
+        "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+      },
+      "rrf_k": 60
+    },
+    "top_k": 5
+  },
+  "dependencies": [
+    "Jinja2==3.1.6",
+    "MarkupSafe==3.0.3",
+    "PyYAML==6.0.3",
+    "Pygments==2.21.0",
+    "SQLAlchemy==2.0.54",
+    "absl-py==2.5.0",
+    "accelerate==1.15.0",
+    "aiohappyeyeballs==2.7.1",
+    "aiohttp==3.14.3",
+    "aiosignal==1.4.0",
+    "altair==6.3.0",
+    "annotated-doc==0.0.5",
+    "annotated-types==0.8.0",
+    "anyio==4.15.1",
+    "appdirs==1.4.4",
+    "attrs==26.1.0",
+    "certifi==2026.7.22",
+    "charset-normalizer==3.5.1",
+    "click==8.5.0",
+    "cloudpickle==3.1.2",
+    "colorama==0.4.6",
+    "dataclasses-json==0.6.7",
+    "datasets==4.8.5",
+    "defusedxml==0.7.1",
+    "dill==0.4.1",
+    "diskcache==5.6.3",
+    "distro==1.9.0",
+    "docstring_parser==0.16",
+    "faiss-cpu==1.15.1",
+    "filelock==4.0.1",
+    "frozenlist==1.8.0",
+    "fsspec==2026.2.0",
+    "greenlet==3.5.6",
+    "h11==0.16.0",
+    "httpcore2==2.13.0",
+    "httpcore==1.0.9",
+    "httptools==0.8.0",
+    "httpx-sse==0.4.3",
+    "httpx2==2.13.0",
+    "httpx==0.28.1",
+    "huggingface_hub==0.36.2",
+    "idna==3.20",
+    "iniconfig==2.3.0",
+    "instructor==1.3.2",
+    "itsdangerous==2.2.0",
+    "jiter==0.17.0",
+    "joblib==1.6.0",
+    "jsonpatch==1.33",
+    "jsonpointer==3.1.1",
+    "jsonschema-specifications==2025.9.1",
+    "jsonschema==4.26.0",
+    "langchain-classic==1.0.8",
+    "langchain-community==0.4.1",
+    "langchain-core==1.6.3",
+    "langchain-openai==1.1.9",
+    "langchain-protocol==0.0.19",
+    "langchain-text-splitters==1.1.2",
+    "langchain==1.4.2",
+    "langgraph-checkpoint==4.2.0",
+    "langgraph-prebuilt==1.1.0",
+    "langgraph-sdk==0.4.4",
+    "langgraph==1.2.11",
+    "langsmith==0.13.0",
+    "markdown-it-py==4.2.0",
+    "marshmallow==3.26.2",
+    "mdurl==0.1.2",
+    "mpmath==1.3.0",
+    "multidict==6.9.0",
+    "multiprocess==0.70.19",
+    "mypy_extensions==1.1.0",
+    "narwhals==2.26.0",
+    "nest-asyncio==1.6.0",
+    "networkx==3.6.1",
+    "nltk==3.10.3",
+    "numpy==2.4.6",
+    "openai==1.109.1",
+    "orjson==3.12.0",
+    "ormsgpack==1.12.2",
+    "packaging==26.3",
+    "pandas==2.3.3",
+    "pillow==12.3.0",
+    "pip==26.2.1",
+    "pluggy==1.6.0",
+    "propcache==0.5.4",
+    "protobuf==7.36.2",
+    "psutil==7.2.2",
+    "pyarrow==25.0.1",
+    "pydantic-settings==2.15.0",
+    "pydantic==2.13.5",
+    "pydantic_core==2.46.5",
+    "pydeck==0.9.3",
+    "pytest==9.1.1",
+    "python-dateutil==2.9.0.post0",
+    "python-dotenv==1.2.3",
+    "python-multipart==0.0.32",
+    "pytz==2026.3.post1",
+    "ragas==0.4.3",
+    "rank-bm25==0.2.2",
+    "referencing==0.37.0",
+    "regex==2026.9.10",
+    "requests-toolbelt==1.0.0",
+    "requests==2.34.2",
+    "rich==13.9.4",
+    "rouge_score==0.1.2",
+    "rpds-py==2026.6.3",
+    "ruff==0.16.8",
+    "safetensors==0.8.0",
+    "scikit-learn==1.9.1",
+    "scikit-network==0.33.5",
+    "scipy==1.17.1",
+    "sentence-transformers==5.7.0",
+    "sentencepiece==0.2.2",
+    "setuptools==83.0.0",
+    "shellingham==1.5.4",
+    "six==1.17.0",
+    "sniffio==1.3.1",
+    "starlette==1.6.0",
+    "streamlit==1.64.0",
+    "sympy==1.14.0",
+    "tenacity==8.5.0",
+    "threadpoolctl==3.7.0",
+    "tiktoken==0.14.0",
+    "tokenizers==0.22.2",
+    "toml==0.10.2",
+    "torch==2.14.0",
+    "tqdm==4.70.1",
+    "transformers==4.57.6",
+    "truststore==0.10.4",
+    "typer==0.27.2",
+    "typing-inspect==0.9.0",
+    "typing-inspection==0.4.4",
+    "typing_extensions==4.16.0",
+    "tzdata==2026.4",
+    "urllib3==2.8.0",
+    "uuid_utils==0.17.1",
+    "uvicorn==0.53.0",
+    "watchdog==6.0.0",
+    "websockets==16.1.1",
+    "wheel==0.47.0",
+    "xxhash==4.0.1",
+    "yarl==1.25.1",
+    "zstandard==0.25.0"
+  ],
+  "filtering_counts": {
+    "eligible": 2640,
+    "held_out": 1451,
+    "no_usable_text_evidence": 955,
+    "paper_not_in_every_corpus": 3,
+    "total": 5049
+  },
+  "generator": null,
+  "hardware": {
+    "machine": "AMD64",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel"
+  },
+  "inputs": {
+    "config": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\tmp\\tmp_chunk_smoke_bm25.json",
+      "sha256": "289ad0c32f4cbe2d521c0cdce758581cfae82b4faf205894d42339bc2085b66d"
+    },
+    "export_manifest": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\qasper_export.manifest.json",
+      "sha256": "1cdad8448b1adc6a65a8b314080aba932e0a83c57eeabf23eb611ea4d747e003"
+    },
+    "papers": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\papers.jsonl",
+      "sha256": "905866c186f63dab38979601a0121412d44588cacfa84520242ffcf2f5b198f9"
+    },
+    "qa": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\qa.jsonl",
+      "sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e"
+    }
+  },
+  "prompts": null,
+  "python": "3.11.16",
+  "question_ids": [
+    "feafcc1c4026d7f55a2c8ce7850d7e12030b5c22",
+    "2ccc26e11df4eb26fcccdd1f446dc749aff5d572",
+    "09f0dce416a1e40cc6a24a8b42a802747d2c9363"
+  ],
+  "question_sample_count_actual": 3,
+  "question_sample_count_requested": 3,
+  "readability_passage_ids": {
+    "150": [
+      "qasper-passage-v1-1125b862f824363620e7392847f47d77abc9a22c6a91f2d7b54b7393758deda8",
+      "qasper-passage-v1-18a3a7ea70776993dd54cecf91cc004cb536e5f54e6a51d7d3b4078298b359d1",
+      "qasper-passage-v1-3cd62a9bd1587f4e4d48ce5cad01dd54cf69ccb582abf3e6230df9e4238ae88b",
+      "qasper-passage-v1-8b1b0e5588b5c5e695cdc17ac7ae0c99153a84f3760741e6784cdf2a81dc5a6b"
+    ],
+    "200": [
+      "qasper-passage-v1-54f1412769ef8b46937511a50c93113d6cd77098d6c24514b8080f4c2cfbb3df",
+      "qasper-passage-v1-92cd9fc661aa509dad84156ddee60ad76dfc38afd45d0fbe6b4621c7c350f8d4",
+      "qasper-passage-v1-ab0a2130989bdcee7ba59b7db0437ce62590786b27ad01d873e7e99090129283"
+    ],
+    "250": [
+      "qasper-passage-v1-13f9f4fb269d25edfb97401f43a36a57cc70756d5691c9ad3905c68988187501",
+      "qasper-passage-v1-45e83c12b6e7975080cccfc2a30fae23169fd9d638a28b6b26ad0f66979aab2f",
+      "qasper-passage-v1-d8b6513e84927404f6990557ffde62af918ac4a7754b4b872bbc5a6136dd3089"
+    ]
+  },
+  "readability_sample_count_actual": 2,
+  "readability_samples": [
+    {
+      "character_span": [
+        0,
+        389
+      ],
+      "location": "1605.04655:12:3",
+      "paper_id": "1605.04655",
+      "paragraph_index": 3,
+      "section_index": 12
+    },
+    {
+      "character_span": [
+        0,
+        309
+      ],
+      "location": "1805.12032:0:1",
+      "paper_id": "1805.12032",
+      "paragraph_index": 1,
+      "section_index": 0
+    }
+  ],
+  "retriever": {
+    "bm25": {
+      "b": 0.75,
+      "enabled": true,
+      "epsilon": 0.25,
+      "k1": 1.5,
+      "tokenizer": "casefold + Unicode word runs"
+    },
+    "dense": {
+      "enabled": false
+    },
+    "id": "p1-p2-static-retrieval",
+    "mode": "bm25",
+    "packages": {
+      "rank-bm25": "0.2.2"
+    },
+    "persistent_score_cache": false,
+    "reranker": {
+      "enabled": false
+    },
+    "scope": "selected paper",
+    "score": "raw BM25",
+    "source_commit": "5ccfb070a00f71dd2f95f69afb31868c296f35c4",
+    "tie_break": "passage_id ascending; reranker ties first use RRF descending"
+  },
+  "run_id": "smoke_p1_bm25_01",
+  "schema_version": "v0-proposed",
+  "source": {
+    "dataset_id": "allenai/qasper",
+    "local_parser_version": 1,
+    "resolved_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "source_manifest_sha256": "c1b073d330bc649280951304c04bac5796476c926b6a98ff8b1cc22c882fd9e7",
+    "split_files": {
+      "test": {
+        "rows": 416,
+        "sha256": "308380c3da5287ac450582c457a9a75303b8361360dd88e727afd021c8320779"
+      },
+      "train": {
+        "rows": 888,
+        "sha256": "7a25389963d05d97de9462d4e46b2ef367f37b898de55f5833bae7aa4b6e8732"
+      },
+      "validation": {
+        "rows": 281,
+        "sha256": "f3e8f8072bbb42c6f770cdbc311672738683505eef401a7b75e0c08cfb7c5945"
+      }
+    }
+  },
+  "source_splits": [
+    "train",
+    "validation"
+  ],
+  "split_policy_version": "qasper-official-paper-disjoint-v0-proposed",
+  "timing_policy": "perf_counter wall seconds; index_seconds includes factory construction, model initialization and passage encoding; per-query includes full retrieval and lazy first BGE scoring load; no hidden warm-up; excludes report rendering",
+  "working_tree_dirty": false,
+  "working_tree_status": []
+}

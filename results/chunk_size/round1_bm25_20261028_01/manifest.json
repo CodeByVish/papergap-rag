@@ -1,0 +1,558 @@
+{
+  "build_seconds": {
+    "100": 8.818160499999067,
+    "200": 8.355235700000776,
+    "400": 8.112899800005835
+  },
+  "chunking": {
+    "100": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 100,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "200": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 200,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "400": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 400,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    }
+  },
+  "code_commit": "8ca37c40cd049698988c4d7b33235d58ed27a214",
+  "config": {
+    "candidates": [
+      100,
+      200,
+      400
+    ],
+    "n_paper": 5,
+    "n_paragraph": 2,
+    "overlap_words": 40,
+    "question_sample_count": 50,
+    "question_sampling_method": "simple_random_without_replacement",
+    "retrieval": {
+      "candidate_k": 20,
+      "dense": {
+        "batch_size": 32,
+        "cache_folder": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\.cache\\huggingface",
+        "device": "cpu",
+        "local_files_only": true,
+        "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+      },
+      "mode": "bm25",
+      "reranker": {
+        "batch_size": 8,
+        "cache_folder": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\.cache\\huggingface",
+        "device": "cpu",
+        "local_files_only": true,
+        "max_length": 512,
+        "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+      },
+      "rrf_k": 60
+    },
+    "seed": 42,
+    "top_k": 5
+  },
+  "dependencies": [
+    "Jinja2==3.1.6",
+    "MarkupSafe==3.0.3",
+    "PyYAML==6.0.3",
+    "Pygments==2.21.0",
+    "SQLAlchemy==2.0.54",
+    "absl-py==2.5.0",
+    "accelerate==1.15.0",
+    "aiohappyeyeballs==2.7.1",
+    "aiohttp==3.14.3",
+    "aiosignal==1.4.0",
+    "altair==6.3.0",
+    "annotated-doc==0.0.5",
+    "annotated-types==0.8.0",
+    "anyio==4.15.1",
+    "appdirs==1.4.4",
+    "attrs==26.1.0",
+    "certifi==2026.7.22",
+    "charset-normalizer==3.5.1",
+    "click==8.5.0",
+    "cloudpickle==3.1.2",
+    "colorama==0.4.6",
+    "dataclasses-json==0.6.7",
+    "datasets==4.8.5",
+    "defusedxml==0.7.1",
+    "dill==0.4.1",
+    "diskcache==5.6.3",
+    "distro==1.9.0",
+    "docstring_parser==0.16",
+    "faiss-cpu==1.15.1",
+    "filelock==4.0.1",
+    "frozenlist==1.8.0",
+    "fsspec==2026.2.0",
+    "greenlet==3.5.6",
+    "h11==0.16.0",
+    "httpcore2==2.13.0",
+    "httpcore==1.0.9",
+    "httptools==0.8.0",
+    "httpx-sse==0.4.3",
+    "httpx2==2.13.0",
+    "httpx==0.28.1",
+    "huggingface_hub==0.36.2",
+    "idna==3.20",
+    "iniconfig==2.3.0",
+    "instructor==1.3.2",
+    "itsdangerous==2.2.0",
+    "jiter==0.17.0",
+    "joblib==1.6.0",
+    "jsonpatch==1.33",
+    "jsonpointer==3.1.1",
+    "jsonschema-specifications==2025.9.1",
+    "jsonschema==4.26.0",
+    "langchain-classic==1.0.8",
+    "langchain-community==0.4.1",
+    "langchain-core==1.6.3",
+    "langchain-openai==1.1.9",
+    "langchain-protocol==0.0.19",
+    "langchain-text-splitters==1.1.2",
+    "langchain==1.4.2",
+    "langgraph-checkpoint==4.2.0",
+    "langgraph-prebuilt==1.1.0",
+    "langgraph-sdk==0.4.4",
+    "langgraph==1.2.11",
+    "langsmith==0.13.0",
+    "markdown-it-py==4.2.0",
+    "marshmallow==3.26.2",
+    "mdurl==0.1.2",
+    "mpmath==1.3.0",
+    "multidict==6.9.0",
+    "multiprocess==0.70.19",
+    "mypy_extensions==1.1.0",
+    "narwhals==2.26.0",
+    "nest-asyncio==1.6.0",
+    "networkx==3.6.1",
+    "nltk==3.10.3",
+    "numpy==2.4.6",
+    "openai==1.109.1",
+    "orjson==3.12.0",
+    "ormsgpack==1.12.2",
+    "packaging==26.3",
+    "pandas==2.3.3",
+    "pillow==12.3.0",
+    "pip==26.2.1",
+    "pluggy==1.6.0",
+    "propcache==0.5.4",
+    "protobuf==7.36.2",
+    "psutil==7.2.2",
+    "pyarrow==25.0.1",
+    "pydantic-settings==2.15.0",
+    "pydantic==2.13.5",
+    "pydantic_core==2.46.5",
+    "pydeck==0.9.3",
+    "pytest==9.1.1",
+    "python-dateutil==2.9.0.post0",
+    "python-dotenv==1.2.3",
+    "python-multipart==0.0.32",
+    "pytz==2026.3.post1",
+    "ragas==0.4.3",
+    "rank-bm25==0.2.2",
+    "referencing==0.37.0",
+    "regex==2026.9.10",
+    "requests-toolbelt==1.0.0",
+    "requests==2.34.2",
+    "rich==13.9.4",
+    "rouge_score==0.1.2",
+    "rpds-py==2026.6.3",
+    "ruff==0.16.8",
+    "safetensors==0.8.0",
+    "scikit-learn==1.9.1",
+    "scikit-network==0.33.5",
+    "scipy==1.17.1",
+    "sentence-transformers==5.7.0",
+    "sentencepiece==0.2.2",
+    "setuptools==83.0.0",
+    "shellingham==1.5.4",
+    "six==1.17.0",
+    "sniffio==1.3.1",
+    "starlette==1.6.0",
+    "streamlit==1.64.0",
+    "sympy==1.14.0",
+    "tenacity==8.5.0",
+    "threadpoolctl==3.7.0",
+    "tiktoken==0.14.0",
+    "tokenizers==0.22.2",
+    "toml==0.10.2",
+    "torch==2.14.0",
+    "tqdm==4.70.1",
+    "transformers==4.57.6",
+    "truststore==0.10.4",
+    "typer==0.27.2",
+    "typing-inspect==0.9.0",
+    "typing-inspection==0.4.4",
+    "typing_extensions==4.16.0",
+    "tzdata==2026.4",
+    "urllib3==2.8.0",
+    "uuid_utils==0.17.1",
+    "uvicorn==0.53.0",
+    "watchdog==6.0.0",
+    "websockets==16.1.1",
+    "wheel==0.47.0",
+    "xxhash==4.0.1",
+    "yarl==1.25.1",
+    "zstandard==0.25.0"
+  ],
+  "filtering_counts": {
+    "eligible": 2466,
+    "held_out": 1451,
+    "invalid_answer_evidence": 1129,
+    "paper_not_in_every_corpus": 3,
+    "total": 5049
+  },
+  "generator": null,
+  "hardware": {
+    "machine": "AMD64",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel"
+  },
+  "inputs": {
+    "config": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\experiments\\chunk_size\\config.json",
+      "sha256": "9fb5f9a5474816c885c361b7d81f8a29b37816622e1cbfba6ce4790dd46e13fd"
+    },
+    "export_manifest": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\qasper_export.manifest.json",
+      "sha256": "1cdad8448b1adc6a65a8b314080aba932e0a83c57eeabf23eb611ea4d747e003"
+    },
+    "papers": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\papers.jsonl",
+      "sha256": "905866c186f63dab38979601a0121412d44588cacfa84520242ffcf2f5b198f9"
+    },
+    "qa": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\qa.jsonl",
+      "sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e"
+    }
+  },
+  "prompts": null,
+  "python": "3.11.16",
+  "question_ids": [
+    "30c6d34b878630736f819fd898319ac4e71ee50b",
+    "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50",
+    "729694a9fe1e05d329b7a4078a596fe606bc5a95",
+    "65ad17f614b7345f0077424c04c94971c831585b",
+    "5bcc12680cf2eda2dd13ab763c42314a26f2d993",
+    "3bfb8c12f151dada259fbd511358914c4b4e1b0e",
+    "2c7e94a65f5f532aa31d3e538dcab0468a43b264",
+    "e755fb599690d0d0c12ddb851ac731a0a7965797",
+    "249c805ee6f2ebe4dbc972126b3d82fb09fa3556",
+    "fbd47705262bfa0a2ba1440a2589152def64cbbd",
+    "b27f7993b1fe7804c5660d1a33655e424cea8d10",
+    "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec",
+    "0cd90e5b79ea426ada0203177c28812a7fc86be5",
+    "282aa4e160abfa7569de7d99b8d45cabee486ba4",
+    "593e307d9a9d7361eba49484099c7a8147d3dade",
+    "601e58a3d2c03a0b4cd627c81c6228a714e43903",
+    "d571e0b0f402a3d36fb30d70cdcd2911df883bc7",
+    "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6",
+    "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3",
+    "ef081d78be17ef2af792e7e919d15a235b8d7275",
+    "537b2d7799124d633892a1ef1a485b3b071b303d",
+    "e74ba39c35af53d3960be5a6c86eddd62cef859f",
+    "b1ce129678e37070e69f01332f1a8587e18e06b0",
+    "5a2f7e27efdedf3c43498ff0c32f808d406c42ec",
+    "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b",
+    "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f",
+    "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d",
+    "022c365a14fdec406c7a945a1a18e7e79df37f08",
+    "43d8057ff0d3f0c745a7164aed7ed146674630e0",
+    "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae",
+    "90f80a94fabaab72833256572db1d449c2779beb",
+    "73abb173a3cc973ab229511cf53b426865a2738b",
+    "42084c41343e5a6ae58a22e5bfc5ce987b5173de",
+    "5871d258f66b00fb716065086f757ef745645bfe",
+    "8e857e44e4233193c7b2d538e520d37be3ae1552",
+    "2c78993524ca62bf1f525b60f2220a374d0e3535",
+    "27c1c678d3862c7676320ca493537b03a9f0c77a",
+    "a1e07c7563ad038ee2a7de5093ea08efdd6077d4",
+    "29c014baf99fb9f40b5171aab3e2c7f12a748f79",
+    "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5",
+    "9299fe72f19c1974564ea60278e03a423eb335dc",
+    "6dc9960f046ec6bd280a721724458f66d5a9a585",
+    "12391aab31c899bac0ecd7238c111cb73723a6b7",
+    "c00ce1e3be14610fb4e1f0614005911bb5ff0302",
+    "e1f5531ed04d0aae1dfcb0559f1512a43134c43a",
+    "35915166ab2fd3d39c0297c427d4ac00e8083066",
+    "a15bc19674d48cd9919ad1cf152bf49c88f4417d",
+    "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b",
+    "eac042734f76e787cb98ba3d0c13a916a49bdfb3",
+    "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7"
+  ],
+  "question_sample_count_actual": 50,
+  "question_sample_count_requested": 50,
+  "readability_passage_ids": {
+    "100": [
+      "qasper-passage-v1-12a5ee8bd70fd226e4e3c6db87a067e58a79d7d5ffcac981e15f3f4f2e2fcf58",
+      "qasper-passage-v1-2391e30b22869f1cc7d256fdf845fcad53c0206d160744327e37bcecf9eea0d6",
+      "qasper-passage-v1-3d3268521bbce572437dbfc42cb3ce6b3d2f4ee51154ad6c2aa12d072045e38e",
+      "qasper-passage-v1-3fc60dcf841de8e0c801a4d029f56d30b6dc835c6993a868b94db1d666b93adf",
+      "qasper-passage-v1-42b49f401bcc3058a07d0e520867d215dec967f934fa6ed2ec3d6e222262798a",
+      "qasper-passage-v1-458ed504ff339e2879878dfcdbd657451185eee70502673856aad8c4226eb700",
+      "qasper-passage-v1-5ade2090c95f3a2cab57139a03c42ecc39f7ec1b56e1f61821bc88b91419c7f7",
+      "qasper-passage-v1-72c411486e6483bb7f80c2c00810e1c83edafd084b311c7ee0bc15026618fc7e",
+      "qasper-passage-v1-7d43d474d453695a0c5b51af9e308614a63692fc5195bcc165cb6ac125cb0e7e",
+      "qasper-passage-v1-81d088752f124f79aa5522d364bc976fcca83cb0cceb9a1a085f745b1aef7526",
+      "qasper-passage-v1-8daf87dbd4dcc310cc455da8d428e8ae0eb9a253382e10eb5676c5c77501ae79",
+      "qasper-passage-v1-8e9ff2f27a46f29d866999d29fde8b5280d9c68bbf9652551e70b9ed271be8f7",
+      "qasper-passage-v1-9d352473d82e40f3147fe4370e6f592e00ef1dd18e2fdc4636a5bf595e9ee67a",
+      "qasper-passage-v1-9ef7ef2aef0be35e0aa969e445d21039e07572c583340bbb22baddcda1e0aa35",
+      "qasper-passage-v1-ab608c619473fb2d7157faccd1ba75784326efb42406a0e78533c4481bb96fd1",
+      "qasper-passage-v1-b34849f2bfc1529ceebade899cde02d62915d9c118b8ef185a3794534b5d04e3",
+      "qasper-passage-v1-ba2f40b33910afb8ee447a57493049b54a4a6de4a4d02a2cdccaf0b922907473",
+      "qasper-passage-v1-c4230442af336e3f1f8265ffa42951abc957370bd9c0ef3f7eb047898758216b",
+      "qasper-passage-v1-cb08898742dd7102513644091a70a85798349499af83d8a549d6462c917fec74",
+      "qasper-passage-v1-d17cab2deacda3d941fa050faf5cfbc8ca7b9ee3ba7e47507b7e776ab29f9765",
+      "qasper-passage-v1-d485855af200d8064a9503d8038518c9f80fcc723431d72cca00468bde5b5639",
+      "qasper-passage-v1-ecc55b24395225d0f42c72611f8f05b4aa1bdfba50f6f0cce94b943312efc59d",
+      "qasper-passage-v1-f817946a12186b529fe6549fb2741c86e973098c3feba647f4f6bd03051e0930",
+      "qasper-passage-v1-fc08ac48cbf82539f58b052e4ca260d284e27c28b7ac73a15aba7f77496f4e5b"
+    ],
+    "200": [
+      "qasper-passage-v1-2e008d831877fe6a1ede47bb2fb9ef7bb4b2d054b66083703887a75f2e0b59a3",
+      "qasper-passage-v1-38638b7add41c74605bafbdc9fe066cab9913e41be068376b0d251dd0041cdd1",
+      "qasper-passage-v1-780b679ea56640bac1abee356e8d4658eefc9711216c9fa4f3d3d0e10fc9fac2",
+      "qasper-passage-v1-82bfaa243a3e3831cca68aa4c59e566681d0f0d2f97bebb33f8f3578124a2ef1",
+      "qasper-passage-v1-8708f7ce5d0a98ef24541671acda3a01ede691cda41fc492722c40721afde609",
+      "qasper-passage-v1-89e231b2aa24fd7e1c25c436b5f6482f18794ba1dad4f254588980900952d95e",
+      "qasper-passage-v1-ae4ba3175b15673cd9ffe40f93f2e401166ecdd7e5610f0ea6369302b3ebb92f",
+      "qasper-passage-v1-b52969e3da6c01167f4fecd3e949fa5e3c3aaf8bbec9c799e5b13ee54d7ac0db",
+      "qasper-passage-v1-b61d1d2e4481c7dce937a8a1e2471f4703efdce557645703c98d4e9499057977",
+      "qasper-passage-v1-b8996427e9baa1b4762de6db6508f39b4c6f5bb67ed9cfb3f0656eb677f3fdca",
+      "qasper-passage-v1-c4a10a6528b6e8dc9412f7184a6b8325bd1aa1790e625667ce77d102d9c2998c",
+      "qasper-passage-v1-e5b6f149bed4aa26c51ccf42238383062442493a2dfaa653dd574ffc3e37e6c7",
+      "qasper-passage-v1-fccbc4aee061eb4b87cf21eed1c3df0d138cb249b81883f39bf44c560150da40"
+    ],
+    "400": [
+      "qasper-passage-v1-0d41563b175aa927989c9f261deb2814142c969bf488b1192b39cada17e93894",
+      "qasper-passage-v1-253bf5a02f8f139ccbafbe85818a2ce05bbe1a45250a454958d3d9703d34d793",
+      "qasper-passage-v1-291e5f5e7d09909b2664cdd54941bc0084f69f24971fb910a7309e5ed66c6eae",
+      "qasper-passage-v1-2a7ac1f3d86283ad64d947ef7578298ec8f375567b6daf955a60b90fd364fbe5",
+      "qasper-passage-v1-3d3901e9f732265198344f0db7d5bafc23d85923163e8a25b10300d7d9fee09f",
+      "qasper-passage-v1-777dfbf8390064980c0c5af0cb7d35f6c7e6e6e1ac474cffb14aa8b92abba28e",
+      "qasper-passage-v1-94975861cfcc0353f454de9219a14471437bbd99096fc3b772b4c368fc5b1dc9",
+      "qasper-passage-v1-d233302cee6f9b4872bed7e5d01752ab9952baec17e824e1390884bc96066f0e",
+      "qasper-passage-v1-d73ebc5d29d41795fea32c97a182b158f91865470801b4f8db83fc1440ca1d99",
+      "qasper-passage-v1-dd5f5e46b52e58cfd87906c2f54e2c70cb9e5f9eb8e004ef726490f2a850ff62",
+      "qasper-passage-v1-fe09ede3a0ecbb55ff9d0eaf00f99c80453541b66cd42429ca9b07906afcfea1"
+    ]
+  },
+  "readability_review_chunk_count_total": 48,
+  "readability_review_chunk_counts": {
+    "100": 24,
+    "200": 13,
+    "400": 11
+  },
+  "readability_sample_count_actual": 10,
+  "readability_samples": [
+    {
+      "character_span": [
+        0,
+        747
+      ],
+      "location": "1708.08615:0:2",
+      "paper_id": "1708.08615",
+      "paragraph_index": 2,
+      "section_index": 0
+    },
+    {
+      "character_span": [
+        0,
+        319
+      ],
+      "location": "1708.08615:3:1",
+      "paper_id": "1708.08615",
+      "paragraph_index": 1,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        18
+      ],
+      "location": "1606.05320:3:4",
+      "paper_id": "1606.05320",
+      "paragraph_index": 4,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        859
+      ],
+      "location": "1606.05320:5:2",
+      "paper_id": "1606.05320",
+      "paragraph_index": 2,
+      "section_index": 5
+    },
+    {
+      "character_span": [
+        0,
+        288
+      ],
+      "location": "1904.12087:3:1",
+      "paper_id": "1904.12087",
+      "paragraph_index": 1,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        328
+      ],
+      "location": "1904.12087:4:0",
+      "paper_id": "1904.12087",
+      "paragraph_index": 0,
+      "section_index": 4
+    },
+    {
+      "character_span": [
+        0,
+        354
+      ],
+      "location": "1901.03860:1:2",
+      "paper_id": "1901.03860",
+      "paragraph_index": 2,
+      "section_index": 1
+    },
+    {
+      "character_span": [
+        0,
+        1480
+      ],
+      "location": "1901.03860:3:0",
+      "paper_id": "1901.03860",
+      "paragraph_index": 0,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        437
+      ],
+      "location": "1811.00942:0:0",
+      "paper_id": "1811.00942",
+      "paragraph_index": 0,
+      "section_index": 0
+    },
+    {
+      "character_span": [
+        0,
+        259
+      ],
+      "location": "1811.00942:2:2",
+      "paper_id": "1811.00942",
+      "paragraph_index": 2,
+      "section_index": 2
+    }
+  ],
+  "readability_sampling": {
+    "length_check": {
+      "long_count": 2,
+      "short_count": 8,
+      "threshold_words": 150
+    },
+    "method": "random_papers_then_contiguous_paragraph_intervals",
+    "paper_count_actual": 5,
+    "paper_count_requested": 5,
+    "paper_ids": [
+      "1708.08615",
+      "1606.05320",
+      "1904.12087",
+      "1901.03860",
+      "1811.00942"
+    ],
+    "paragraph_count_by_paper": {
+      "1606.05320": 2,
+      "1708.08615": 2,
+      "1811.00942": 2,
+      "1901.03860": 2,
+      "1904.12087": 2
+    },
+    "paragraph_count_requested": 10,
+    "paragraph_word_counts": [
+      112,
+      47,
+      3,
+      153,
+      43,
+      57,
+      56,
+      231,
+      63,
+      36
+    ],
+    "paragraphs_per_paper_requested": 2
+  },
+  "retriever": {
+    "bm25": {
+      "b": 0.75,
+      "enabled": true,
+      "epsilon": 0.25,
+      "k1": 1.5,
+      "tokenizer": "casefold + Unicode word runs"
+    },
+    "dense": {
+      "enabled": false
+    },
+    "id": "p1-p2-static-retrieval",
+    "mode": "bm25",
+    "packages": {
+      "rank-bm25": "0.2.2"
+    },
+    "persistent_score_cache": false,
+    "reranker": {
+      "enabled": false
+    },
+    "scope": "selected paper",
+    "score": "raw BM25",
+    "source_commit": "5ccfb070a00f71dd2f95f69afb31868c296f35c4",
+    "tie_break": "passage_id ascending; reranker ties first use RRF descending"
+  },
+  "run_id": "round1_bm25_20261028_01",
+  "schema_version": "v0-proposed",
+  "source": {
+    "dataset_id": "allenai/qasper",
+    "local_parser_version": 1,
+    "resolved_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "source_manifest_sha256": "c1b073d330bc649280951304c04bac5796476c926b6a98ff8b1cc22c882fd9e7",
+    "split_files": {
+      "test": {
+        "rows": 416,
+        "sha256": "308380c3da5287ac450582c457a9a75303b8361360dd88e727afd021c8320779"
+      },
+      "train": {
+        "rows": 888,
+        "sha256": "7a25389963d05d97de9462d4e46b2ef367f37b898de55f5833bae7aa4b6e8732"
+      },
+      "validation": {
+        "rows": 281,
+        "sha256": "f3e8f8072bbb42c6f770cdbc311672738683505eef401a7b75e0c08cfb7c5945"
+      }
+    }
+  },
+  "source_splits": [
+    "train",
+    "validation"
+  ],
+  "split_policy_version": "qasper-official-paper-disjoint-v0-proposed",
+  "timing_policy": "perf_counter wall seconds; index_seconds includes factory construction, model initialization and passage encoding; per-query includes full retrieval and lazy first BGE scoring load; no hidden warm-up; excludes report rendering",
+  "working_tree_dirty": true,
+  "working_tree_status": [
+    " M experiments/chunk_size/README.md",
+    " M experiments/chunk_size/config.json",
+    " M experiments/chunk_size/criteria.md",
+    " M experiments/chunk_size/criteria_zn-CN.md",
+    " M weekly-work/week-3/HANDOFF.md",
+    " M weekly-work/week-3/TODO.md"
+  ]
+}

@@ -61,7 +61,7 @@ src/ui/               P6: Streamlit
 scripts/              Reproducible command-line entry points
 tests/                Module and integration tests
 data/                Local datasets (ignored except README)
-results/              Local experiment outputs (ignored except README)
+results/              Shared experiment metrics, reports and reproducibility records
 ```
 
 ## Assignment delivery

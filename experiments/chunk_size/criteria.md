@@ -101,7 +101,7 @@ This `v0-proposed` output contract is implemented for new BM25 runs. Store quest
 
 ### File responsibilities
 
-All paths are under `results/chunk_size/<run_id>/`. Generated data stays out of Git.
+All paths are under `results/chunk_size/<run_id>/`. Share experiment results in Git; raw datasets and generated corpora stay out of Git.
 
 | Path | Contents and purpose |
 | --- | --- |
@@ -227,7 +227,7 @@ The old `readability_sample_count`, `question_seed` and `readability_seed` confi
 
 ## What to save during evaluation
 
-The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. The `run_id` identifies the comparison run; the configuration directory names are `chunk_size_100`, `chunk_size_200`, and `chunk_size_400`. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, replacing `<size>` with `100`, `200`, or `400`. Generated files stay out of Git.
+The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. The `run_id` identifies the comparison run; the configuration directory names are `chunk_size_100`, `chunk_size_200`, and `chunk_size_400`. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, replacing `<size>` with `100`, `200`, or `400`. Share these experiment result files in Git.
 
 | Metric | What the code must save | File under the size directory |
 | --- | --- | --- |

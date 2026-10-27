@@ -409,6 +409,7 @@ def test_modes_end_to_end(
     manifest = json.loads((run / "manifest.json").read_text(encoding="utf-8"))
     summary = json.loads((run / "summary.json").read_text(encoding="utf-8"))
     assert manifest["retriever"]["mode"] == mode
+    assert (run / "summary.html").is_file()
     assert manifest["retriever"]["test_double"]
     assert manifest["config"]["retrieval"] == adapter.normalize_retrieval(
         config["retrieval"]

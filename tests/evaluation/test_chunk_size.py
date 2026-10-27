@@ -384,6 +384,7 @@ def test_runner_and_manual_summary(exported_inputs: tuple, tmp_path: Path) -> No
         "run_id": "comparison",
     }
     run = run_comparison(**args)
+    assert (run / "summary.html").is_file()
     manifest = json.loads((run / "manifest.json").read_text(encoding="utf-8"))
     assert set(manifest["question_ids"]) == {"question-train", "question-validation"}
     assert manifest["filtering_counts"] == {
@@ -415,6 +416,9 @@ def test_runner_and_manual_summary(exported_inputs: tuple, tmp_path: Path) -> No
         text = review.read_text(encoding="utf-8")
         review.write_text(text.replace("| pending |", "| pass |"), encoding="utf-8")
     summary = summarize_readability(run)
+    html = (run / "summary.html").read_text(encoding="utf-8")
+    assert 'Pending (' not in html
+    assert '>1.0000</td>' in html
     counts = manifest["readability_review_chunk_counts"]
     assert manifest["readability_review_chunk_count_total"] == sum(counts.values())
     for size, count in counts.items():

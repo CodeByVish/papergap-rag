@@ -1,4 +1,4 @@
-"""Expose chunk-size comparison and manual review summarization commands.
+"""Expose chunk-size experiments, review imports and offline report commands.
 
 Run from the repository root with ``python -m scripts.evaluate_chunk_size``.
 The default run uses a CPU BM25 baseline without downloading model weights.
@@ -12,11 +12,12 @@ from pathlib import Path
 
 from src.evaluation.chunk_size_artifacts import generate_reports
 from src.evaluation.chunk_size_reports import summarize_readability
+from src.evaluation.render_chunk_size_summary import write_summary_html
 from src.evaluation.run_chunk_size import run_comparison
 
 
 def main() -> int:
-    """Parse run or summarize arguments and report actionable validation errors.
+    """Dispatch experiment and report commands with actionable validation errors.
 
     Returns zero on success and one for invalid inputs or filesystem errors.
     Generated outputs are retained locally under the requested new run ID.
@@ -53,6 +54,10 @@ def main() -> int:
     )
     regenerate.add_argument("--run-dir", type=Path, required=True)
     regenerate.add_argument("--word-budgets", nargs="+", type=int)
+    render = commands.add_parser(
+        "render", help="render summary.html from summary.json without changing metrics"
+    )
+    render.add_argument("--run-dir", type=Path, required=True)
     arguments = vars(parser.parse_args())
     command = arguments.pop("command")
     try:
@@ -61,6 +66,8 @@ def main() -> int:
         elif command == "summarize":
             summarize_readability(arguments["run_dir"])
             print(arguments["run_dir"] / "summary.json")
+        elif command == "render":
+            print(write_summary_html(arguments["run_dir"]))
         else:
             generate_reports(arguments["run_dir"], arguments["word_budgets"])
             print(arguments["run_dir"] / "summary.json")

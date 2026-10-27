@@ -299,3 +299,7 @@ def test_runner_replay_without_raw_inputs(
     assert main() == 0
     changed = json.loads((run / "summary.json").read_text(encoding="utf-8"))
     assert changed["word_budgets"] == [3, 6]
+    html = (run / "summary.html").read_text(encoding="utf-8")
+    assert 'Word budget: 3 words' in html
+    assert 'Word budget: 6 words' in html
+    assert 'Word budget: 500 words' not in html

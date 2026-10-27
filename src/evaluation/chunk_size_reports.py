@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from src.evaluation.chunk_size_metrics import uncovered_spans
+from src.evaluation.render_chunk_size_summary import write_summary_html
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -239,4 +240,5 @@ def summarize_readability(run_dir: Path) -> dict[str, Any]:
             manifest["readability_passage_ids"][key],
         )
     write_json(run_dir / "summary.json", summary)
+    write_summary_html(run_dir, summary)
     return summary

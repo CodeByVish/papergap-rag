@@ -19,11 +19,9 @@ dist/
 .env.*
 !.env.example
 .streamlit/secrets.toml
-# Local data, models, indexes and outputs
+# Local data, models, indexes and caches
 /data/*
 !/data/README.md
-/results/*
-!/results/README.md
 /models/
 /indexes/
 /cache/

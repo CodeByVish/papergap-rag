@@ -62,6 +62,7 @@ from src.evaluation.chunk_size_retrieval import (
 from src.evaluation.chunk_size_retrieval import (
     retriever_metadata as configured_metadata,
 )
+from src.evaluation.render_chunk_size_summary import write_summary_html
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULTS = {
@@ -598,5 +599,7 @@ def run_comparison(
     write_json(run_dir / "summary.json", summary)
     if structured:
         generate_reports(run_dir, manifest=manifest)
+    else:
+        write_summary_html(run_dir, summary)
     write_json(run_dir / "manifest.json", manifest)
     return run_dir

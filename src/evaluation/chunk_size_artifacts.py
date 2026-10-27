@@ -15,6 +15,7 @@ from typing import Any
 
 from src.evaluation.chunk_size_metrics import evaluate_question, normalized_paragraph
 from src.evaluation.chunk_size_reports import evidence_section, quoted_text, write_json
+from src.evaluation.render_chunk_size_summary import write_summary_html
 
 SCHEMA = "chunk-size-inputs-v0-proposed"
 DEFAULT_BUDGETS = [500, 1000, 2000]
@@ -594,4 +595,5 @@ def generate_reports(
             report, encoding="utf-8"
         )
     write_json(summary_path, summary)
+    write_summary_html(run_dir, summary)
     return summary

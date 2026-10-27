@@ -1,0 +1,2 @@
+# Preserve experiment bytes so manifest SHA-256 hashes survive Git round trips.
+results/chunk_size/** -text

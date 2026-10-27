@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chunk size comparison: round1_bm25_20261028_02</title>
+<style>
+:root { --navy: #1F3864; --blue: #2F5496; --gray: #F2F2F2;
+  --text: #333F50; --border: #D9D9D9; --white: #FFFFFF; --highlight: #DCE9FB; }
+body { font-family: "Times New Roman", SimSun, serif; font-size: 12pt;
+  color: var(--text); margin: 2rem; line-height: 1.5; }
+h1, caption { color: var(--navy); }
+h1 { font-size: 22pt; }
+a { color: var(--blue); }
+.run-id { font-family: Consolas, monospace; }
+.metric-notes { background: var(--gray); border-left: 3px solid var(--blue);
+  padding: .5rem 1rem; margin: 1rem 0; }
+.metric-notes p { margin: .5rem 0; }
+.table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+table { border-collapse: collapse; width: 100%; }
+caption { text-align: left; font-weight: bold; font-size: 15pt; padding: .5rem 0; }
+th, td { border: 1px solid var(--border); padding: .6rem;
+  text-align: center; vertical-align: middle; }
+thead { background: var(--navy); color: var(--white); }
+tbody tr:nth-child(even) { background: var(--gray); }
+td.best { background: var(--highlight); color: var(--navy); font-weight: bold; }
+@media print { body { margin: 0; } .table-wrap { overflow: visible; } }
+</style></head><body>
+<h1>Chunk size comparison</h1>
+<p>Run: <span class="run-id">round1_bm25_20261028_02</span> | Schema: v0-proposed | Source: <a href="summary.json">summary.json</a></p>
+<p>Rates use the 0–1 scale. Decimal values use four decimal places.
+Blue bold cells mark the highest rate in each column, including exact ties.
+Hover over aggregate values for numerator / denominator.
+Pending means manual review is unfinished; N/A means unavailable.
+Word counts and timings are descriptive and receive no best-value highlight.
+Single-run timings do not establish a performance comparison.</p>
+<aside class="metric-notes" aria-label="Metric notes">
+<p><strong>Mean retrieved words:</strong> Mean total word count of the top-5
+retrieved chunks per question (or all returned chunks if fewer than five).
+Overlapping text is counted repeatedly.</p>
+<p><strong>Corpus passages:</strong> Total number of chunks in the entire
+experiment corpus for this chunk size, rather than the number retrieved for
+one question. Smaller chunks usually produce more passages.</p>
+<p><strong>Corpus exhausted (questions):</strong> Number of questions for which
+all available chunks from the question's paper have been read but the specified
+word budget is still not filled. This describes exhausted available text;
+it does not by itself indicate retrieval failure or missing evidence.</p>
+</aside>
+<div class="table-wrap"><table><caption>Top-5 retrieval and readability</caption><thead><tr><th scope="col">Chunk size (words)</th><th scope="col">Evidence Hit@5 (higher is better)</th><th scope="col">Complete evidence rate@5 (higher is better)</th><th scope="col">Mean retrieved words</th><th scope="col">Readability pass rate (higher is better)</th><th scope="col">Corpus passages</th><th scope="col">Index time (seconds)</th></tr></thead><tbody><tr><th scope="row">100</th><td title="15 / 50">0.3000</td><td title="12 / 50">0.2400</td><td title="23458 / 50">469.1600</td><td title="0 / 24">Pending (24)</td><td title="">69344</td><td title="">3.7349</td></tr><tr><th scope="row">200</th><td title="25 / 50">0.5000</td><td title="20 / 50">0.4000</td><td title="41644 / 50">832.8800</td><td title="0 / 13">Pending (13)</td><td title="">32073</td><td title="">2.5660</td></tr><tr><th scope="row">400</th><td class="best" title="30 / 50">0.6000</td><td class="best" title="26 / 50">0.5200</td><td title="66636 / 50">1332.7200</td><td title="0 / 11">Pending (11)</td><td title="">20490</td><td title="">2.2406</td></tr></tbody></table></div><div class="table-wrap"><table><caption>Word budget: 500 words</caption><thead><tr><th scope="col">Chunk size (words)</th><th scope="col">Evidence hit (higher is better)</th><th scope="col">Complete evidence rate (higher is better)</th><th scope="col">Mean actual words</th><th scope="col">Questions</th><th scope="col">Corpus exhausted (questions)</th></tr></thead><tbody><tr><th scope="row">100</th><td title="15 / 50">0.3000</td><td title="12 / 50">0.2400</td><td title="25000 / 50">500.0000</td><td title="">50</td><td title="">0</td></tr><tr><th scope="row">200</th><td class="best" title="19 / 50">0.3800</td><td title="12 / 50">0.2400</td><td title="25000 / 50">500.0000</td><td title="">50</td><td title="">0</td></tr><tr><th scope="row">400</th><td title="15 / 50">0.3000</td><td class="best" title="13 / 50">0.2600</td><td title="25000 / 50">500.0000</td><td title="">50</td><td title="">0</td></tr></tbody></table></div><div class="table-wrap"><table><caption>Word budget: 1000 words</caption><thead><tr><th scope="col">Chunk size (words)</th><th scope="col">Evidence hit (higher is better)</th><th scope="col">Complete evidence rate (higher is better)</th><th scope="col">Mean actual words</th><th scope="col">Questions</th><th scope="col">Corpus exhausted (questions)</th></tr></thead><tbody><tr><th scope="row">100</th><td title="18 / 50">0.3600</td><td title="14 / 50">0.2800</td><td title="50000 / 50">1000.0000</td><td title="">50</td><td title="">0</td></tr><tr><th scope="row">200</th><td class="best" title="27 / 50">0.5400</td><td title="21 / 50">0.4200</td><td title="50000 / 50">1000.0000</td><td title="">50</td><td title="">0</td></tr><tr><th scope="row">400</th><td class="best" title="27 / 50">0.5400</td><td class="best" title="23 / 50">0.4600</td><td title="50000 / 50">1000.0000</td><td title="">50</td><td title="">0</td></tr></tbody></table></div><div class="table-wrap"><table><caption>Word budget: 2000 words</caption><thead><tr><th scope="col">Chunk size (words)</th><th scope="col">Evidence hit (higher is better)</th><th scope="col">Complete evidence rate (higher is better)</th><th scope="col">Mean actual words</th><th scope="col">Questions</th><th scope="col">Corpus exhausted (questions)</th></tr></thead><tbody><tr><th scope="row">100</th><td title="31 / 50">0.6200</td><td title="22 / 50">0.4400</td><td title="99566 / 50">1991.3200</td><td title="">50</td><td title="">1</td></tr><tr><th scope="row">200</th><td class="best" title="39 / 50">0.7800</td><td class="best" title="35 / 50">0.7000</td><td title="98855 / 50">1977.1000</td><td title="">50</td><td title="">3</td></tr><tr><th scope="row">400</th><td title="36 / 50">0.7200</td><td title="34 / 50">0.6800</td><td title="98245 / 50">1964.9000</td><td title="">50</td><td title="">6</td></tr></tbody></table></div>
+</body></html>
