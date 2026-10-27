@@ -100,3 +100,16 @@ Owner: Ananya. Merged: [#6](https://github.com/CodeByVish/papergap-rag/pull/6) L
 Agreed with P5: refuse without a model call only for `INSUFFICIENT_INFORMATION` or no retrieved passages; every other state generates and keeps `sufficient` as metadata, so both arms share one generation call.
 
 Open items: first run of the critic on real Qwen on the cluster (needs a cluster runner and P5's generator; raw replies are logged so the prompt can be inspected); P2's PR #10 (section-scoped retrieval) before the per-paper section selector can be proposed; P3's gold-evidence mapping for recall metrics; real-data traces on development examples; agent freeze by 25 October. Passage and state schemas remain `v0-proposed`.
+
+## P2 batch handoff — 17 October 2026
+
+Added a fixed-question JSONL batch entry point with shared model/index loading,
+RRF-only and BGE modes, original query order/IDs, explicit offline operation,
+run manifests and failure reporting. Completed both real-model exports on P1's
+unchanged 100 training questions: each contains 485 passages and three genuine
+empty results. The local corpus hash matches P1; RRF top-five IDs/order match
+all 100 records. Independent schema/provenance validation passed. All 423 tests
+passed. See [batch commands, snapshot comparison and results](P2_BATCH_HANDOFF.md).
+These are integration artifacts; held-out quality evaluation and team interface
+agreement remain pending. PR #5 was reviewed and merged on 17 October (431 tests passed against current
+main). Batch changes are on `p2/batch-hybrid-handoff`, pending review.
