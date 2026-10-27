@@ -10,7 +10,7 @@
     4. 固定随机种子（建议 `experiments/chunk_size/config.json` 中，所有随机过程采用相同的 random seed）
     5. `n_paper`、`n_paragraph` 一并记入 `experiments/chunk_size/config.json` 中
     6. 补充相关代码，在 `experiments\chunk_size\criteria_zn-CN.md` 和英文版，补充实验配置和这个采样方案
-2. 正式检索模式及固定参数的选择。
+2. 正式检索模式及固定参数的选择。已选用 `bm25`；算法说明及当前参数见 `experiments/chunk_size/BM25.md` 和英文版。当前使用 `top_k=5` 及库缺省值 $k_1=1.5$、$b=0.75$、$\epsilon=0.25$；固定参数仍待正式确认，本条暂不标为全部完成。
 3. 可读性通过／不通过的具体判定标准和示例。
 4. 可读性评审人员、是否隐藏分块大小及分歧处理方式。
 5. 部分证据无法定位的答案标注，其已定位段落是否参与证据命中统计。

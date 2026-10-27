@@ -24,7 +24,7 @@
 | `data.chunk_words`：$200$ | `candidates`：$150$、$200$、$250$ | 用途相关但结构不同；实验逐一比较候选大小，不采用 YAML 的单一大小。 |
 | `seed`：$42$ | `seed`：$42$ | 用途和值相同；所有抽样过程使用实验配置中的种子，不读取 YAML。 |
 
-YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 等提案设置，实验 JSON 当前仅指定 `retrieval.mode` 为 `bm25`。两者不是同一完整检索配置；本实验不会继承 YAML 的模型或融合参数。实验检索代码的缺省值和可选模式见 `experiments/chunk_size/README.md`。
+YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 等提案设置，实验 JSON 当前仅指定 `retrieval.mode` 为 `bm25`，本次实验已选用此模式。两者不是同一完整检索配置；本实验不会继承 YAML 的模型或融合参数。BM25 的输入、输出、完整流程及当前参数见 `experiments/chunk_size/BM25.md`；固定参数仍待正式确认。实验检索代码的缺省值和可选模式见 `experiments/chunk_size/README.md`。
 
 除开头已列出的 `candidates` 外，当前实验 JSON 的全部设置如下；比较各候选分块大小时保持这些设置一致。
 
