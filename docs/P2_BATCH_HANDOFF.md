@@ -99,6 +99,7 @@ training integration questions, not the frozen held-out evaluation set.
 
 P5 should consume `bge/retrieval.jsonl` for the reranked integration and preserve
 the fusion-only Week-3 baseline separately. Do not overwrite `runs/week3/`.
-A local path is not a team-accessible URL: forwarding/uploading the ZIP is still
-required. No shared-cloud upload is claimed. The bundle preserves the historical
+The ZIP has now been uploaded and metadata-verified in the team Drive folder:
+[download the handoff](https://drive.google.com/file/d/1XM84LDukvCmQaNXFOBFfAW_j_JkkpWV3/view).
+Folder sharing determines teammate access; individual permissions were not changed. The bundle preserves the historical
 executed source and manifests; do not relabel it as a run of newer code.
