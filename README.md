@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1 BM25/Dense experiments use P3's real development corpus. P2 PR #5 is merged, providing real-data Hybrid/RRF, optional BGE reranking and pilot commands. P4 Agent control flow is also merged; its planner, mapper, critic and rewriter remain keyword mocks. Real quality metrics remain unavailable. See [P1 experiments and integration](docs/P1_WEEK3_WEEK4.md) and [P2 real-data commands and results](docs/P2_WEEK2.md).
+**Status:** P1 BM25/Dense experiments use P3's real development corpus. Merged P2 work provides Hybrid/RRF, optional BGE reranking, batch exports, section forwarding, score caching and evaluation/pooling tools. P4 provides a rule-based planner and evidence mapper, a gap-driven rewriter, an optional LLM critic and a static/adaptive experiment harness. Real Qwen validation and final quality results remain pending. See [P1 experiments and integration](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md) and the [28 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026).
 
 ## Start here
 
@@ -11,6 +11,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
+- [P1 used-question inventory](docs/handoffs/P1_QUESTION_USAGE.md): prior development usage for the team held-out exclusion audit.
 
 ## Team
 
@@ -21,7 +22,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
 | P5 | Pending | Generation, citations and answer API | QA and grounding |
-| P6 | Pending | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
+| P6 | Changyan | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.
 
@@ -83,7 +84,7 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending gold mappings and P6 metric functions. Keep real data, model weights, caches, indexes and generated results in ignored local directories; only small synthetic fixtures belong in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending compatible gold mappings and the agreed P6 evaluation protocol; P1/P2 metric tooling is available. Keep real data, model weights, caches, indexes and generated results in ignored local directories; only small synthetic fixtures belong in Git.
 
 ## P1 retrieval: Week 3 / Week 4
 
@@ -108,21 +109,25 @@ labels; see the [provisional evaluation contract](docs/P1_EVALUATION.md).
 The original `retrieve(query, paper_id, top_k)` callback remains supported.
 Both independent retrievers also accept keyword-only `section="Results"`
 with exact matching before top-K selection. Callers can supply a rewritten
-query directly. P2/P4 forwarding of section filters remains a separate
-application-contract task; their code is unchanged. The latest isolated-main
-check verifies fixed request bindings through real Hybrid retrieval and P4
-control flow; it does not implement dynamic section selection.
+query directly. Merged P2 Hybrid retrieval forwards exact sections to both
+callbacks, and the P4 graph accepts a caller-supplied section selector. P4 still
+owns the per-paper selector and same-round unscoped fallback. The historical
+P1 integration checks used fixed request bindings; they do not establish
+dynamic section selection. See [section interfaces](docs/P2_AGENT_CACHE.md).
 
-Gold evidence-to-chunk mapping and P6 retrieval metric functions are still
-missing from the inspected upstream code. This workflow exports real retrieval
-candidates and latency; it does not fabricate relevance labels or quality
-metrics. See the linked verification record for actual results and limitations.
+P1 saved-ranking scoring and P2 retrieval evaluation/pooling tools are
+available. Compatible gold evidence-to-passage mappings, relevance rules and
+the approved held-out/configuration freeze remain external inputs. This
+workflow exports real retrieval candidates and latency; quality metrics remain
+unavailable until those inputs are supplied. See the [P2 evaluation handoff](docs/P2_EVALUATION_HANDOFF.md)
+and the linked P1 verification record for scope and limitations.
 
 The Week 3/4 delivery branch includes main's merged P2 and P4 APIs.
 `python -B -m scripts.run_p1_integration --help` describes the bounded integration
 check using existing artifacts and fixed request sections. It does not establish
-dynamic section selection or real critic quality. See the [18 October main integration](docs/P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026)
-for the latest delivery checkpoint.
+dynamic section selection or real critic quality. The [18 October integration](docs/P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026)
+records historical execution; see the [28 October checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026)
+for the current branch refresh and question-use handoff.
 
 ## P2 real-data Hybrid and reranking
 

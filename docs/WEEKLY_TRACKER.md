@@ -2,7 +2,7 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
-> Current P1 delivery: [18 October main integration](#p1-main-integration-after-p2-merge-18-october-2026). P2 PR #5 is merged. Earlier open-PR, local-only, uncommitted and deferred-delivery statements describe their original checkpoints.
+> Current P1 delivery: [28 October question-use handoff and main sync](#p1-question-usage-handoff-and-main-sync-28-october-2026). Earlier PR states, integration limitations and test counts describe their original dated checkpoints; they are not current validation results.
 
 | Week | Dates | Exit checkpoint | Status |
 | --- | --- | --- | --- |
@@ -463,3 +463,131 @@ help/import checks passed. Unmerged-path/conflict-marker scans and
 real-index build or ZIP generation was needed. Detailed commands and local
 record paths are in the linked report. These results supersede neither the
 original experiment provenance nor earlier version-specific test records.
+
+## P4 agent progress — updated 23 October 2026
+
+Owner: Ananya. Merged: [#6](https://github.com/CodeByVish/papergap-rag/pull/6) LangGraph loop on the P2 retrieval API, [#12](https://github.com/CodeByVish/papergap-rag/pull/12) planner and evidence mapper, [#13](https://github.com/CodeByVish/papergap-rag/pull/13) critic, `question_id` and export record, [#14](https://github.com/CodeByVish/papergap-rag/pull/14) gap-driven query rewriter, [#16](https://github.com/CodeByVish/papergap-rag/pull/16) chat-based critic client for P5's Qwen generator, [#17](https://github.com/CodeByVish/papergap-rag/pull/17) static-vs-adaptive experiment harness and real-retrieval smoke test. 130 agent tests pass with fake retrievers and fake LLM clients. The agent has run end to end on real P1/P2 retrieval (10 training questions, no LLM); it has **not** yet run with real Qwen.
+
+| Component | Status | Notes |
+| --- | --- | --- |
+| Loop and stopping | Implemented | Plan, retrieve, map, critic, rewrite; at most 2 retries (3 rounds); stops early on `INSUFFICIENT_INFORMATION`; every round logged. |
+| Planner | Rule-based | Five question types and structured evidence requirements. `unanswerable` is never predicted from the question text. |
+| Evidence mapper | Rule-based, weak | `scripts/evaluate_planner.py` on QASPER train (2,593 questions): the plan is satisfied by gold evidence 55.6% of the time but by the five closest non-evidence paragraphs 79.2% (validation: 58.8% vs 79.5%). It cannot separate real evidence from lookalikes, so `evidence_map` is advisory. |
+| Critic | Implemented; Qwen prompt unvalidated | System/user prompt, tolerant JSON scan, deterministic validation, rule-based fallback, and `GeneratorChatClient` for P5's shared generator (greedy, thinking off, one larger-budget retry on truncation). `critic_log` records `llm`/`rules`/`fallback` and the raw replies per round. |
+| Query rewriter | Implemented | One action per gap label; reuses the paper's own terms and the LLM critic's missing components; never repeats an earlier query. Section-scoped retries wait for P2's PR #10. |
+| Experiment harness | Implemented | `src/agent/experiments.py`: static (no retries) vs adaptive arms; evidence recall before/after retries, rounds, gap recovery, unnecessary/ineffective/redundant retries, refusals, paired bootstrap gain. Optional `answer_fn(record) -> dict` runs P5's generation identically on both arms. Needs P3's gold-evidence-to-passage mapping for recall. |
+| Real-retrieval smoke test | Run once | `scripts/smoke_agent_real.py` on 6 pilot training papers with the rule-based critic: it accepted 7 of 10 questions in round 1 although only about 25% of approximate gold passages were retrieved, so adaptive retries made no difference. This motivates the Qwen critic; it is not a result. |
+| Handoff to P5/P6 | Implemented | `AgentState.question_id`; `src/agent/export.py` writes one JSON record per question including passage text. |
+
+Agreed with P5: refuse without a model call only for `INSUFFICIENT_INFORMATION` or no retrieved passages; every other state generates and keeps `sufficient` as metadata, so both arms share one generation call.
+
+Open items: first run of the critic on real Qwen on the cluster (needs a cluster runner and P5's generator; raw replies are logged so the prompt can be inspected); P2's PR #10 (section-scoped retrieval) before the per-paper section selector can be proposed; P3's gold-evidence mapping for recall metrics; real-data traces on development examples; agent freeze by 25 October. Passage and state schemas remain `v0-proposed`.
+
+## P2 evaluation and annotation preparation — 17 October 2026
+
+Prepared four-system inference grids, independent-label scoring with judged
+coverage and explicit pool/full-paper distinctions, paired fusion/reranking
+contributions, error categories, deterministic blinded candidate pooling and
+blank P2 annotation batch exports gated on a complete frozen pool and P6
+assignment approval. Added a report methodology/latency draft with pending
+quality results clearly marked. Real-model workflow smoke: three training
+questions, candidate sizes 10/20, RRF 60, all four methods; c20 pooling produced
+30 unique pairs without shortfalls. This is not the held-out annotation pool.
+
+Repository/local-data audit found no agreed relevance-label file or frozen
+held-out manifest; final quality scoring, development parameter selection,
+held-out pooling, 334 proposed P2 human judgments, agreement and report quality
+conclusions require P3/P6 inputs. No labels or approvals were manufactured.
+See [evaluation commands and required inputs](P2_EVALUATION_HANDOFF.md) and
+[report contribution draft](P2_REPORT_CONTRIBUTION.md).
+
+## P2 dependency audit — 27 October 2026
+
+Latest main is integrated into P2 #9/#10/#11 with tracker conflicts resolved.
+An isolated combination with P5 #15 passed 566 shared tests and a two-arm mock
+generation bridge check. Section-map limitations and P2/P5 double annotation
+are clarified. Final labels, held-out/configuration freeze, P6 pool allocation,
+P5's unpublished relevance guideline and real Qwen validation remain outstanding.
+See [current P2 audit](P2_STATUS.md). No held-out approval or human labels were invented.
+## P2 agent/filter/cache increment — 17 October 2026
+
+PR #5 is merged. Added optional exact-section forwarding with a legacy P1
+adapter, caller-selected per-round agent sections, compact per-round ID traces
+and persistent content/config-keyed reranker scoring. The new real-agent CLI
+passed a pinned CPU section-scoped three-round check: first process eight unique
+pair misses/four hits; second process zero misses/12 hits. The branch is rebased onto P4's current planner/critic/rewriter; full passages
+remain in the export, not the retrieval log. All 436 tests pass; lint and changed-file formatting pass.
+See [interface and cache commands](P2_AGENT_CACHE.md). P1/P4 interface review is
+pending; this does not freeze proposed shared schemas or evaluation policy.
+## P2 batch handoff — 17 October 2026
+
+Added a fixed-question JSONL batch entry point with shared model/index loading,
+RRF-only and BGE modes, original query order/IDs, explicit offline operation,
+run manifests and failure reporting. Completed both real-model exports on P1's
+unchanged 100 training questions: each contains 485 passages and three genuine
+empty results. The local corpus hash matches P1; RRF top-five IDs/order match
+all 100 records. Independent schema/provenance validation passed. All 423 tests
+passed. See [batch commands, snapshot comparison and results](P2_BATCH_HANDOFF.md).
+These are integration artifacts; held-out quality evaluation and team interface
+agreement remain pending. PR #5 was reviewed and merged on 17 October (431 tests passed against current
+main). Batch changes are on `p2/batch-hybrid-handoff`, pending review.
+
+## P2 release and report preparation — 27 October 2026
+
+P2 #9 and #10 merged after review and integration testing. #11 combines those
+changes with the evaluation/pooling tools; protocol approvals remain distinct
+from merging implementation. The verified 100-question handoff is uploaded
+to the team Drive folder (link in P2_BATCH_HANDOFF.md). Report text now reflects
+P4's implemented LLM critic interface and includes reproducible historical
+100-question timing summaries, explicitly not final quality results.
+
+## P1 question-usage handoff and main sync: 28 October 2026
+
+The [P1 question-use inventory](handoffs/P1_QUESTION_USAGE.md) records prior
+retrieval-test usage for the team-wide held-out exclusion audit. It contains
+2,593 unique official train questions across 888 papers, including all three
+questions with genuinely empty retrieval results. The 100-question handoff
+and recorded integration/qualitative samples are subsets. The inventory is
+based on saved query logs and supporting artifacts; it does not declare a
+new held-out set, supply relevance labels or freeze the team's split policy.
+
+Main `5ccfb070a00f71dd2f95f69afb31868c296f35c4` is integrated into `p1/week3-week4`
+with a normal merge for [PR #8](https://github.com/CodeByVish/papergap-rag/pull/8).
+The tracker retains all P1, P2 and P4 history. Existing run counts, quality
+limitations and artifact provenance remain attached to their original
+checkpoints; the P1 RRF-only package and P2 reranked export stay distinct.
+
+The merged code includes P2 section forwarding and evaluation/pooling tools,
+and P4's rule-based planner/mapper, optional LLM critic, query rewriter and
+experiment harness. Per-paper section selection and same-round unscoped
+fallback remain P4 follow-ups. Compatible gold mappings, the agreed relevance
+protocol and the final held-out/configuration freeze remain prerequisites
+for final quality claims. Real Qwen validation is not established here.
+
+P1's integration validator now preserves `question_id`, accepts the current
+Agent's `INSUFFICIENT_INFORMATION` early stop, and excludes only measured
+retrieval durations from repeat-request state comparisons. Timing validity,
+queries, paper/section scope, ranks/scores, candidate budgets and first-hit
+deduplication remain checked. The controlled fixtures follow the current
+planner/rewriter; P2/P4 production code is unchanged from the merged main.
+
+Current branch validation used two disjoint offline pytest runs with the
+project's Python 3.11 environment:
+
+```text
+python -B -m pytest tests --ignore=tests/test_p1_agent_integration.py -q --tb=short -p no:cacheprovider
+693 passed in 30.59s
+python -B -m pytest tests/test_p1_agent_integration.py -q -p no:cacheprovider
+5 passed in 0.68s
+```
+
+Together these cover **698 passing tests**, with no failures or skips in the
+final runs. The second run includes synthetic tracer, early-stop and timing
+isolation regressions; it is not a real-model end-to-end run. Ruff check and
+format check passed for the two adjusted P1 Python files. Historical test
+counts above retain their original checkpoints. Local verification records
+are in `results/p1-refresh-20261028/`.
+
+The inventory's 2,593 IDs, paper/split mapping, three zero-hit questions and
+29 source-file hashes were independently checked. The question-use inventory
+reuses saved evidence without rerunning retrieval or rebuilding indexes.

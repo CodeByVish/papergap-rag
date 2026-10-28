@@ -1,7 +1,7 @@
 """Bounded real-index checks of the P1 -> P2 -> P4 control-flow boundary.
 
-This is an integration check, not an evaluation of the keyword mock critic.
-Run from a checkout containing P4 and the local P1 Week 3/4 increment.
+This checks rule-based agent control flow, not retrieval or critic quality.
+Run from a checkout containing the current P1/P2/P4 interfaces.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 
 from scripts.build_indexes import PINNED_REVISION
 from src.agent.graph import build_agent_graph
-from src.agent.schemas import AgentState
+from src.agent.schemas import AgentState, GapLabel
 from src.retrieval.bm25_retriever import BM25Retriever
 from src.retrieval.dense_retriever import DEFAULT_MODEL_NAME, DenseRetriever
 from src.retrieval.experiment import (
@@ -42,6 +42,17 @@ def _hit_record(hit: RetrievalHit | RetrievedPassage) -> dict:
         section=hit.passage.section,
     )
     return record
+
+
+def _without_retrieval_timing(state: dict) -> dict:
+    """Compare all agent state except the measured duration of each retrieval."""
+    return {
+        **state,
+        "retrieval_log": [
+            {key: value for key, value in entry.items() if key != "retrieval_ms"}
+            for entry in state["retrieval_log"]
+        ],
+    }
 
 
 class TracedRequest:
@@ -156,10 +167,14 @@ class TracedRequest:
 
     def invoke(self, question: DevelopmentQuestion, label: str) -> dict:
         self.rounds = []
-        # question_id is trace metadata: P4's existing schema has no such field.
-        initial = {"question": question.query, "paper_id": question.paper_id}
+        initial = {
+            "question": question.query,
+            "paper_id": question.paper_id,
+            "question_id": question.question_id,
+        }
         result = AgentState.model_validate(self.graph.invoke(initial))
         _check(result.paper_id == question.paper_id, "P4 changed the request paper")
+        _check(result.question_id == question.question_id, "P4 changed the question ID")
         _check(1 <= result.retrieval_round <= 3, "Default retry limit")
         _check(result.retrieval_round == len(self.rounds), "Round count mismatch")
         _check(self.rounds[0]["query"] == question.query, "Initial query mismatch")
@@ -169,6 +184,10 @@ class TracedRequest:
             _check(trace["paper_id"] == question.paper_id, "P4 called another paper")
             _check(log["query"] == trace["query"], "P4/P1 query trace mismatch")
             _check(log["round"] == trace["round"], "P4/P1 round trace mismatch")
+            _check(
+                math.isfinite(log["retrieval_ms"]) and log["retrieval_ms"] >= 0,
+                "P4 retrieval timing must be finite and nonnegative",
+            )
             _check(
                 log["passage_ids"] == [h["passage_id"] for h in trace["returned"]],
                 "P4/P2 passage trace mismatch",
@@ -182,9 +201,13 @@ class TracedRequest:
             accumulated == list(first_seen.values()),
             "Cross-round dedup/first occurrence",
         )
-        if not result.sufficient:
+        if (
+            not result.sufficient
+            and result.gap_label is not GapLabel.INSUFFICIENT_INFORMATION
+        ):
             _check(
-                result.retrieval_round == 3, "Insufficient evidence must exhaust budget"
+                result.retrieval_round == 3,
+                "Recoverable evidence gaps must exhaust the retry budget",
             )
         return {
             "case": label,
@@ -274,9 +297,15 @@ def run_agent_integration(artifact_root: Path, output_dir: Path) -> dict:
     ):
         cases.append(request(question, section, top_k).invoke(question, label))
     cases.append(approach.invoke(q1, "approach-after"))
+    before, after = (
+        {
+            **{key: value for key, value in case.items() if key != "case"},
+            "agent_state": _without_retrieval_timing(case["agent_state"]),
+        }
+        for case in (cases[0], cases[-1])
+    )
     _check(
-        {k: v for k, v in cases[0].items() if k != "case"}
-        == {k: v for k, v in cases[-1].items() if k != "case"},
+        before == after,
         "Interleaved request/graph state leaked",
     )
     empty_case = next(c for c in cases if c["case"] == "known-paper-without-passages")
@@ -303,7 +332,7 @@ def run_agent_integration(artifact_root: Path, output_dir: Path) -> dict:
     ]
     report = {
         "status": "passed",
-        "evidence_kind": "real retrieval to mock-agent control-flow integration",
+        "evidence_kind": "real retrieval to rule-based agent control-flow integration",
         "quality_metrics": {"status": "unavailable", "metrics": None},
         "section_policy": "fixed per request; no gap-driven section switching",
         "annotations_used": False,
