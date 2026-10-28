@@ -1,0 +1,188 @@
+主题：P5 -> P6：Week-6 交接（标注规则、question inventory、生成结果、runner 契约）
+
+P6 你好，
+
+下面是 P5 现在就能提供给你的信息，以及 P5 需要你确认/提供的几项。内容按“你能直接用 / 需要你给 / GPU 需求 / 路径清单”组织。
+
+======================================================================
+一、现在就能提供的信息
+======================================================================
+
+1) §4 标注规则（P2 点名要的 binary relevance / partial-evidence）
+   - 版本：p5-annotation-v1（2026-10-28），P5 已定稿，等 P3/P6 批准。
+   - 共享仓库 branch p5/generation-integration：
+       docs/P5_ANNOTATION_RULE.md
+     独立 P5 仓库：
+       docs/WEEK5_QUALITY.md §4
+   - 核心规则：
+       * 每个 (question, passage) 给一个 0/1 标签；
+       * 1 = passage 包含确定正确答案所必需的信息，不是“同主题/同实体/词面重合”；
+       * 多部分问题：支持任一必需组件即 1，partial=1，并记录 component；
+       * 不可回答问题：所有 passage 为 0，answerable=0；
+       * 负证据算相关（答“否”也需要证据）；与 gold 矛盾且不提供正确事实的为 0；
+       * 词面重合不算相关；
+       * relevance 不等于 P5 的 provenance[].support（后者是“是否陈述了生成器的 claim”）；
+       * 标注前盲测：不看 retrieval system、score、rank、gold answer、对方标签；
+       * 协议：仲裁前算 raw agreement 和每对 Cohen's kappa，第三人仲裁，不能为了抬高 agreement 改标签。
+   - 文件里还有边界案例表、标注字段、与 P5 validator 的关系。
+
+2) P5 的 question inventory
+   - P5 只用了 100 个真实 QASPER 题，全部是 train，全部在 P1 的 2,593 题 inventory 内；
+   - P5 新增 QASPER ID = 0；
+   - 8 个 bench-b01…b08 是虚构 SciReader/SQuAD 样本，已单独列出，不需要 held-out 排除；
+   - 共享仓库：
+       docs/handoffs/p5_used_question_ids.jsonl
+       docs/handoffs/p5_question_usage_manifest.json
+       docs/handoffs/P5_QUESTION_USAGE.md
+   - P5 的 100 题是 training-integration，不是 held-out，P6 建 pool 时需要排除。
+
+3) 已完成的生成结果（P6 可直接用来算指标）
+   - Week-3 v2 基线（fusion-only，100 题）：
+       runs/week3/answers-vllm-cluster.jsonl
+       runs/week3/answers-transformers-cluster.jsonl
+   - Week-5 v7 基线（fusion-only，100 题）：
+       runs/week5/answers-vllm-v7-cluster.jsonl
+   - Week-6 R4 BGE top-5（100 题）：
+       runs/week6/answers-vllm-bge-reranked-cluster.jsonl
+       runs/week6/answers-vllm-bge-reranked-cluster.notes.json
+       runs/week6/answers-vllm-bge-reranked-cluster.jsonl.meta.json
+   - 已有对比：
+       runs/week6/comparison-bge-reranked-vs-week3-fusion.json
+       以及 P5 的 v7 vs Week-3 对比文件在 runs/week5/。
+   - 每条 answer 记录的结构：
+       result: 冻结五键（answer, citations, evidence_status, retrieval_rounds, provenance）
+       validation: violations / downgraded / downgrade_reason / raw_result
+       generation: backend / prompt_version / diagnostics / raw_text_excerpt
+     join key 是 request_id（等于 QASPER question_id）。
+
+4) 冻结的生成配置（写报告/复现时用）
+   - prompt：p5-grounded-qa-v7（v3 措辞 + validator 修复）
+   - max_new_tokens：1024
+   - schema：p5-answer-v1（五键）
+   - validator：finite-clause splitter + CITATION_REPAIRED_FOR_NUMBER
+   - 共享仓库代码 commit：1198d23（Week-6 reranked/parser 修复）
+   - 最新文档 commit：148f017
+
+5) P6 runner / make_answer_fn 契约
+   - P6 可以直接用共享仓库的：
+       src/generation/harness.py -> make_answer_fn(pipeline)
+     独立 P5 仓库的参考实现：
+       nlp_p5.harness.make_answer_fn
+   - 相关文档（独立 P5 仓库）：
+       docs/P6_HANDOFF.md
+       docs/P6_RUNNER_HANDOFF.md
+       docs/AGENT_HANDOFF.md
+       examples/final_response.schema.json
+   - 规则回顾：
+       * gap_label == INSUFFICIENT_INFORMATION 或 retrieval 为空 -> 不调用模型，直接 refusal；
+       * 其他情况生成，sufficient=False 作为 metadata + GENERATED_WITH_INSUFFICIENT_EVIDENCE warning；
+       * P5 永不抛异常；一个坏样本不能中断 batch；
+       * P6 的 runner 拥有调用权，P5 只提供 answer_fn。
+
+6) 集群路径（如果 P6 要自己跑生成/runner）
+   - P5_ROOT 默认 ~/p5：
+       ~/p5/models/Qwen3-8B
+       ~/p5/data/p1_hybrid.jsonl
+       ~/p5/data/bge/retrieval.jsonl
+       ~/p5/vllm-venv-vllm__0_11_0_python312_defaultbin/bin/python
+   - 代码目录：~/p5-week6-20261028
+   - answer 文件在 P5 的集群账号下；如果 P6 读不到，P5 可以复制到共享位置或由 P6 在自己的作业里指定路径。
+
+7) 已知限制（报告里要写清楚）
+   - P5 的 100 题是 training-integration，不是 held-out；
+   - R4/top-5 第一次测量 78 / 22 / 5，对比 R3/v7 的 85 / 15 / 3；
+     逐条诊断发现 6/10 的 answered->refused 是 reranker 把旧答案引用的 passage 全部排掉；
+   - record 0 的 PARSE_ERROR 是 LaTeX-in-JSON parser bug，已修复；reparse 已确认可恢复；
+     用修复后的 parser 重跑 R4/top-5，预期 79 / 21 / 4（尚未实测）；
+   - record 18 的派生数字 20,000 仍受 R3 限制（stated, not derivable）；
+   - R4/top-5 还不是 freeze 候选，P5 已请 P2 提供 top-10 或 RRF-fallback 导出。
+
+======================================================================
+二、P5 需要 P6 提供/确认的
+======================================================================
+
+1) 1,000-pair held-out annotation pool
+   - 100 题 × 10 passage，固定 record order；
+   - assignment manifest：三组标注对、每人记录范围；
+   - approval manifest：approved_by、pool_sha256、assignment ranges。
+   P2/P5 独立标注同一批 334 条；P5 拿到这四件套后按 p5-annotation-v1 开始标注。
+
+2) §4 是否批准
+   - 请确认 p5-annotation-v1 可作为这 334 条的标注规则；
+   - 如果 P3/P6 要改任何一条，请给版本号和变更点，P5 按新版本执行。
+
+3) G5 runner 谁跑
+   - P6 跑：需要 GPU（Qwen3-8B/vLLM），P5 提供 make_answer_fn、P6_HANDOFF/P6_RUNNER_HANDOFF 和 answer 记录格式；
+   - P5 跑：P6 提供 runner 接口/导出格式，P5 在集群提交作业。
+   请明确一种，避免两个 runner。
+
+4) RAGAS judge 用 API 还是本地模型
+   - API judge：P6 不需要 GPU，但要记录 judge model、prompt、参数、embedding model、成本；
+   - 本地 judge：需要 GPU 配额。
+
+5) held-out 最终生成谁跑
+   - P6 跑或 P5 跑都可以；如果 P6 跑，需要 P5 的模型路径、vLLM venv 和 prompt/validator 配置。
+
+======================================================================
+三、GPU 需求（给 P6 排作业用）
+======================================================================
+
+不需要 GPU：
+  - pool/manifest 构建、标注协调；
+  - 读取 P5 的 answer JSONL、算 retrieval/QA 指标；
+  - Streamlit UI；
+  - RAGAS（如果 judge 走 API）。
+
+需要 GPU：
+  - P6 的 agent trace runner（G5，加载 Qwen3-8B/vLLM）；
+  - held-out 最终生成（如果 P6 自己跑）；
+  - RAGAS（如果 judge 用本地模型）；
+  - BERTScore/embedding 类指标可选 GPU，CPU 也能跑。
+
+集群约束（之前实测）：
+  - 一个作业一整张 A40（45 GiB，无 MIG）；
+  - 每次作业 6 小时上限；
+  - GPU 只能通过 sbatch，登录节点不能跑模型；
+  - P6 的 runner 可以共用 P5 已加载的 Qwen3-8B（GeneratorBackend.chat + make_answer_fn），避免重复加载。
+
+======================================================================
+四、路径清单（复制用）
+======================================================================
+
+共享仓库（branch p5/generation-integration）：
+  docs/P5_ANNOTATION_RULE.md
+  docs/P5_WEEK6.md
+  docs/handoffs/p5_used_question_ids.jsonl
+  docs/handoffs/p5_question_usage_manifest.json
+  docs/handoffs/P5_QUESTION_USAGE.md
+  src/generation/harness.py
+  src/generation/schema.py
+  examples/final_response.schema.json
+
+独立 P5 仓库：
+  docs/P6_HANDOFF.md
+  docs/P6_RUNNER_HANDOFF.md
+  docs/AGENT_HANDOFF.md
+  docs/WEEK5_QUALITY.md §4
+  examples/final_response.schema.json
+
+集群（P5 账号）：
+  ~/p5/models/Qwen3-8B
+  ~/p5/data/p1_hybrid.jsonl
+  ~/p5/data/bge/retrieval.jsonl
+  ~/p5-week6-20261028/runs/week3/answers-vllm-cluster.jsonl
+  ~/p5-week6-20261028/runs/week5/answers-vllm-v7-cluster.jsonl
+  ~/p5-week6-20261028/runs/week6/answers-vllm-bge-reranked-cluster.jsonl
+
+======================================================================
+五、不在 P5 范围的事项
+======================================================================
+
+- held-out pool 的构建、清理、排除审计由 P3/P6 负责；P5 只提供自己的 100 题 inventory（新增 0）。
+- P1 manifest 的 CRLF/LF hash 规范化是上游问题，不由 P5 处理。
+- P2/P3/P4 的内部代码和实验，不由 P5 处理。
+
+如果上面有哪一项需要 P5 先做，请直接指出对应路径/格式，我按你的格式补。
+
+谢谢，
+P5
