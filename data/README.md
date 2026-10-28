@@ -6,9 +6,72 @@ Raw and processed data and their manifests are tracked on the P3 working branch,
 
 ## Data versions and updates
 
-Week 4 Step $2.4.2$ completes the scoped cross-branch exclusion inventory: P1's $2593$, P2's $106$ and P3's $250$ selection IDs merge into $2654$ unique banned questions. All qualifying overlapping sources are retained. No known eligibility records remain unresolved within this scope; unrecorded external/P4–P6 use is not claimed to be covered. Add later explicit usage evidence in a new version before sampling. New held-out sampling and formal retrieval remain pending, and historical artifacts are unchanged.
+Week 4 Step $2.5$ is complete: the independent `qa_for_held_out_v2.jsonl` freezes $200$ eligible questions with zero banned overlap. Historical BM25 files are retired and retained with hashes; formal three-algorithm retrieval and new annotation exports remain pending. Current commands and fields are below; later legacy BM25 reproduction sections describe history only.
 
-Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal expansion and renewed held-out eligibility checks remain pending. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
+Week 4 Step $2.4.2$ completes the scoped cross-branch exclusion inventory: P1's $2593$, P2's $106$ and P3's $250$ selection IDs merge into $2654$ unique banned questions. All qualifying overlapping sources are retained. No known eligibility records remain unresolved within this scope; unrecorded external/P4–P6 use is not claimed to be covered. Step $2.5$ reconstructs this inventory before the new freeze; add later explicit usage evidence in a new version before further sampling. Formal retrieval remains pending, and historical artifact bytes are unchanged.
+
+Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal expansion remains pending; Step $2.5$ completes renewed held-out eligibility checks. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
+
+## `data/processed/qa_for_held_out_v2.jsonl`
+
+Step $2.5$ freezes this independent held-out question list for the new common evaluation. Before the first draw, `configs/held_out_sampling_v2.json` fixed seed $2026102805$, ascending candidate IDs and Python `Random(seed).sample` without replacement, preserving draw order. From $3329$ valid all-splits gold-mapped questions, $1884$ are banned and none of the remaining questions fail the minimum-$5$-passage condition, leaving $1445$ eligible IDs. The frozen $200$ unique questions have no banned intersection: $78$ validation and $122$ test, covering $174$ papers with at least $6$ passages each. These split counts are sampling outcomes, not quotas; no official-split filter is applied. Isolation is question-level and permits shared papers. No candidate question, answer, evidence or historical retrieval/label content was previewed to select the draw.
+
+Run the following from the project Python $3.11$ environment at the repository root. Generation refuses existing outputs. The retirement command has already run; do not delete its record to rerun it. Obtain the JSONL, both manifests below, configs and their matching inputs from the GitHub P3 branch with the other tracked data; no Release is required. Locally reproduce JSONL bytes with `python -m src.data.freeze_held_out freeze --output tmp/tmp_qa_for_held_out_v2.jsonl`; its companion records that output path and the local code identity.
+
+```powershell
+python -m src.data.freeze_held_out retire
+python -m src.data.freeze_held_out freeze
+python -m src.data.freeze_held_out verify
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id` | `string` | Canonical unique question ID, in frozen draw order. |
+| `paper_id` | `string` | Paper used for scoped retrieval. |
+| `question` | `string` | Original QA query copied verbatim after ID sampling. |
+| `source_split` | `string` | Official split provenance; no evaluation-role assignment. |
+
+## `data/processed/qa_for_held_out_v2.manifest.json`
+
+Generated by `python -m src.data.freeze_held_out freeze` and reconstructed by `verify` above. The freeze verifies the complete banned inventory and historical hashes before drawing; it checks the gold/corpus/QA companion hashes, fixed $365/40$ chunking, unique nonempty passages and canonical identity metadata. It preserves all eligible IDs, disjoint rejection lists and exact final IDs. Later explicit development-use evidence requires a new inventory/version; no held-out content or results may guide system choices. This question freeze does not perform Step $2.6$ retrieval or freeze future generator/agent configurations.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `status` | `string` | Proposed schema, held-out purpose and frozen state. |
+| `configuration` | `object` | Exact predeclared sampling configuration. |
+| `configuration.schema_version` | `string` | `v0-proposed`. |
+| `configuration.seed`, `configuration.question_count`, `configuration.minimum_passages_per_paper` | `integer` | Seed, required draw size and passage threshold. |
+| `configuration.sampling_rule`, `configuration.scope`, `configuration.isolation`, `configuration.eligibility` | `string` | Ordering/draw, all-splits scope, question isolation and metadata-only filters. |
+| `configuration.reason`, `configuration.usage_boundary` | `string` | Resampling reason and prohibition on held-out-driven tuning. |
+| `inputs.<path>` | `string` | SHA-256 of config, retirement, banned list/manifest, gold/manifest, corpus/manifest and source exports. |
+| `code.commit`, `code.python`, `code.implementation_sha256` | `string` | Generation HEAD, Python version and exact uncommitted implementation fingerprint. Verification preserves the saved HEAD. |
+| `candidate_count`, `banned_question_count`, `question_count`, `paper_count` | `integer` | Gold candidate total, complete banned total, selected questions and selected papers. |
+| `eligible_question_ids[]` | `string` | Sorted eligible question IDs. |
+| `rejections.banned[]`, `rejections.fewer_than_minimum_passages[]` | `string` | Rejected IDs; banned takes precedence over corpus-size rejection. |
+| `question_ids[]` | `string` | Final frozen IDs in draw order. |
+| `source_split_counts.<split>` | `integer` | Selected split counts. |
+| `selected_paper_passage_counts.<paper_id>` | `integer` | Distinct corpus passages in each selected paper. |
+| `historical_redrawn_question_ids[]` | `string` | $13$ eligible historical IDs randomly drawn again, without result reuse. |
+| `validation.exactly_200_unique`, `validation.banned_intersection_empty`, `validation.at_least_five_passages_per_paper` | `boolean` | Cardinality, exclusion and corpus-capacity checks. |
+| `validation.canonical_question_text`, `validation.retained_history_hashes_verified`, `validation.exclusion_inventory_reconstructed` | `boolean` | Original text, unchanged history and complete banned-inventory reconstruction checks. |
+| `output.path`, `output.sha256` | `string` | Versioned question-list path and exact byte hash. |
+| `next_action` | `string` | Fresh three-algorithm retrieval pending under Step $2.6$. |
+
+## `data/processed/historical_bm25_retirement.manifest.json`
+
+Generated once by `python -m src.data.freeze_held_out retire`; `verify` validates it and all retained bytes before reconstructing the new freeze. All $25$ original files remain at `qa_for_held_out.jsonl`, its manifest and `annotation_held_out/`; their pairs, ranks, scores, labels and numbering belong exclusively to the retired BM25 version. The old `freeze` and formal BM25 `export` commands now refuse operation when this marker exists. Pilot commands remain available. Retirement is voluntary resampling for a common evaluation, not a finding that all old questions were contaminated. The Step $2.4$ usage audit found normal frozen BM25 evaluation, requiring no blanket ban; $95$ old questions are nevertheless banned by other accepted sources, leaving $105$ potentially eligible old questions before the candidate metadata filter. No new tuning-use evidence was identified.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version`, `status`, `reason` | `string` | Proposed schema, retired state and resampling rationale. |
+| `retained_files.<path>` | `string` | Original SHA-256 of every retained historical file. |
+| `banned_manifest_sha256` | `string` | Hash of the verified Step $2.4$ inventory manifest. |
+| `usage_decision.source_id`, `usage_decision.path`, `usage_decision.sha256` | `string` | Historical-use decision identity and saved BM25 manifest hash. |
+| `usage_decision.question_ids[]` | `string` | All $200$ old evaluation question IDs. |
+| `usage_decision.decision`, `usage_decision.usage`, `usage_decision.reason` | `string` | No automatic exclusion for normal frozen evaluation; other sources still apply. |
+| `historical_question_count` | `integer` | Original question count. |
+| `historical_banned_question_ids[]`, `other_historical_question_ids[]` | `string` | Old IDs inside and outside the complete banned inventory. |
+| `reuse_policy`, `replacement_questions` | `string` | No old-result reuse and canonical replacement question path. |
 
 ## `data/processed/held_out_exclusion_sources/p1_used_question_ids.jsonl`
 
@@ -35,7 +98,7 @@ Byte-preserving snapshot of `docs/handoffs/p2_used_question_ids.jsonl` from bran
 
 Generate with `python -m src.data.build_held_out_exclusions`; verify existing artifacts with `python -m src.data.build_held_out_exclusions --verify`. Reproduce without replacing shared data using `python -m src.data.build_held_out_exclusions --output tmp/tmp_qa_banned_for_held_out.jsonl`: JSONL bytes match, while the manifest records the new output path and generation identity. Existing outputs are refused. The commands use tracked snapshots, QA and saved preparation/pilot manifests, without network, models, seed reconstruction or parsing historical results. Obtain JSONL, manifest, snapshots and config together from the GitHub P3 branch; no Release is needed.
 
-All owner-designated IDs are banned. Other questions are banned when used to choose or adjust models, parameters, algorithms, prompts or evidence handling; failed/void runs follow the same purpose rule. P3 selection comparisons and three development pilots retain provenance. The old preparation's blanket $253$-ID exclusion is not reused: $3$ functional smoke IDs and the original $200$-question frozen BM25 evaluation are not automatically banned, though other qualifying sources can ban them. Raw export and gold mapping alone do not imply exclusion. Preserved functional-test evidence and decisions are in the config/manifest. No held-out sample is frozen; isolation is question-level and permits shared papers.
+All owner-designated IDs are banned. Other questions are banned when used to choose or adjust models, parameters, algorithms, prompts or evidence handling; failed/void runs follow the same purpose rule. P3 selection comparisons and three development pilots retain provenance. The old preparation's blanket $253$-ID exclusion is not reused: $3$ functional smoke IDs and the original $200$-question frozen BM25 evaluation are not automatically banned, though other qualifying sources can ban them. Raw export and gold mapping alone do not imply exclusion. Preserved functional-test evidence and decisions are in the config/manifest. The banned inventory itself is not a question freeze; the independent `v2` freeze is documented above. Isolation is question-level and permits shared papers.
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -237,6 +300,9 @@ data/
     ├── annotation_preparation.manifest.json
     ├── qa_for_held_out.jsonl
     ├── qa_for_held_out.manifest.json
+    ├── qa_for_held_out_v2.jsonl
+    ├── qa_for_held_out_v2.manifest.json
+    ├── historical_bm25_retirement.manifest.json
     ├── annotation_pilot/
     ├── annotation_held_out/
     ├── sample_passages_100.jsonl
@@ -953,7 +1019,9 @@ dataset = datasets.load_dataset(
 
 This is a local JSON loader, not a Hub acquisition or passage builder. Source records are still paper-level. Keep raw files, generated corpora, manifests, source archives, caches, and staging directories outside Git. Remove local outputs only when no longer needed and after satisfying experiment-retention requirements.
 
-## Annotation-pool reproduction and use
+## Historical BM25 annotation-pool reproduction and use
+
+This section and the original `qa_for_held_out` / `annotation_held_out` field tables below describe the retired BM25 version. Its commands are historical; the retirement marker blocks legacy freeze/formal export. Use the independent `v2` commands above for current question-list reproduction. Formal common-pool retrieval/export is pending.
 
 The legacy `--scope all-splits-testing` spelling remains an alias for `all-splits-reference`; it no longer implies a waiver of held-out status. The optional development exporter remains available under explicit `--scope development` with separate `gold_evidence_mapping_development` basenames; that artifact is not retained in this data package. The current draw had $3{,}077$ eligible IDs after excluding $251$ gold-mapped prior-use questions and $1$ paper with fewer than $5$ passages; $2$ other audited used IDs were absent from the gold map. The selected provenance counts are $95$ train, $40$ validation and $65$ test.
 

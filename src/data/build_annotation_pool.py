@@ -386,6 +386,8 @@ def export_pool(data: Path, output: Path, *, pilot: bool = False) -> None:
         output: New run directory; existing directories are rejected.
         pilot: Use the first five historical development questions only.
     """
+    if not pilot and (data / "historical_bm25_retirement.manifest.json").exists():
+        raise ValueError("BM25-only pool retired; use the new frozen list in Step 2.6")
     if output.exists():
         raise FileExistsError(output)
     preparation = json.loads(
@@ -450,6 +452,8 @@ def freeze(data: Path, pilot: Path) -> None:
         data: Processed input directory and new frozen question-list outputs.
         pilot: Successfully completed pilot run directory.
     """
+    if (data / "historical_bm25_retirement.manifest.json").exists():
+        raise ValueError("legacy freeze retired; use python -m src.data.freeze_held_out")
     targets = [data / "qa_for_held_out.jsonl", data / "qa_for_held_out.manifest.json"]
     if any(path.exists() for path in targets):
         raise FileExistsError("held-out outputs already exist; never resample")

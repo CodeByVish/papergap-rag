@@ -1,0 +1,12 @@
+{
+  "schema_version": "v0-proposed",
+  "seed": 2026102805,
+  "question_count": 200,
+  "minimum_passages_per_paper": 5,
+  "sampling_rule": "sort eligible question_id ascending; Python random.Random(seed).sample without replacement; preserve draw order",
+  "scope": "all valid rows of gold_evidence_mapping_all_splits.jsonl; no official-split filter",
+  "isolation": "question-level; shared papers allowed",
+  "eligibility": "metadata only; exclude every banned ID; require at least five distinct nonempty passages in the fixed 365/40 corpus",
+  "reason": "voluntary fresh sampling for the common BM25/Dense/Hybrid evaluation; no reuse of historical results; retirement does not imply contamination of every old question",
+  "usage_boundary": "No tuning of models, parameters, algorithms, prompts or evidence rules using held-out questions, answers, evidence, labels or results. Add explicit new usage evidence before sampling."
+}

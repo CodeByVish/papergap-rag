@@ -6,9 +6,72 @@
 
 ## 数据版本与更新
 
-Week 4 第 $2.4.2$ 步已完成本次范围内的跨分支禁用题单：P1 的 $2593$ 题、P2 的 $106$ 题及 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。范围内无已知待核实资格记录，不声称覆盖未记录的外部/P4–P6 用题；后续明确新增证据须在抽样前补充新版本。新版 held-out 抽样和正式检索仍待执行，历史产物未改动。
+Week 4 第 $2.5$ 步已完成：独立的 `qa_for_held_out_v2.jsonl` 冻结 $200$ 道合格题，与禁用题单无交集。原 BM25 文件已停用，保留原位及哈希；正式三算法检索和新版标注导出仍待执行。当前命令和字段见下方新增章节，后文旧 BM25 复现章节仅描述历史。
 
-Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法扩池和 held-out 资格复核尚未完成，不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+Week 4 第 $2.4.2$ 步已完成本次范围内的跨分支禁用题单：P1 的 $2593$ 题、P2 的 $106$ 题及 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。范围内无已知待核实资格记录，不声称覆盖未记录的外部/P4–P6 用题。第 $2.5$ 步在新版冻结前重建核验此清单；后续明确新增证据须在再次抽样前补充新版本。正式检索仍待执行，历史产物字节未改动。
+
+Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法扩池尚未完成；第 $2.5$ 步已完成新版 held-out 资格复核。不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+
+## `data/processed/qa_for_held_out_v2.jsonl`
+
+第 $2.5$ 步为新版共同评估冻结独立 held-out 题单。首次抽样前，`configs/held_out_sampling_v2.json` 已固定种子 $2026102805$、候选 ID 升序及 Python `Random(seed).sample` 无放回抽样规则，保留抽取顺序。all-splits gold 映射有 $3329$ 道有效问题，排除 $1884$ 道禁用题；其余问题均满足每篇至少 $5$ 个 passage，得到 $1445$ 道候选。冻结 $200$ 道唯一问题，与禁用题单无交集：validation $78$ 题、test $122$ 题，覆盖 $174$ 篇论文，每篇至少 $6$ 个 passage。split 数量是随机结果，不是配额；不按官方 split 筛选。采用问题层面隔离，允许共享论文。抽样未通过预览候选问题、答案、证据或历史检索/标签内容选题。
+
+在仓库根目录、项目 Python $3.11$ 环境执行以下命令，生成时拒绝覆盖已有文件。停用命令已经执行，不要删除记录重跑。JSONL、下方两份 manifest、配置及匹配输入均与其他受跟踪数据一起从 GitHub P3 分支获取，无须 Release。本地使用 `python -m src.data.freeze_held_out freeze --output tmp/tmp_qa_for_held_out_v2.jsonl` 复现相同 JSONL 字节；配套 manifest 记录新输出路径及本地代码身份。
+
+```powershell
+python -m src.data.freeze_held_out retire
+python -m src.data.freeze_held_out freeze
+python -m src.data.freeze_held_out verify
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id` | `string` | 原始唯一问题 ID，按冻结抽取顺序保存。 |
+| `paper_id` | `string` | paper-scoped 检索使用的论文 ID。 |
+| `question` | `string` | 抽取 ID 后从 QA 逐字复制的问题原文。 |
+| `source_split` | `string` | 官方 split 来源，不直接指定评估角色。 |
+
+## `data/processed/qa_for_held_out_v2.manifest.json`
+
+由 `python -m src.data.freeze_held_out freeze` 生成，使用上述 `verify` 重建核验。抽样前验证完整禁用题单及历史文件哈希，核对 gold、语料、QA 及其配套输入哈希、固定 $365/40$ 分块、唯一非空 passage 和原始身份元数据。保存全部合格 ID、互斥排除列表及最终 ID。后续明确的开发用题证据须补充新禁用题单/版本；禁止根据 held-out 内容或结果选择系统配置。本次题单冻结不执行第 $2.6$ 步检索，也不冻结后续生成器或 agent 配置。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `status` | `string` | 暂定 schema、held-out 用途及冻结状态。 |
+| `configuration` | `object` | 预先确定的完整抽样配置。 |
+| `configuration.schema_version` | `string` | `v0-proposed`。 |
+| `configuration.seed`, `configuration.question_count`, `configuration.minimum_passages_per_paper` | `integer` | 种子、题数及 passage 数量门槛。 |
+| `configuration.sampling_rule`, `configuration.scope`, `configuration.isolation`, `configuration.eligibility` | `string` | 排序/抽样规则、all-splits 范围、问题隔离及元数据筛选条件。 |
+| `configuration.reason`, `configuration.usage_boundary` | `string` | 重新抽样原因及禁止利用 held-out 调参的边界。 |
+| `inputs.<path>` | `string` | 配置、停用记录、禁用题单/manifest、gold/manifest、语料/manifest 和原始导出的 SHA-256。 |
+| `code.commit`, `code.python`, `code.implementation_sha256` | `string` | 生成时 HEAD、Python 版本及未提交实现的精确指纹；核验保留原 HEAD。 |
+| `candidate_count`, `banned_question_count`, `question_count`, `paper_count` | `integer` | gold 候选数、完整禁用题数、抽中题数及论文数。 |
+| `eligible_question_ids[]` | `string` | 升序合格问题 ID。 |
+| `rejections.banned[]`, `rejections.fewer_than_minimum_passages[]` | `string` | 排除 ID；禁用优先于语料数量不足，避免重复统计。 |
+| `question_ids[]` | `string` | 按抽取顺序冻结的最终 ID。 |
+| `source_split_counts.<split>` | `integer` | 抽中题目的 split 数量。 |
+| `selected_paper_passage_counts.<paper_id>` | `integer` | 各入选论文在语料中的唯一 passage 数。 |
+| `historical_redrawn_question_ids[]` | `string` | 随机再次抽中的 $13$ 道合格旧题，不复用旧结果。 |
+| `validation.exactly_200_unique`, `validation.banned_intersection_empty`, `validation.at_least_five_passages_per_paper` | `boolean` | 题数/唯一性、禁用交集及论文容量检查。 |
+| `validation.canonical_question_text`, `validation.retained_history_hashes_verified`, `validation.exclusion_inventory_reconstructed` | `boolean` | 原文一致、历史字节未改动及完整禁用题单重建检查。 |
+| `output.path`, `output.sha256` | `string` | 独立版本题单路径及字节哈希。 |
+| `next_action` | `string` | 第 $2.6$ 步待执行新的三算法检索。 |
+
+## `data/processed/historical_bm25_retirement.manifest.json`
+
+由 `python -m src.data.freeze_held_out retire` 一次生成；`verify` 在重建新版冻结题单前核验此文件及全部历史字节。原 $25$ 个文件继续保存在 `qa_for_held_out.jsonl`、其 manifest 及 `annotation_held_out/`；配对、排名、分数、标签和编号仅属于已停用的历史 BM25 版本。存在此标记时，旧 `freeze` 及正式 BM25 `export` 命令拒绝执行；开发 pilot 入口仍可用。停用是为统一评估主动重新抽样，不代表全部旧题受污染。第 $2.4$ 步用途审计认定旧 BM25 为正常冻结评估，不整体禁用；其中 $95$ 题仍因其他已接收来源被禁用，其余 $105$ 题可继续接受候选元数据筛选。本次未发现新增调参用途证据。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version`, `status`, `reason` | `string` | 暂定 schema、停用状态及重新抽样原因。 |
+| `retained_files.<path>` | `string` | 每份原始历史文件的 SHA-256。 |
+| `banned_manifest_sha256` | `string` | 已核验第 $2.4$ 步禁用 manifest 哈希。 |
+| `usage_decision.source_id`, `usage_decision.path`, `usage_decision.sha256` | `string` | 历史用途判定身份及保存的 BM25 manifest 哈希。 |
+| `usage_decision.question_ids[]` | `string` | 原评估的全部 $200$ 道题 ID。 |
+| `usage_decision.decision`, `usage_decision.usage`, `usage_decision.reason` | `string` | 正常冻结评估不自动禁用；其他来源仍然适用。 |
+| `historical_question_count` | `integer` | 原题单数量。 |
+| `historical_banned_question_ids[]`, `other_historical_question_ids[]` | `string` | 原题单中属于/不属于完整禁用题单的 ID。 |
+| `reuse_policy`, `replacement_questions` | `string` | 不复用旧结果的规则及规范替代题单路径。 |
 
 ## `data/processed/held_out_exclusion_sources/p1_used_question_ids.jsonl`
 
@@ -35,7 +98,7 @@ Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `
 
 生成命令：`python -m src.data.build_held_out_exclusions`；已有产物核验：`python -m src.data.build_held_out_exclusions --verify`。本地复现且不替换共享数据：`python -m src.data.build_held_out_exclusions --output tmp/tmp_qa_banned_for_held_out.jsonl`，JSONL 字节相同，manifest 记录新输出路径和生成身份。拒绝覆盖已有输出。命令使用受跟踪的快照、QA、已保存 preparation/pilot manifest，无需网络、模型、随机种子重建或解析历史结果。JSONL、manifest、快照及 config 一起从 GitHub P3 分支获取，无须 Release。
 
-负责人指定 ID 全部禁用。其他题按是否用于选择或调整模型、参数、算法、prompt 或证据处理规则判定，失败/作废实验遵循同一用途规则。P3 历史选参比较和三次开发 pilot 保留来源。旧 preparation 一律禁用的 $253$ 题不直接复用：$3$ 道功能 smoke 题及原 $200$ 题冻结 BM25 评估不自动禁用，但仍可能因其他符合排除条件的来源而禁用。原始导出、gold 映射本身不导致禁用。功能测试原话与用途判定保存在 config/manifest。本文件不冻结 held-out 题单，采用问题层面隔离，允许共享论文。
+负责人指定 ID 全部禁用。其他题按是否用于选择或调整模型、参数、算法、prompt 或证据处理规则判定，失败/作废实验遵循同一用途规则。P3 历史选参比较和三次开发 pilot 保留来源。旧 preparation 一律禁用的 $253$ 题不直接复用：$3$ 道功能 smoke 题及原 $200$ 题冻结 BM25 评估不自动禁用，但仍可能因其他符合排除条件的来源而禁用。原始导出、gold 映射本身不导致禁用。功能测试原话与用途判定保存在 config/manifest。禁用题单本身不是题单冻结记录；独立的 `v2` 冻结见上文。采用问题层面隔离，允许共享论文。
 
 | 字段 | 类型 | 含义 |
 | --- | --- | --- |
@@ -237,6 +300,9 @@ data/
     ├── annotation_preparation.manifest.json
     ├── qa_for_held_out.jsonl
     ├── qa_for_held_out.manifest.json
+    ├── qa_for_held_out_v2.jsonl
+    ├── qa_for_held_out_v2.manifest.json
+    ├── historical_bm25_retirement.manifest.json
     ├── annotation_pilot/
     ├── annotation_held_out/
     ├── sample_passages_100.jsonl
@@ -949,7 +1015,9 @@ dataset = datasets.load_dataset(
 
 这是本地 JSON 加载器，不是 Hub 下载或块构建器，记录仍为论文级。原始文件、生成语料、manifest、源压缩包、缓存及暂存目录均不纳入 Git。只有不再需要且满足实验保留要求时，才清理本地输出。
 
-## 标注候选池复现与使用
+## 历史 BM25 标注候选池复现与使用
+
+本节及后续原 `qa_for_held_out` / `annotation_held_out` 字段表仅描述已停用的 BM25 版本。下方命令属于历史记录，停用标记会阻止旧版冻结/正式导出。当前题单使用上方独立 `v2` 命令复现；正式共同评估池检索/导出仍待执行。
 
 旧参数 `--scope all-splits-testing` 仍作为 `all-splits-reference` 的兼容别名，不再代表放弃 held-out 状态。可显式用 `--scope development` 生成独立命名的 `gold_evidence_mapping_development` 文件；本次数据包不保留该产物。排除 gold 映射中 $251$ 道已用题及 $1$ 道所属论文不足 $5$ 个块的题后，合格池有 $3{,}077$ 个 ID；另有 $2$ 个已用 ID 不在 gold 映射中。最终来源为 train $95$ 题、validation $40$ 题、test $65$ 题。
 

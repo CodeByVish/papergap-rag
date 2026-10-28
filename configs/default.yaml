@@ -44,5 +44,5 @@ generation:
 evaluation:
   judge_model: null
   held_out_manifest: null  # Legacy official-split workflow; not the Week 4 pool.
-  annotation_pool_manifest: data/processed/qa_for_held_out.manifest.json
+  annotation_pool_manifest: data/processed/qa_for_held_out_v2.manifest.json
   annotation_pool_isolation: question  # Shared papers allowed; actual use controls eligibility.
