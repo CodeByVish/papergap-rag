@@ -1,6 +1,6 @@
 # Chunk Size Evaluation Criteria
 
-Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Round 2 completed all $9$ candidates in the current `config.json` under `results/chunk_size/round2_bm25_20261028_01/`, fulfilling `weekly-work/week-3/TODO.md` item $2.4.2.2$. Both rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
+Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Round 2 completed $9$ candidates, $200/225/250/275/300/325/350/375/400$, under `results/chunk_size/round2_bm25_20261028_01/`, fulfilling `weekly-work/week-3/TODO.md` item $2.4.2.2$. Both rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. The current `config.json` now contains the confirmed Round 3 candidates below; execution is pending. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
 
 ## Candidate-size rationale and proposal
 
@@ -31,7 +31,7 @@ These primary sources motivate a search range; their settings do not establish a
 | $200$ words | Existing project default, rerun as the control in Round 1; not a published optimum. | Does the current cost–completeness compromise remain competitive? |
 | $400$ words | Double the default, completing a multiplicative range inspired by broad screening [S2] and QASPER context requirements [S3]. This exact value is our design choice. | Does added context improve complete evidence enough to offset extra text, noise and truncation? |
 
-Do not reuse the void experiments, including their $200$-word result. Use the valid Round 1's `manifest.json` for its historical candidates and controls; the current Round 2 configuration does not reconstruct historical settings.
+Do not reuse the void experiments, including their $200$-word result. Use each valid run's `manifest.json` for its historical candidates and controls; the current configuration does not reconstruct historical settings.
 
 ### Round 2: confirmed refinement plan
 
@@ -61,6 +61,21 @@ These exact values come from local results and a uniform search design; the lite
 5. Complete readability review before final adoption. BM25 findings do not automatically generalize to dense / hybrid / reranker retrieval; apply the model input-length checks below.
 
 Words remain Unicode non-whitespace spans counted by `\S+` in `src/data/chunking.py`; do not convert published token sizes using a fixed ratio. Token-based splitting, sentence-boundary adjustment and different paragraph-merging rules belong in separate experiments.
+
+### Round 3: confirmed local refinement plan
+
+Confirmed on 2026/10/28: compare $325/335/345/350/355/365/375/385/395/400$ words per chunk, giving $10$ candidates now recorded in `config.json`. Execution is pending under `weekly-work/week-3/TODO.md` item $2.4.2.3$. Shared interfaces and the final chunk configuration remain `v0-proposed`.
+
+Round 2's `summary.html` supports starting at $325$: $375$ has the highest top-$5$ hit / complete evidence rates at $64\%/56\%$, but mean retrieved words are $1291.60$ versus $1203.84$ for $325$. At a $1000$-word budget, $325$ leads both metrics at $58\%/50\%$, compared with $50\%/42\%$ for $375$. Its complete evidence rate at a $500$-word budget is also the highest at $32\%$. Retain the neighborhoods of both $325$ and $375$ rather than searching only around the top-$5$ winner.
+
+| Candidates (words) | Reason |
+| --- | --- |
+| $325/350/375/400$ | Retain Round 2 controls and verify agreement across rounds. |
+| $335/345/355/365/385/395$ | Refine the $325$–$400$ range at approximately $10$-word intervals; retaining existing controls leaves some adjacent points $5$ words apart. |
+
+This local search follows project results; it neither rules out better values outside the range nor establishes a literature-backed optimum. Retain the same $50$ questions and order, evidence eligibility, paper scope, BM25 settings, $40$-word overlap, `top_k=5`, `seed=42` and readability source locations from the previous rounds. Save all $10$ configurations under a new `run_id` without overwriting existing results; verify that corpus, rankings and per-question results for all four controls agree across rounds, excluding timings.
+
+Continue using both evidence metrics at all $500/1000/2000$-word budgets as the main selection evidence, reporting actual words and exhausted-question counts; top-$5$ remains supplementary. Each question represents $2$ percentage points, and $375$ leads $325$ by only $2$ questions on top-$5$. Inspect per-question gains and losses before refining the entire range to $5$-word intervals. Complete readability review and validate candidate values on an independent or expanded development / validation question set before final adoption. BM25 findings do not automatically generalize to dense / hybrid / reranker retrieval.
 
 ### Interpretation and selection limits
 
@@ -221,7 +236,7 @@ Use `experiments/chunk_size/config.json` as this experiment's configuration auth
 | --- | --- | --- |
 | `data.overlap_words`: $40$ | `overlap_words`: $40$ | Same chunk overlap setting and current value; use the experiment configuration. |
 | `retrieval.top_k`: $5$ | `top_k`: $5$ | Same retrieval result limit and current value; use the experiment configuration. |
-| `data.chunk_words`: $200$ | `candidates`: $200/225/250/275/300/325/350/375/400$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
+| `data.chunk_words`: $200$ | `candidates`: $325/335/345/350/355/365/375/385/395/400$ | Related purpose with a different structure; compare each Round 3 candidate instead of using the single YAML size. |
 | `seed`: $42$ | `seed`: $42$ | Same purpose and value; use the experiment seed for every sampling stage, without reading YAML. |
 
 The YAML `retrieval` section proposes dense models, a reranker, candidate counts and RRF settings, whereas the experiment JSON currently specifies only `retrieval.mode` as `bm25`. This experiment has confirmed that mode and `top_k=5`. These are not equivalent complete retrieval configurations. The experiment does not inherit YAML model or fusion settings. BM25 algorithm parameters use the implementation's library defaults and remain retriever implementation details, outside the configuration choices or tuning scope of this experiment. See `experiments/chunk_size/BM25.en.md` for BM25 inputs, outputs, workflow and current parameters. See `experiments/chunk_size/README.md` for experiment retrieval-code defaults and optional modes.
