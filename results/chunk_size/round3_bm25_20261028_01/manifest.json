@@ -1,0 +1,4256 @@
+{
+  "build_seconds": {
+    "325": 14.253829099994618,
+    "335": 14.63679439999396,
+    "345": 17.928080600016983,
+    "350": 18.775219500006642,
+    "355": 18.455007499986095,
+    "365": 18.702742299996316,
+    "375": 18.8445192000072,
+    "385": 18.913540800014744,
+    "395": 19.00370380000095,
+    "400": 18.929000299976906
+  },
+  "chunking": {
+    "325": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 325,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "335": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 335,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "345": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 345,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "350": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 350,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "355": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 355,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "365": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 365,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "375": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 375,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "385": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 385,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "395": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 395,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    },
+    "400": {
+      "chunk_overlap_words": 40,
+      "chunk_size_words": 400,
+      "chunking_version": "word-chunking-v1",
+      "normalization_version": "text-normalization-v1"
+    }
+  },
+  "code_commit": "53c5d35627c5b9e760580ce28944108c0339bfde",
+  "config": {
+    "candidates": [
+      325,
+      335,
+      345,
+      350,
+      355,
+      365,
+      375,
+      385,
+      395,
+      400
+    ],
+    "n_paper": 5,
+    "n_paragraph": 2,
+    "overlap_words": 40,
+    "question_sample_count": 50,
+    "question_sampling_method": "simple_random_without_replacement",
+    "retrieval": {
+      "candidate_k": 20,
+      "dense": {
+        "batch_size": 32,
+        "cache_folder": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\.cache\\huggingface",
+        "device": "cpu",
+        "local_files_only": true,
+        "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
+      },
+      "mode": "bm25",
+      "reranker": {
+        "batch_size": 8,
+        "cache_folder": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\.cache\\huggingface",
+        "device": "cpu",
+        "local_files_only": true,
+        "max_length": 512,
+        "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+      },
+      "rrf_k": 60
+    },
+    "seed": 42,
+    "top_k": 5,
+    "word_budgets": [
+      500,
+      1000,
+      2000
+    ]
+  },
+  "dependencies": [
+    "Jinja2==3.1.6",
+    "MarkupSafe==3.0.3",
+    "PyYAML==6.0.3",
+    "Pygments==2.21.0",
+    "SQLAlchemy==2.0.54",
+    "absl-py==2.5.0",
+    "accelerate==1.15.0",
+    "aiohappyeyeballs==2.7.1",
+    "aiohttp==3.14.3",
+    "aiosignal==1.4.0",
+    "altair==6.3.0",
+    "annotated-doc==0.0.5",
+    "annotated-types==0.8.0",
+    "anyio==4.15.1",
+    "appdirs==1.4.4",
+    "attrs==26.1.0",
+    "certifi==2026.7.22",
+    "charset-normalizer==3.5.1",
+    "click==8.5.0",
+    "cloudpickle==3.1.2",
+    "colorama==0.4.6",
+    "dataclasses-json==0.6.7",
+    "datasets==4.8.5",
+    "defusedxml==0.7.1",
+    "dill==0.4.1",
+    "diskcache==5.6.3",
+    "distro==1.9.0",
+    "docstring_parser==0.16",
+    "faiss-cpu==1.15.1",
+    "filelock==4.0.1",
+    "frozenlist==1.8.0",
+    "fsspec==2026.2.0",
+    "greenlet==3.5.6",
+    "h11==0.16.0",
+    "httpcore2==2.13.0",
+    "httpcore==1.0.9",
+    "httptools==0.8.0",
+    "httpx-sse==0.4.3",
+    "httpx2==2.13.0",
+    "httpx==0.28.1",
+    "huggingface_hub==0.36.2",
+    "idna==3.20",
+    "iniconfig==2.3.0",
+    "instructor==1.3.2",
+    "itsdangerous==2.2.0",
+    "jiter==0.17.0",
+    "joblib==1.6.0",
+    "jsonpatch==1.33",
+    "jsonpointer==3.1.1",
+    "jsonschema-specifications==2025.9.1",
+    "jsonschema==4.26.0",
+    "langchain-classic==1.0.8",
+    "langchain-community==0.4.1",
+    "langchain-core==1.6.3",
+    "langchain-openai==1.1.9",
+    "langchain-protocol==0.0.19",
+    "langchain-text-splitters==1.1.2",
+    "langchain==1.4.2",
+    "langgraph-checkpoint==4.2.0",
+    "langgraph-prebuilt==1.1.0",
+    "langgraph-sdk==0.4.4",
+    "langgraph==1.2.11",
+    "langsmith==0.13.0",
+    "markdown-it-py==4.2.0",
+    "marshmallow==3.26.2",
+    "mdurl==0.1.2",
+    "mpmath==1.3.0",
+    "multidict==6.9.0",
+    "multiprocess==0.70.19",
+    "mypy_extensions==1.1.0",
+    "narwhals==2.26.0",
+    "nest-asyncio==1.6.0",
+    "networkx==3.6.1",
+    "nltk==3.10.3",
+    "numpy==2.4.6",
+    "openai==1.109.1",
+    "orjson==3.12.0",
+    "ormsgpack==1.12.2",
+    "packaging==26.3",
+    "pandas==2.3.3",
+    "pillow==12.3.0",
+    "pip==26.2.1",
+    "pluggy==1.6.0",
+    "propcache==0.5.4",
+    "protobuf==7.36.2",
+    "psutil==7.2.2",
+    "pyarrow==25.0.1",
+    "pydantic-settings==2.15.0",
+    "pydantic==2.13.5",
+    "pydantic_core==2.46.5",
+    "pydeck==0.9.3",
+    "pytest==9.1.1",
+    "python-dateutil==2.9.0.post0",
+    "python-dotenv==1.2.3",
+    "python-multipart==0.0.32",
+    "pytz==2026.3.post1",
+    "ragas==0.4.3",
+    "rank-bm25==0.2.2",
+    "referencing==0.37.0",
+    "regex==2026.9.10",
+    "requests-toolbelt==1.0.0",
+    "requests==2.34.2",
+    "rich==13.9.4",
+    "rouge_score==0.1.2",
+    "rpds-py==2026.6.3",
+    "ruff==0.16.8",
+    "safetensors==0.8.0",
+    "scikit-learn==1.9.1",
+    "scikit-network==0.33.5",
+    "scipy==1.17.1",
+    "sentence-transformers==5.7.0",
+    "sentencepiece==0.2.2",
+    "setuptools==83.0.0",
+    "shellingham==1.5.4",
+    "six==1.17.0",
+    "sniffio==1.3.1",
+    "starlette==1.6.0",
+    "streamlit==1.64.0",
+    "sympy==1.14.0",
+    "tenacity==8.5.0",
+    "threadpoolctl==3.7.0",
+    "tiktoken==0.14.0",
+    "tokenizers==0.22.2",
+    "toml==0.10.2",
+    "torch==2.14.0",
+    "tqdm==4.70.1",
+    "transformers==4.57.6",
+    "truststore==0.10.4",
+    "typer==0.27.2",
+    "typing-inspect==0.9.0",
+    "typing-inspection==0.4.4",
+    "typing_extensions==4.16.0",
+    "tzdata==2026.4",
+    "urllib3==2.8.0",
+    "uuid_utils==0.17.1",
+    "uvicorn==0.53.0",
+    "watchdog==6.0.0",
+    "websockets==16.1.1",
+    "wheel==0.47.0",
+    "xxhash==4.0.1",
+    "yarl==1.25.1",
+    "zstandard==0.25.0"
+  ],
+  "filtering_counts": {
+    "eligible": 2466,
+    "held_out": 1451,
+    "invalid_answer_evidence": 1129,
+    "paper_not_in_every_corpus": 3,
+    "total": 5049
+  },
+  "generator": null,
+  "hardware": {
+    "machine": "AMD64",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel"
+  },
+  "inputs": {
+    "config": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\experiments\\chunk_size\\config.json",
+      "sha256": "3808a5fe933eb2b279fdb07eb9cd111247b1a2bd94c6bdd963d6a7202fed51cf"
+    },
+    "export_manifest": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\qasper_export.manifest.json",
+      "sha256": "1cdad8448b1adc6a65a8b314080aba932e0a83c57eeabf23eb611ea4d747e003"
+    },
+    "papers": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\papers.jsonl",
+      "sha256": "905866c186f63dab38979601a0121412d44588cacfa84520242ffcf2f5b198f9"
+    },
+    "qa": {
+      "path": "D:\\Qian-Jingshuai\\2-Master-NTU\\Study\\Courses\\AI6127\\papergap-rag\\data\\processed\\qa.jsonl",
+      "sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e"
+    }
+  },
+  "prompts": null,
+  "python": "3.11.16",
+  "question_ids": [
+    "30c6d34b878630736f819fd898319ac4e71ee50b",
+    "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50",
+    "729694a9fe1e05d329b7a4078a596fe606bc5a95",
+    "65ad17f614b7345f0077424c04c94971c831585b",
+    "5bcc12680cf2eda2dd13ab763c42314a26f2d993",
+    "3bfb8c12f151dada259fbd511358914c4b4e1b0e",
+    "2c7e94a65f5f532aa31d3e538dcab0468a43b264",
+    "e755fb599690d0d0c12ddb851ac731a0a7965797",
+    "249c805ee6f2ebe4dbc972126b3d82fb09fa3556",
+    "fbd47705262bfa0a2ba1440a2589152def64cbbd",
+    "b27f7993b1fe7804c5660d1a33655e424cea8d10",
+    "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec",
+    "0cd90e5b79ea426ada0203177c28812a7fc86be5",
+    "282aa4e160abfa7569de7d99b8d45cabee486ba4",
+    "593e307d9a9d7361eba49484099c7a8147d3dade",
+    "601e58a3d2c03a0b4cd627c81c6228a714e43903",
+    "d571e0b0f402a3d36fb30d70cdcd2911df883bc7",
+    "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6",
+    "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3",
+    "ef081d78be17ef2af792e7e919d15a235b8d7275",
+    "537b2d7799124d633892a1ef1a485b3b071b303d",
+    "e74ba39c35af53d3960be5a6c86eddd62cef859f",
+    "b1ce129678e37070e69f01332f1a8587e18e06b0",
+    "5a2f7e27efdedf3c43498ff0c32f808d406c42ec",
+    "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b",
+    "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f",
+    "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d",
+    "022c365a14fdec406c7a945a1a18e7e79df37f08",
+    "43d8057ff0d3f0c745a7164aed7ed146674630e0",
+    "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae",
+    "90f80a94fabaab72833256572db1d449c2779beb",
+    "73abb173a3cc973ab229511cf53b426865a2738b",
+    "42084c41343e5a6ae58a22e5bfc5ce987b5173de",
+    "5871d258f66b00fb716065086f757ef745645bfe",
+    "8e857e44e4233193c7b2d538e520d37be3ae1552",
+    "2c78993524ca62bf1f525b60f2220a374d0e3535",
+    "27c1c678d3862c7676320ca493537b03a9f0c77a",
+    "a1e07c7563ad038ee2a7de5093ea08efdd6077d4",
+    "29c014baf99fb9f40b5171aab3e2c7f12a748f79",
+    "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5",
+    "9299fe72f19c1974564ea60278e03a423eb335dc",
+    "6dc9960f046ec6bd280a721724458f66d5a9a585",
+    "12391aab31c899bac0ecd7238c111cb73723a6b7",
+    "c00ce1e3be14610fb4e1f0614005911bb5ff0302",
+    "e1f5531ed04d0aae1dfcb0559f1512a43134c43a",
+    "35915166ab2fd3d39c0297c427d4ac00e8083066",
+    "a15bc19674d48cd9919ad1cf152bf49c88f4417d",
+    "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b",
+    "eac042734f76e787cb98ba3d0c13a916a49bdfb3",
+    "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7"
+  ],
+  "question_sample_count_actual": 50,
+  "question_sample_count_requested": 50,
+  "readability_passage_ids": {
+    "325": [
+      "qasper-passage-v1-081c5b69edd98626158cbe20e4b0ef102c68c2d6bd02c1cee6846bcddf474320",
+      "qasper-passage-v1-10cc184aecff2599d13f0719658e6727c7baa5d617f3f7a5a75d27671547a492",
+      "qasper-passage-v1-1862444d7e27432110f3b2221028c1773bfa8625d4ed21f05aeb30b821691a0c",
+      "qasper-passage-v1-1faa9a6dad69e2cbe48eeb788db3215326f24e8ea49cbe6255047d567fe46f28",
+      "qasper-passage-v1-25368677fd3f9da34b61fe3579ad214b04f5cd220ffb3efe0c4b9817cfaf2267",
+      "qasper-passage-v1-281a533161f9b6db4a61d6ea1fe1fbd9f76e27d75a9edc5669d6a0400a060f05",
+      "qasper-passage-v1-393297afd16dacdbd4b4257f5281ac845ad68032251ef049a543d6db8b0b3b7f",
+      "qasper-passage-v1-553055030871af689768b24c70c962a0b2dbf7c6495dca3537073f62d7c573bf",
+      "qasper-passage-v1-6e40ea7880f633653dd35bdcdb3388d21be9482811b1baa94e4ecafcb81927d3",
+      "qasper-passage-v1-d3d854d356d70e83fc8657b177b591bcd943f9ed0a61c8ed16c9ada0f3f13115",
+      "qasper-passage-v1-e69c35aad56ab392a3eb329308a57a956ee4c9fc8810beecea64683d62ddc8c1"
+    ],
+    "335": [
+      "qasper-passage-v1-105e95449c3f11cee6794b16f974265d87c0f9a14229934f414e52fcd05d4ba4",
+      "qasper-passage-v1-20ba3d6f1a301774e1212410e4777796f11d53d857025e0cf97f559051f21f67",
+      "qasper-passage-v1-3215d82b7667e6b151512d5ccbea3344951bd1efd4831b5abb649249c1c90ba7",
+      "qasper-passage-v1-7d54a0bce82b79ddda3526dce2ed8c2f75408ae64ab6df724cae6ac91a8c630e",
+      "qasper-passage-v1-9787f7875921f3f14e5a5c62f8535d3f73caa981e2c54706909376e30f924dde",
+      "qasper-passage-v1-a67c4b34868f914b060cf634afdcc72507b07cc21b7356b3ffe53862c21a7dfa",
+      "qasper-passage-v1-b1cebb9c310388f667e66972d98f182a8140799c92f62de4825f338521accad1",
+      "qasper-passage-v1-bc89807c5d865b0f83ce49e5dea453768a3399d097b6d850096c53c1db6e2213",
+      "qasper-passage-v1-c191cf438f6adb60bc3dbaa918e66a36212f31a5ca074a0fcadbd60c70a83a8c",
+      "qasper-passage-v1-edbfaa5b019973c1b4cab049b26d80d205f524020ac980fd86b171d1b8869027",
+      "qasper-passage-v1-f33ace9d952f150d45c3899fc354acf0e8f2a2bacc8d3ed161260d01daff1b75"
+    ],
+    "345": [
+      "qasper-passage-v1-0c44f88387a173745a19ac05df598de6efae40f8bfe1067f9b09e7697fb6bada",
+      "qasper-passage-v1-1aacbe2fce1079983aa809c80a9e57e7d2fae3a2b035c44a759342109f33e554",
+      "qasper-passage-v1-3721271943ec7da0cd898e6ff330507be20a281b25c006d1b3712a11a13839ab",
+      "qasper-passage-v1-4a4f62db325a7ae8c7b59298d22bbc8169ba281750f718e73b0bed25899aef00",
+      "qasper-passage-v1-72fafacf4328f672e19886d919b8c55f66325408d6ac1622c855657dcaf0eef6",
+      "qasper-passage-v1-83c2cb4fe0c7f402cc49ce19d40c56784d411fb4e1d7c34d754fb1051561210c",
+      "qasper-passage-v1-b86d71b4d84d24f80e2daeaf0b9ffb07c264d80cc0656c52ef3205a65baabd14",
+      "qasper-passage-v1-d13c2c8d47fc0bac900153933e788ac894d9274881a59774904fbc0ebf864e38",
+      "qasper-passage-v1-d4bcbd090e4db402c35a15468f1d03d8119bd5ba2fe4e2ee5204beeb0b2b8225",
+      "qasper-passage-v1-f0205836daaae27d7c0aab148a1fbcb6f8b17143918e7f6d9114027c0ecc3551",
+      "qasper-passage-v1-fcda55aeca1d434abb4df819e95107bbd6af08c5da24dfc1ada52d5e834e9bc2"
+    ],
+    "350": [
+      "qasper-passage-v1-083479c247405cc7a59363e7380e424ba897a272f89361f2ad97d50256d08499",
+      "qasper-passage-v1-0aa21e0d123b438c496c11cf08cb7d18d2df039070850f2edf42e6a67cb5cfa2",
+      "qasper-passage-v1-1901078a14904216e5e0a8f0cd68f928364396476bbad7ffee882a6326d99bb4",
+      "qasper-passage-v1-3b97b06d777bbe03feb99614b9955289df9d05faceabf647c1e26091c530cd40",
+      "qasper-passage-v1-5876d2894c3010692bcbf020c45e06e79a7cf71bbcb48ee0992d9ee84b2af3ac",
+      "qasper-passage-v1-5c37e09c5fc78ae88bc02b1544ed9e2d5b1f6c7b963383d07517b6c331c3dcce",
+      "qasper-passage-v1-a666ed9ceb6b734efc1d531979663e3d09f7fb40212e43fdf61bb79fefba4121",
+      "qasper-passage-v1-e289768dabb3ddc45401aedf00982e4d3ee3b2fb72588d4d01c374a2fb35c39b",
+      "qasper-passage-v1-ee819a612aead96ee679aa6c0dd44cd8d4613c55433e7e197d6984bf2916141b",
+      "qasper-passage-v1-f5273184fc0b3680ca08aab1f9600abd1224e54b3c08fd25a7008fa9e47be448",
+      "qasper-passage-v1-f81bd98ab8e8966107c86cda62beaf460cb7e23238b2318e7321cb6736051f49"
+    ],
+    "355": [
+      "qasper-passage-v1-09d1734aa79a249a77c410a738feaa36be4de67d48ab1d03bae11b1e719341b6",
+      "qasper-passage-v1-23b99342ed7bfb7b083753ca36f0193d2f2174f10ece2109ed41b1907e13c2db",
+      "qasper-passage-v1-5801e83ebefb9d8cd350a4a5cce444a7b39cfdfb24cee20be66442821932c6fc",
+      "qasper-passage-v1-5f3516879f04414e93ccf25915cf6136e2edb75ce9da9125eeaff497589fae99",
+      "qasper-passage-v1-7f5cfbcfacaf223145aae26e08106693cb534a5b6c2f2f94f1bac365fcce75f3",
+      "qasper-passage-v1-9e327006bd949ac91f2c7f823cf75053986050ed5b4f32cb91b9d9d9e654a635",
+      "qasper-passage-v1-c256b29747d8871ce55c9601fcfbe3643005f73e60913921f49887207140c40e",
+      "qasper-passage-v1-c454b67ee29d202e6c59aa2660ef1f5b3dbfcf6d4cfe0970bbd8c53192f21e61",
+      "qasper-passage-v1-d43afc7fdeb75ad164a9e34daac7f1d3581a69ef30960ddb6489a8ca90445368",
+      "qasper-passage-v1-ffb6de30492a2186e9e7877b535dfebaff920dfa656010493b3635e606c1f83f"
+    ],
+    "365": [
+      "qasper-passage-v1-40f841151defa920ce4d72f5efe1de7dfd7e4c9c0883cc961b0747830ecb361f",
+      "qasper-passage-v1-43de84786314b9c4d6fdebcd78aa8fc8dc3cb8b97d1ddf5d9647f40bddca954d",
+      "qasper-passage-v1-68c9f732e357d2b7d07b1909d3cda90bd7fe41ccf0bdc0ca39c75d7f6937ffd3",
+      "qasper-passage-v1-6bf4596fcdf0993fd102f91b32f0cf386986e8e2132960c7cfc08d65331f210c",
+      "qasper-passage-v1-8ed573a4fbc2bdc2ea2f27b36f0e7581f66358cb21244525d219d5abac295e7e",
+      "qasper-passage-v1-94ca04dfcef1875fd9d674855915c17f21ae344cdb1561441a5e4300422a60e4",
+      "qasper-passage-v1-cfe181f047e21c9bf9a7c27f0c6e19502234dca656c95ac7c60f9acd7e9308c8",
+      "qasper-passage-v1-e703708ea45162d165db9a594d33a83755326f89de1c3b8b398abbf99cc548f0",
+      "qasper-passage-v1-f04785d333a5644430cd5e14d15a1bc01bbc6af889f108643ac8eebcd922507c",
+      "qasper-passage-v1-f6d258f7d0ed572e45673616069d79a92199e011fbedd3e0a28df984c3a6ab9f"
+    ],
+    "375": [
+      "qasper-passage-v1-10da5ed15404ca69c691de7d2aa9fa28ade2a8c4df71a122620b5827e3f76da3",
+      "qasper-passage-v1-17d59c3f0be42eecf52b5de21a2e0888539a260678e14d460661468e75dbcb7f",
+      "qasper-passage-v1-5cd9312a8828fb52d2d445fab41b8be318e60b446966e192ca917fa430836180",
+      "qasper-passage-v1-5d5e05845b95445afc6d51b3e437342cd0a9e5ef123f2ae87156e7c4312d4068",
+      "qasper-passage-v1-7e711b8b67c5aea623db3e4d1b4a2d8bf91d9aa921e0fe5e64a6652330a0bc6e",
+      "qasper-passage-v1-ab03400dc3ee936a72b38a468a6f706c304288ee3d60674dfeb9a9bd1ab3fad2",
+      "qasper-passage-v1-c4406167f89c180710a16cdf25eca94a8b2e6b5c1925987136a4c1e68fb9146f",
+      "qasper-passage-v1-d66106201091bcbb05c96df0933fbd1158adb1aed8e4f3346dc8608d7da45ab7",
+      "qasper-passage-v1-f484653a414ed764bef46e23c6b995ae36bd3896a0a951f8181be80d14ee149e",
+      "qasper-passage-v1-fad634dc2e161b263c18f721fba2789c25b107ee1d52bea7d9e48ffa7c8cebf3"
+    ],
+    "385": [
+      "qasper-passage-v1-18966fec720fd0074d51bd1cfa1dac88ba9b8900021c73eb42fb0c70e5bfaebd",
+      "qasper-passage-v1-25642e2dcfd93ae362cfe4846dd1fbfea1b493914c3d5ee725ee491b9cace5ea",
+      "qasper-passage-v1-4a93532932e2f0249675f2d65bda0d7bde4f69148f333b65e97043c5efe19d74",
+      "qasper-passage-v1-55262d961548c94ceeff1bff16ba5d4ffcf2c141eed0074e16e9c607b159e9e4",
+      "qasper-passage-v1-6e97b849c55e7697da88343fab631e44b049d5cfc94c6950d8872190de510812",
+      "qasper-passage-v1-a39eb6d954d04f230fa7f8d7ce4f8364e699c9503ea59fecfdad84fb726dd70f",
+      "qasper-passage-v1-b5d34faa12a3e1996412c2b2081f150e3f3acd42d4f1d743629e2bd125816ba9",
+      "qasper-passage-v1-ba1ad86c965d1237f97ec4b2aedfe3f47575c28eb7a241ba1fbe388608e2ae5f",
+      "qasper-passage-v1-d17a2f50d325b2ec836da5fc772e7b08e890be1c29a5cb904ef7f6a7c08eb3f2",
+      "qasper-passage-v1-e20e98b91e74dc10c7f2d0999e90d7dc616e396377ba7ddc1bdd9d6bc837c76b",
+      "qasper-passage-v1-ee6af9b8cf32f65864fe7b0f0f0da98984666093561c23b17de00a59663a9ea7"
+    ],
+    "395": [
+      "qasper-passage-v1-1bc421b70f2bed0352ac92dba8944ab4ce6bed5161bbd8dc00e274fe0634c42f",
+      "qasper-passage-v1-64596ad784ef7d9e40142ebe6ba5deb086a1ae75a52fae53afb4f1d68bfa3fd5",
+      "qasper-passage-v1-6601c4118e566f60af00dc25f04b455a43c3fcc9cd481ae1238771207e527ebd",
+      "qasper-passage-v1-6cfc26323898da1959030bca54731a7901fc9a1e057d4e5b5463bb9de349b297",
+      "qasper-passage-v1-70abcfccad358cc3c5108cf8b824a36b0654df0c1583e8fd2acb29e49ed9744e",
+      "qasper-passage-v1-8293fadc4626531cdba44305efd43090b5b03cb92c8ac1d6909248f57cf9309c",
+      "qasper-passage-v1-90c146bd8477441175537a4856d56f6ba352571422fa389ba34718b5fe8ecc6d",
+      "qasper-passage-v1-bccf91661aaf820f2a0edaa329d58a1adfee9a4ca20159fa01b30479777fe4f4",
+      "qasper-passage-v1-cb90b3df32798254c90cd6828779eea5b9d305a17bf12663bf0feb9ea93f594b",
+      "qasper-passage-v1-d783faa917dfd3052c2b6a8d37f09db5eea368626f14b1b1510ba9aac41bfb2f",
+      "qasper-passage-v1-ea3954a620a206cb2f5a651e6983bb725d14435f9414fb6bdb4d7197a2273f48"
+    ],
+    "400": [
+      "qasper-passage-v1-0d41563b175aa927989c9f261deb2814142c969bf488b1192b39cada17e93894",
+      "qasper-passage-v1-253bf5a02f8f139ccbafbe85818a2ce05bbe1a45250a454958d3d9703d34d793",
+      "qasper-passage-v1-291e5f5e7d09909b2664cdd54941bc0084f69f24971fb910a7309e5ed66c6eae",
+      "qasper-passage-v1-2a7ac1f3d86283ad64d947ef7578298ec8f375567b6daf955a60b90fd364fbe5",
+      "qasper-passage-v1-3d3901e9f732265198344f0db7d5bafc23d85923163e8a25b10300d7d9fee09f",
+      "qasper-passage-v1-777dfbf8390064980c0c5af0cb7d35f6c7e6e6e1ac474cffb14aa8b92abba28e",
+      "qasper-passage-v1-94975861cfcc0353f454de9219a14471437bbd99096fc3b772b4c368fc5b1dc9",
+      "qasper-passage-v1-d233302cee6f9b4872bed7e5d01752ab9952baec17e824e1390884bc96066f0e",
+      "qasper-passage-v1-d73ebc5d29d41795fea32c97a182b158f91865470801b4f8db83fc1440ca1d99",
+      "qasper-passage-v1-dd5f5e46b52e58cfd87906c2f54e2c70cb9e5f9eb8e004ef726490f2a850ff62",
+      "qasper-passage-v1-fe09ede3a0ecbb55ff9d0eaf00f99c80453541b66cd42429ca9b07906afcfea1"
+    ]
+  },
+  "readability_review_chunk_count_total": 107,
+  "readability_review_chunk_counts": {
+    "325": 11,
+    "335": 11,
+    "345": 11,
+    "350": 11,
+    "355": 10,
+    "365": 10,
+    "375": 10,
+    "385": 11,
+    "395": 11,
+    "400": 11
+  },
+  "readability_sample_count_actual": 10,
+  "readability_samples": [
+    {
+      "character_span": [
+        0,
+        747
+      ],
+      "location": "1708.08615:0:2",
+      "paper_id": "1708.08615",
+      "paragraph_index": 2,
+      "section_index": 0
+    },
+    {
+      "character_span": [
+        0,
+        319
+      ],
+      "location": "1708.08615:3:1",
+      "paper_id": "1708.08615",
+      "paragraph_index": 1,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        18
+      ],
+      "location": "1606.05320:3:4",
+      "paper_id": "1606.05320",
+      "paragraph_index": 4,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        859
+      ],
+      "location": "1606.05320:5:2",
+      "paper_id": "1606.05320",
+      "paragraph_index": 2,
+      "section_index": 5
+    },
+    {
+      "character_span": [
+        0,
+        288
+      ],
+      "location": "1904.12087:3:1",
+      "paper_id": "1904.12087",
+      "paragraph_index": 1,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        328
+      ],
+      "location": "1904.12087:4:0",
+      "paper_id": "1904.12087",
+      "paragraph_index": 0,
+      "section_index": 4
+    },
+    {
+      "character_span": [
+        0,
+        354
+      ],
+      "location": "1901.03860:1:2",
+      "paper_id": "1901.03860",
+      "paragraph_index": 2,
+      "section_index": 1
+    },
+    {
+      "character_span": [
+        0,
+        1480
+      ],
+      "location": "1901.03860:3:0",
+      "paper_id": "1901.03860",
+      "paragraph_index": 0,
+      "section_index": 3
+    },
+    {
+      "character_span": [
+        0,
+        437
+      ],
+      "location": "1811.00942:0:0",
+      "paper_id": "1811.00942",
+      "paragraph_index": 0,
+      "section_index": 0
+    },
+    {
+      "character_span": [
+        0,
+        259
+      ],
+      "location": "1811.00942:2:2",
+      "paper_id": "1811.00942",
+      "paragraph_index": 2,
+      "section_index": 2
+    }
+  ],
+  "readability_sampling": {
+    "length_check": {
+      "long_count": 2,
+      "short_count": 8,
+      "threshold_words": 150
+    },
+    "method": "random_papers_then_contiguous_paragraph_intervals",
+    "paper_count_actual": 5,
+    "paper_count_requested": 5,
+    "paper_ids": [
+      "1708.08615",
+      "1606.05320",
+      "1904.12087",
+      "1901.03860",
+      "1811.00942"
+    ],
+    "paragraph_count_by_paper": {
+      "1606.05320": 2,
+      "1708.08615": 2,
+      "1811.00942": 2,
+      "1901.03860": 2,
+      "1904.12087": 2
+    },
+    "paragraph_count_requested": 10,
+    "paragraph_word_counts": [
+      112,
+      47,
+      3,
+      153,
+      43,
+      57,
+      56,
+      231,
+      63,
+      36
+    ],
+    "paragraphs_per_paper_requested": 2
+  },
+  "retriever": {
+    "bm25": {
+      "b": 0.75,
+      "enabled": true,
+      "epsilon": 0.25,
+      "k1": 1.5,
+      "tokenizer": "casefold + Unicode word runs"
+    },
+    "dense": {
+      "enabled": false
+    },
+    "id": "p1-p2-static-retrieval",
+    "mode": "bm25",
+    "packages": {
+      "rank-bm25": "0.2.2"
+    },
+    "persistent_score_cache": false,
+    "reranker": {
+      "enabled": false
+    },
+    "scope": "selected paper",
+    "score": "raw BM25",
+    "source_commit": "5ccfb070a00f71dd2f95f69afb31868c296f35c4",
+    "tie_break": "passage_id ascending; reranker ties first use RRF descending"
+  },
+  "run_id": "round3_bm25_20261028_01",
+  "schema_version": "v0-proposed",
+  "source": {
+    "dataset_id": "allenai/qasper",
+    "local_parser_version": 1,
+    "resolved_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "source_manifest_sha256": "c1b073d330bc649280951304c04bac5796476c926b6a98ff8b1cc22c882fd9e7",
+    "split_files": {
+      "test": {
+        "rows": 416,
+        "sha256": "308380c3da5287ac450582c457a9a75303b8361360dd88e727afd021c8320779"
+      },
+      "train": {
+        "rows": 888,
+        "sha256": "7a25389963d05d97de9462d4e46b2ef367f37b898de55f5833bae7aa4b6e8732"
+      },
+      "validation": {
+        "rows": 281,
+        "sha256": "f3e8f8072bbb42c6f770cdbc311672738683505eef401a7b75e0c08cfb7c5945"
+      }
+    }
+  },
+  "source_splits": [
+    "train",
+    "validation"
+  ],
+  "split_policy_version": "qasper-official-paper-disjoint-v0-proposed",
+  "structured_inputs": {
+    "files": {
+      "chunk_size_325/ranked_chunks.jsonl": {
+        "sha256": "93f2d915af3371bac5181cf1bd9899e38582c6ca3b7ec988685bde4bcc7bef6c"
+      },
+      "chunk_size_335/ranked_chunks.jsonl": {
+        "sha256": "4e665f77687a4d66899dfca19e46af669a02afd0fdd7492b85822afc6a29e66c"
+      },
+      "chunk_size_345/ranked_chunks.jsonl": {
+        "sha256": "0c451ff81b852487d35e588530ac5c1047994e9f5f4ae86ed69e2966040e8bca"
+      },
+      "chunk_size_350/ranked_chunks.jsonl": {
+        "sha256": "9a43f570bc6b8bec9f34eec1b9c3564e70bf82b4ac4fd557cb4f2323781fcd1d"
+      },
+      "chunk_size_355/ranked_chunks.jsonl": {
+        "sha256": "784cd736482bc0d9b83c7ade7be66a1b22cdd5f80241f765001b196860a47a74"
+      },
+      "chunk_size_365/ranked_chunks.jsonl": {
+        "sha256": "4e3b189feaa660d7eb2eae07387ffd6fcd798620ae721b7bfbb26404f20bdc41"
+      },
+      "chunk_size_375/ranked_chunks.jsonl": {
+        "sha256": "3318187ac47b79e87d1dfdd4ca19618fd78e7185844c052d6b60d0a64dba0b53"
+      },
+      "chunk_size_385/ranked_chunks.jsonl": {
+        "sha256": "608dd70271a153a02b957a76aece69af6ad31b0fbda505b0d1e92d6ae2320a39"
+      },
+      "chunk_size_395/ranked_chunks.jsonl": {
+        "sha256": "df681471d9b20eb40372cba596e75b8f5ac22a3193f94ccb395718cf8c4266f2"
+      },
+      "chunk_size_400/ranked_chunks.jsonl": {
+        "sha256": "4ae39e509c835d0be179910ba13b4a416c4a88ddf905844289b794e53ca81309"
+      },
+      "questions.jsonl": {
+        "sha256": "f8154a5c96ca11e5c977b32b757ffec1e7dc2b481a6059dcee91b9c988068dd5"
+      }
+    },
+    "ranking_depth_rule": "shortest prefix with >=5 chunks and maximum budget words, or all available",
+    "ranking_states": {
+      "325": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2157
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1971
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2194
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2120
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2033
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2290
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2074
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2145
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2020
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2171
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2016
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2212
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2261
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2027
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2094
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2310
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2145
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 27,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2240
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2204
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2162
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1656
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2244
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2044
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2116
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2080
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2184
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1899
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2219
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2052
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 32,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2081
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2195
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2168
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2036
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2202
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2293
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 9,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2190
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2044
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 31,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2014
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2279
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2259
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 87,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2247
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2159
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2191
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2126
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2200
+        }
+      },
+      "335": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2167
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1971
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2086
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2056
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2235
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2290
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2034
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2165
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2000
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2201
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2036
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2212
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2263
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2070
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2134
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2015
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2165
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2239
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2204
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2099
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1656
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2274
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2054
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2136
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2168
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2224
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1899
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2135
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2072
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 31,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2059
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2215
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2198
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2066
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2005
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2303
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 9,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2020
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2064
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2139
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2279
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2279
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 87,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2267
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2169
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2221
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2136
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2200
+        }
+      },
+      "345": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2177
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1971
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2076
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2086
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2255
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2290
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2034
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2269
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2248
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2056
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2212
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2263
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2110
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2174
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2045
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2000
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2029
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2204
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2110
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2304
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2064
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2318
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2178
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2154
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1899
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2108
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2092
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2081
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2169
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2096
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2015
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2313
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2043
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2084
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2149
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2136
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2129
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 85,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2314
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2164
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2251
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2081
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2028
+        }
+      },
+      "350": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2182
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1971
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2071
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2101
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2265
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2238
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2274
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2258
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2066
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2306
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2263
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2130
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2186
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2060
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2000
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2024
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2204
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2115
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2279
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2069
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2328
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2183
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2174
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1899
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2318
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2102
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2091
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2174
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2243
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2111
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2020
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2186
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2048
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2094
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2154
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2279
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2144
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 83,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2100
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2159
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2258
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2101
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2028
+        }
+      },
+      "355": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2187
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1971
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2066
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 29,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2116
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2091
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2243
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2279
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2268
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2076
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2301
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2263
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2067
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2214
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2133
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2000
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2019
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2204
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2120
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2294
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2074
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2338
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2130
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2194
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1899
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2013
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2112
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2101
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2179
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2258
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2121
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2025
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2209
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2053
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2104
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 30,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2004
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2279
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2159
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 81,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2307
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2113
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2263
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2116
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2028
+        }
+      },
+      "365": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2197
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 7,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 1931
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2056
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 29,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2146
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2101
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2091
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2289
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 14,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2265
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2096
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2291
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2043
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2087
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2186
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2153
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2130
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2009
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2032
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2130
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2324
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2033
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2358
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2100
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2229
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 12,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 1899
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2358
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2092
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2117
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2189
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2116
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2134
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2035
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2239
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2063
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2117
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2120
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2279
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2189
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 78,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2190
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2104
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2273
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2126
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2091
+        }
+      },
+      "375": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2097
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 7,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 1931
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2046
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 29,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2176
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2111
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2101
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2299
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 14,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2255
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2007
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2040
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2053
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2105
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2294
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2173
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2130
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2101
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2052
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2173
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2354
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2054
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 10,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2003
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2110
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2259
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1859
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2220
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2112
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2127
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2192
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2126
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2144
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2154
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2269
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2073
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2127
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2120
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2279
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 25,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2219
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 76,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2089
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2094
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2283
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2136
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2101
+        }
+      },
+      "385": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2127
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 7,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 1931
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2036
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 29,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2322
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2121
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2111
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2265
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 14,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 12,
+          "saved_word_count": 2245
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2037
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2060
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2063
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2124
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2334
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2193
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2130
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2334
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2205
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2173
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2116
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2064
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 10,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2013
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2022
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2092
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1859
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2139
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2126
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2137
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2192
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2348
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2154
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2004
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2155
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2012
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2083
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2137
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2120
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2273
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2227
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 74,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2310
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2084
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2293
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2241
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2032
+        }
+      },
+      "395": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2157
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 7,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 1931
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2306
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2233
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2131
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2121
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2279
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 14,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2212
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2061
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2080
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 15,
+          "saved_word_count": 2047
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2073
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2134
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2374
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2141
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2130
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2116
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2245
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2173
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2002
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2074
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 10,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2023
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2052
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2070
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1859
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2145
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2126
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2147
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2192
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2378
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2164
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2014
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2189
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2210
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2093
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2147
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2120
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2263
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2227
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 73,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2347
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2074
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2303
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2017
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2052
+        }
+      },
+      "400": {
+        "022c365a14fdec406c7a945a1a18e7e79df37f08": {
+          "available_count": 24,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2172
+        },
+        "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50": {
+          "available_count": 6,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 1891
+        },
+        "0b92fb692feb35d4b4bf4665f7754d283d6ad5f3": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2306
+        },
+        "0cd90e5b79ea426ada0203177c28812a7fc86be5": {
+          "available_count": 27,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2243
+        },
+        "0d6d5b6c00551dd0d2519f117ea81d1e9e8785ec": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2136
+        },
+        "12391aab31c899bac0ecd7238c111cb73723a6b7": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2126
+        },
+        "21a96b328b43a568f9ba74cbc6d4689dbc4a3d7b": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2139
+        },
+        "249c805ee6f2ebe4dbc972126b3d82fb09fa3556": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2284
+        },
+        "27c1c678d3862c7676320ca493537b03a9f0c77a": {
+          "available_count": 14,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2207
+        },
+        "282aa4e160abfa7569de7d99b8d45cabee486ba4": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2228
+        },
+        "29c014baf99fb9f40b5171aab3e2c7f12a748f79": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2071
+        },
+        "2c78993524ca62bf1f525b60f2220a374d0e3535": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2090
+        },
+        "2c7e94a65f5f532aa31d3e538dcab0468a43b264": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 2002
+        },
+        "30c6d34b878630736f819fd898319ac4e71ee50b": {
+          "available_count": 14,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 14,
+          "saved_word_count": 1793
+        },
+        "35915166ab2fd3d39c0297c427d4ac00e8083066": {
+          "available_count": 12,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2078
+        },
+        "3bfb8c12f151dada259fbd511358914c4b4e1b0e": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2139
+        },
+        "42084c41343e5a6ae58a22e5bfc5ce987b5173de": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2394
+        },
+        "43d8057ff0d3f0c745a7164aed7ed146674630e0": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2156
+        },
+        "537b2d7799124d633892a1ef1a485b3b071b303d": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2068
+        },
+        "5871d258f66b00fb716065086f757ef745645bfe": {
+          "available_count": 23,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2116
+        },
+        "593e307d9a9d7361eba49484099c7a8147d3dade": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2265
+        },
+        "5a2f7e27efdedf3c43498ff0c32f808d406c42ec": {
+          "available_count": 8,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 1126
+        },
+        "5bcc12680cf2eda2dd13ab763c42314a26f2d993": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2173
+        },
+        "601e58a3d2c03a0b4cd627c81c6228a714e43903": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1616
+        },
+        "65ad17f614b7345f0077424c04c94971c831585b": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2007
+        },
+        "6dc9960f046ec6bd280a721724458f66d5a9a585": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2079
+        },
+        "729694a9fe1e05d329b7a4078a596fe606bc5a95": {
+          "available_count": 10,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2028
+        },
+        "73abb173a3cc973ab229511cf53b426865a2738b": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2067
+        },
+        "73bb8b7d7e98ccb88bb19ecd2215d91dd212f50d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2090
+        },
+        "79cfd1b82c72d18e2279792c66a042c0e9dfa6b7": {
+          "available_count": 11,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 1859
+        },
+        "8e857e44e4233193c7b2d538e520d37be3ae1552": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2163
+        },
+        "90f80a94fabaab72833256572db1d449c2779beb": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2126
+        },
+        "9299fe72f19c1974564ea60278e03a423eb335dc": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2152
+        },
+        "983c2fe7bdbf471bb8b15db858fd2cbec86b96a5": {
+          "available_count": 11,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2192
+        },
+        "a15bc19674d48cd9919ad1cf152bf49c88f4417d": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2393
+        },
+        "a1e07c7563ad038ee2a7de5093ea08efdd6077d4": {
+          "available_count": 20,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2396
+        },
+        "b1ce129678e37070e69f01332f1a8587e18e06b0": {
+          "available_count": 15,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2019
+        },
+        "b27f7993b1fe7804c5660d1a33655e424cea8d10": {
+          "available_count": 16,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2199
+        },
+        "b2fab9ffbcf1d6ec6d18a05aeb6e3ab9a4dbf2ae": {
+          "available_count": 26,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2225
+        },
+        "bc1e3f67d607bfc7c4c56d6b9763d3ae7f56ad5b": {
+          "available_count": 16,
+          "ranking_complete": true,
+          "retention_satisfied": true,
+          "saved_count": 16,
+          "saved_word_count": 1960
+        },
+        "c00ce1e3be14610fb4e1f0614005911bb5ff0302": {
+          "available_count": 8,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2098
+        },
+        "d571e0b0f402a3d36fb30d70cdcd2911df883bc7": {
+          "available_count": 21,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2152
+        },
+        "e1f5531ed04d0aae1dfcb0559f1512a43134c43a": {
+          "available_count": 28,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 11,
+          "saved_word_count": 2120
+        },
+        "e74ba39c35af53d3960be5a6c86eddd62cef859f": {
+          "available_count": 18,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 10,
+          "saved_word_count": 2258
+        },
+        "e755fb599690d0d0c12ddb851ac731a0a7965797": {
+          "available_count": 22,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 7,
+          "saved_word_count": 2227
+        },
+        "eac042734f76e787cb98ba3d0c13a916a49bdfb3": {
+          "available_count": 72,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2357
+        },
+        "ef081d78be17ef2af792e7e919d15a235b8d7275": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2069
+        },
+        "fb5fb11e7d01b9f9efe3db3417b8faf4f8d6931f": {
+          "available_count": 17,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 9,
+          "saved_word_count": 2308
+        },
+        "fbd47705262bfa0a2ba1440a2589152def64cbbd": {
+          "available_count": 19,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 6,
+          "saved_word_count": 2034
+        },
+        "fffbd6cafef96eeeee2f9fa5d8ab2b325ec528e6": {
+          "available_count": 13,
+          "ranking_complete": false,
+          "retention_satisfied": true,
+          "saved_count": 8,
+          "saved_word_count": 2062
+        }
+      }
+    },
+    "schema_version": "chunk-size-inputs-v0-proposed",
+    "source_run_id": null,
+    "truncation_rule": "ranked prefix; last chunk ends at the final retained word; no skipping",
+    "word_count_rule": "Unicode non-whitespace runs: \\S+; body only; overlap counted repeatedly"
+  },
+  "timing_policy": "perf_counter wall seconds; index_seconds includes factory construction, model initialization and passage encoding; per-query includes full retrieval and lazy first BGE scoring load; no hidden warm-up; excludes report rendering",
+  "working_tree_dirty": false,
+  "working_tree_status": []
+}

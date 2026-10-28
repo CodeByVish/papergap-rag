@@ -1,6 +1,6 @@
 # Chunk Size Evaluation Criteria
 
-Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Round 2 completed $9$ candidates, $200/225/250/275/300/325/350/375/400$, under `results/chunk_size/round2_bm25_20261028_01/`, fulfilling `weekly-work/week-3/TODO.md` item $2.4.2.2$. Both rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. The current `config.json` now contains the confirmed Round 3 candidates below; execution is pending. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
+Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Round 2 completed $9$ candidates, $200/225/250/275/300/325/350/375/400$, under `results/chunk_size/round2_bm25_20261028_01/`, fulfilling `weekly-work/week-3/TODO.md` item $2.4.2.2$. Round 3 completed the $10$ candidates below under `results/chunk_size/round3_bm25_20261028_01/`, fulfilling item $2.4.2.3$; `config.json` retains these settings. All three rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
 
 ## Candidate-size rationale and proposal
 
@@ -64,7 +64,7 @@ Words remain Unicode non-whitespace spans counted by `\S+` in `src/data/chunking
 
 ### Round 3: confirmed local refinement plan
 
-Confirmed on 2026/10/28: compare $325/335/345/350/355/365/375/385/395/400$ words per chunk, giving $10$ candidates now recorded in `config.json`. Execution is pending under `weekly-work/week-3/TODO.md` item $2.4.2.3$. Shared interfaces and the final chunk configuration remain `v0-proposed`.
+Confirmed and executed on 2026/10/28: compare $325/335/345/350/355/365/375/385/395/400$ words per chunk, giving $10$ candidates recorded in `config.json`. Results are in `results/chunk_size/round3_bm25_20261028_01/summary.html`, fulfilling `weekly-work/week-3/TODO.md` item $2.4.2.3$. Input hashes, question IDs/order, evidence filtering and readability source locations were verified; all four $325/350/375/400$ controls reproduce Round 2's corpus hashes, saved rankings and per-question results exactly, excluding timings. Structured regeneration and readability summarization leave `summary.json` byte-identical to the initial result; artifact and budget checks passed. All $107$ readability chunk reviews remain pending; comparative assessment belongs to item $2.4.3$. Shared interfaces and the final chunk configuration remain `v0-proposed`.
 
 Round 2's `summary.html` supports starting at $325$: $375$ has the highest top-$5$ hit / complete evidence rates at $64\%/56\%$, but mean retrieved words are $1291.60$ versus $1203.84$ for $325$. At a $1000$-word budget, $325$ leads both metrics at $58\%/50\%$, compared with $50\%/42\%$ for $375$. Its complete evidence rate at a $500$-word budget is also the highest at $32\%$. Retain the neighborhoods of both $325$ and $375$ rather than searching only around the top-$5$ winner.
 
