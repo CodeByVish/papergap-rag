@@ -1,101 +1,731 @@
-# Local QASPER data
+# QASPER data guide
 
-## Directory structure
+[中文版](README_zh-CN.md)
 
-The tree below shows the local layout after acquisition and export. Raw and processed data files are downloaded or generated locally and remain out of Git.
+Raw and processed data remain outside Git. This guide describes versioned Release sharing, local reproduction, and the fields of each processed artifact. All commands run from the repository root in the project Python 3.11 environment; install `requirements.txt` or `requirements-dev.txt` first.
+
+## Data packages and updates
+
+The agreed workflow is to publish `data/raw/` and `data/processed/` together as a versioned GitHub Release attachment tied to an exact `p3` commit. Keep all companion manifests, source license declarations, and provenance. Code and bilingual documentation are tracked in Git; data and archives remain ignored.
+
+No data Release has been published as part of this documentation change. The [repository Releases page](https://github.com/CodeByVish/papergap-rag/releases) is navigation only, not a claim that a data package exists. After publication, update both guides with the actual version-specific asset links and code commit.
+
+### Publish a version
+
+1. Rebuild changed outputs in a separate local staging directory, keeping the canonical basenames, and regenerate dependent artifacts and manifests together. Validate hashes, schemas, scope, and links before selecting the release files. Retain the previous local snapshot until the new one is verified.
+
+2. Use a new version such as `data-v1`, then `data-v2`. These are examples, not published versions. Record the exact `p3` code commit, upstream revision, parser/normalization/chunking versions, chunk parameters, included files, evaluation scope, changes, and validation results in the Release notes.
+
+3. Package only `data/raw/` and the selected complete `data/processed/` outputs, preserving paths relative to `data/`. Include each JSONL's manifest. Exclude credentials, caches, staging files, model weights, indexes, and personal notes. The optional inspection report is included only when regenerated and intentionally selected.
+
+4. Upload the archive and a separate SHA-256 checksum file as Release assets. Retain old versions; changed data requires a new Release rather than silently replacing published assets. Update the download links in both guides together. Publication is manual unless an explicit automation is added later.
+
+The following packaging example assumes the selected, validated files are already in the canonical directories and `tmp/` exists. Set the example version to the intended new release version; the resulting archive contains top-level `raw/` and `processed/` directories. Do not run it over an existing archive of the same version.
+
+```powershell
+$packageVersion = 'data-v1'
+$packagePath = "tmp/tmp_qasper-$packageVersion.zip"
+Compress-Archive -LiteralPath data/raw,data/processed -DestinationPath $packagePath
+$packageHash = (Get-FileHash -LiteralPath $packagePath -Algorithm SHA256).Hash.ToLowerInvariant()
+$checksumLine = "$packageHash  tmp_qasper-$packageVersion.zip`n"
+[System.IO.File]::WriteAllText("$packagePath.sha256", $checksumLine, [System.Text.UTF8Encoding]::new($false))
+```
+
+### Download and use
+
+Choose a specific data Release and check out its recorded code commit. Download the ZIP and its checksum file, compare `Get-FileHash -LiteralPath <downloaded-zip> -Algorithm SHA256` with the published checksum, and extract into a separate directory first. Copy the verified `raw/` and `processed/` trees into the repository's `data/` directory only after backing up any existing local data. Keep manifests beside their data files and run the checks below. Do not edit a JSONL without regenerating its manifest and dependent artifacts.
+
+Downloading a package does not change evaluation permissions: held-out questions/answers/evidence remain restricted under the default policy. The explicit `all-splits-testing` artifact is ordinary testing and cannot support an independent held-out claim.
+
+## Directory structure and build order
+
+The tree lists canonical artifacts; the diagnostic report is optional and may be absent. `README_zh-CN.md` is tracked alongside `README.md`; all generated files remain ignored.
 
 ```text
 data/
-├── README.md                                           # Acquisition, processing, data contracts, and usage guide
-├── raw/                                                # Downloaded source data; ignored by Git
+├── README.md                                           # English guide / 英文指南
+├── README_zh-CN.md                                     # Chinese guide / 中文指南
+├── raw/                                                # Ignored source data / 忽略的源数据
 │   └── qasper/
-│       ├── manifest.json                               # Pinned source metadata, split inventory, and checksums
-│       ├── train.jsonl                                 # Raw training-split paper records
-│       ├── validation.jsonl                            # Raw development split, named validation locally
-│       └── test.jsonl                                  # Raw held-out paper records
-└── processed/                                          # Generated local exports; ignored by Git
-    ├── papers.jsonl                                    # Paper-only records from all three splits
-    ├── passages.jsonl                                  # Development passages; configured default path
-    ├── passages.manifest.json                          # Development corpus counts and hashes
-    ├── passages_all_paper_text.jsonl                   # Passages from all paper text; inference index
-    ├── passages_all_paper_text.manifest.json           # Inference corpus scope, counts, and hashes
-    ├── gold_evidence_mapping.jsonl                     # Eligible development QA evidence-to-passage mappings
-    ├── gold_evidence_mapping.manifest.json             # Mapping provenance and filtering counts
-    ├── gold_evidence_mapping_all_splits.jsonl          # Ordinary-test mappings from all official splits
-    ├── gold_evidence_mapping_all_splits.manifest.json  # All-split export provenance and counts
-    ├── qa.jsonl                                        # Questions with answer and evidence annotations
-    ├── qasper_export.manifest.json                     # Paper and Q&A export provenance, counts, and hashes
-    ├── sample_passages_100.jsonl                       # 100-passage reproducibility sample
-    └── sample_passages_100.manifest.json               # Sample selection details and hashes
+│       ├── manifest.json                               # Source metadata and hashes / 来源及哈希
+│       ├── train.jsonl
+│       ├── validation.jsonl
+│       └── test.jsonl
+└── processed/                                          # Ignored generated outputs / 忽略的生成产物
+    ├── papers.jsonl
+    ├── qa.jsonl
+    ├── qasper_export.manifest.json
+    ├── passages.jsonl
+    ├── passages.manifest.json
+    ├── passages_all_paper_text.jsonl
+    ├── passages_all_paper_text.manifest.json
+    ├── gold_evidence_mapping.jsonl
+    ├── gold_evidence_mapping.manifest.json
+    ├── gold_evidence_mapping_all_splits.jsonl
+    ├── gold_evidence_mapping_all_splits.manifest.json
+    ├── sample_passages_100.jsonl
+    ├── sample_passages_100.manifest.json
+    └── qasper_inspection.json                          # Optional diagnostics / 可选诊断
 ```
 
-Keep the manifests beside their JSONL files: they preserve provenance and checksums, and the export manifest is required by the passage and sample builders. `passages.jsonl` contains only development/validation paper text and matches `data.passages_path` in `configs/default.yaml`. `passages_all_paper_text.jsonl` includes held-out paper text and is for inference indexing only; do not use held-out questions, answers, evidence, or labels for tuning or prompt design. This compact layout omits the diagnostic inspection report.
+Build order: raw acquisition → `papers.jsonl`, `qa.jsonl`, export manifest → development/all-paper-text corpora and sample → evidence mappings. Every file below has its own generation command and field table; repeated commands generate companion files together, so execute each distinct build only once.
 
-## JSONL record examples
+The builders refuse existing output paths, except the optional inspector, which replaces its report. For rebuilds, use a new staging directory and pass its corresponding input/output paths throughout. The corpus and sample CLIs do not read YAML: their legacy defaults are $200/40$ words, so explicitly pass the selected $365/40$ settings. These are words, not model tokens.
 
-Each JSONL physical line contains one compact JSON object. The examples below show one representative record for every JSONL file; placeholder values such as `<paper-id>` are illustrative. The examples are kept on one line to match the file format, and the notes below explain each key.
+Field tables use JSON types. Dotted paths and `[]` describe nested fields; `<split>` means `train`, `validation`, or `test`, and `<input>` is one of the named inputs. Source exports preserve additional original fields if present; tables describe the pinned QASPER source and current exporter, not a schema repair step.
 
-### `data/raw/qasper/train.jsonl`
+## Raw QASPER acquisition
 
-```json
-{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
+### Generation command
+
+```powershell
+python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54
 ```
 
-### `data/raw/qasper/validation.jsonl`
+The download maps upstream `dev` to local `validation`; `train` and `test` keep their names. Each raw JSONL line is a whole paper with `id`, `title`, `abstract`, `full_text`, `figures_and_tables`, and `qas`. `qas[]` has the question fields documented under `qa.jsonl`, without the added `paper_id` and `source_split`. The paper content fields match `papers.jsonl`, without `source_split`. Raw records are neither normalized nor chunked.
 
-```json
-{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
+`--output-dir` is required. Existing destinations are rejected unless `--force` is supplied; `--force` replaces the whole verified acquisition with rollback, not an append/resume operation. The exact accepted directory contains only `manifest.json`, `train.jsonl`, `validation.jsonl`, and `test.jsonl`. The command needs network access to the Hugging Face Hub and official archives; QASPER is public and needs no Hugging Face token.
+
+### Raw manifest fields
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `manifest_schema_version` | `integer` | Manifest contract version. |
+| `dataset` | `object` | Dataset ID/config, requested/resolved revision, source dataset version, local parser version. |
+| `licenses` | `object` | Hub/source license declarations; retain on redistribution. |
+| `repository_files` | `array<object>` | Byte counts and SHA-256 of pinned qasper.py and dataset_infos.json. |
+| `splits` | `array<object>` | Split name, filename, rows, bytes, SHA-256 for each JSONL. |
+| `source_verification` | `string` | Fixed verification contract identifier. |
+| `source_archives` | `array<object>` | Official URLs, declared/observed bytes and hashes, required members. |
+| `libraries` | `object` | Python and huggingface-hub runtime versions. |
+| `output` | `object` | Encoding, newline, aggregate-hash algorithm and aggregate_sha256. |
+
+Acquisition validates pinned `qasper.py` and `dataset_infos.json` as bytes, never executes remote code, and never uses `trust_remote_code`. Both official archives must match byte counts, SHA-256, and required members; they are not extracted to disk. Source, fingerprint, or schema changes fail closed. `--revision main` is for upstream checks, not team reproduction. The aggregate digest covers sorted JSONL relative paths and file hashes, excluding `manifest.json`. Raw JSONL uses UTF-8, LF, recursively sorted keys, and compact serialization; retain the manifest for reproduction.
+
+## `data/processed/papers.jsonl`
+
+One paper per row from every official split. Preserves all original top-level fields except qas and adds source_split. It is paper-only input for passage builders.
+
+### Generation command
+
+```powershell
+python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
 ```
 
-### `data/raw/qasper/test.jsonl`
+### Field table
 
-```json
-{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `id` | `string` | Original paper identifier. |
+| `title` | `string` | Original paper title. |
+| `abstract` | `string` | Original abstract; retained but not currently indexed. |
+| `full_text` | `array<object>` | Ordered source sections. |
+| `full_text[].section_name` | `string or null` | Original section label; blank/null labels are dropped by the passage builder. |
+| `full_text[].paragraphs` | `array<string>` | Original ordered paragraphs, before normalization. |
+| `figures_and_tables` | `array<object>` | Original figure/table metadata; not currently indexed. |
+| `figures_and_tables[].caption` | `string` | Original figure/table caption. |
+| `figures_and_tables[].file` | `string` | Source figure/table file reference; not a bundled image. |
+| `source_split` | `string` | Official split: train, validation, or test. |
+
+## `data/processed/qa.jsonl`
+
+One original question per row, with every answer annotation. Includes every official split; paper_id and source_split are added without filtering source QA fields. Use paper_id to join papers, then evidence matching to recover passage IDs.
+
+### Generation command
+
+```powershell
+python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
 ```
 
-The three raw split files share this structure. `id` identifies the paper; `title` and `abstract` hold its title and abstract; `full_text` is an ordered list of source sections, each with a `section_name` and a list of `paragraphs`; `figures_and_tables` is a list of items with `caption` and `file`; and `qas` is a list of questions and annotations. Each Q&A item has `question_id`, `question`, and the question context fields `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background`. Each entry in `answers` has an `annotation_id`, a `worker_id`, and an `answer` object. That object contains `evidence`, `extractive_spans`, `free_form_answer`, `highlighted_evidence`, the `unanswerable` flag, and `yes_no` (a boolean or `null`). The source split is determined by the filename and is not a raw record key.
+### Field table
 
-### `data/processed/papers.jsonl`
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `question_id` | `string` | Original question identifier. |
+| `paper_id` | `string` | Foreign key to papers.jsonl:id. |
+| `source_split` | `string` | Official source split; retained even in ordinary-testing mode. |
+| `question` | `string` | Original question text. |
+| `nlp_background` | `string` | Question author's NLP background. |
+| `paper_read` | `string` | Source record of how much of the paper was read. |
+| `question_writer` | `string` | Original question-writer identifier. |
+| `search_query` | `string` | Original search query. |
+| `topic_background` | `string` | Question author's topic background. |
+| `answers` | `array<object>` | All alternative answer annotations; preserved independently. |
+| `answers[].annotation_id` | `string` | Original annotation identifier. |
+| `answers[].worker_id` | `string` | Original annotator metadata; not relevance supervision. |
+| `answers[].answer` | `object` | Original answer payload. |
+| `answers[].answer.evidence` | `array<string>` | Annotated evidence text, including possible FLOAT SELECTED markers. |
+| `answers[].answer.extractive_spans` | `array<string>` | Extractive reference answer spans. |
+| `answers[].answer.free_form_answer` | `string` | Free-form reference answer, possibly empty. |
+| `answers[].answer.highlighted_evidence` | `array<string>` | Original highlighted evidence; not used for paragraph matching. |
+| `answers[].answer.unanswerable` | `boolean` | Whether the question is marked unanswerable. |
+| `answers[].answer.yes_no` | `boolean or null` | Yes/no reference answer, or null for another answer type. |
 
-```json
-{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"source_split":"train"}
+## `data/processed/qasper_export.manifest.json`
+
+Generated alongside papers.jsonl and qa.jsonl, not in a separate build. Binds source and output hashes, split counts, and the proposed policy. Output filenames are basenames; keep all three export files together.
+
+### Generation command
+
+```powershell
+python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
 ```
 
-This keeps the paper fields described above, omits `qas`, and adds `source_split` to identify `train`, `validation`, or `test`. Each line is one paper record.
+### Field table
 
-### `data/processed/qa.jsonl`
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `manifest_schema_version` | `integer` | Manifest format version. |
+| `artifact` | `string` | qasper_papers_and_qa. |
+| `split_policy_version` | `string` | Proposed paper-disjoint split policy version. |
+| `source` | `object` | Pinned upstream and export provenance. |
+| `source.dataset_id` | `string` | allenai/qasper. |
+| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
+| `source.local_parser_version` | `integer` | Local source parser version. |
+| `source.source_manifest_sha256` | `string` | Hash of raw/qasper/manifest.json. |
+| `source.split_files` | `object` | Input inventory keyed by train, validation, test. |
+| `source.split_files.<split>.rows` | `integer` | Number of source paper rows. |
+| `source.split_files.<split>.sha256` | `string` | Source split JSONL byte hash. |
+| `split_counts` | `object` | Counts keyed by official split. |
+| `split_counts.<split>.papers` | `integer` | Paper count. |
+| `split_counts.<split>.questions` | `integer` | Question count. |
+| `split_counts.<split>.answer_annotations` | `integer` | Answer annotation count. |
+| `outputs` | `object` | Inventory of the two output JSONL files. |
+| `outputs.<papers\|qa>.file` | `string` | Output basename; outputs share a directory. |
+| `outputs.<papers\|qa>.rows` | `integer` | Output row count. |
+| `outputs.<papers\|qa>.sha256` | `string` | Output SHA-256. |
+| `outputs.qa.answer_annotation_count` | `integer` | Total answer annotations across all QA rows. |
 
-```json
-{"question_id":"<question-id>","paper_id":"<paper-id>","source_split":"train","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}
+## `data/processed/passages.jsonl`
+
+Default development corpus used by configs/default.yaml:data.passages_path. Includes train and validation only. Current pinned 365/40 build contains 21,360 passages; manifests are authoritative for exact counts and hashes.
+
+### Generation command
+
+```powershell
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
 ```
 
-Each line represents one question. `question_id` identifies it; `paper_id` links it to `papers.jsonl`; `source_split` records its source split; `question` is the query text; and `answers` contains the QASPER annotations described above. `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background` preserve the corresponding question context fields.
+### Field table
 
-The current pinned export already combines all three official splits: $2{,}593$ train questions, $1{,}005$ validation questions, and $1{,}451$ test questions, totaling $5{,}049$ questions and $7{,}993$ answer annotations. They are stored together for completeness; `source_split` preserves their origin. The evidence mapper reads this file directly and joins `paper_id` to `papers.jsonl` and the selected passage corpus. QA records alone do not contain passage IDs or source coordinates, so those joins and text matching are still necessary.
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `passage_id` | `string` | Opaque deterministic qasper-passage-v1- SHA-256 identifier. |
+| `paper_id` | `string` | Source paper identifier. |
+| `title` | `string` | Normalized paper title. |
+| `section` | `string` | Normalized display section label; equal labels do not merge containers. |
+| `chunk_number` | `integer` | Zero-based contiguous chunk index within one original source container. |
+| `text` | `string` | Normalized full-text chunk; contains no QA supervision. |
+| `previous_passage_id` | `string or null` | Direct predecessor in the same container; null at the start. |
+| `next_passage_id` | `string or null` | Direct successor in the same container; null at the end. |
 
-### `data/processed/passages_all_paper_text.jsonl`
+## `data/processed/passages.manifest.json`
 
-```json
-{"passage_id":"qasper-passage-v1-<64-lowercase-hex-characters>","paper_id":"<paper-id>","title":"Example title","section":"Introduction","chunk_number":1,"text":"<passage text>","previous_passage_id":"qasper-passage-v1-<previous-id>","next_passage_id":"qasper-passage-v1-<next-id>"}
+Companion to passages.jsonl. scope=development, artifact=development_corpus, purpose=development. All official splits are recorded, including excluded test with zero emitted passages.
+
+### Generation command
+
+```powershell
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
 ```
 
-`passage_id` is the stable passage identifier; `paper_id` and `title` identify the source paper; `section` is the display section name; `chunk_number` is the zero-based position within its source section; `text` is the passage content; and `previous_passage_id` and `next_passage_id` link to adjacent passages in that section, or are `null` at its boundaries.
+### Field table
 
-### `data/processed/sample_passages_100.jsonl`
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `manifest_schema_version` | `integer` | Manifest format version. |
+| `artifact` | `string` | development_corpus or inference_corpus. |
+| `purpose` | `string` | development or index_for_inference. |
+| `scope` | `string` | development or all-paper-text. |
+| `source` | `object` | Pinned upstream and export provenance. |
+| `source.dataset_id` | `string` | allenai/qasper. |
+| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
+| `source.local_parser_version` | `integer` | Local source parser version. |
+| `source.export_papers_file` | `string` | Input paper-export basename. |
+| `source.export_papers_sha256` | `string` | SHA-256 of exact paper-export bytes. |
+| `source.source_splits` | `object` | Raw split inventory copied from export source.split_files. |
+| `source.source_splits.<split>.rows` | `integer` | Original split paper count. |
+| `source.source_splits.<split>.sha256` | `string` | Raw split byte hash. |
+| `source.split_policy_version` | `string` | Proposed split policy version. |
+| `source.split_counts` | `object` | Scope/count metadata keyed by split. |
+| `source.split_counts.<split>.project_role` | `string` | development, validation, or held_out. |
+| `source.split_counts.<split>.included_in_scope` | `boolean` | Whether the split was included. |
+| `source.split_counts.<split>.source_paper_count` | `integer` | Paper count in the input export for this split. |
+| `source.split_counts.<split>.passage_count` | `integer` | Generated passage count for this split. |
+| `chunking` | `object` | Exact normalization/chunking settings. |
+| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
+| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
+| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
+| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
+| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
+| `chunking.word_rule` | `string` | Definition of word counting. |
+| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
+| `output` | `object` | Corpus inventory, counts, and rubric checks. |
+| `output.file` | `string` | Corpus basename. |
+| `output.sha256` | `string` | Exact corpus byte hash. |
+| `output.scope` | `string` | Same scope as the top-level field. |
+| `output.purpose` | `string` | Same purpose as the top-level field. |
+| `output.source_paper_count` | `integer` | Input papers in the selected scope. |
+| `output.indexed_paper_count` | `integer` | Papers emitting at least one passage. |
+| `output.passage_count` | `integer` | Total passages. |
+| `output.unique_passage_count` | `integer` | Distinct passage IDs. |
+| `output.source_word_count` | `integer` | Source words counted once without chunk overlap duplication. |
+| `output.passage_word_count` | `integer` | Words in emitted passages, including overlap. |
+| `output.passage_word_type_count` | `integer` | Distinct casefolded passage word types. |
+| `output.minimum_passages` | `integer` | Required minimum passage count. |
+| `output.minimum_words` | `integer` | Required minimum word count. |
+| `output.rubric_minimum_met` | `boolean` | Whether at least 10,000 passages and 100,000 words are met. |
 
-```json
-{"passage_id":"qasper-passage-v1-<64-lowercase-hex-characters>","paper_id":"<paper-id>","title":"Example title","section":"Introduction","chunk_number":0,"text":"<passage text>","previous_passage_id":null,"next_passage_id":null}
+## `data/processed/passages_all_paper_text.jsonl`
+
+Includes train, validation, and test paper bodies for inference indexing. It contains no QA fields. Current pinned 365/40 build contains 28,617 passages; held-out paper inclusion does not permit supervision-based tuning.
+
+### Generation command
+
+```powershell
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages_all_paper_text.jsonl --manifest-output data/processed/passages_all_paper_text.manifest.json
 ```
 
-This sample uses the same eight-key `Passage` structure and key meanings as `passages_all_paper_text.jsonl`. The example shows a one-passage section, so both neighbor links are `null`.
+### Field table
 
-Generated or downloaded data stays out of Git. Do not commit `data/raw/`, source archives, Hugging Face cache files, staging directories, or other locally generated data.
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `passage_id` | `string` | Opaque deterministic qasper-passage-v1- SHA-256 identifier. |
+| `paper_id` | `string` | Source paper identifier. |
+| `title` | `string` | Normalized paper title. |
+| `section` | `string` | Normalized display section label; equal labels do not merge containers. |
+| `chunk_number` | `integer` | Zero-based contiguous chunk index within one original source container. |
+| `text` | `string` | Normalized full-text chunk; contains no QA supervision. |
+| `previous_passage_id` | `string or null` | Direct predecessor in the same container; null at the start. |
+| `next_passage_id` | `string or null` | Direct successor in the same container; null at the end. |
 
-## Scope and data shape
+## `data/processed/passages_all_paper_text.manifest.json`
 
-The acquisition command downloads the uncleaned, unchunked, paper-level QASPER source data as JSONL. Each JSONL line represents one paper record.
+Companion to passages_all_paper_text.jsonl. scope=all-paper-text, artifact=inference_corpus, purpose=index_for_inference. Records included paper bodies by source split; not a frozen question-pool manifest.
 
-The source members `train`, `dev`, and `test` are published as `train.jsonl`, `validation.jsonl`, and `test.jsonl`, respectively. The acquisition stage does not clean or chunk these records; the later sections document the current proposed Passage contract, deterministic chunking behavior, and the 100-passage dependency sample.
+### Generation command
+
+```powershell
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages_all_paper_text.jsonl --manifest-output data/processed/passages_all_paper_text.manifest.json
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `manifest_schema_version` | `integer` | Manifest format version. |
+| `artifact` | `string` | development_corpus or inference_corpus. |
+| `purpose` | `string` | development or index_for_inference. |
+| `scope` | `string` | development or all-paper-text. |
+| `source` | `object` | Pinned upstream and export provenance. |
+| `source.dataset_id` | `string` | allenai/qasper. |
+| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
+| `source.local_parser_version` | `integer` | Local source parser version. |
+| `source.export_papers_file` | `string` | Input paper-export basename. |
+| `source.export_papers_sha256` | `string` | SHA-256 of exact paper-export bytes. |
+| `source.source_splits` | `object` | Raw split inventory copied from export source.split_files. |
+| `source.source_splits.<split>.rows` | `integer` | Original split paper count. |
+| `source.source_splits.<split>.sha256` | `string` | Raw split byte hash. |
+| `source.split_policy_version` | `string` | Proposed split policy version. |
+| `source.split_counts` | `object` | Scope/count metadata keyed by split. |
+| `source.split_counts.<split>.project_role` | `string` | development, validation, or held_out. |
+| `source.split_counts.<split>.included_in_scope` | `boolean` | Whether the split was included. |
+| `source.split_counts.<split>.source_paper_count` | `integer` | Paper count in the input export for this split. |
+| `source.split_counts.<split>.passage_count` | `integer` | Generated passage count for this split. |
+| `chunking` | `object` | Exact normalization/chunking settings. |
+| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
+| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
+| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
+| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
+| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
+| `chunking.word_rule` | `string` | Definition of word counting. |
+| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
+| `output` | `object` | Corpus inventory, counts, and rubric checks. |
+| `output.file` | `string` | Corpus basename. |
+| `output.sha256` | `string` | Exact corpus byte hash. |
+| `output.scope` | `string` | Same scope as the top-level field. |
+| `output.purpose` | `string` | Same purpose as the top-level field. |
+| `output.source_paper_count` | `integer` | Input papers in the selected scope. |
+| `output.indexed_paper_count` | `integer` | Papers emitting at least one passage. |
+| `output.passage_count` | `integer` | Total passages. |
+| `output.unique_passage_count` | `integer` | Distinct passage IDs. |
+| `output.source_word_count` | `integer` | Source words counted once without chunk overlap duplication. |
+| `output.passage_word_count` | `integer` | Words in emitted passages, including overlap. |
+| `output.passage_word_type_count` | `integer` | Distinct casefolded passage word types. |
+| `output.minimum_passages` | `integer` | Required minimum passage count. |
+| `output.minimum_words` | `integer` | Required minimum word count. |
+| `output.rubric_minimum_met` | `boolean` | Whether at least 10,000 passages and 100,000 words are met. |
+
+## `data/processed/gold_evidence_mapping.jsonl`
+
+Maps all eligible train/validation questions to the verified development corpus, without sampling. Existing local older exports may omit qa_metadata and annotation metadata; regenerate to new output paths for the current fields below. Mapping schema remains v0-proposed.
+
+### Generation command
+
+```powershell
+python -m scripts.export_evidence_mapping --scope development
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed. |
+| `question_id` | `string` | Original question identifier. |
+| `paper_id` | `string` | Source paper identifier. |
+| `source_split` | `string` | Official source split. |
+| `question` | `string` | Original question text. |
+| `qa_metadata` | `object` | Other source QA fields; current exporter preserves them unchanged. |
+| `qa_metadata.nlp_background` | `string` | Question author's NLP background. |
+| `qa_metadata.paper_read` | `string` | Source record of how much of the paper was read. |
+| `qa_metadata.question_writer` | `string` | Original question-writer identifier. |
+| `qa_metadata.search_query` | `string` | Original search query. |
+| `qa_metadata.topic_background` | `string` | Question author's topic background. |
+| `annotations` | `array<object>` | Alternative answers retained separately with located evidence. |
+| `annotations[].annotation_id` | `string` | Source annotation ID converted to string; answer-array index if absent. |
+| `annotations[].worker_id` | `string (if present)` | Original worker metadata retained by the current exporter. |
+| `annotations[].answer` | `object` | Original answer payload. |
+| `annotations[].answer.evidence` | `array<string>` | Annotated evidence text, including possible FLOAT SELECTED markers. |
+| `annotations[].answer.extractive_spans` | `array<string>` | Extractive reference answer spans. |
+| `annotations[].answer.free_form_answer` | `string` | Free-form reference answer, possibly empty. |
+| `annotations[].answer.highlighted_evidence` | `array<string>` | Original highlighted evidence; not used for paragraph matching. |
+| `annotations[].answer.unanswerable` | `boolean` | Whether the question is marked unanswerable. |
+| `annotations[].answer.yes_no` | `boolean or null` | Yes/no reference answer, or null for another answer type. |
+| `annotations[].evidence_locations` | `array<string>` | Nonempty references to evidence_paragraphs[].location. |
+| `evidence_paragraphs` | `array<object>` | Deduplicated source evidence paragraphs across answers. |
+| `evidence_paragraphs[].location` | `string` | paper_id:section_index:paragraph_index reference. |
+| `evidence_paragraphs[].section_index` | `integer` | Zero-based original full_text index. |
+| `evidence_paragraphs[].paragraph_index` | `integer` | Zero-based original paragraphs index; blanks still count. |
+| `evidence_paragraphs[].text` | `string` | Original evidence paragraph, preserving whitespace and line endings. |
+| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | True for exported questions: matches jointly cover all non-whitespace characters. |
+| `evidence_paragraphs[].passage_matches` | `array<object>` | All passages with non-whitespace overlap. |
+| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | Exact identifier in the selected corpus. |
+| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | Two half-open [start, end) Python character offsets in the original evidence paragraph; not bytes, tokens, or passage offsets. |
+| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | Whether this passage alone covers all non-whitespace paragraph content. |
+| `gold_passage_ids` | `array<string>` | Sorted unique IDs overlapping any annotated evidence; not manual relevance labels. |
+
+A question is retained only if it has at least one answer and every answer has nonempty evidence uniquely located in whole full-text paragraphs, fully covered by the supplied corpus. Empty evidence, `FLOAT SELECTED`, missing paragraphs, duplicate-text ambiguity, or incomplete coverage excludes the entire question. Matching normalizes line endings and outer whitespace only; it uses no fuzzy or answer-substring matching. Compute coverage separately for alternative answers, without merging them. `gold_passage_ids` includes partial-overlap passages; an individual passage need not cover complete evidence. An unlisted passage is not automatically irrelevant. Keep questions, answers, evidence, and derived labels out of the retrieval corpus.
+
+## `data/processed/gold_evidence_mapping.manifest.json`
+
+Companion to the development evidence mapping. Current exports record scope=development and development-only evaluation_design; older local manifests can omit both. held_out_freeze=false does not create or freeze a held-out pool.
+
+### Generation command
+
+```powershell
+python -m scripts.export_evidence_mapping --scope development
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed. |
+| `split_policy_version` | `string` | Proposed split policy version. |
+| `source_splits` | `array<string>` | Official splits selected for evidence mapping. |
+| `scope` | `string` | development or all-splits-testing; absent in older development exports. |
+| `evaluation_design` | `string` | Evaluation interpretation; absent in older development exports. |
+| `chunking` | `object` | Exact normalization/chunking settings. |
+| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
+| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
+| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
+| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
+| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
+| `chunking.word_rule` | `string` | Definition of word counting. |
+| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
+| `inputs` | `object` | Hashes of papers, qa, export_manifest, passages, and passages_manifest. |
+| `inputs.<input>.file` | `string` | Input basename. |
+| `inputs.<input>.sha256` | `string` | Input byte hash. |
+| `filtering_counts` | `object` | Question counts keyed by official split; zero categories can be absent. |
+| `filtering_counts.<split>.total` | `integer` | Questions inspected. |
+| `filtering_counts.<split>.eligible` | `integer` | Questions retained. |
+| `filtering_counts.<split>.held_out_excluded` | `integer` | Questions excluded by development scope. |
+| `filtering_counts.<split>.invalid_or_uncovered_answer_evidence` | `integer` | Questions rejected for missing, ambiguous, or incompletely covered evidence. |
+| `mapping_rule` | `string` | Unique whole-paragraph evidence; every answer required. |
+| `passage_match_rule` | `string` | Any non-whitespace overlap, with complete union coverage. |
+| `offset_rule` | `string` | Zero-based half-open Python character offsets in evidence text. |
+| `label_status` | `string` | Derived gold references, not human relevance labels. |
+| `held_out_freeze` | `boolean` | False: not a final held-out freeze record. |
+| `output` | `object` | Mapping output inventory. |
+| `output.file` | `string` | Mapping JSONL basename. |
+| `output.rows` | `integer` | Eligible question rows. |
+| `output.sha256` | `string` | Exact mapping JSONL byte hash. |
+
+## `data/processed/gold_evidence_mapping_all_splits.jsonl`
+
+Explicit ordinary-testing export over train, validation, and test. Defaults select the all-paper-text corpus and distinct all-splits output names. This evaluation design waives independent held-out status for test and must not be reported as independent held-out performance.
+
+### Generation command
+
+```powershell
+python -m scripts.export_evidence_mapping --scope all-splits-testing
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed. |
+| `question_id` | `string` | Original question identifier. |
+| `paper_id` | `string` | Source paper identifier. |
+| `source_split` | `string` | Official source split. |
+| `question` | `string` | Original question text. |
+| `qa_metadata` | `object` | Other source QA fields; current exporter preserves them unchanged. |
+| `qa_metadata.nlp_background` | `string` | Question author's NLP background. |
+| `qa_metadata.paper_read` | `string` | Source record of how much of the paper was read. |
+| `qa_metadata.question_writer` | `string` | Original question-writer identifier. |
+| `qa_metadata.search_query` | `string` | Original search query. |
+| `qa_metadata.topic_background` | `string` | Question author's topic background. |
+| `annotations` | `array<object>` | Alternative answers retained separately with located evidence. |
+| `annotations[].annotation_id` | `string` | Source annotation ID converted to string; answer-array index if absent. |
+| `annotations[].worker_id` | `string (if present)` | Original worker metadata retained by the current exporter. |
+| `annotations[].answer` | `object` | Original answer payload. |
+| `annotations[].answer.evidence` | `array<string>` | Annotated evidence text, including possible FLOAT SELECTED markers. |
+| `annotations[].answer.extractive_spans` | `array<string>` | Extractive reference answer spans. |
+| `annotations[].answer.free_form_answer` | `string` | Free-form reference answer, possibly empty. |
+| `annotations[].answer.highlighted_evidence` | `array<string>` | Original highlighted evidence; not used for paragraph matching. |
+| `annotations[].answer.unanswerable` | `boolean` | Whether the question is marked unanswerable. |
+| `annotations[].answer.yes_no` | `boolean or null` | Yes/no reference answer, or null for another answer type. |
+| `annotations[].evidence_locations` | `array<string>` | Nonempty references to evidence_paragraphs[].location. |
+| `evidence_paragraphs` | `array<object>` | Deduplicated source evidence paragraphs across answers. |
+| `evidence_paragraphs[].location` | `string` | paper_id:section_index:paragraph_index reference. |
+| `evidence_paragraphs[].section_index` | `integer` | Zero-based original full_text index. |
+| `evidence_paragraphs[].paragraph_index` | `integer` | Zero-based original paragraphs index; blanks still count. |
+| `evidence_paragraphs[].text` | `string` | Original evidence paragraph, preserving whitespace and line endings. |
+| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | True for exported questions: matches jointly cover all non-whitespace characters. |
+| `evidence_paragraphs[].passage_matches` | `array<object>` | All passages with non-whitespace overlap. |
+| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | Exact identifier in the selected corpus. |
+| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | Two half-open [start, end) Python character offsets in the original evidence paragraph; not bytes, tokens, or passage offsets. |
+| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | Whether this passage alone covers all non-whitespace paragraph content. |
+| `gold_passage_ids` | `array<string>` | Sorted unique IDs overlapping any annotated evidence; not manual relevance labels. |
+
+A question is retained only if it has at least one answer and every answer has nonempty evidence uniquely located in whole full-text paragraphs, fully covered by the supplied corpus. Empty evidence, `FLOAT SELECTED`, missing paragraphs, duplicate-text ambiguity, or incomplete coverage excludes the entire question. Matching normalizes line endings and outer whitespace only; it uses no fuzzy or answer-substring matching. Compute coverage separately for alternative answers, without merging them. `gold_passage_ids` includes partial-overlap passages; an individual passage need not cover complete evidence. An unlisted passage is not automatically irrelevant. Keep questions, answers, evidence, and derived labels out of the retrieval corpus.
+
+## `data/processed/gold_evidence_mapping_all_splits.manifest.json`
+
+Companion to the all-splits mapping. scope=all-splits-testing and evaluation_design explicitly records ordinary testing across all official splits; held_out_freeze remains false.
+
+### Generation command
+
+```powershell
+python -m scripts.export_evidence_mapping --scope all-splits-testing
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed. |
+| `split_policy_version` | `string` | Proposed split policy version. |
+| `source_splits` | `array<string>` | Official splits selected for evidence mapping. |
+| `scope` | `string` | development or all-splits-testing; absent in older development exports. |
+| `evaluation_design` | `string` | Evaluation interpretation; absent in older development exports. |
+| `chunking` | `object` | Exact normalization/chunking settings. |
+| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
+| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
+| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
+| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
+| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
+| `chunking.word_rule` | `string` | Definition of word counting. |
+| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
+| `inputs` | `object` | Hashes of papers, qa, export_manifest, passages, and passages_manifest. |
+| `inputs.<input>.file` | `string` | Input basename. |
+| `inputs.<input>.sha256` | `string` | Input byte hash. |
+| `filtering_counts` | `object` | Question counts keyed by official split; zero categories can be absent. |
+| `filtering_counts.<split>.total` | `integer` | Questions inspected. |
+| `filtering_counts.<split>.eligible` | `integer` | Questions retained. |
+| `filtering_counts.<split>.held_out_excluded` | `integer` | Questions excluded by development scope. |
+| `filtering_counts.<split>.invalid_or_uncovered_answer_evidence` | `integer` | Questions rejected for missing, ambiguous, or incompletely covered evidence. |
+| `mapping_rule` | `string` | Unique whole-paragraph evidence; every answer required. |
+| `passage_match_rule` | `string` | Any non-whitespace overlap, with complete union coverage. |
+| `offset_rule` | `string` | Zero-based half-open Python character offsets in evidence text. |
+| `label_status` | `string` | Derived gold references, not human relevance labels. |
+| `held_out_freeze` | `boolean` | False: not a final held-out freeze record. |
+| `output` | `object` | Mapping output inventory. |
+| `output.file` | `string` | Mapping JSONL basename. |
+| `output.rows` | `integer` | Eligible question rows. |
+| `output.sha256` | `string` | Exact mapping JSONL byte hash. |
+
+## `data/processed/sample_passages_100.jsonl`
+
+Deterministic dependency sample from train and validation only. Selects complete source containers by stable paper-ordered subset sum, allowing at most one container per paper and preferring more papers. Always exactly 100 passages; the pinned 365/40 sample has 100 papers and 20,017 passage words.
+
+### Generation command
+
+```powershell
+python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `passage_id` | `string` | Opaque deterministic qasper-passage-v1- SHA-256 identifier. |
+| `paper_id` | `string` | Source paper identifier. |
+| `title` | `string` | Normalized paper title. |
+| `section` | `string` | Normalized display section label; equal labels do not merge containers. |
+| `chunk_number` | `integer` | Zero-based contiguous chunk index within one original source container. |
+| `text` | `string` | Normalized full-text chunk; contains no QA supervision. |
+| `previous_passage_id` | `string or null` | Direct predecessor in the same container; null at the start. |
+| `next_passage_id` | `string or null` | Direct successor in the same container; null at the end. |
+
+## `data/processed/sample_passages_100.manifest.json`
+
+Generated together with the sample. Records source hashes, normalization totals before selection, complete selected containers, and output hash. Sample neighbors remain complete because partial containers are never selected.
+
+### Generation command
+
+```powershell
+python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `manifest_schema_version` | `integer` | Manifest format version. |
+| `artifact` | `string` | sample_passages_100. |
+| `source` | `object` | Pinned upstream and export provenance. |
+| `source.dataset_id` | `string` | allenai/qasper. |
+| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
+| `source.local_parser_version` | `integer` | Local source parser version. |
+| `source.export_papers_file` | `string` | Input paper-export basename. |
+| `source.export_papers_sha256` | `string` | SHA-256 of exact paper-export bytes. |
+| `source.source_splits` | `array<object>` | Development source split inventory. |
+| `source.source_splits[].name` | `string` | train or validation. |
+| `source.source_splits[].project_role` | `string` | Proposed project role. |
+| `source.source_splits[].input_paper_count` | `integer` | Input papers in the split. |
+| `source.source_splits[].source_sha256` | `string` | Raw split SHA-256. |
+| `normalization` | `object` | Counters across all examined development records, before sample selection. |
+| `normalization.paragraphs_seen` | `integer` | Source paragraphs examined. |
+| `normalization.paragraphs_emitted` | `integer` | Nonblank normalized paragraphs retained. |
+| `normalization.blank_paragraphs_dropped` | `integer` | Blank paragraphs dropped. |
+| `normalization.line_ending_replacements` | `integer` | CRLF/CR-to-LF replacements. |
+| `normalization.outer_whitespace_trims` | `integer` | Outer-whitespace trim operations. |
+| `normalization.sections_seen` | `integer` | Source sections examined. |
+| `normalization.sections_emitted` | `integer` | Sections retained. |
+| `normalization.blank_sections_dropped` | `integer` | Blank-name sections dropped. |
+| `normalization.null_sections_dropped` | `integer` | Null-name sections dropped. |
+| `normalization.empty_sections_dropped` | `integer` | Sections without usable paragraphs dropped. |
+| `normalization.invalid_papers_dropped` | `integer` | Papers rejected by normalization. |
+| `chunking` | `object` | Exact normalization/chunking settings. |
+| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
+| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
+| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
+| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
+| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
+| `chunking.word_rule` | `string` | Definition of word counting. |
+| `selection` | `object` | Deterministic complete-container selection metadata. |
+| `selection.method` | `string` | Stable paper-ordered complete-container subset sum. |
+| `selection.target_passage_count` | `integer` | Target passage count (100). |
+| `selection.selected_container_count` | `integer` | Selected source-container count. |
+| `selection.selected_paper_count` | `integer` | Selected distinct paper count. |
+| `selection.selected_section_count` | `integer` | Selected distinct section count. |
+| `selection.selected_groups` | `array<object>` | Complete selected source containers. |
+| `selection.selected_groups[].source_split` | `string` | Official source split. |
+| `selection.selected_groups[].project_role` | `string` | Proposed project role. |
+| `selection.selected_groups[].paper_id` | `string` | Source paper identifier. |
+| `selection.selected_groups[].source_kind` | `string` | full_text. |
+| `selection.selected_groups[].section_index` | `integer` | Original zero-based section position. |
+| `selection.selected_groups[].passage_count` | `integer` | Passages in this selected container. |
+| `output` | `object` | Sample serialization and counts. |
+| `output.file` | `string` | Sample basename. |
+| `output.format` | `string` | jsonl. |
+| `output.encoding` | `string` | utf-8. |
+| `output.newline` | `string` | lf. |
+| `output.passage_count` | `integer` | Total sample passages (100). |
+| `output.unique_passage_count` | `integer` | Distinct passage IDs. |
+| `output.unique_paper_count` | `integer` | Distinct source papers. |
+| `output.passage_word_count` | `integer` | Emitted sample words, including overlap. |
+| `output.sha256` | `string` | Exact sample byte hash. |
+
+## `data/processed/qasper_inspection.json`
+
+Optional offline diagnostic report; currently absent from the compact local layout. Checks exactly the four acquisition files, split hashes/rows, JSON parsing, and critical nested structure before reporting. Unlike other builders, it replaces an existing report. Source: src/data/qasper_inspection.py.
+
+### Generation command
+
+```powershell
+python -m scripts.inspect_qasper --input-dir data/raw/qasper --output data/processed/qasper_inspection.json
+```
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `provenance` | `object` | Pinned source metadata and input byte hashes. |
+| `provenance.dataset_id` | `string` | Source dataset_id from the acquisition manifest. |
+| `provenance.config` | `string` | Source config from the acquisition manifest. |
+| `provenance.source_dataset_version` | `string` | Source source_dataset_version from the acquisition manifest. |
+| `provenance.requested_revision` | `string` | Source requested_revision from the acquisition manifest. |
+| `provenance.resolved_revision` | `string` | Source resolved_revision from the acquisition manifest. |
+| `provenance.manifest_schema_version` | `integer` | Raw manifest format version. |
+| `provenance.licenses` | `object` | Original source license declarations. |
+| `provenance.input_files` | `object` | Input inventory keyed by split JSONL basename. |
+| `provenance.input_files.<file>.bytes` | `integer` | Input byte count. |
+| `provenance.input_files.<file>.rows` | `integer` | Input paper count. |
+| `provenance.input_files.<file>.sha256` | `string` | Exact input byte hash. |
+| `counting_definitions` | `object<string, string>` | Definitions for paper, question, annotation, paragraph, ID, and answer-type counts. |
+| `per_split` | `object` | Detailed diagnostics keyed by official split. |
+| `global_totals` | `object<string, integer>` | paper_count, question_count, answer_annotation_count, unique_paper_id_count, unique_question_id_count, chapter_count, paragraph_count, paragraph_string_count. |
+| `field_anomalies` | `object` | Per-split and global field/category anomaly counters and example coordinates. |
+| `section_anomalies` | `object` | Per-split and global field/category anomaly counters and example coordinates. |
+| `question_anomalies` | `object` | Per-split and global field/category anomaly counters and example coordinates. |
+| `answer_field_anomalies` | `object` | Per-split and global field/category anomaly counters and example coordinates. |
+| `answer_types` | `object` | Per-split/global answer-type counts using the documented precedence. |
+| `ambiguous_payload` | `object` | Per-split/global counts of ambiguous answer payloads. |
+| `evidence` | `object` | Per-split/global evidence and highlighted-evidence diagnostics. |
+| `duplicate_paragraphs` | `object` | same_paper and cross_paper duplicate summaries. |
+| `duplicate_paragraphs.<scope>.duplicate_group_count` | `integer` | Repeated paragraph groups. |
+| `duplicate_paragraphs.<scope>.involved_paragraph_count` | `integer` | Paragraph occurrences in repeated groups. |
+| `duplicate_paragraphs.cross_paper.involved_paper_count` | `integer` | Distinct papers involved in cross-paper duplicates. |
+| `duplicate_paragraphs.<scope>.examples` | `array<object>` | Bounded occurrence_count, paper_id_count, and locations examples. |
+| `split_overlap` | `object` | Paper/question intersections and within-split duplicate IDs. |
+| `split_overlap.paper_id_intersections` | `object<string, array<string>>` | Paper ID intersections for each split pair. |
+| `split_overlap.question_id_intersections` | `object<string, array<string>>` | Question ID intersections for each split pair. |
+| `split_overlap.within_split_duplicate_paper_ids` | `object<string, array<string>>` | Duplicate paper IDs keyed by split. |
+| `split_overlap.observed_paper_disjoint` | `boolean` | True only if no within-split duplicates or cross-split paper intersections exist. |
+| `open_decisions` | `array<string>` | Observed issues and decisions requiring review. |
+| `per_split.<split>.paper_count` | `integer` | Paper rows. |
+| `per_split.<split>.question_count` | `integer` | Questions. |
+| `per_split.<split>.answer_annotation_count` | `integer` | Answer annotations. |
+| `per_split.<split>.unique_paper_id_count` | `integer` | Unique nonblank paper IDs. |
+| `per_split.<split>.duplicate_paper_id_count` | `integer` | Distinct duplicated paper IDs. |
+| `per_split.<split>.unique_question_id_count` | `integer` | Unique nonblank question IDs. |
+| `per_split.<split>.duplicate_question_id_count` | `integer` | Distinct duplicated question IDs. |
+| `per_split.<split>.ambiguous_payload_count` | `integer` | Annotations with multiple valid answer payload types. |
+| `per_split.<split>.duplicate_paper_id_values` | `array<string>` | Sorted duplicated paper identifiers. |
+| `per_split.<split>.duplicate_question_id_values` | `array<string>` | Sorted duplicated question identifiers. |
+| `per_split.<split>.question_annotation_count_stats` | `object` | min, median, max annotation counts per question. |
+| `per_split.<split>.question_annotation_count_stats.<min\|median\|max>` | `number or null` | Summary count; null for no questions, median can be fractional. |
+| `per_split.<split>.chapters` | `object` | Original section and paragraph statistics. |
+| `per_split.<split>.chapters.chapter_count` | `integer` | Original full_text list items. |
+| `per_split.<split>.chapters.paragraph_count` | `integer` | Original paragraph entries, including blanks/non-strings. |
+| `per_split.<split>.chapters.paragraph_string_count` | `integer` | String-typed paragraph entries. |
+| `per_split.<split>.chapters.anomalies` | `object` | Section field/category anomaly counters. |
+| `per_split.<split>.field_anomalies` | `object` | Field/category anomaly counters for this split. |
+| `per_split.<split>.question_anomalies` | `object` | Field/category anomaly counters for this split. |
+| `per_split.<split>.answer_field_anomalies` | `object` | Field/category anomaly counters for this split. |
+| `per_split.<split>.answer_types` | `object<string, integer>` | Counts of unanswerable, yes_no, extractive, free_form, invalid_or_empty. |
+| `per_split.<split>.evidence` | `object` | evidence and highlighted_evidence diagnostics using the shared evidence-counter structure. |
+| `<anomaly-counter>.<field>.<category>.count` | `integer` | Shared counter shape in anomaly blocks; observed category count. |
+| `<anomaly-counter>.<field>.<category>.locations` | `array<object>` | At most ten stable diagnostic coordinates per category. |
+| `<location>.split` | `string` | Official split at a diagnostic location. |
+| `<location>.paper_id` | `string or null` | Paper identifier, or null when malformed. |
+| `<location>.line_number` | `integer` | One-based JSONL source line. |
+| `<location>.<section_index\|paragraph_index\|question_index\|answer_index>` | `integer (when present)` | Zero-based source-array index appropriate to the anomaly. |
+| `<location>.<question_id\|field>` | `string or null (when present)` | Question identifier or affected field, when applicable. |
+| `<evidence-counter>.total_items` | `integer` | All evidence items. |
+| `<evidence-counter>.blank_items` | `integer` | Blank evidence strings. |
+| `<evidence-counter>.non_string_items` | `integer` | Non-string evidence items. |
+| `<evidence-counter>.annotations_with_items` | `integer` | Annotations containing evidence items. |
+| `<evidence-counter>.float_selected_hits` | `integer` | FLOAT SELECTED prefix matches. |
+| `<evidence-counter>.hit_paper_count` | `integer` | Papers containing prefix hits. |
+| `<evidence-counter>.figures_and_tables_items_in_hit_papers` | `integer` | Total figure/table entries in hit papers; not inferred evidence mappings. |
+| `<evidence-counter>.float_selected_prefix_forms` | `array<string>` | Observed distinct prefix forms. |
+| `<evidence-counter>.anomaly_locations` | `object<string, array<object>>` | Bounded coordinates keyed by evidence anomaly category. |
+
+`<anomaly-counter>` and `<evidence-counter>` describe reused diagnostic object shapes, not literal top-level keys; the same shapes appear in per-split and global summaries. Categories, field names, and optional coordinates depend on observations. Counting definitions and examples are generated by the inspector without question, answer, or evidence text.
 
 ## Passage ID contract
 
@@ -154,68 +784,15 @@ Whether abstract or figure/table containers will actually be indexed remains a t
 
 The implementation is in `src/data/chunking.py`. The selected Week 3 configuration in `configs/default.yaml` is `normalization_version="text-normalization-v1"`, `chunking_version="word-chunking-v1"`, `chunk_words=365`, and `overlap_words=40`. These are words, not tokens. Valid Round 1–4 experiments selected this working setting for BM25; the evidence, selection rationale, and limitations are in [the experiment criteria](../experiments/chunk_size/criteria.md) and [Chinese criteria](../experiments/chunk_size/criteria_zn-CN.md). It is not a demonstrated stable optimum or a validated dense/hybrid/reranker setting. The configuration, passage schema, and split policy remain `v0-proposed` pending team confirmation.
 
-The corpus and sample builders do not read `configs/default.yaml`; their legacy CLI defaults remain $200/40$. Always pass `--chunk-size-words 365 --chunk-overlap-words 40` as shown below to reproduce the selected corpus. Chunk size and overlap are included in passage identity, so rebuilding changes passage IDs; consumers must rebuild dependent indexes and refresh saved passage references.
+The corpus and sample builders do not read `configs/default.yaml`; their legacy CLI defaults remain $200/40$. Always pass `--chunk-size-words 365 --chunk-overlap-words 40` as shown in the file sections above to reproduce the selected corpus. Chunk size and overlap are included in passage identity, so rebuilding changes passage IDs; consumers must rebuild dependent indexes and refresh saved passage references.
 
 Normalization is deliberately conservative. For each source paragraph, the builder replaces CRLF and lone CR line endings with LF, removes only leading and trailing Unicode whitespace, drops paragraphs that become empty, and leaves internal whitespace, punctuation, casing, Unicode content, paragraph order, and evidence-marker text unchanged. Section names and paper titles receive the same line-ending and outer-whitespace treatment; a blank or `null` section name is dropped rather than replaced with a guessed label, and a blank paper title causes that paper to produce no passages. The returned `NormalizationReport` records paragraph and section counts, dropped blanks or `null` section names, line-ending replacements, outer-whitespace trims, and invalid-paper drops so a corpus manifest can preserve the observed transformations.
 
 The word rule is the number of Unicode-aware non-whitespace runs matched by `\\S+`. A chunk window contains at most `chunk_size_words` runs; the next window starts `chunk_size_words - chunk_overlap_words` runs later. Chunk text is the original normalized character span from the first selected run through the last selected run, so internal whitespace and punctuation are not reconstructed or collapsed. Paragraphs are joined only with an internal LF-LF separator inside one source container, and the private build result retains the original paragraph indices touched by each chunk.
 
-`build_passages_from_record` reads only `id`, `title`, and `full_text`. It never reads `qas`, answers, evidence, highlighted evidence, or figure/table metadata. Each original `full_text[section_index]` is processed independently, including sections with repeated or blank display names. Empty sections do not cause later sections to be renumbered: the original `section_index` remains in the passage ID coordinate. The current public record builder generates `full_text` passages only; abstract and figure/table sources remain deferred team decisions.
+`build_passages_from_record` reads only `id`, `title`, and `full_text`. It never reads `qas`, answers, evidence, highlighted evidence, or figure/table metadata. Each original `full_text[section_index]` is processed independently, including sections with repeated display names; blank section names are dropped. Empty sections do not cause later sections to be renumbered: the original `section_index` remains in the passage ID coordinate. The current public record builder generates `full_text` passages only; abstract and figure/table sources remain deferred team decisions.
 
 `build_passages_from_records` produces a deterministic order by `paper_id`, source kind, original section index, and chunk index. The private coordinate is `(paper_id, source_kind, section_index, chunk_index)`, while the public `Passage` remains the eight-field contract. Neighbor links are filled only within one `(paper_id, source_kind, section_index)` sequence, and `validate_built_passages` rejects duplicate IDs, empty text, missing chunk numbers, dangling links, and non-mutual or cross-container adjacency. The builder never infers boundaries from output order or display section names.
-
-## Unified paper and QA exports
-
-The local data flow is: verify the fixed-revision download; export one combined paper file, one combined question file, and a manifest; build development passages, the 100-passage sample, or an all-paper-text inference index from the paper file; then select questions and answers from the QA file under the evaluation protocol. The source `data/raw/qasper/` files and manifest remain unchanged.
-
-`papers.jsonl` has one record per paper in `train`, `validation`, `test` order and preserves every original top-level field except `qas`; it adds only `source_split`. `qa.jsonl` has one record per question, retains the complete original question object and `answers` array, and adds `paper_id` and `source_split`. It contains all three source splits. Neither the paper builder nor the paper loader opens `qa.jsonl`.
-
-`qasper_export.manifest.json` records the pinned source metadata, source manifest hash, input split hashes and row counts, output filenames and hashes, counts by source split, and the current `v0-proposed` split policy version. Output filenames in the manifest are basenames and all three export files share one directory. The JSONL outputs use deterministic compact JSON, UTF-8 without a BOM, and LF line endings. Generated files under `data/processed/` are ignored by Git.
-
-Export and independently verify the combined files with:
-
-```powershell
-python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
-python -m scripts.check_qasper_export --papers data/processed/papers.jsonl --qa data/processed/qa.jsonl --manifest data/processed/qasper_export.manifest.json
-```
-
-The export command and structural checker may read `test` records mechanically to project fields, calculate hashes and counts, and verify links. Their summaries contain no question or answer text. People and experiment code must not preview or use `test` questions, answers, evidence, or labels before the evaluation freeze. A future evaluation entry point must first expose only `question_id`, `paper_id`, and `question` to RAG, persist query results, and read `answers` and evidence separately for scoring after inference.
-
-The export command refuses any existing target. If publication is interrupted before the manifest is present, inspect the partial files manually before choosing new output names. It uses `tmp_` sibling files while staging; it does not silently replace an existing export.
-
-## 100-passage dependency sample
-
-Build the sample from the verified paper-only export:
-
-```powershell
-python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
-```
-
-The builder selects only `train` and `validation`, uses `full_text`, selects complete source-container sequences with a stable paper-ordered subset-sum rule, and validates each output record with `Passage`. The generated JSONL contains exactly $100$ passages from $100$ papers. For the pinned source revision and selected $365$-word chunks with $40$-word overlap, its expected SHA-256 is `b3343a793f7428ad796bff83a79f8bd70528a89cd9d099d978fe69727ec0fa2c`, with $20{,}017$ passage words. The manifest records the export papers hash and source split hashes. Existing outputs are rejected; choose new output names when rebuilding for comparison.
-
-## Full development corpus and rubric check
-
-Build the default development corpus and independently check its published passage file:
-
-```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
-python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
-```
-
-The default `development` scope processes only `train` and `validation`. The alternate `--scope all-paper-text` also processes `test` paper bodies and labels its output purpose as `index_for_inference`; use distinct output filenames and never use that corpus as tuning or prompt-design material. Both scopes enforce at least $10{,}000$ passages and $100{,}000$ source words. The manifest records the chosen scope, export papers SHA-256, and paper and passage counts by official source split. The checker validates the generated passage file and its manifest without needing the export inputs.
-
-Build and check the full-paper inference corpus with the same selected parameters:
-
-```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages_all_paper_text.jsonl --manifest-output data/processed/passages_all_paper_text.manifest.json
-python -m scripts.check_corpus --corpus data/processed/passages_all_paper_text.jsonl --manifest data/processed/passages_all_paper_text.manifest.json
-```
-
-For the pinned source revision and selected $365$-word chunks with $40$-word overlap, the current development corpus has $1{,}169$ source papers, $1{,}168$ indexed papers, $21{,}360$ unique passages, $4{,}262{,}446$ source words, $4{,}469{,}326$ passage words, and $174{,}636$ case-folded passage word types. Its expected passage SHA-256 is `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403`. Word counts use Unicode non-whitespace runs. Existing output paths are never overwritten; use a separate staging directory for a rebuild, validate it, and back up existing local outputs before replacing the canonical files. These counts do not freeze the team's split or source-kind decisions.
-
-The corresponding all-paper-text inference corpus has $1{,}585$ source papers, $1{,}584$ indexed papers, $28{,}617$ unique passages, $5{,}659{,}921$ source words, $5{,}930{,}961$ passage words, and $210{,}909$ case-folded passage word types. Its SHA-256 is `8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e`. Passage counts by source split are $16{,}457$ train, $4{,}903$ validation, and $7{,}257$ test; test paper text is included only for inference indexing.
-
-The 2026/10/28 rebuild verified both corpora with `scripts.check_corpus`, checked all three passage files against source-derived records using the YAML parameters, and applied `validate_built_passages` with original source coordinates. Checks passed for non-empty text, the $365$-word maximum, unique IDs, contiguous chunk positions, complete corpus scope, valid mutual neighbor references within source containers, output hashes, and manifest configuration. The paper export, QA export, and export manifest hashes were unchanged. The JSONL files and manifests remain local and ignored by Git.
 
 ## Proposed split policy
 
@@ -226,77 +803,6 @@ The proposal is supported by the deterministic inspection report for resolved re
 The paper-level invariant is strict: a paper's title, text, questions, answers, evidence, and all passages derived from that paper stay in one project role. The policy does not split or rebalance papers by question or passage, and it does not claim that the official names are model-training semantics. `validate_paper_disjoint_splits` in `src/data/split_policy.py` requires exactly the three official split keys, clean non-empty paper IDs, no within-split duplicates, and no cross-split overlap; it reads no files and does not modify its input.
 
 The configuration is still a proposal under `P3-D004`, pending P5/P6 review. `evaluation.held_out_manifest: null` means that the held-out question and annotation pool has not been created; it is not permission to sample from `test` for tuning. Any future remapping must increment the policy version and repeat the paper-leakage check. The `Passage` schema and passage ID remain unchanged, while corpus manifests must record the source split, project role, policy version, chunking configuration, and relevant output hashes.
-
-## Gold evidence-to-passage export
-
-Run `python -m scripts.export_evidence_mapping` from the repository root after building the development corpus. The command creates `data/processed/gold_evidence_mapping.jsonl` and `data/processed/gold_evidence_mapping.manifest.json`; existing outputs are never overwritten. All input/output paths can be changed with `--papers`, `--qa`, `--export-manifest`, `--passages`, `--passages-manifest`, `--output`, and `--manifest-output`. These generated local artifacts remain outside Git.
-
-For the user-selected ordinary-testing design, run `python -m scripts.export_evidence_mapping --scope all-splits-testing`. This explicitly includes `train`, `validation`, and `test`, reads `passages_all_paper_text.jsonl` and its manifest, and writes `gold_evidence_mapping_all_splits.jsonl` with `gold_evidence_mapping_all_splits.manifest.json` under `data/processed/`. The original official split names remain provenance, but `test` in this export is ordinary test data and is no longer claimed as an independent held-out set. This is a separate evaluation design, not approval of the pending held-out freeze. No neural-network training is needed for selection bias: chunking, retrieval, prompts, and stopping rules can still be tuned to observed questions or results.
-
-The exporter extracts the source-mapping helpers from the chunk-size experiments into `src/data/map_evidence.py`; existing experiment imports remain supported. It verifies the QASPER exports, reads chunking settings from the corpus manifest, and reconstructs every passage in the selected scope to verify its exact ID and content against the supplied corpus. The current corpora use $365$ words and $40$ words overlap. Both modes export every eligible question without sampling. Default `--scope development` excludes `test`; `--scope all-splits-testing` includes it under the ordinary-testing design above. Neither mode creates or freezes a held-out question pool.
-
-A question is eligible only if it has at least one answer annotation and every annotation has a nonempty evidence set that maps completely to unique full-text paragraphs. Empty evidence, `FLOAT SELECTED` markers, missing paragraphs, duplicate-text ambiguity, and incomplete coverage by the supplied corpus exclude the entire question. Matching preserves the experiment's line-ending normalization and outer-whitespace trimming rules; it does not use fuzzy or answer-substring matching.
-
-Each JSONL row contains `question_id`, `paper_id`, `source_split`, `question`, separate `annotations` with original `answer` objects and `evidence_locations`, `evidence_paragraphs`, and deduplicated `gold_passage_ids`. Each evidence paragraph includes original `text`, its zero-based `section_index` and `paragraph_index`, and `passage_matches`. A match stores `passage_id`, a half-open `source_char_span` into that paragraph's original Python string, and `covers_full_paragraph`. `fully_covered_by_passage_union` confirms complete non-whitespace coverage across all matching passages; a long paragraph can require several partial passages. `gold_passage_ids` includes any passage with non-whitespace overlap with annotated evidence, so it must not be interpreted as a list of individually complete evidence passages.
-
-The manifest records input/output SHA-256 hashes, chunking settings, split policy, per-split inclusion/exclusion counts, and mapping semantics. The mapping schema remains `gold-evidence-to-passage-v0-proposed`. These are automatically derived gold references, not human query–passage relevance labels; absence from `gold_passage_ids` does not establish irrelevance. Do not write this supervision into the retrieval corpus.
-
-### Mapping JSONL fields
-
-Each physical line is one complete question object. Arrays retain alternative answer groups; evidence from different answers must not be merged when computing complete-answer evidence coverage. New exports preserve all source QA fields: question context lives in `qa_metadata`, and original answer-annotation fields such as `worker_id` remain in `annotations`. Earlier development mappings may omit `qa_metadata` and annotation metadata; regenerate to a new output path when those fields are needed.
-
-| Field | JSON type | Meaning |
-| --- | --- | --- |
-| `schema_version` | string | `gold-evidence-to-passage-v0-proposed`. |
-| `question_id` | string | Original QASPER question ID. |
-| `paper_id` | string | Links to the source paper and passages. |
-| `source_split` | string | Original `train`, `validation`, or `test`; inclusion depends on export scope. |
-| `question` | string | Original question text. |
-| `qa_metadata` | object | All other original question fields, such as `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background`; source values and types are preserved. |
-| `annotations` | array of objects | All original answer annotations, enriched with located evidence; no alternative answer is discarded. |
-| `evidence_paragraphs` | array of objects | Deduplicated original evidence paragraphs referenced by the annotations. |
-| `gold_passage_ids` | array of strings | Sorted unique IDs of passages overlapping any evidence paragraph; these are derived references, not manual relevance judgments. |
-
-`annotations[]` contains the following fields. Additional source annotation fields are retained unchanged.
-
-| Field | JSON type | Meaning |
-| --- | --- | --- |
-| `annotation_id` | string | Original annotation ID converted to a string; falls back to its answer-array index if absent. |
-| `worker_id` | source value, when present | Original annotator metadata; not used for relevance scoring. |
-| `answer` | object | Original answer object, including all available fields below. |
-| `evidence_locations` | array of strings | Nonempty paragraph references in `paper_id:section_index:paragraph_index` form, linking to `evidence_paragraphs[].location`. |
-
-`annotations[].answer` retains the source fields and values. Not all answer types populate every field.
-
-| Field | JSON type | Meaning |
-| --- | --- | --- |
-| `evidence` | array of strings | Annotated evidence paragraphs, each required to match a unique source paragraph. |
-| `extractive_spans` | array of strings | Extractive answer text, when supplied. |
-| `free_form_answer` | string | Free-form reference answer, when supplied. |
-| `highlighted_evidence` | array of strings | Original highlighted evidence; preserved but not used for paragraph matching. |
-| `unanswerable` | boolean | Original unanswerability flag; questions without usable evidence are excluded by this evidence-focused export. |
-| `yes_no` | boolean or null | Original yes/no answer value. |
-
-`evidence_paragraphs[]` describes the source evidence and its passage coverage.
-
-| Field | JSON type | Meaning |
-| --- | --- | --- |
-| `location` | string | Unique paragraph reference within the question. |
-| `section_index` | integer | Zero-based index into the original paper's `full_text`. |
-| `paragraph_index` | integer | Zero-based index into that section's original `paragraphs`; blank paragraphs still count toward the index. |
-| `text` | string | Original paragraph text, including original line endings and outer whitespace. |
-| `passage_matches` | array of objects | Every passage with non-whitespace overlap with this paragraph. |
-| `fully_covered_by_passage_union` | boolean | Always `true` for exported questions: matching passages jointly cover every non-whitespace source character. |
-
-`evidence_paragraphs[].passage_matches[]` records one passage-to-paragraph overlap.
-
-| Field | JSON type | Meaning |
-| --- | --- | --- |
-| `passage_id` | string | Exact ID in the selected passage corpus. |
-| `source_char_span` | array of two integers | Half-open `[start, end)` offsets in this evidence paragraph's original Python string; character offsets, not bytes or tokens, and not offsets within the passage. |
-| `covers_full_paragraph` | boolean | Whether this passage alone covers all non-whitespace content of the evidence paragraph. Partial matches can still jointly cover it. |
-
-The manifest's `scope`, `source_splits`, and `evaluation_design` describe which questions are eligible for inclusion. `filtering_counts` records totals and eligibility by source split; `inputs` and `output` bind the mappings to exact files by SHA-256. `held_out_freeze: false` states that this artifact is not a final held-out freeze record, including in ordinary-testing mode. Evidence filtering makes the mapping a subset of `qa.jsonl`; the full QA file remains the source for tasks needing unanswerable, figure/table-only, or unresolved-evidence questions.
 
 ## Held-out asset-use policy
 
@@ -325,90 +831,35 @@ Corpus manifests must record the source split, project role, `SPLIT_POLICY_VERSI
 
 The current `data.split_policy.held_out_usage` configuration records `index_paper_text: true`, forbids `tuning`, `prompt_design`, and `chunk_selection`, and requires an explicit frozen state for final evaluation. `evaluation.held_out_manifest: null` means that the question pool has not been created; it is not permission to sample temporary held-out questions for tuning. The freeze-record and rerun rules remain `P3-D005` and `P3-D006` pending team review.
 
-## Requirements
+## Validation and reference snapshot
 
-Run the command from the repository root with the project Python 3.11 environment. Install the project dependencies first, for example with `python -m pip install -r requirements.txt` or `python -m pip install -r requirements-dev.txt`.
-
-## Reproducible local workflow
-
-Run the following commands from the repository root in order. The commands use repository-relative paths and do not depend on a local shell variable or a hidden configuration file.
-
-1. Download the pinned acquisition: `python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54`.
-2. Inspect the existing acquisition without network access: `python -m scripts.inspect_qasper --input-dir data/raw/qasper --output data/processed/qasper_inspection.json`.
-3. Export and structurally verify the combined files using the commands in [Unified paper and QA exports](#unified-paper-and-qa-exports).
-4. Build the 100-passage dependency sample using the command in [100-passage dependency sample](#100-passage-dependency-sample), or build a passage corpus as described in [Full development corpus and rubric check](#full-development-corpus-and-rubric-check).
-
-The download command requires `--output-dir`; `--revision` defaults to the pinned commit SHA and `--force` is required to replace an existing acquisition directory. The inspection command requires `--input-dir` and `--output`, creates the report parent directory, and replaces the report at the requested output path; it has no `--force` flag. Before writing a report, it requires exactly `manifest.json`, `train.jsonl`, `validation.jsonl`, and `test.jsonl`, verifies split hashes and row counts, and stops on invalid JSON or critical nested structure errors. `download_qasper` and `inspect_qasper` still take the raw acquisition directory. The `build_corpus` and `build_sample_passages` commands now take `--papers` and `--export-manifest`; their former `--input-dir` form has been replaced. Generated export, sample, and passage outputs reject existing names, so use new names when rebuilding for comparison.
-
-The acquisition requires network access to the Hugging Face Hub and the official QASPER source archives. QASPER is public data; do not configure or provide a Hugging Face token for this command.
-
-## Reproducible acquisition
-
-The recommended team command pins the supported QASPER source revision explicitly:
+Run the following independent checks after extracting a package or rebuilding its companion files:
 
 ```powershell
-python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54
+python -m scripts.check_qasper_export --papers data/processed/papers.jsonl --qa data/processed/qa.jsonl --manifest data/processed/qasper_export.manifest.json
+python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
+python -m scripts.check_corpus --corpus data/processed/passages_all_paper_text.jsonl --manifest data/processed/passages_all_paper_text.manifest.json
+git check-ignore -v data/raw/qasper/manifest.json data/processed/papers.jsonl
 ```
 
-If `--revision` is omitted, the CLI uses the same fixed commit SHA as its default. Team reproductions should still pass the SHA explicitly so that the intended source version is visible in the command.
+The corpus checker validates the published corpus and manifest without requiring raw/export inputs. Builders enforce at least $10{,}000$ passages and $100{,}000$ source words (and sufficient emitted words). Evidence export checks its paper/QA inputs, hashes, corpus scope and configuration, then rebuilds passages to verify exact IDs/text before mapping. There is no separate evidence-mapping checker CLI; do not mistake the QA checker for an evidence-mapping validator.
 
-The command resolves the requested branch, tag, or SHA to a full commit SHA and records both values in `manifest.json`. The acquisition only accepts the fixed source profile supported by the local parser.
+The following is the existing pinned $365/40$ reference snapshot, not a statement that a Release has been published. A new package must use its own manifests and checksum. The export contains $1{,}585$ papers, $5{,}049$ questions, and $7{,}993$ answer annotations; question counts are $2{,}593$ train, $1{,}005$ validation, and $1{,}451$ test.
 
-## Command-line options
+| Corpus | Source papers | Indexed papers | Passages | Source words | Passage words | Casefolded word types |
+| --- | --- | --- | --- | --- | --- | --- |
+| Development | $1{,}169$ | $1{,}168$ | $21{,}360$ | $4{,}262{,}446$ | $4{,}469{,}326$ | $174{,}636$ |
+| All paper text | $1{,}585$ | $1{,}584$ | $28{,}617$ | $5{,}659{,}921$ | $5{,}930{,}961$ | $210{,}909$ |
 
-| Option | Required | Behavior |
-| --- | --- | --- |
-| `--output-dir PATH` | Yes | Destination directory for the published acquisition, such as `data/raw/qasper`. |
-| `--revision REVISION` | No | Hub branch, tag, or commit SHA to resolve. The default is `fdc9d8214fbab5dd782958601db4d678e6934a54`; both requested and resolved revisions are recorded in the manifest. |
-| `--force` | No | Replace an existing destination only after the new result has been completely staged, verified, serialized, and given a valid manifest. |
+All-paper-text passage counts are $16{,}457$ train, $4{,}903$ validation, and $7{,}257$ test. Word counts use Unicode non-whitespace runs; source words exclude duplicated chunk overlap.
 
-Without `--force`, an existing output directory is rejected before downloading. `--force` is a whole-directory replacement operation, not an append, resume, or partial-overwrite operation. The previous directory is retained until the new directory is published successfully, with rollback on a publish failure.
-
-## Successful output
-
-On success, the output directory contains exactly these four files:
-
-```text
-data/raw/qasper/
-├── train.jsonl
-├── validation.jsonl
-├── test.jsonl
-└── manifest.json
-```
-
-The JSONL files use UTF-8 encoding, LF newlines, recursively sorted JSON keys, compact JSON separators, and one record per line. Use `manifest.json` as the authority for the observed row counts, byte counts, and SHA-256 digests; this document does not provide machine-specific download results.
-
-The CLI prints the output directory, resolved revision, split row counts, and aggregate SHA-256 after a successful publication. The aggregate digest covers the relative path and individual SHA-256 of each JSONL file in lexicographic path order; `manifest.json` is not included.
-
-## Manifest reference
-
-`manifest.json` is deterministic metadata for the acquisition and contains no timestamp, username, hostname, absolute path, cache path, token, environment variable, or complete environment dump.
-
-| Top-level field | Contents and purpose |
+| Artifact | Expected SHA-256 |
 | --- | --- |
-| `manifest_schema_version` | Version of the manifest field contract. |
-| `dataset` | Dataset ID and configuration, `requested_revision`, resolved immutable `resolved_revision`, supported source dataset version, and `local_parser_version`. |
-| `licenses` | License information reported by the Hub dataset card and the fixed source metadata. |
-| `repository_files` | Observed byte count and SHA-256 for the pinned `qasper.py` and `dataset_infos.json` files. These files are read as ordinary bytes only; they are not imported or executed. |
-| `splits` | Output split name, JSONL filename, observed row count, byte count, and individual SHA-256 for `train`, `validation`, and `test`. |
-| `source_verification` | Identifier for the source verification contract, including archive SHA-256 checks and required-member checks. |
-| `source_archives` | Each official archive URL, declared and observed byte counts, declared and observed SHA-256 values, and the required archive members read by the parser. |
-| `libraries` | Runtime Python version and the `huggingface-hub` package version used by the acquisition. |
-| `output` | JSONL encoding and newline rules, the aggregate-hash algorithm identifier, and `aggregate_sha256` for the three JSONL files. |
+| `passages.jsonl` | `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403` |
+| `passages_all_paper_text.jsonl` | `8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e` |
+| `sample_passages_100.jsonl` | `b3343a793f7428ad796bff83a79f8bd70528a89cd9d099d978fe69727ec0fa2c` |
 
-The two official source archives must match their declared byte counts and SHA-256 values. The parser reads only the explicitly whitelisted root members and does not extract the archive to disk. If the source version, archive URL, checksum, required member, repository-file fingerprint, or supported schema changes, the acquisition fails closed instead of guessing a new format.
-
-## Source safety and reproducibility
-
-The Hub copies of `qasper.py` and `dataset_infos.json` are downloaded only to validate fixed source metadata and fingerprints. The acquisition never imports or executes the Hub `qasper.py`, uses `trust_remote_code`, or relies on a remote dataset loader.
-
-`--revision main` is useful only for actively checking upstream changes and is not the team reproduction command. Even if `main` resolves to a new SHA, the command safely fails when that revision is not supported by the current source profile or parser.
-
-For an experiment reproduction, retain the manifest values for `resolved_revision`, `local_parser_version`, repository-file fingerprints, source-archive fingerprints, split file digests, and `aggregate_sha256`.
-
-## Loading the local JSONL files
-
-The files can be loaded locally with the `datasets` JSON loader. This example uses local paths and does not access the Hub:
+To read raw splits locally with the optional `datasets` package:
 
 ```python
 import datasets
@@ -423,16 +874,4 @@ dataset = datasets.load_dataset(
 )
 ```
 
-At this point the records are still paper-level raw QASPER records. They are not passage-cleaned, passage-chunked, or converted into the project's later retrieval corpus.
-
-The offline inspection report is a deterministic validation artifact at `data/processed/qasper_inspection.json`. It contains provenance, split counts, field and nested-structure anomalies, answer types, evidence observations, duplicate-paragraph observations, and split-overlap results. The exporter publishes `data/processed/papers.jsonl`, `data/processed/qa.jsonl`, and `data/processed/qasper_export.manifest.json`; the corpus and sample builders publish their passage JSONL files and manifests. All are generated artifacts and remain outside Git.
-
-## Git ignore check and cleanup
-
-Verify that the generated acquisition is ignored before working with it:
-
-```powershell
-git check-ignore -v data/raw/qasper/manifest.json
-```
-
-The check should match the repository rule for `/data/*`. Keep `data/raw/`, downloaded archives, Hugging Face cache files, staging directories, and other generated data local; remove them when they are no longer needed, subject to any local experiment-retention requirements.
+This is a local JSON loader, not a Hub acquisition or passage builder. Source records are still paper-level. Keep raw files, generated corpora, manifests, source archives, caches, and staging directories outside Git. Remove local outputs only when no longer needed and after satisfying experiment-retention requirements.
