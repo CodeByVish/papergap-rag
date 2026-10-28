@@ -46,7 +46,7 @@
     "06095a4dee77e9a570837b35fc38e77228664f91",
     "09a993756d2781a89f7ec5d7992f812d60e24232"
   ],
-  "finding": "95 of the 200 proposed held-out questions are P1 train questions that have already been used in development. The overlap includes 7 questions P5 answered in the Week-3, Week-5 and Week-6 runs, so those questions cannot serve as held-out evaluation questions.",
-  "recommendation": "P6 must rebuild or clean the pool before freezing: remove every question in the 2,595-ID development union, or rebuild the pool from the held-out split only. The manifest is v0-proposed, so this is a pre-freeze correction, not a post-hoc change.",
+  "finding": "95 of the 200 proposed held-out questions are P1 train questions that have already been used in development; 7 of them were answered by P5 in the Week-3, Week-5 and Week-6 runs.",
+  "ownership": "P3/P6 own the held-out pool. This file is an informational ID cross-check, not a P5 action item; P5's own inventory adds no new IDs.",
   "scope_note": "P1's and P2's manifests describe saved local artefacts, not a complete team inventory. The 95-overlap count is a lower bound on train contamination."
 }

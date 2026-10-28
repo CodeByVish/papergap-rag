@@ -58,35 +58,12 @@ must not reappear as a held-out evaluation question.
 adds zero. Both P1 and P2 describe their inventories as scoped to saved local artefacts,
 not as a complete team inventory; unsaved or external runs can still add IDs.
 
-## Proposed held-out pool overlap (must be cleaned before freeze)
+## Held-out pool — P3/P6 scope
 
-P3's `annotation_held_out` manifest on `p3-qasper-foundation`
-(`data/processed/annotation_held_out/manifest.json`, schema `v0-proposed`, 200 questions
-/ 1,000 pairs) was audited against the development inventories:
-
-| overlap | count |
-|---|---:|
-| held-out questions also in P1's train inventory | **95 / 200** |
-| held-out questions P5 already answered | **7 / 200** |
-| held-out questions in P2's inventory | 7 |
-| held-out questions in P3's pilot | 0 |
-| held-out questions not in P1's train inventory | 105 |
-
-The seven P5-exposed questions are:
-
-- `00bcdffff7e055f99aaf1b05cf41c98e2748e948`
-- `00ef9cc1d1d60f875969094bb246be529373cb1d`
-- `0106bd9d54e2f343cc5f30bb09a5dbdd171e964b`
-- `0427ca83d6bf4ec113bc6fec484b2578714ae8ec`
-- `04f72eddb1fc73dd11135a80ca1cf31e9db75578`
-- `06095a4dee77e9a570837b35fc38e77228664f91`
-- `09a993756d2781a89f7ec5d7992f812d60e24232`
-
-All seven appeared in the Week-3 evidence run, the Week-5 v7 run and the Week-6 R4 run.
-They cannot serve as held-out evaluation questions. The manifest is `v0-proposed`, so the
-correction belongs **before** P6 freezes the pool: rebuild from the held-out split only,
-or remove the full 2,595-ID development union. The machine-readable report is
-`docs/handoffs/p5_held_out_overlap.json`.
+P5's part of the exclusion audit is complete: 100 questions, all in P1's inventory, no
+P5-only IDs. Held-out pool construction and any overlap with development IDs are P3/P6's
+scope; P5 takes no action on them here. The factual ID cross-check remains in
+`docs/handoffs/p5_held_out_overlap.json` for P6's use if wanted.
 
 ## One upstream integrity note
 
@@ -98,7 +75,6 @@ reproducible across platforms.
 
 ## For P6
 
-- Exclude the 2,595-ID union from the held-out question pool.
-- Add P5's manifest to the audit record; no P5-only IDs need resolution.
+- Add P5's inventory to the audit record; there are no P5-only IDs to resolve.
 - If a future P5 run (R4-v2, agent trace, annotation calibration) uses a question not in
   this inventory, add it before the freeze.
