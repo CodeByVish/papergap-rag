@@ -4,6 +4,50 @@
 
 Status as of 2026/10/29
 
+## Question-passage held-out annotation preparation
+
+Collected questions already used for development, excluded them and independently froze $200$ held-out questions. BM25, Dense and Hybrid each retrieved the top-$5$ passages within the question's paper using the development-frozen $365/40$ chunk settings. Deduplication produced $1532$ question-passage pairs, exported as two independent sets of English Markdown annotation templates. All labels are blank; annotator assignment and human judgments remain pending.
+
+### Code involved
+
+| Code path | Role |
+| --- | --- |
+| `src/data/build_held_out_exclusions.py` | Collect P1/P2 owner-designated inventories and saved P3 development questions into the exclusion list. |
+| `src/data/freeze_held_out.py` | Exclude banned questions, freeze the new list, and preserve and retire the historical BM25 outputs. |
+| `src/data/build_common_pool.py` | Run three-method retrieval with frozen settings, retain native rankings and merge unique pairs. |
+| `src/data/build_multi_retriever_pilot.py` | Share retrieval, pair-merging and batched Markdown rendering logic. |
+| `src/data/export_common_annotations.py` | Export blank A/B templates from saved pairs; verify content, groups, numbering and file hashes. |
+| `tests/data/test_held_out_exclusions.py`, `test_freeze_held_out.py`, `test_common_pool.py`, `test_multi_retriever_pilot.py`, `test_common_annotation_export.py` | Cover exclusions, sampling freeze, pair deduplication, ranking links and template export checks. |
+
+### Files involved
+
+Paths below are relative to the repository root; the three configuration files are under `configs/`, and data outputs are under `data/processed/`.
+
+| File or directory | Purpose |
+| --- | --- |
+| `configs/held_out_exclusions.json`, `configs/held_out_sampling_v2.json`, `configs/annotation_pilot.json` | Exclusion sources, sampling rules and retrieval settings frozen during development. |
+| `data/processed/qa_banned_for_held_out.jsonl`, `qa_banned_for_held_out.manifest.json` | Banned question inventory and provenance. |
+| `data/processed/qa_for_held_out_v2.jsonl`, `qa_for_held_out_v2.manifest.json` | Current frozen question list and sampling record. |
+| `data/processed/passages_all_paper_text.jsonl`, `papers.jsonl` | Retrieval text and paper-title sources. |
+| `data/processed/annotation_common_v2/` | Saved questions, unique pairs, native algorithm rankings, frozen settings, run inputs and manifest. |
+| `data/processed/annotation_common_v2_markdown/annotator_A/batch_01.md` through `batch_10.md`, plus matching files under `annotator_B/` | Formal annotation templates for teammate review; A/B have identical content for independent completion by different people. |
+| `data/processed/annotation_common_v2_markdown/manifest.json` | Template sources, batch counts and file hashes. |
+| `data/processed/historical_bm25_retirement.manifest.json` | Retirement and preservation record for historical BM25 files. |
+
+### Fixed template in each Markdown file
+
+Each set contains $10$ `.md` files with $20$ questions per file. Each question has $5$–$11$ distinct passages, so pair counts vary between batches. Every file follows this structure:
+
+| Level | Fixed content |
+| --- | --- |
+| Header | `# Passage relevance annotation`, blank `Annotator:`, and English instructions: assign `1` if a passage helps answer the question, including useful partial evidence; otherwise assign `0`. Topic overlap alone is insufficient. |
+| Question | A global question heading such as `## Question 0001`, followed by the `Paper:` title and the original question as a blockquote. |
+| Groups | `### Common Retrieved Chunks`, `### BM25`, `### Dense`, `### Hybrid`, in that order. Common holds pairs retrieved by at least two methods; the remaining groups hold method-exclusive pairs. Empty groups show `None`. |
+| Passage | `#### Passage <number>`, algorithm sources in `Retrieved by:`, and the full passage as a blockquote. Common uses stable record order; exclusive groups use their method's native rank order. |
+| Judgment | `#### Relevance <same number>` and blank `Label:`; enter `Label: 0` or `Label: 1`. |
+
+Enter the annotator's name or agreed identifier in the header, then judge each pair while preserving text and numbering. Templates disclose algorithm sources and omit gold evidence, retrieval scores, numeric native ranks and internal IDs. Each pair appears once and links back to the structured pair file through its stable number.
+
 ## Current rebuild status: Steps $2.5$–$2.8$
 
 The independent `data/processed/qa_for_held_out_v2.jsonl` freezes $200$ questions with no intersection against the $2654$ banned IDs. From $3329$ all-splits gold-mapped questions, $1884$ are banned, leaving $1445$ eligible candidates. Seed $2026102805$, ascending IDs and Python `Random(seed).sample` were fixed before the draw. The outcome is $78$ validation/$122$ test questions across $174$ papers; no split quota or filter was applied. Isolation is at question level and permits shared papers. P1/P2 owner inventories and saved P3 development use define the accepted exclusion scope; pure functional tests, raw export, gold mapping and normal frozen evaluation are not automatic exclusions. Unrecorded external/P4–P6 use is outside the claim; later explicit development-use evidence requires a new inventory and eligibility review.

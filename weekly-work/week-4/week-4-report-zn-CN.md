@@ -4,6 +4,50 @@
 
 截至 2026/10/29
 
+## Question-passage held-out 标注文件准备
+
+整理已用于开发的禁用题，排除后独立冻结 $200$ 道 held-out 问题。按开发阶段冻结的 $365/40$ 分块配置，分别用 BM25、Dense、Hybrid 在问题所属论文内检索 top-$5$，合并去重得到 $1532$ 条 question-passage 配对，再导出两套独立的英文 Markdown 标注模板。当前标签全部为空，人员分配和人工判断尚未开展。
+
+### 涉及代码
+
+| 代码路径 | 工作内容 |
+| --- | --- |
+| `src/data/build_held_out_exclusions.py` | 汇总 P1/P2 指定题库及已保存的 P3 开发用题，生成禁用清单。 |
+| `src/data/freeze_held_out.py` | 排除禁用题、冻结新版题单，保留并停用旧 BM25 产物。 |
+| `src/data/build_common_pool.py` | 按冻结配置执行三路检索，保存原始排名并合并唯一配对。 |
+| `src/data/build_multi_retriever_pilot.py` | 提供三路检索、配对合并和 Markdown 分批渲染的共用逻辑。 |
+| `src/data/export_common_annotations.py` | 从已保存配对导出 A/B 两套空白模板，核验内容、分组、编号及文件哈希。 |
+| `tests/data/test_held_out_exclusions.py`、`test_freeze_held_out.py`、`test_common_pool.py`、`test_multi_retriever_pilot.py`、`test_common_annotation_export.py` | 覆盖禁用题、抽样冻结、配对去重、排名关联及模板导出核验。 |
+
+### 涉及文件
+
+以下路径均相对于仓库根目录；前三项配置位于 `configs/`，其余数据产物位于 `data/processed/`。
+
+| 文件或目录 | 用途 |
+| --- | --- |
+| `configs/held_out_exclusions.json`、`configs/held_out_sampling_v2.json`、`configs/annotation_pilot.json` | 禁用来源、抽样规则及开发阶段冻结的检索配置。 |
+| `data/processed/qa_banned_for_held_out.jsonl`、`qa_banned_for_held_out.manifest.json` | 禁用题清单及来源记录。 |
+| `data/processed/qa_for_held_out_v2.jsonl`、`qa_for_held_out_v2.manifest.json` | 当前正式使用的冻结题单及抽样记录。 |
+| `data/processed/passages_all_paper_text.jsonl`、`papers.jsonl` | 检索正文及论文标题来源。 |
+| `data/processed/annotation_common_v2/` | 保存题单、唯一配对、各算法原始排名、冻结配置、运行输入和 manifest。 |
+| `data/processed/annotation_common_v2_markdown/annotator_A/batch_01.md` 至 `batch_10.md`，以及 `annotator_B/` 下的同名文件 | 队友需要评审的正式标注模板；A/B 内容相同，供不同人员独立填写。 |
+| `data/processed/annotation_common_v2_markdown/manifest.json` | 模板来源、批次数量及文件哈希记录。 |
+| `data/processed/historical_bm25_retirement.manifest.json` | 旧 BM25 文件的停用与保留记录。 |
+
+### 每份 Markdown 的固定模板
+
+每套共 $10$ 份 `.md`，每份包含 $20$ 道问题；每题有 $5$–$11$ 个去重 passage，因此各批配对数不同。所有文件使用以下结构：
+
+| 层级 | 固定内容 |
+| --- | --- |
+| 文件头 | `# Passage relevance annotation`、空白 `Annotator:`、英文判断说明：能帮助回答问题（含部分有效证据）记为 `1`，否则记为 `0`；仅主题相近不足以判相关。 |
+| 问题 | `## Question 0001` 形式的全局问题编号，随后是 `Paper:` 论文标题和引用格式的问题原文。 |
+| 分组 | 依次为 `### Common Retrieved Chunks`、`### BM25`、`### Dense`、`### Hybrid`。Common 收录至少两种算法命中的配对，后三组仅收录各算法独有配对；空组显示 `None`。 |
+| Passage | `#### Passage <编号>`、`Retrieved by:` 算法来源及引用格式的完整 passage 正文。Common 按稳定记录编号排列，独有组按对应算法原始排名排列。 |
+| 判断栏 | `#### Relevance <同一编号>` 和空白 `Label:`；填写 `Label: 0` 或 `Label: 1`。 |
+
+填写文件头的标注者姓名或约定标识后，逐条判断相关性，保留正文及编号。模板公开算法来源，不展示 gold 证据、检索分数、原始排名数值或内部 ID；同一配对仅出现一次，并用稳定编号关联回结构化配对文件。
+
 ## 当前重建状态：第 $2.5$–$2.8$ 步
 
 独立的 `data/processed/qa_for_held_out_v2.jsonl` 冻结 $200$ 题，与 $2654$ 道禁用题无交集。全量 gold 映射的 $3329$ 题排除 $1884$ 道禁用题后，得到 $1445$ 道合格候选。抽样前固定种子 $2026102805$、ID 升序及 Python `Random(seed).sample` 规则。实际抽中 validation $78$ 题、test $122$ 题，覆盖 $174$ 篇论文，不设 split 配额或筛选。采用问题层面隔离，允许共享论文。接收范围为 P1/P2 负责人指定题库及已保存的 P3 开发用途；纯功能检查、原始导出、gold 映射及正常冻结评估不自动禁用。不声称覆盖未记录的外部/P4–P6 用题；后续明确新增开发用途证据须补充清单并复核资格。
