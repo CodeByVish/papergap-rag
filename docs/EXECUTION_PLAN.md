@@ -6,7 +6,7 @@
 
 ### Mandatory components
 
-Current Week 4 evaluation design supersedes the original fixed-count annotation plan: the scoped cross-branch exclusions and `qa_for_held_out_v2.jsonl` freeze are complete; fresh BM25/Dense/Hybrid top-$5$ retrieval forms `annotation_common_v2/` with $200$ questions and $1532$ actual unique pairs. The old BM25 templates are retired history. New source-disclosed English views (Step $2.8$) and two independent judgments per unique pair (Step $2.9$) remain pending. See `docs/EVALUATION.md` and the bilingual data guides for authoritative commands, fields, source scope and held-out boundaries. The annotation count is a minimum requirement, not a quota; the agent, reranker and citation features below remain project design choices as clarified in `docs/REQUIREMENTS.md`.
+Current Week 4 evaluation design supersedes the original fixed-count annotation plan: the scoped cross-branch exclusions and `qa_for_held_out_v2.jsonl` freeze are complete; fresh BM25/Dense/Hybrid top-$5$ retrieval forms `annotation_common_v2/` with $200$ questions and $1532$ actual unique pairs. The old BM25 templates are retired history. New source-disclosed English views (Step $2.8$) are complete in `data/processed/annotation_common_v2_markdown/`; two independent judgments per unique pair (Step $2.9$) remain pending. See `docs/EVALUATION.md` and the bilingual data guides for authoritative commands, fields, source scope and held-out boundaries. The annotation count is a minimum requirement, not a quota; the agent, reranker and citation features below remain project design choices as clarified in `docs/REQUIREMENTS.md`.
 
 * QASPER knowledge base with at least 10,000 passage documents
 * BM25 sparse retrieval
@@ -806,7 +806,7 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 * Retain the completed, fresh BM25/Dense/Hybrid native top-$5$ lists and their $1532$-pair union in `annotation_common_v2/`.
 * Deduplicate by `(question_id, passage_id)` and preserve stable record mappings and all original ranks/scores.
 * Keep gold evidence in separate verification/reference data; never insert it into retrieval results or annotation views.
-* Execute Step $2.8$: export English source-disclosed Markdown in $10$ batches of $20$ questions, with variable record counts and no HTML or notes field.
+* Step $2.8$ is complete: retain `annotation_common_v2_markdown/` pristine templates; verify with `python -m src.data.export_common_annotations verify`. Assign separate copies in Step $2.9$; each slot has $10$ batches of $20$ questions with variable record counts and no HTML or notes field.
 
 ## P4
 

@@ -6,21 +6,56 @@ Raw and processed data and their manifests are tracked on the P3 working branch,
 
 ## Data versions and updates
 
-Step $2.7$ synchronizes the rebuild documentation. The original BM25 pool and its blank templates are retired history; the `v2` question freeze and formal three-method common pool are complete; the new formal annotation export (Step $2.8$) and human judgments (Step $2.9$) remain pending. The $1532$ records are the actual deduplicated union, not a fixed target: three top-$5$ lists yield $5$–$15$ unique pairs per question ($1000$–$3000$ overall), with $5$–$11$ observed here. Two independent judgments per unique pair will require $3064$ judgments, with no extra count for shared sources.
+Step $2.8$ is complete: `data/processed/annotation_common_v2_markdown/` contains two independent blank English Markdown sets, each with $10$ batches of $20$ questions and all $1532$ unique pairs. Sources, grouping, native exclusive order, stable numbering, titles, queries and passage text verify against the JSONL. Batch pair counts are $156,158,156,155,146,152,151,152,144,162$ per slot. Run `python -m src.data.export_common_annotations verify` for read-only verification. Slots A/B do not represent assigned people; Step $2.9$ assignment, $3064$ independent judgments, pre-adjudication agreement and adjudication remain pending. No retrieval was rerun and the frozen pool and all historical bytes are unchanged.
 
-The planned formal views disclose all `Retrieved by:` sources and the `Annotator:` name or agreed identifier; they are not algorithm-blind. Use the English question-grouped layout documented in the pilot view section, with $10$ batches of $20$ questions and variable record counts, preserving `record_number` and native algorithm ranks. No formal view output path or generation command is implemented yet; do not substitute the retired BM25 export or development `multi-pilot` command. The six existing `annotation_common_v2` outputs and their nested fields are documented below. See [the current annotation and metric protocol](../docs/EVALUATION.md#current-annotation-and-metric-protocol) for independent labeling, shared final labels and Recall@K coverage. Pool recall uses judged relevant union members; QASPER passage-reference recall uses mapped `gold_passage_ids`, subject to evidence-location and corpus-coverage filters. Neither reference makes unpooled passages manual negatives.
+The completed formal views disclose all `Retrieved by:` sources and the `Annotator:` name or agreed identifier; they are not algorithm-blind. Use the English question-grouped layout documented in the pilot view section, with $10$ batches of $20$ questions and variable record counts, preserving `record_number` and native algorithm ranks. Generate with `python -m src.data.export_common_annotations run`; verify with `python -m src.data.export_common_annotations verify`. The output is `annotation_common_v2_markdown/`, separate from the six frozen retrieval outputs; do not substitute the retired BM25 export or development `multi-pilot` command. The six existing `annotation_common_v2` outputs and their nested fields are documented below. See [the current annotation and metric protocol](../docs/EVALUATION.md#current-annotation-and-metric-protocol) for independent labeling, shared final labels and Recall@K coverage. Pool recall uses judged relevant union members; QASPER passage-reference recall uses mapped `gold_passage_ids`, subject to evidence-location and corpus-coverage filters. Neither reference makes unpooled passages manual negatives.
 
-Week 4 Step $2.5$ is complete: the independent `qa_for_held_out_v2.jsonl` freezes $200$ eligible questions with zero banned overlap. Historical BM25 files are retired and retained with hashes; formal three-algorithm retrieval is complete as documented below; new annotation exports remain pending. Current commands and fields are below; later legacy BM25 reproduction sections describe history only.
+Week 4 Step $2.5$ is complete: the independent `qa_for_held_out_v2.jsonl` freezes $200$ eligible questions with zero banned overlap. Historical BM25 files are retired and retained with hashes; formal three-algorithm retrieval is complete as documented below; new annotation exports are complete under Step $2.8$; human judgments remain pending. Current commands and fields are below; later legacy BM25 reproduction sections describe history only.
 
 Week 4 Step $2.4.2$ completes the scoped cross-branch exclusion inventory: P1's $2593$, P2's $106$ and P3's $250$ selection IDs merge into $2654$ unique banned questions. All qualifying overlapping sources are retained. No known eligibility records remain unresolved within this scope; unrecorded external/P4–P6 use is not claimed to be covered. Step $2.5$ reconstructs this inventory before the new freeze; add later explicit usage evidence in a new version before further sampling. Formal retrieval is now complete under Step $2.6$; historical artifact bytes are unchanged.
 
 Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal retrieval is complete under Step $2.6$; Step $2.5$ completes renewed held-out eligibility checks. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
 
-Step $2.6$ now saves fresh formal BM25/Dense/Hybrid retrieval under `data/processed/annotation_common_v2/`. It consumes the persisted $200$-question freeze without resampling, validates the full banned inventory and all historical hashes, and copies the development-frozen $365/40$/paper-scoped/top-$5$ settings before indexing. Every source retains all native ranks/scores; the unique union has one null final label per pair. No historical retrieval result is reused. Gold evidence is not joined in this step. New Markdown export and human annotation remain Steps $2.8$–$2.9$.
+Step $2.6$ now saves fresh formal BM25/Dense/Hybrid retrieval under `data/processed/annotation_common_v2/`. It consumes the persisted $200$-question freeze without resampling, validates the full banned inventory and all historical hashes, and copies the development-frozen $365/40$/paper-scoped/top-$5$ settings before indexing. Every source retains all native ranks/scores; the unique union has one null final label per pair. No historical retrieval result is reused. Gold evidence is not joined in this step. Markdown export is complete under Step $2.8$; human annotation remains Step $2.9$.
 
 Obtain these files and matching inputs from the GitHub P3 branch together with the other tracked data. For local reproduction use `python -m src.data.build_common_pool run --output tmp/tmp_annotation_common_v2`; an existing directory is refused. Load the pinned model from ignored `.cache/huggingface/` as in the pilot instructions below. The CLI sets `HF_HUB_OFFLINE=1` before model imports and restores it afterward. The first attempt omitted this existing development wrapper policy and failed during an optional processor probe before dense indexing completed, with no rankings or pairs produced; its three pre-run files are retained locally in `tmp/tmp_common_pool_failed_processor/`. The successful run changes no retrieval parameters. Use original algorithm ranks with common final labels, never Markdown display order. Unpooled passages remain unjudged; pool Recall@K uses relevant judged union pairs as its denominator, while gold-evidence recall has separate mapping/coverage limits. Isolation is question-level and permits shared papers; no held-out-driven tuning is allowed.
 
 Formal validation: $200$ questions, $1000$ hits per method, $600$ ranking rows, $1532$ unique pairs and $5$–$11$ pairs per question. Common: $975$; BM25-only: $277$; Dense-only: $254$; Hybrid-only: $26$. All labels are null; no human annotation has been completed.
+
+## `data/processed/annotation_common_v2_markdown/annotator_A/` and `annotator_B/`
+
+Generate with `python -m src.data.export_common_annotations run`; verify pristine templates with `python -m src.data.export_common_annotations verify`. Obtain the templates and manifest with the tracked data from the GitHub `p3` working branch. For local reproduction use `python -m src.data.export_common_annotations run --output tmp/tmp_annotation_export`; verify with the same `--output`. Existing directories are refused. No model download, retrieval, resampling or gold join occurs. The six original common-pool files and all historical files retain their hashes.
+
+Each slot has `batch_01.md` through `batch_10.md`, each with $20$ complete questions. Pair counts per batch are $156,158,156,155,146,152,151,152,144,162$, totaling $1532$ per slot. These are two copies of the same pairs, not $3064$ unique records. A/B are template slots; Step $2.9$ must assign different people for each pair. Distribute only each person's Markdown copies and preserve these pristine originals; completed copies will intentionally fail the pristine-template verifier. Do not share gold/reference JSONL or the other person's judgments before independent submission.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `Annotator:` | `text` | Initially empty; fill in a name or agreed identifier. |
+| `0 — Not relevant`, `1 — Relevant` | `instructions` | Helpful answer evidence, including partial evidence, is relevant; topic overlap alone is insufficient. |
+| `Question NNNN` | `level-two heading` | Saved question order, numbered continuously across batches. |
+| `Paper:` and quoted question | `text` | Real title and original query; no internal IDs. |
+| `Common Retrieved Chunks`, `BM25`, `Dense`, `Hybrid` | `level-three headings` | Common has at least two sources in stable record order; exclusive groups use native rank; empty groups show `None`. |
+| `Passage N`, `Relevance N` | `level-four headings` | Existing `record_number`, appearing once per pair per slot; original passage text is quoted. |
+| `Retrieved by:` | `text` | All actual algorithm sources; algorithm identity is disclosed. |
+| `Label:` | `empty text` | Fill only `Label: 0` or `Label: 1`; preserve numbering, question and passage. |
+
+There is no generated HTML or notes field. Gold, scores, native ranks, internal question/paper/passage IDs and other labels are excluded from the projection. Native ranks and ID mappings stay in the original JSONL; use those ranks with shared final labels for metrics, never Markdown display order. No human judgments or agreement are claimed by this export.
+
+## `data/processed/annotation_common_v2_markdown/manifest.json`
+
+Generated and verified with the same `src.data.export_common_annotations` commands above; acquire it alongside both template sets from the GitHub `p3` branch. The schema remains `v0-proposed`. The verifier checks source-pool and retained-history hashes, template hashes, complete coverage and exact per-record projection. Source hashes record the generation implementation; read-only verification does not require the current checkout to match historical source bytes.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `policy` | `string` | Proposed schema, empty-template purpose and independent-judgment/source-disclosure policy. |
+| `inputs` | `object<string,string>` | Pool manifest, questions, pairs and rankings paths mapped to byte SHA-256 values. |
+| `source_sha256` | `object<string,string>` | Exporter and reused renderer source paths mapped to generation-time SHA-256 values. |
+| `question_count`, `pair_count_per_annotator` | `integer` | $200$ questions and $1532$ unique pairs per slot. |
+| `slots` | `array<string>` | Independent blank template slots `A` and `B`; no assigned people yet. |
+| `batches` | `array<object>` | Coverage of each batch, identical in both slots. |
+| `batches[].batch` | `integer` | One-based batch number. |
+| `batches[].question_count`, `batches[].pair_count` | `integer` | Whole-question and actual union-pair counts in that batch. |
+| `outputs` | `object<string,string>` | All $20$ Markdown paths mapped to byte SHA-256 values; the manifest excludes itself. |
 
 ## `data/processed/annotation_common_v2/questions.jsonl`
 
@@ -349,7 +384,7 @@ Generated by `python -m scripts.build_annotation_pool multi-pilot`. Input/output
 
 ## `data/processed/annotation_pilot_multi_v2/annotator_A/` and `annotator_B/`
 
-Generated by `python -m scripts.build_annotation_pool multi-pilot`. Each slot has one English Markdown batch for this $5$-question pilot. Future formal export remains pending. Views disclose algorithms and annotator identity, hide gold/scores/ranks/internal IDs/other labels, and contain no HTML or notes field. Two-way and three-way common pairs appear once, ordered by stable number; source-exclusive groups follow original algorithm rank. Each question stays within one batch of at most $20$ questions. Empty groups show `None`.
+Generated by `python -m scripts.build_annotation_pool multi-pilot`. Each slot has one English Markdown batch for this $5$-question pilot. Formal export is now complete; see the separate formal export sections above. Views disclose algorithms and annotator identity, hide gold/scores/ranks/internal IDs/other labels, and contain no HTML or notes field. Two-way and three-way common pairs appear once, ordered by stable number; source-exclusive groups follow original algorithm rank. Each question stays within one batch of at most $20$ questions. Empty groups show `None`.
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -1130,7 +1165,7 @@ This is a local JSON loader, not a Hub acquisition or passage builder. Source re
 
 ## Historical BM25 annotation-pool reproduction and use
 
-This section and the original `qa_for_held_out` / `annotation_held_out` field tables below describe the retired BM25 version. Its commands are historical; the retirement marker blocks legacy freeze/formal export. Use the independent `v2` commands above for current question-list reproduction. Formal common-pool retrieval/export is pending.
+This section and the original `qa_for_held_out` / `annotation_held_out` field tables below describe the retired BM25 version. Its commands are historical; the retirement marker blocks legacy freeze/formal export. Use the independent `v2` commands above for current question-list reproduction. Formal common-pool retrieval and Markdown export are complete; human judgments remain pending.
 
 The legacy `--scope all-splits-testing` spelling remains an alias for `all-splits-reference`; it no longer implies a waiver of held-out status. The optional development exporter remains available under explicit `--scope development` with separate `gold_evidence_mapping_development` basenames; that artifact is not retained in this data package. The current draw had $3{,}077$ eligible IDs after excluding $251$ gold-mapped prior-use questions and $1$ paper with fewer than $5$ passages; $2$ other audited used IDs were absent from the gold map. The selected provenance counts are $95$ train, $40$ validation and $65$ test.
 

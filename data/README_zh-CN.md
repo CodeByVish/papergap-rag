@@ -6,21 +6,56 @@
 
 ## 数据版本与更新
 
-第 $2.7$ 步同步重建文档。原 BM25 池及空白模板已停用并保留为历史版本；`v2` 题单冻结与正式三算法共同池已完成；新版正式标注导出（第 $2.8$ 步）和人工判断（第 $2.9$ 步）待执行。$1532$ 条 records 是实际去重并集，不是固定目标：三路 top-$5$ 每题产生 $5$–$15$ 条唯一配对，总计 $1000$–$3000$ 条，本次每题实际 $5$–$11$ 条。每条唯一配对两次独立判断，共需 $3064$ 次，不因多个算法共有而重复计数。
+第 $2.8$ 步已完成：`data/processed/annotation_common_v2_markdown/` 保存两套独立空白英文 Markdown，每套 $10$ 批，每批 $20$ 题，覆盖全部 $1532$ 条唯一配对。来源、分组、独有结果原始排名顺序、稳定编号、标题、问题和正文均与 JSONL 一致。每套各批配对数为 $156,158,156,155,146,152,151,152,144,162$。使用 `python -m src.data.export_common_annotations verify` 只读核验。A/B 仅为模板槽位，尚未分配实际人员；第 $2.9$ 步的分配、$3064$ 次独立判断、裁决前一致率及裁决待执行。未重新检索，冻结共同池和全部历史文件字节未变。
 
-计划中的正式视图公开全部 `Retrieved by:` 来源及 `Annotator:` 姓名或约定标识，不属于算法盲审。采用下方开发视图章节说明的英文按题分组布局，按每批 $20$ 题拆成 $10$ 批，各批 records 数量可变，保留 `record_number` 和算法原始排名。正式视图的输出路径和生成命令尚未实现，不得替用已停用的 BM25 导出或开发 `multi-pilot` 命令。现有 `annotation_common_v2` 六项产物及嵌套字段见下文。[当前标注与指标协议](../docs/EVALUATION.md#current-annotation-and-metric-protocol)说明独立判断、共用最终标签及 Recall@K 覆盖边界。池内 recall 使用并集中已判断相关配对；QASPER passage-reference recall 使用映射的 `gold_passage_ids`，受证据定位和语料覆盖筛选限制。两者均不能据此将池外 passage 视为人工不相关。
+已生成的正式视图公开全部 `Retrieved by:` 来源及 `Annotator:` 姓名或约定标识，不属于算法盲审。采用下方开发视图章节说明的英文按题分组布局，按每批 $20$ 题拆成 $10$ 批，各批 records 数量可变，保留 `record_number` 和算法原始排名。使用 `python -m src.data.export_common_annotations run` 生成，使用 `python -m src.data.export_common_annotations verify` 核验。输出为 `annotation_common_v2_markdown/`，独立于原六项冻结检索产物；不得替用已停用的 BM25 导出或开发 `multi-pilot` 命令。现有 `annotation_common_v2` 六项产物及嵌套字段见下文。[当前标注与指标协议](../docs/EVALUATION.md#current-annotation-and-metric-protocol)说明独立判断、共用最终标签及 Recall@K 覆盖边界。池内 recall 使用并集中已判断相关配对；QASPER passage-reference recall 使用映射的 `gold_passage_ids`，受证据定位和语料覆盖筛选限制。两者均不能据此将池外 passage 视为人工不相关。
 
-Week 4 第 $2.5$ 步已完成：独立的 `qa_for_held_out_v2.jsonl` 冻结 $200$ 道合格题，与禁用题单无交集。原 BM25 文件已停用，保留原位及哈希；正式三算法检索已完成，见下方共同池章节；新版标注导出仍待执行。当前命令和字段见下方新增章节，后文旧 BM25 复现章节仅描述历史。
+Week 4 第 $2.5$ 步已完成：独立的 `qa_for_held_out_v2.jsonl` 冻结 $200$ 道合格题，与禁用题单无交集。原 BM25 文件已停用，保留原位及哈希；正式三算法检索已完成，见下方共同池章节；新版标注导出已在第 $2.8$ 步完成，人工判断待执行。当前命令和字段见下方新增章节，后文旧 BM25 复现章节仅描述历史。
 
 Week 4 第 $2.4.2$ 步已完成本次范围内的跨分支禁用题单：P1 的 $2593$ 题、P2 的 $106$ 题及 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。范围内无已知待核实资格记录，不声称覆盖未记录的外部/P4–P6 用题。第 $2.5$ 步在新版冻结前重建核验此清单；后续明确新增证据须在再次抽样前补充新版本。正式检索已在第 $2.6$ 步完成，历史产物字节未改动。
 
 Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法检索已在第 $2.6$ 步完成；第 $2.5$ 步已完成新版 held-out 资格复核。不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
 
-第 $2.6$ 步正式 BM25/Dense/Hybrid 检索保存到 `data/processed/annotation_common_v2/`。直接消费已保存的 $200$ 题，不重新抽题；核验完整禁用清单及全部历史哈希，建索引前保存开发已冻结的 $365/40$/paper-scoped/top-$5$ 配置。各算法保留全部原始排名/分数，每条并集配对共享一份空标签，不复用历史检索结果。本步不关联 gold evidence；新版 Markdown 导出和人工标注仍属第 $2.8$–$2.9$ 步。
+第 $2.6$ 步正式 BM25/Dense/Hybrid 检索保存到 `data/processed/annotation_common_v2/`。直接消费已保存的 $200$ 题，不重新抽题；核验完整禁用清单及全部历史哈希，建索引前保存开发已冻结的 $365/40$/paper-scoped/top-$5$ 配置。各算法保留全部原始排名/分数，每条并集配对共享一份空标签，不复用历史检索结果。本步不关联 gold evidence；新版 Markdown 已在第 $2.8$ 步导出，人工标注仍属第 $2.9$ 步。
 
 从 GitHub P3 分支与其他受跟踪数据一起获取这些文件及匹配输入。本地复现使用 `python -m src.data.build_common_pool run --output tmp/tmp_annotation_common_v2`，拒绝已有目录。按下方开发指引将固定模型放入已忽略的 `.cache/huggingface/`；CLI 在导入模型前设置 `HF_HUB_OFFLINE=1` 并在结束后恢复。首次启动遗漏开发入口已有的离线包装，在可选 processor 探测阶段失败，尚未完成 Dense 索引，未生成排名或配对；其三份运行前文件本地保留于 `tmp/tmp_common_pool_failed_processor/`。成功运行未改变检索参数。计算指标时将各算法原始排名关联共同最终标签，不用 Markdown 展示顺序。候选池外 passage 未判断；池内 Recall@K 的分母为并集中已判断相关的配对，gold-evidence recall 另受映射覆盖限制。采用问题层面隔离，允许共享论文，禁止按 held-out 调参。
 
 正式核验结果：$200$ 题，每算法 $1000$ 次命中，$600$ 行排名，合并为 $1532$ 条唯一配对，每题 $5$–$11$ 条；Common $975$、BM25 独有 $277$、Dense 独有 $254$、Hybrid 独有 $26$。初始标签均为空，尚未进行人工标注。
+
+## `data/processed/annotation_common_v2_markdown/annotator_A/` 和 `annotator_B/`
+
+使用 `python -m src.data.export_common_annotations run` 生成，使用 `python -m src.data.export_common_annotations verify` 核验空白原始模板。从 GitHub `p3` 工作分支随受跟踪数据获取模板及 manifest。本地复现使用 `python -m src.data.export_common_annotations run --output tmp/tmp_annotation_export`，核验时使用同一 `--output`。拒绝已有目录。不下载模型、重新检索、抽题或关联 gold；原共同池六项文件及全部历史文件哈希不变。
+
+每套含 `batch_01.md` 至 `batch_10.md`，每批 $20$ 道完整问题。各批配对数为 $156,158,156,155,146,152,151,152,144,162$，每套共 $1532$ 条。两套是相同配对的独立副本，不是 $3064$ 条不同 records。A/B 仅为模板槽位，第 $2.9$ 步须为每条配对安排两位不同人员。仅分发各自的 Markdown 副本，保留空白原件；填写后的副本不应通过空白模板核验。独立提交前不分享 gold/reference JSONL 或另一人的判断。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `Annotator:` | `text` | 初始为空，填写姓名或约定标识。 |
+| `0 — Not relevant`、`1 — Relevant` | `instructions` | 有助于回答问题的证据（包括部分证据）为相关，仅主题重合不足以判相关。 |
+| `Question NNNN` | `level-two heading` | 按已保存题序跨批连续编号。 |
+| `Paper:` 及引用的问题 | `text` | 真实论文标题及原问题，不显示内部 ID。 |
+| `Common Retrieved Chunks`、`BM25`、`Dense`、`Hybrid` | `level-three headings` | Common 收录至少两个来源的配对，按稳定编号排列；独有组按原始排名排列；空组显示 `None`。 |
+| `Passage N`、`Relevance N` | `level-four headings` | 现有 `record_number`，每套中每条配对出现一次；引用原 passage 正文。 |
+| `Retrieved by:` | `text` | 全部实际算法来源，公开算法身份。 |
+| `Label:` | `empty text` | 仅填写 `Label: 0` 或 `Label: 1`，保留编号、问题和 passage。 |
+
+不生成 HTML 或备注栏。视图不投影 gold、分数、原始排名、内部 question/paper/passage ID 或另一人的标签。原始排名及 ID 映射仍保存在原 JSONL 中；计算指标时按这些排名关联共同最终标签，不用 Markdown 展示顺序。导出完成不代表已取得人工判断或一致率。
+
+## `data/processed/annotation_common_v2_markdown/manifest.json`
+
+使用上方相同的 `src.data.export_common_annotations` 命令生成和核验，从 GitHub `p3` 分支随两套模板获取。协议仍为 `v0-proposed`。核验覆盖源共同池与历史哈希、模板哈希、完整覆盖及每条记录的准确投影。源码哈希记录生成实现；只读核验不要求当前源码与历史生成字节一致。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version`、`purpose`、`policy` | `string` | 提议协议、空白模板用途及独立判断与公开来源策略。 |
+| `inputs` | `object<string,string>` | 共同池 manifest、题单、配对和排名路径到字节 SHA-256 的映射。 |
+| `source_sha256` | `object<string,string>` | 导出器及复用渲染器路径到生成时源码 SHA-256 的映射。 |
+| `question_count`、`pair_count_per_annotator` | `integer` | 每套 $200$ 题、$1532$ 条唯一配对。 |
+| `slots` | `array<string>` | 独立空白模板槽位 `A` 和 `B`，尚未分配人员。 |
+| `batches` | `array<object>` | 各批覆盖数量，两套相同。 |
+| `batches[].batch` | `integer` | 从 $1$ 开始的批次编号。 |
+| `batches[].question_count`、`batches[].pair_count` | `integer` | 该批完整问题数和实际并集配对数。 |
+| `outputs` | `object<string,string>` | 全部 $20$ 份 Markdown 路径到字节 SHA-256 的映射，不包含 manifest 自身。 |
 
 ## `data/processed/annotation_common_v2/questions.jsonl`
 
@@ -349,7 +384,7 @@ Dense 使用 L2 归一化向量，经 FAISS `IndexFlatIP` 计算余弦相似度�
 
 ## `data/processed/annotation_pilot_multi_v2/annotator_A/` 和 `annotator_B/`
 
-使用 `python -m scripts.build_annotation_pool multi-pilot` 生成，每个槽位为本次 $5$ 道开发题生成一批英文 Markdown，正式新版导出待完成。公开算法与标注者身份，隐藏 gold、分数、排名、内部 ID 和对方标签，无 HTML 或备注栏。两路或三路共有配对只出现一次，按稳定编号排列；独有配对按所属算法原始排名排列。每批最多 $20$ 题，同题不拆批，空分组显示 `None`。
+使用 `python -m scripts.build_annotation_pool multi-pilot` 生成，每个槽位为本次 $5$ 道开发题生成一批英文 Markdown，正式新版导出已完成，见上方独立导出章节。公开算法与标注者身份，隐藏 gold、分数、排名、内部 ID 和对方标签，无 HTML 或备注栏。两路或三路共有配对只出现一次，按稳定编号排列；独有配对按所属算法原始排名排列。每批最多 $20$ 题，同题不拆批，空分组显示 `None`。
 
 | 字段 | 类型 | 含义 |
 | --- | --- | --- |
@@ -1126,7 +1161,7 @@ dataset = datasets.load_dataset(
 
 ## 历史 BM25 标注候选池复现与使用
 
-本节及后续原 `qa_for_held_out` / `annotation_held_out` 字段表仅描述已停用的 BM25 版本。下方命令属于历史记录，停用标记会阻止旧版冻结/正式导出。当前题单使用上方独立 `v2` 命令复现；正式共同池检索已完成；新版标注导出仍待执行。
+本节及后续原 `qa_for_held_out` / `annotation_held_out` 字段表仅描述已停用的 BM25 版本。下方命令属于历史记录，停用标记会阻止旧版冻结/正式导出。当前题单使用上方独立 `v2` 命令复现；正式共同池检索已完成；新版标注导出已在第 $2.8$ 步完成，人工判断待执行。
 
 旧参数 `--scope all-splits-testing` 仍作为 `all-splits-reference` 的兼容别名，不再代表放弃 held-out 状态。可显式用 `--scope development` 生成独立命名的 `gold_evidence_mapping_development` 文件；本次数据包不保留该产物。排除 gold 映射中 $251$ 道已用题及 $1$ 道所属论文不足 $5$ 个块的题后，合格池有 $3{,}077$ 个 ID；另有 $2$ 个已用 ID 不在 gold 映射中。最终来源为 train $95$ 题、validation $40$ 题、test $65$ 题。
 
