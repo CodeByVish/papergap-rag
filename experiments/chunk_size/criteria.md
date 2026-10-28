@@ -1,6 +1,6 @@
 # Chunk Size Evaluation Criteria
 
-Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Following `weekly-work/week-3/TODO.md` item $2.4.2.2$, the current `config.json` now contains the confirmed Round 2 candidates below, which have not been run. Both rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
+Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Round 2 completed all $9$ candidates in the current `config.json` under `results/chunk_size/round2_bm25_20261028_01/`, fulfilling `weekly-work/week-3/TODO.md` item $2.4.2.2$. Both rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
 
 ## Candidate-size rationale and proposal
 
@@ -35,7 +35,7 @@ Do not reuse the void experiments, including their $200$-word result. Use the va
 
 ### Round 2: confirmed refinement plan
 
-Confirmed on 2026/10/28: compare $200/225/250/275/300/325/350/375/400$ words per chunk, giving $9$ candidates at $25$-word intervals within $200$–$400$ words. Only this plan and `config.json` have been updated; the experiment has not been run. Shared interfaces and the final chunk configuration remain `v0-proposed`.
+Confirmed and executed on 2026/10/28: compare $200/225/250/275/300/325/350/375/400$ words per chunk, giving $9$ candidates at $25$-word intervals within $200$–$400$ words. Results are in `results/chunk_size/round2_bm25_20261028_01/summary.html`. Input hashes, question IDs/order, evidence filtering and readability source locations were verified; the $200/400$ controls reproduce Round 1's corpus hashes, saved rankings and per-question results exactly, excluding timings. Structured regeneration and summary validation passed. All $104$ readability chunk reviews remain pending; comparative assessment belongs to TODO item $2.4.3$. Shared interfaces and the final chunk configuration remain `v0-proposed`.
 
 The valid Round 1's `summary.html` supports this range: $100$ words performs no better than $200/400$ on either evidence metric at any fixed budget, while $200$ and $400$ each have advantages that warrant testing intermediate values.
 
