@@ -6,24 +6,26 @@ The tree below shows the local layout after acquisition and export. Raw and proc
 
 ```text
 data/
-├── README.md                                # Acquisition, processing, data contracts, and usage guide
-├── raw/                                     # Downloaded source data; ignored by Git
+├── README.md                                 # Acquisition, processing, data contracts, and usage guide
+├── raw/                                      # Downloaded source data; ignored by Git
 │   └── qasper/
-│       ├── manifest.json                    # Pinned source metadata, split inventory, and checksums
-│       ├── train.jsonl                      # Raw training-split paper records
-│       ├── validation.jsonl                 # Raw development split, named validation locally
-│       └── test.jsonl                       # Raw held-out paper records
-└── processed/                               # Generated local exports; ignored by Git
-    ├── papers.jsonl                         # Paper-only records from all three splits
-    ├── passages_all_paper_text.jsonl        # Passages from all paper text; inference index
-    ├── passages_all_paper_text.manifest.json # Inference corpus scope, counts, and hashes
-    ├── qa.jsonl                             # Questions with answer and evidence annotations
-    ├── qasper_export.manifest.json          # Paper and Q&A export provenance, counts, and hashes
-    ├── sample_passages_100.jsonl            # 100-passage reproducibility sample
-    └── sample_passages_100.manifest.json    # Sample selection details and hashes
+│       ├── manifest.json                     # Pinned source metadata, split inventory, and checksums
+│       ├── train.jsonl                       # Raw training-split paper records
+│       ├── validation.jsonl                  # Raw development split, named validation locally
+│       └── test.jsonl                        # Raw held-out paper records
+└── processed/                                # Generated local exports; ignored by Git
+    ├── papers.jsonl                          # Paper-only records from all three splits
+    ├── passages.jsonl                        # Development passages; configured default path
+    ├── passages.manifest.json                # Development corpus counts and hashes
+    ├── passages_all_paper_text.jsonl         # Passages from all paper text; inference index
+    ├── passages_all_paper_text.manifest.json  # Inference corpus scope, counts, and hashes
+    ├── qa.jsonl                              # Questions with answer and evidence annotations
+    ├── qasper_export.manifest.json           # Paper and Q&A export provenance, counts, and hashes
+    ├── sample_passages_100.jsonl             # 100-passage reproducibility sample
+    └── sample_passages_100.manifest.json     # Sample selection details and hashes
 ```
 
-Keep the three manifests beside their JSONL files: they preserve provenance and checksums, and the export manifest is required by the passage and sample builders. `passages_all_paper_text.jsonl` includes held-out paper text and is for inference indexing only; do not use held-out questions, answers, evidence, or labels for tuning or prompt design. This compact layout omits the diagnostic inspection report and duplicate development-passage and sample exports.
+Keep the manifests beside their JSONL files: they preserve provenance and checksums, and the export manifest is required by the passage and sample builders. `passages.jsonl` contains only development/validation paper text and matches `data.passages_path` in `configs/default.yaml`. `passages_all_paper_text.jsonl` includes held-out paper text and is for inference indexing only; do not use held-out questions, answers, evidence, or labels for tuning or prompt design. This compact layout omits the diagnostic inspection report.
 
 ## JSONL record examples
 
@@ -144,7 +146,9 @@ Whether abstract or figure/table containers will actually be indexed remains a t
 
 ## Normalization and chunking contract
 
-The Step 5 implementation is in `src/data/chunking.py`. The current provisional configuration is `normalization_version="text-normalization-v1"`, `chunking_version="word-chunking-v1"`, `chunk_size_words=200`, and `chunk_overlap_words=40`. Week 3 must compare `$150`, `$200`, and `$250` chunk sizes using development and validation data before selecting a working setting.
+The implementation is in `src/data/chunking.py`. The selected Week 3 configuration in `configs/default.yaml` is `normalization_version="text-normalization-v1"`, `chunking_version="word-chunking-v1"`, `chunk_words=365`, and `overlap_words=40`. These are words, not tokens. Valid Round 1–4 experiments selected this working setting for BM25; the evidence, selection rationale, and limitations are in [the experiment criteria](../experiments/chunk_size/criteria.md) and [Chinese criteria](../experiments/chunk_size/criteria_zn-CN.md). It is not a demonstrated stable optimum or a validated dense/hybrid/reranker setting. The configuration, passage schema, and split policy remain `v0-proposed` pending team confirmation.
+
+The corpus and sample builders do not read `configs/default.yaml`; their legacy CLI defaults remain $200/40$. Always pass `--chunk-size-words 365 --chunk-overlap-words 40` as shown below to reproduce the selected corpus. Chunk size and overlap are included in passage identity, so rebuilding changes passage IDs; consumers must rebuild dependent indexes and refresh saved passage references.
 
 Normalization is deliberately conservative. For each source paragraph, the builder replaces CRLF and lone CR line endings with LF, removes only leading and trailing Unicode whitespace, drops paragraphs that become empty, and leaves internal whitespace, punctuation, casing, Unicode content, paragraph order, and evidence-marker text unchanged. Section names and paper titles receive the same line-ending and outer-whitespace treatment; a blank or `null` section name is dropped rather than replaced with a guessed label, and a blank paper title causes that paper to produce no passages. The returned `NormalizationReport` records paragraph and section counts, dropped blanks or `null` section names, line-ending replacements, outer-whitespace trims, and invalid-paper drops so a corpus manifest can preserve the observed transformations.
 
@@ -178,23 +182,34 @@ The export command refuses any existing target. If publication is interrupted be
 Build the sample from the verified paper-only export:
 
 ```powershell
-python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
+python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
 ```
 
-The builder selects only `train` and `validation`, uses `full_text`, selects complete source-container sequences with a stable paper-ordered subset-sum rule, and validates each output record with `Passage`. The generated JSONL contains exactly `100` passages from `100` papers. For the pinned source revision and default $200$-word chunks with $40$-word overlap, its expected SHA-256 is `d017b7937d2e9a54ee653c8a3a94f37afa2819d548c0f79eacc93f08832bdb42`. The manifest records the export papers hash and source split hashes. Existing outputs are rejected; choose new output names when rebuilding for comparison.
+The builder selects only `train` and `validation`, uses `full_text`, selects complete source-container sequences with a stable paper-ordered subset-sum rule, and validates each output record with `Passage`. The generated JSONL contains exactly $100$ passages from $100$ papers. For the pinned source revision and selected $365$-word chunks with $40$-word overlap, its expected SHA-256 is `b3343a793f7428ad796bff83a79f8bd70528a89cd9d099d978fe69727ec0fa2c`, with $20{,}017$ passage words. The manifest records the export papers hash and source split hashes. Existing outputs are rejected; choose new output names when rebuilding for comparison.
 
 ## Full development corpus and rubric check
 
 Build the default development corpus and independently check its published passage file:
 
 ```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
 python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
 ```
 
 The default `development` scope processes only `train` and `validation`. The alternate `--scope all-paper-text` also processes `test` paper bodies and labels its output purpose as `index_for_inference`; use distinct output filenames and never use that corpus as tuning or prompt-design material. Both scopes enforce at least $10{,}000$ passages and $100{,}000$ source words. The manifest records the chosen scope, export papers SHA-256, and paper and passage counts by official source split. The checker validates the generated passage file and its manifest without needing the export inputs.
 
-For the pinned source revision and default $200$-word chunks with $40$-word overlap, the current development baseline is $1{,}169$ source papers, $1{,}168$ indexed papers, $32{,}073$ unique passages, $4{,}262{,}446$ source words, $4{,}897{,}846$ passage words, and $174{,}636$ case-folded passage word types. Its expected passage SHA-256 is `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790`. Word counts use Unicode non-whitespace runs. Existing output paths are never overwritten; use new filenames to compare a rebuild. These counts describe the current development scope and do not freeze the team's split or source-kind decisions.
+Build and check the full-paper inference corpus with the same selected parameters:
+
+```powershell
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages_all_paper_text.jsonl --manifest-output data/processed/passages_all_paper_text.manifest.json
+python -m scripts.check_corpus --corpus data/processed/passages_all_paper_text.jsonl --manifest data/processed/passages_all_paper_text.manifest.json
+```
+
+For the pinned source revision and selected $365$-word chunks with $40$-word overlap, the current development corpus has $1{,}169$ source papers, $1{,}168$ indexed papers, $21{,}360$ unique passages, $4{,}262{,}446$ source words, $4{,}469{,}326$ passage words, and $174{,}636$ case-folded passage word types. Its expected passage SHA-256 is `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403`. Word counts use Unicode non-whitespace runs. Existing output paths are never overwritten; use a separate staging directory for a rebuild, validate it, and back up existing local outputs before replacing the canonical files. These counts do not freeze the team's split or source-kind decisions.
+
+The corresponding all-paper-text inference corpus has $1{,}585$ source papers, $1{,}584$ indexed papers, $28{,}617$ unique passages, $5{,}659{,}921$ source words, $5{,}930{,}961$ passage words, and $210{,}909$ case-folded passage word types. Its SHA-256 is `8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e`. Passage counts by source split are $16{,}457$ train, $4{,}903$ validation, and $7{,}257$ test; test paper text is included only for inference indexing.
+
+The 2026/10/28 rebuild verified both corpora with `scripts.check_corpus`, checked all three passage files against source-derived records using the YAML parameters, and applied `validate_built_passages` with original source coordinates. Checks passed for non-empty text, the $365$-word maximum, unique IDs, contiguous chunk positions, complete corpus scope, valid mutual neighbor references within source containers, output hashes, and manifest configuration. The paper export, QA export, and export manifest hashes were unchanged. The JSONL files and manifests remain local and ignored by Git.
 
 ## Proposed split policy
 

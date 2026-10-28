@@ -40,5 +40,5 @@
                 6. 交付与边界：在 `results/chunk_size/{run_id}/` 保存配置、题单及分组标识、筛选计数、输入哈希、逐题结果、`summary.json`、`summary.html` 和简洁的 `report.md`。若各预算仍有不同优胜者，保留使用预算下的取舍；未能拉开差距则记录为暂未区分，不继续细搜同一题集。新增题用于本次选参后，不再充当独立最终测试题；BM25 结论不直接推广到其他检索模式，共享接口和最终配置继续保持 `v0-proposed`。
     5. [x] 对于各类结果展开评估：有效 Round 1–4 的 `results/chunk_size/{run_id}/report.md` 均已完成，包含定量结果和简短判断，不使用可读性评分。综合选定 $365$ words、重叠 $40$ words；选值原因已同步中英文 criteria，知识库冻结及定版交付留在第 $3$ 项。
 3. [ ] 定版交付
-    1. [ ] 将 `configs/default.yaml` 中的 chunk size 设为 $365$ words、重叠设为 $40$ words，重新生成 `data/processed` 文件夹内有关 passages 的 JSONL 数据库；核验生成结果与配置一致、正文非空、ID 无重复、相邻块引用有效，并同步 `data/README.md` 中过时的配置说明。
+    1. [x] 将 `configs/default.yaml` 中的 chunk size 设为 $365$ words、重叠设为 $40$ words，重新生成 `data/processed` 文件夹内有关 passages 的 JSONL 数据库；核验生成结果与配置一致、正文非空、ID 无重复、相邻块引用有效，并同步 `data/README.md` 中过时的配置说明。已重建开发语料 $21{,}360$ 条、完整论文语料 $28{,}617$ 条及 $100$ 条样本和对应 manifest；配置、正文、词数、ID、原始容器内相邻引用、范围和哈希核验通过，配置及共享接口继续保留 `v0-proposed`。
     2. [ ] 在 `weekly-work/week-3/week-3-report-en.md` 和 `weekly-work/week-3/week-3-report-zn.md` 中生成内容一致的中英文简报，大致描述 Week 3 工作，不需要重复 `experiments/chunk_size/criteria.md` 的内容：制定定量标准，由粗到细，比较、挑选 chunk size；指标和实验设计引用中英文 `criteria`，实验结果引用各个 `results/chunk_size/<run_id>/summary.html`，选值判断引用对应的 `report.md`。第 $3.1$ 项完成后，再写明最终参数已落实到正式配置，并已据此重新生成和核验 passages 数据库；未完成时如实记录状态。

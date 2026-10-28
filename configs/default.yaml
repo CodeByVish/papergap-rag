@@ -1,4 +1,4 @@
-# Proposal only: no application currently consumes this file.
+# Shared configuration remains v0-proposed; passage builders require explicit CLI parameters.
 seed: 42
 data:
   dataset: allenai/qasper
@@ -6,7 +6,7 @@ data:
   qa_path: data/processed/qa.jsonl
   qasper_export_manifest: data/processed/qasper_export.manifest.json
   passages_path: data/processed/passages.jsonl
-  chunk_words: 200
+  chunk_words: 365
   overlap_words: 40
   normalization_version: text-normalization-v1
   chunking_version: word-chunking-v1
