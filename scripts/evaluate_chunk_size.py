@@ -47,6 +47,12 @@ def main() -> int:
     )
     run.add_argument("--output-root", type=Path, default=Path("results/chunk_size"))
     run.add_argument("--run-id", required=True)
+    run.add_argument(
+        "--prepare-plan", type=Path, help="freeze a validation plan without retrieval"
+    )
+    run.add_argument(
+        "--question-plan", type=Path, help="reuse an exact frozen validation plan"
+    )
     summarize = commands.add_parser("summarize")
     summarize.add_argument("--run-dir", type=Path, required=True)
     regenerate = commands.add_parser(

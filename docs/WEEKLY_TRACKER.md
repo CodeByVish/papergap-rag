@@ -6,7 +6,7 @@ Update this file after the weekly meeting. Link to concrete issues, PRs, artifac
 | --- | --- | --- | --- |
 | 1 | 14–20 Sep | Rubric interpretation, owners, compute, interfaces and split policy | Not recorded |
 | 2 | 21–27 Sep | Provisional corpus, independent retrieval, pilot candidates | Not recorded |
-| 3 | 28 Sep–4 Oct | Retrieval baselines, annotation pilot, final chunker/corpus freeze | P3 BM25 Round 3 completed on 2026/10/28: `results/chunk_size/round3_bm25_20261028_01/summary.html`; four Round 2 controls reproduced exactly, excluding timings; assessment, readability review and freeze pending. Other checkpoints not recorded. |
+| 3 | 28 Sep–4 Oct | Retrieval baselines, annotation pilot, final chunker/corpus freeze | P3 BM25 Round 4 completed on 2026/10/28: `results/chunk_size/round4_bm25_20261028_01/summary.html`; $50$ regression plus $200$ new questions, three candidate controls reproduced Round 3 exactly, excluding timings. Separate group metrics and paired gains/losses saved; readability review, final assessment and freeze pending. Other checkpoints not recorded. |
 | 4 | 5–11 Oct | One complete query in Streamlit | Not recorded |
 | 5 | 12–18 Oct | Frozen held-out pool and annotation guidelines | Not recorded |
 | 6 | 19–25 Oct | 2,000 blind judgments, agreement, adjudication, system freeze | Not recorded |

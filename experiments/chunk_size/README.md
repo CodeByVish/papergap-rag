@@ -18,6 +18,21 @@ Readability sampling selects papers without replacement, divides each paper's el
 
 The default `retrieval` configuration is `{"mode": "bm25"}`; older configurations without this block use the same defaults. The runner now uses P1/P2 code from fixed upstream commit `5ccfb070a00f71dd2f95f69afb31868c296f35c4`. It builds independent indexes for each chunk size and each paper. Only the eight validated public passage fields enter retrieval; private source spans stay in evaluation. No P4 Agent, P5 generator or P6 UI is needed. The four modes have offline wiring tests; real-model quality, device availability and tokenizer truncation remain unverified.
 
+## Round 4 frozen validation sample
+
+Current `config.json` compares $325/365/375$ words on the original $50$ questions plus $200$ unused eligible questions. `validation.reference_run` identifies Round 3; `validation.additional_question_count` requests new questions, and `validation.primary_word_budget=1000` predeclares the main budget. Complete evidence rate on new questions is primary; evidence hit and other budgets remain reported. The primary budget is an experimental choice; the deployment budget remains unconfirmed. `question_sample_count` must equal reference question count plus requested new count. Fewer available new questions are used without relaxing eligibility. This mode requires BM25; omitting `validation` preserves the earlier sampling workflow.
+
+Freeze before retrieval, then reuse the exact plan (choose a new plan filename if it already exists):
+
+```powershell
+python -m scripts.evaluate_chunk_size run --run-id round4_bm25_20261028_01 --prepare-plan experiments/chunk_size/round4_question_plan.json
+python -m scripts.evaluate_chunk_size run --run-id round4_bm25_20261028_01 --question-plan experiments/chunk_size/round4_question_plan.json
+```
+
+Preparation builds candidate corpora to verify common-paper eligibility but does no retrieval and creates no run directory. A reused plan must exactly match current configuration, inputs, reference hashes and seeded selection. A normal validation run without these flags freezes its plan before retrieval. Every run saves `question_plan.json` and its hash, group membership, paper/source counts and paper overlap; it checks regression question records, corpus hashes, rankings and metrics against the reference before writing the completion manifest. A failed regression leaves an incomplete directory. The reference files remain unchanged.
+
+`summary.json.validation` contains separate `regression`, `new` and `combined` summaries and paired candidate gains/losses with exact question IDs at top-$5$ and every word budget. `summary.html` displays all groups, while `report.md` presents budget metrics and paired new-question counts. `regenerate` rebuilds these views from structured inputs and the frozen plan, preserving readability labels. New questions may share papers with old ones and are no longer independent final-test questions once used for selection.
+
 ## Retrieval settings
 
 BM25 is selected for this experiment. A beginner's explanation of its inputs, outputs and complete workflow is available in `BM25.en.md` (English) and `BM25.md` (Chinese). Keep the selected mode and all its parameters fixed across chunk sizes; final parameter confirmation remains in `weekly-work/week-3/EXPERIMENT_GAPS.md`. Comparing different modes does not isolate chunk size effects. Select another configuration file with `--config`; `configs/default.yaml` is not read by this runner.

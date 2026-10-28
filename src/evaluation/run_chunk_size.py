@@ -62,6 +62,7 @@ from src.evaluation.chunk_size_retrieval import (
 from src.evaluation.chunk_size_retrieval import (
     retriever_metadata as configured_metadata,
 )
+from src.evaluation.chunk_size_validation import freeze_plan, verify_regression
 from src.evaluation.render_chunk_size_summary import write_summary_html
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -90,6 +91,7 @@ def load_config(path: Path) -> dict[str, Any]:
         "retrieval",
         "question_sampling_method",
         "word_budgets",
+        "validation",
         *DEFAULTS,
     }:
         raise ValueError("configuration must be an object with known keys")
@@ -127,6 +129,33 @@ def load_config(path: Path) -> dict[str, Any]:
     config["retrieval"] = normalize_retrieval(
         supplied.get("retrieval", {}), config["top_k"]
     )
+    if "validation" in config:
+        settings = config["validation"]
+        if not isinstance(settings, dict) or set(settings) != {
+            "reference_run",
+            "additional_question_count",
+            "primary_word_budget",
+        }:
+            raise ValueError(
+                "validation requires reference_run, additional_question_count and primary_word_budget"
+            )
+        if (
+            not isinstance(settings["reference_run"], str)
+            or not settings["reference_run"].strip()
+        ):
+            raise ValueError("validation reference_run must be a nonempty path")
+        if (
+            type(settings["additional_question_count"]) is not int
+            or settings["additional_question_count"] <= 0
+        ):
+            raise ValueError("additional_question_count must be a positive integer")
+        if (
+            type(settings["primary_word_budget"]) is not int
+            or settings["primary_word_budget"] not in config["word_budgets"]
+        ):
+            raise ValueError("primary_word_budget must be a configured budget")
+        if config["retrieval"]["mode"] != "bm25":
+            raise ValueError("expanded validation requires BM25 structured rankings")
     return config
 
 
@@ -330,12 +359,16 @@ def run_comparison(
     run_id: str,
     retriever_factory: RetrieverFactory | None = None,
     retriever_metadata: dict[str, Any] | None = None,
+    prepare_plan: Path | None = None,
+    question_plan: Path | None = None,
 ) -> Path:
     """Build candidate corpora and publish one new comparison directory.
 
     A custom retriever factory receives the full candidate corpus and returns
     ``(query, paper_id, top_k) -> [(passage_id, score)]``. It must provide explicit
     reproducibility metadata. Outputs never overwrite an existing run.
+    With prepare_plan, freeze the sample without retrieval or creating a run.
+    With question_plan, validate and reuse that exact plan before retrieval.
     """
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", run_id):
         raise ValueError("run_id must be a simple directory name")
@@ -343,6 +376,16 @@ def run_comparison(
     if run_dir.exists():
         raise FileExistsError(f"run already exists: {run_dir}")
     config = load_config(config_path)
+    if (
+        prepare_plan is not None or question_plan is not None
+    ) and "validation" not in config:
+        raise ValueError("sampling plans require validation configuration")
+    if prepare_plan is not None and (
+        question_plan is not None or prepare_plan.exists()
+    ):
+        raise ValueError(
+            "prepare_plan must be new and cannot be combined with question_plan"
+        )
     if retriever_factory is not None and not retriever_metadata:
         raise ValueError("custom retrievers require explicit metadata")
     if retriever_factory is None and retriever_metadata is not None:
@@ -386,6 +429,59 @@ def run_comparison(
         config,
     )
     samples, sampling = select_readability_samples(paragraphs, common_papers, config)
+    inputs = {
+        name: {"path": str(path.resolve()), "sha256": file_hash(path)}
+        for name, path in {
+            "config": config_path,
+            "papers": papers_path,
+            "qa": qa_path,
+            "export_manifest": export_manifest,
+        }.items()
+    }
+    plan = None
+    if "validation" in config:
+        # The evidence filter is unchanged. freeze_plan sorts eligible IDs
+        # before excluding reference questions and drawing the new sample.
+        eligible, _, _ = select_questions(
+            questions,
+            papers,
+            paragraphs,
+            common_papers,
+            {**config, "question_sample_count": len(questions)},
+        )
+        plan, reference = freeze_plan(eligible, config, inputs)
+        plan["filtering_counts"] = filtering
+        if (
+            config["question_sample_count"]
+            != len(reference["question_ids"])
+            + config["validation"]["additional_question_count"]
+        ):
+            raise ValueError(
+                "question_sample_count must equal regression plus requested new questions"
+            )
+        if question_plan is not None:
+            frozen = json.loads(question_plan.read_text(encoding="utf-8"))
+            if frozen != plan:
+                raise ValueError(
+                    "frozen question plan differs from current inputs or settings"
+                )
+            plan = frozen
+        by_question = {question["question_id"]: question for question in eligible}
+        selected = [
+            by_question[qid] for qid in plan["groups"]["combined"]["question_ids"]
+        ]
+        # Reuse actual reference locations even if sampler internals change.
+        samples = [
+            paragraphs[row["paper_id"]][row["location"]]
+            for row in reference["readability_samples"]
+        ]
+        if any(sample["paper_id"] not in common_papers for sample in samples):
+            raise ValueError("reference readability paper absent from candidate corpus")
+        sampling = reference["readability_sampling"]
+        if prepare_plan is not None:
+            prepare_plan.parent.mkdir(parents=True, exist_ok=True)
+            write_json(prepare_plan, plan)
+            return prepare_plan
     commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
@@ -407,15 +503,7 @@ def run_comparison(
         "split_policy_version": SPLIT_POLICY_VERSION,
         "source": export["source"],
         "source_splits": ["train", "validation"],
-        "inputs": {
-            name: {"path": str(path.resolve()), "sha256": file_hash(path)}
-            for name, path in {
-                "config": config_path,
-                "papers": papers_path,
-                "qa": qa_path,
-                "export_manifest": export_manifest,
-            }.items()
-        },
+        "inputs": inputs,
         "retriever": metadata,
         "chunking": chunk_configs,
         "question_ids": [question["question_id"] for question in selected],
@@ -461,6 +549,10 @@ def run_comparison(
     # Reserve the ID only after validation and sampling. An interrupted run stays
     # visible and cannot be mistaken for a completed comparison without a manifest.
     run_dir.mkdir(parents=True, exist_ok=False)
+    if plan is not None:
+        write_json(run_dir / "question_plan.json", plan)
+        manifest["validation_plan"] = plan
+        manifest["question_plan_sha256"] = file_hash(run_dir / "question_plan.json")
     # The proposed independent replay contract currently applies to BM25 only.
     structured = config["retrieval"]["mode"] == "bm25"
     if structured:
@@ -599,6 +691,9 @@ def run_comparison(
     write_json(run_dir / "summary.json", summary)
     if structured:
         generate_reports(run_dir, manifest=manifest)
+        if plan is not None:
+            verify_regression(run_dir, manifest)
+            manifest["regression_verified"] = True
     else:
         write_summary_html(run_dir, summary)
     write_json(run_dir / "manifest.json", manifest)

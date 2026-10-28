@@ -1,12 +1,17 @@
 {
-  "candidates": [325, 335, 345, 350, 355, 365, 375, 385, 395, 400],
+  "candidates": [325, 365, 375],
   "overlap_words": 40,
   "top_k": 5,
   "word_budgets": [500, 1000, 2000],
-  "question_sample_count": 50,
+  "question_sample_count": 250,
   "question_sampling_method": "simple_random_without_replacement",
   "n_paper": 5,
   "n_paragraph": 2,
   "seed": 42,
-  "retrieval": {"mode": "bm25"}
+  "retrieval": {"mode": "bm25"},
+  "validation": {
+    "reference_run": "results/chunk_size/round3_bm25_20261028_01",
+    "additional_question_count": 200,
+    "primary_word_budget": 1000
+  }
 }

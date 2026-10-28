@@ -1,25 +1,15 @@
 > 只记录当前最新完成的工作和下一步。
 
-最新完成：2026/10/28 已执行 `TODO.md` 的 $2.4.2.3$（Round 3），结果位于 `results/chunk_size/round3_bm25_20261028_01/`。使用项目环境 `D:/Apps/Programming/Anaconda/virtue_envs/papergap-rag/python.exe` 执行 `python -m scripts.evaluate_chunk_size run --run-id round3_bm25_20261028_01`，重新构建全部 $10$ 组分块和 BM25 排序，未复用旧指标；运行时工作区干净，代码提交为 `53c5d35627c5b9e760580ce28944108c0339bfde`。未修改运行代码，未提交或推送。
+最新完成：2026/10/28 已执行 `TODO.md` 的 $2.4.2.4$（Round 4），结果位于 `results/chunk_size/round4_bm25_20261028_01/`。新增 `src/evaluation/chunk_size_validation.py`，实现旧题排除、固定题单准备／复用、三组指标、逐题得失、跨轮回归核验及简洁报告；同步中英文 criteria 和实验 README。未提交或推送，运行 manifest 如实记录代码提交及工作区修改状态。
 
-配置：$325/335/345/350/355/365/375/385/395/400$ words/chunk、重叠 $40$ words、`top_k=5`、$50$ 个问题、$5$ 篇论文各 $2$ 个可读性段落、`seed=42`；同时完成 top-$5$ 与固定 $500/1000/2000$ words 预算比较。取点依据与判断边界见中英文 criteria；历史设置以各轮 `manifest.json` 为准。
+运行方式：使用 `D:/Apps/Programming/Anaconda/virtue_envs/papergap-rag/python.exe`，先执行 `python -m scripts.evaluate_chunk_size run --run-id round4_bm25_20261028_01 --prepare-plan experiments/chunk_size/round4_question_plan.json` 冻结题单，再以 `--question-plan experiments/chunk_size/round4_question_plan.json` 替换准备参数正式检索。配置为 $325/365/375$ words、重叠 $40$ words、`top_k=5`、`seed=42`，完整比较 $500/1000/2000$ words；运行前固定新增题的 $1000$ words 完整证据率为主要指标，该预算尚非最终部署约定。
 
-跨轮对照：有效 Round 1 为 `results/chunk_size/round1_bm25_20261028_02/`，Round 2 为 `results/chunk_size/round2_bm25_20261028_01/`。执行前核验输入哈希、控制量、全部候选的论文交集、问题 ID 及顺序、证据筛选和可读性原文位置；执行后核验共享 `questions.jsonl` 字节一致，$325/350/375/400$ 四个对照的语料哈希、保存排序、可读性文件及全部逐问题和汇总结果与 Round 2 一致（排除耗时）。三轮使用同一批 $50$ 个问题，合格池 $2466$ 个，不使用原始 `test` 调参；留出策略见 `data/README.md`。
+抽样：重新核验合格池 $2466$ 题，排除原有 $50$ 题后剩余 $2416$ 题；按 ID 排序后用固定种子抽取 $200$ 题，未使用 `test`。旧题／新题／合计覆盖 $48/184/224$ 篇论文，来源问题数分别为 train $37/152/189$、validation $13/48/61$；新旧论文交集 $8$ 篇，不能称为论文独立验证。题单、顺序、分组、筛选数量、来源划分及输入哈希保存在 `question_plan.json` 和 manifest 中。
 
-已保存共享 `manifest.json`、`summary.json`、`summary.html`、`questions.jsonl`，每个 `chunk_size_<size>/` 下包含 `ranked_chunks.jsonl`、`evidence_review.md`、`readability.md`，共 $34$ 个文件。结构化输入保留证据位置、完整检索分块及来源映射，可独立重算指标；manifest 记录输入和结构化文件哈希、依赖、硬件、抽样、语料哈希和排序保存状态。结果供 Git 共享；原始数据、生成语料和临时脚本继续忽略。
+新增题主要预算结果：$325/365/375$ 的证据命中率为 $123/200$、$131/200$、$131/200$，完整证据率为 $104/200$、$106/200$、$108/200$。$375$ 对 $365$ 的完整证据独有成功为 $5$ 对 $3$ 题；不能据此宣布显著或稳定最优。$500$ words 下 $325$ 的完整证据率较高，$2000$ words 下 $375$ 的完整证据率较高而 $365$ 命中率较高；保留预算取舍，不继续细搜或换种子。
 
-运行快照：下表仅列出本轮固定预算下的最高计数，分母均为 $50$，用于定位结果，不作为最终选值或显著性结论。全部候选指标、实际词数、耗尽数和 top-$5$ 见 `summary.html` 与 `summary.json`。
+已保存本轮 `manifest.json`、`question_plan.json`、`questions.jsonl`、`summary.json`、`summary.html`、`report.md`，以及三个候选各自的 `ranked_chunks.jsonl`、`evidence_review.md`、`readability.md`。结果用于 Git 共享；原始数据、生成语料、模型、索引和临时脚本不入 Git。此前作废实验继续排除；有效前三轮路径及历史配置见中英文 criteria 和各轮 manifest。
 
-| 词数预算 | 最高证据命中率及候选 words/chunk | 最高完整证据率及候选 words/chunk |
-| --- | --- | --- |
-| $500$ | $17/50=34\%$，$325$ | $16/50=32\%$，$325$ |
-| $1000$ | $29/50=58\%$，$325$ | $25/50=50\%$，$325$ |
-| $2000$ | $40/50=80\%$，$365$ | $37/50=74\%$，$365$ |
+验证：字符扫描、Python 语法和变更范围 Ruff 检查通过；`python -m pytest -q tests --basetemp tmp/tmp_pytest_round4_all_tests -x` 共 $518$ 项通过，其中评估模块 $102$ 项通过。`tmp/tmp_verify_round4.py` 独立核验输入／参考／结构化文件哈希、题组计数、预算词数与单调性、分组指标、逐题得失、旧题与 Round 3 的原文／证据、语料、排序、指标和可读性文件一致；`regenerate` 与 `summarize` 后 summary 字节不变，SHA-256 为 `db30119ad51f23b6b11ab7747734a21991924758d1e8bfff5485c5942085d340`。原始题单留在 `experiments/chunk_size/round4_question_plan.json`，供后续复用及核验。
 
-可读性沿用前两轮的 $10$ 个原文段落（短 $8$、长 $2$），本轮全部候选合计 $107$ 个待审核分块；所有标签为 `pending`，通过率为 `null`。原文样本未重抽，尚未执行可读性审核或最终配置冻结。
-
-验证：`tmp/tmp_preflight_round3.py` 在正式检索前核验跨轮输入、全部候选的论文交集和抽样；正式 `run`、`regenerate` 结构化重算、`summarize` 均正常退出。`tmp/tmp_verify_round3.py` 在初次运行及重算汇总后均通过，覆盖输入与结构化文件 SHA-256、全部输出非空、共享问题及顺序、逐问题与汇总指标、预算词数约束、预算增大时覆盖不下降、待审核状态，以及四个对照的跨轮精确一致性。重算及汇总前后的 `summary.json` SHA-256 相同。
-
-作废实验继续排除：旧 Round 1 的 `results/chunk_size/round1_bm25_20261028_01/INVALIDATED.md` 保留替代路径；此前 $150/200/250$ 的 `formal_bm25_20261028_01/` 与 `smoke_p1_bm25_01/` 作废状态继续有效。不得将其指标参与选值或合并。
-
-下一步：执行 `TODO.md` 的 $2.4.3$，结合三轮有效结果的固定预算表现和逐问题得失，在 `results/chunk_size/round3_bm25_20261028_01/report.md` 保存简洁评估。每题对应 $2$ 个百分点，小差异不直接宣布胜出；各预算优胜者不同则保留成本与覆盖的取舍。最终定版前完成可读性审核，并用独立或扩大的开发／验证题集验证候选值；如需区间外补测，按 criteria 判断。共享接口、split policy 和输出仍为 `v0-proposed`；本轮仅使用 BM25，真实 dense / hybrid / reranker 模型及截断检查尚未执行。整合来源见 `INTEGRATION_PLAN.md`，配置及重算命令见 `experiments/chunk_size/README.md`。
+下一步：继续 `TODO.md` 的 $2.4.3$，根据新增题的主要预算结果与逐题得失完成综合评估；当前 `report.md` 已提供本轮定量记录。可读性沿用原有 $10$ 个段落，本轮 $31$ 个分块仍为 `pending`，通过率为 `null`；审核后再讨论最终配置冻结。本轮新增题已经用于选参，不能再充当独立最终测试题。BM25 结论不推广到 dense／hybrid／reranker；接口、split policy 和最终配置继续为 `v0-proposed`。整合来源见 `INTEGRATION_PLAN.md`，完整命令与行为见 `experiments/chunk_size/README.md`。

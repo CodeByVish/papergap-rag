@@ -590,6 +590,19 @@ def generate_reports(
             value["budgets"][str(budget)] = aggregate
         summary["sizes"][size] = value
         reports[size] = "\n".join(sections)
+    if "validation_plan" in manifest:
+        from src.evaluation.chunk_size_validation import (
+            add_validation_summary,
+            write_validation_report,
+        )
+
+        plan = manifest["validation_plan"]
+        if sha256(run_dir / "question_plan.json") != manifest["question_plan_sha256"]:
+            raise ValueError("frozen question plan hash mismatch")
+        if json.loads((run_dir / "question_plan.json").read_text(encoding="utf-8")) != plan:
+            raise ValueError("question plan differs from manifest")
+        add_validation_summary(summary, plan, budgets)
+        write_validation_report(run_dir, summary)
     for size, report in reports.items():
         (run_dir / f"chunk_size_{size}" / "evidence_review.md").write_text(
             report, encoding="utf-8"

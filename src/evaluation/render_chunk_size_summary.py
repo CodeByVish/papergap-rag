@@ -76,6 +76,7 @@ def write_summary_html(run_dir: Path, summary: dict[str, Any] | None = None) -> 
     if summary is None:
         summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
     sizes = summary["sizes"]
+    validation = summary.get("validation")
     tables = [
         _table(
             "Top-5 retrieval and readability",
@@ -99,7 +100,8 @@ def write_summary_html(run_dir: Path, summary: dict[str, Any] | None = None) -> 
         )
     ]
     budgets = {budget for row in sizes.values() for budget in row.get("budgets", {})}
-    for budget in sorted(budgets, key=int):
+    # Group tables already include combined budgets; retain the unique overview.
+    for budget in sorted(budgets, key=int) if not validation else []:
         rows = {
             size: row.get("budgets", {}).get(budget, {}) for size, row in sizes.items()
         }
@@ -120,6 +122,66 @@ def write_summary_html(run_dir: Path, summary: dict[str, Any] | None = None) -> 
                 ],
             )
         )
+    validation_notes = ""
+    if validation:
+        primary = validation["primary_word_budget"]
+        groups = validation["groups"]
+        validation_notes = (
+            f"<p><strong>Group labels:</strong> combined "
+            f"({groups['combined']['question_count']} questions) combines the old and new questions. "
+            f"new ({groups['new']['question_count']} questions) contains additional questions "
+            "not used in the earlier parameter search and is the main validation group. "
+            f"regression ({groups['regression']['question_count']} questions) reuses the "
+            "reference-run questions to check reproducibility; the label does not mean "
+            "a regression model or a performance decrease. New and regression questions "
+            "are disjoint but may come from the same papers.</p>"
+            "<p><strong>Evaluation views:</strong> top-5 evaluates the five highest-ranked "
+            "chunks (or all returned chunks if fewer than five); total words vary by chunk size. "
+            "500 / 1000 / 2000 words evaluate retrieval under the respective cumulative "
+            "word budgets. Higher evidence hit and complete evidence rates are better.</p>"
+            f"<p><strong>Primary validation metric:</strong> Complete evidence rate at "
+            f"{primary} words in the new group, declared before retrieval. "
+            "Combined results include questions previously used for selection. "
+            "Small differences do not establish a stable optimum.</p>"
+        )
+        for group, description in validation["groups"].items():
+            group_sizes = description["sizes"]
+            tables.append(
+                _table(
+                    f"{group}: top-5 ({description['question_count']} questions)",
+                    group_sizes,
+                    [
+                        ("evidence_hit_at_5", "Evidence Hit@5", True),
+                        (
+                            "complete_evidence_rate_at_5",
+                            "Complete evidence rate@5",
+                            True,
+                        ),
+                        ("retrieved_word_count", "Mean retrieved words", False),
+                    ],
+                )
+            )
+            for budget in sorted(budgets, key=int):
+                tables.append(
+                    _table(
+                        f"{group}: {budget} words",
+                        {
+                            size: row["budgets"][budget]
+                            for size, row in group_sizes.items()
+                        },
+                        [
+                            ("evidence_hit", "Evidence hit", True),
+                            ("complete_evidence_rate", "Complete evidence rate", True),
+                            ("actual_word_count", "Mean actual words", False),
+                            ("question_count", "Questions", False),
+                            (
+                                "corpus_exhausted_count",
+                                "Corpus exhausted (questions)",
+                                False,
+                            ),
+                        ],
+                    )
+                )
     run_id = escape(str(summary.get("run_id", run_dir.name)))
     schema = escape(str(summary.get("schema_version", "N/A")))
     document = f"""<!doctype html>
@@ -167,6 +229,7 @@ one question. Smaller chunks usually produce more passages.</p>
 all available chunks from the question's paper have been read but the specified
 word budget is still not filled. This describes exhausted available text;
 it does not by itself indicate retrieval failure or missing evidence.</p>
+{validation_notes}
 </aside>
 {"".join(tables)}
 </body></html>
