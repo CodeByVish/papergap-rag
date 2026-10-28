@@ -6,6 +6,8 @@
 
 ### Mandatory components
 
+Current Week 4 evaluation design supersedes the original fixed-count annotation plan: the scoped cross-branch exclusions and `qa_for_held_out_v2.jsonl` freeze are complete; fresh BM25/Dense/Hybrid top-$5$ retrieval forms `annotation_common_v2/` with $200$ questions and $1532$ actual unique pairs. The old BM25 templates are retired history. New source-disclosed English views (Step $2.8$) and two independent judgments per unique pair (Step $2.9$) remain pending. See `docs/EVALUATION.md` and the bilingual data guides for authoritative commands, fields, source scope and held-out boundaries. The annotation count is a minimum requirement, not a quota; the agent, reranker and citation features below remain project design choices as clarified in `docs/REQUIREMENTS.md`.
+
 * QASPER knowledge base with at least 10,000 passage documents
 * BM25 sparse retrieval
 * BGE dense retrieval with FAISS
@@ -18,7 +20,7 @@
 * Programmatic citation validation
 * Simplified provenance trace
 * Streamlit interface
-* 1,000 manually labelled query–passage records
+* At least $1000$ manually labelled query–passage records; current union: $1532$ pairs awaiting labels
 * Retrieval, QA and RAGAS evaluation
 
 ### Optional experiments
@@ -45,7 +47,7 @@
 
 All six members also complete:
 
-* approximately 333 annotation judgments;
+* a share of the current $3064$ initial annotation judgments, assigned so each pair has two distinct annotators;
 * one report section;
 * unit tests for their module;
 * one module-specific experiment;
@@ -800,12 +802,11 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 
 ## P3
 
-* Select 100 held-out QASPER questions.
-* Stratify across question and answerability types where practical.
-* Generate ten candidate passages per question from pooled retrieval systems.
-* Include gold QASPER evidence where it can be mapped correctly.
-* Remove duplicates.
-* Export exactly 1,000 annotation records.
+* Consume the frozen $200$ questions in `qa_for_held_out_v2.jsonl`; do not redraw or stratify using content/results.
+* Retain the completed, fresh BM25/Dense/Hybrid native top-$5$ lists and their $1532$-pair union in `annotation_common_v2/`.
+* Deduplicate by `(question_id, passage_id)` and preserve stable record mappings and all original ranks/scores.
+* Keep gold evidence in separate verification/reference data; never insert it into retrieval results or annotation views.
+* Execute Step $2.8$: export English source-disclosed Markdown in $10$ batches of $20$ questions, with variable record counts and no HTML or notes field.
 
 ## P4
 
@@ -831,7 +832,7 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 ## P6
 
 * Finalize the annotation sheet or form.
-* Run a 30–50-record annotation pilot involving all six members.
+* Use eligible development records for any guideline-adjustment pilot; never change rules using held-out content or judgments.
 * Calculate preliminary percentage agreement and Cohen’s kappa.
 * Coordinate a discussion about disagreements.
 * Update annotation instructions before full annotation.
@@ -840,7 +841,7 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 
 After the annotation pool is created:
 
-* Do not change the 100 held-out questions.
+* Do not change the frozen $200$ held-out questions.
 * Do not tune retrieval parameters using their final labels.
 * Keep the held-out records separate from development experiments.
 * Record the Git commit and configuration used to create the pool.
@@ -853,20 +854,9 @@ After the annotation pool is created:
 
 ## Shared annotation work
 
-Each of the 1,000 records receives two independent judgments.
+Each of the $1532$ unique pairs must receive two independent judgments from different people: $3064$ initial judgments in total. Assignment remains pending; do not use the former fixed-$1000$ allocation. Keep all pairs for a question in one batch, and coordinate workload using actual union counts.
 
-| Member | First-label batch | Second-label batch |
-| ------ | ----------------: | -----------------: |
-| P1     |             1–167 |            501–667 |
-| P2     |           168–334 |            668–834 |
-| P3     |           335–500 |          835–1,000 |
-| P4     |           501–667 |              1–167 |
-| P5     |           668–834 |            168–334 |
-| P6     |         835–1,000 |            335–500 |
-
-Each member completes approximately 333 judgments.
-
-Annotators must not see the other person’s answer before submitting their own.
+Views disclose algorithm sources and annotator names or agreed identifiers. Annotators must not see the other person's label or negotiate judgments before submitting their own. Preserve returned originals, both raw labels and a separate adjudicated label. Check agreement before adjudication against the assignment's $80\%$ threshold. All methods share each pair's final label, evaluated in native rank order; unpooled passages remain unjudged.
 
 ## P1
 
