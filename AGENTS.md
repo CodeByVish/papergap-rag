@@ -1,6 +1,7 @@
 # Project collaboration
 
 - Write shared source code in English.
+- Consult `Instruction.pdf` first when checking mandatory assignment requirements. Treat it as the primary source over project plans, summaries, or prior interpretations; distinguish explicit requirements from project design choices and flag unresolved ambiguity.
 - Shared documentation and reports may be English-only or have both English and Chinese versions. Keep bilingual versions consistent and include both in shared commits.
 - Follow CONTRIBUTING.md for task branches, review and pull requests into main.
 - When the user says “提交” or “推送”, interpret the request as committing or pushing the current version of the `p3` branch, respectively.
