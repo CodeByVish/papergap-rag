@@ -72,6 +72,12 @@ class ParseDiagnostics(BaseModel):
     candidate_index: int = 0
     extra_fields: list[str] = Field(default_factory=list)
     coerced: list[str] = Field(default_factory=list)
+    #: A JSON string carried a backslash that began no valid escape (typically a
+    #: LaTeX command such as ``\extnormal``) and the parser doubled it. The answer
+    #: survives; the deviation is recorded so a prompt that keeps emitting raw
+    #: LaTeX is visible in the aggregate warnings.
+    repaired_invalid_escapes: bool = False
+    invalid_escape_repairs: int = 0
 
     @property
     def drifted(self) -> bool:
@@ -83,6 +89,7 @@ class ParseDiagnostics(BaseModel):
             or self.trailing_text_chars
             or self.extra_fields
             or self.coerced
+            or self.repaired_invalid_escapes
         )
 
 
@@ -299,6 +306,72 @@ def _normalize_payload(
     return normalized
 
 
+#: The one-character escapes JSON allows after a backslash. ``u`` is handled
+#: separately because it is only valid with four hex digits.
+_VALID_JSON_ESCAPES = frozenset('"\\/bfnrt')
+
+_HEX4_RE = re.compile(r"[0-9a-fA-F]{4}")
+
+
+def _repair_invalid_escapes(text: str) -> tuple[str, int]:
+    """Double backslashes that do not begin a valid JSON escape.
+
+    A scientific answer can contain LaTeX (``\\extnormal``, ``\\(``, ``\\alpha``)
+    that the model wrote into a JSON string without doubling the backslash. The
+    text is then invalid JSON even though the *content* is correct, and the whole
+    answer is thrown away as ``PARSE_ERROR``. That is a format failure, which the
+    parser is supposed to recover from, not a grounding failure.
+
+    The scan is stateful on purpose. A naive regex would double the second
+    backslash of an already-correct ``\\\\extnormal`` and turn a valid escape into
+    a broken one; consuming valid escapes two characters at a time avoids that.
+
+    **What it cannot repair:** sequences that are valid JSON but were intended as
+    LaTeX. ``\\text`` parses as a tab followed by ``ext``, and ``\\nu`` as a
+    newline followed by ``u``; there is no way to tell those apart from real
+    whitespace, so they are left alone. This function only rescues the
+    unambiguous case, and records how many characters it changed.
+
+    Returns the repaired text and the number of backslashes doubled. A count of
+    zero means the text was not changed.
+    """
+    out: list[str] = []
+    repairs = 0
+    index = 0
+
+    while index < len(text):
+        char = text[index]
+        if char != "\\":
+            out.append(char)
+            index += 1
+            continue
+
+        if index + 1 >= len(text):
+            out.append("\\\\")
+            repairs += 1
+            index += 1
+            continue
+
+        nxt = text[index + 1]
+        if nxt in _VALID_JSON_ESCAPES:
+            out.append(text[index : index + 2])
+            index += 2
+            continue
+
+        if nxt == "u" and _HEX4_RE.fullmatch(text[index + 2 : index + 6]):
+            out.append(text[index : index + 6])
+            index += 6
+            continue
+
+        # ``\e``, ``\(``, ``\a`` and friends. JSON has no such escape; doubling
+        # the backslash preserves the character the model meant to write.
+        out.append("\\\\")
+        repairs += 1
+        index += 1
+
+    return "".join(out), repairs
+
+
 def parse_response(text: str) -> tuple[GenerationResult, ParseDiagnostics]:
     """Extract a :class:`GenerationResult` from a model response.
 
@@ -319,8 +392,17 @@ def parse_response(text: str) -> tuple[GenerationResult, ParseDiagnostics]:
         try:
             payload = json.loads(candidate)
         except json.JSONDecodeError as exc:
-            last_error = f"invalid JSON at candidate {index}: {exc.msg}"
-            continue
+            repaired, repairs = _repair_invalid_escapes(candidate)
+            if not repairs:
+                last_error = f"invalid JSON at candidate {index}: {exc.msg}"
+                continue
+            try:
+                payload = json.loads(repaired)
+            except json.JSONDecodeError:
+                last_error = f"invalid JSON at candidate {index}: {exc.msg}"
+                continue
+            diagnostics.repaired_invalid_escapes = True
+            diagnostics.invalid_escape_repairs += repairs
 
         if not isinstance(payload, dict):
             last_error = f"candidate {index} is a {type(payload).__name__}, not an object"

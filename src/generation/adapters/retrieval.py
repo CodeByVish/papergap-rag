@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
+from collections import Counter
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -188,6 +189,56 @@ NESTED_TRACE_KEYS: tuple[str, ...] = (
     "reranker_score",
 )
 
+# --------------------------------------------------------------------------- #
+# Which score ordered the passage
+# --------------------------------------------------------------------------- #
+
+#: ``RetrievedPassage.metadata`` key recording which retriever field supplied
+#: ``RetrievedPassage.score``. A run's retrieval configuration (R3 fusion-only vs
+#: R4 BGE-reranked) is then a property of the adapted data rather than of a path
+#: name somebody typed, which is what lets the generation script refuse a dump
+#: that is not the configuration the run claims to be.
+SCORE_SOURCE_KEY = "p5_score_source"
+
+SCORE_SOURCE_RERANKER = "reranker"
+SCORE_SOURCE_FUSION = "rrf"
+SCORE_SOURCE_NATIVE = "native"
+SCORE_SOURCE_UNSCORED = "unscored"
+
+#: Score field names in the order the retriever's *final ranking* implies.
+#: ``reranker_score`` is the author's last judgement when a reranker ran,
+#: ``rrf_score`` is the fused score when it did not, and a native ``score`` is
+#: the fallback for the single-retriever dumps. The two reranker spellings are
+#: both here because P2's nested shape says ``reranker_score`` while the flat
+#: BM25/dense dumps use ``rerank_score``.
+SCORE_KEYS: tuple[str, ...] = (
+    "reranker_score",
+    "rerank_score",
+    "rrf_score",
+    "score",
+    "similarity",
+    "bm25_score",
+)
+
+
+def score_source(record: Mapping[str, Any]) -> str:
+    """Which field supplied this hit's ``score``, as one of the constants above.
+
+    Used for two things that must agree: the adapter records it per passage, and
+    the run profile counts it. A record whose hits disagree (some reranked, some
+    merely fused) is detected from these values rather than from the presence of
+    a key, because ``reranker_score: null`` is exactly what a fusion-only export
+    carries - see :func:`flatten_nested_hit`.
+    """
+    for key in ("reranker_score", "rerank_score"):
+        if record.get(key) is not None:
+            return SCORE_SOURCE_RERANKER
+    if record.get("rrf_score") is not None:
+        return SCORE_SOURCE_FUSION
+    if any(record.get(key) is not None for key in SCORE_KEYS[3:]):
+        return SCORE_SOURCE_NATIVE
+    return SCORE_SOURCE_UNSCORED
+
 
 def flatten_nested_hit(record: Mapping[str, Any]) -> Mapping[str, Any]:
     """Flatten a P2 ``RetrievedPassage`` into the flat hit shape.
@@ -294,7 +345,10 @@ class AdapterFieldConfig(BaseModel):
 
     id_keys: tuple[str, ...] = ("passage_id", "id", "chunk_id", "doc_id", "pid")
     text_keys: tuple[str, ...] = ("text", "content", "chunk", "passage", "body", "snippet")
-    score_keys: tuple[str, ...] = ("score", "rerank_score", "similarity", "bm25_score")
+    #: Deliberately the same order as :data:`SCORE_KEYS`, so the value recorded
+    #: by ``score_source`` and the value selected here cannot disagree on a
+    #: record that carries more than one score field.
+    score_keys: tuple[str, ...] = SCORE_KEYS
     rank_keys: tuple[str, ...] = ("rank", "rank_position")
     paper_id_keys: tuple[str, ...] = ("paper_id", "doc_id", "paper", "arxiv_id")
     title_keys: tuple[str, ...] = ("title", "paper_title", "heading")
@@ -428,6 +482,10 @@ class AdapterReport(BaseModel):
     malformed_ids: list[str] = []
     #: Ids that appeared more than once and were collapsed to their first hit.
     duplicate_ids: list[str] = []
+    #: Count of hits by :func:`score_source` value, for this one request.
+    score_sources: dict[str, int] = Field(default_factory=dict)
+    #: 1 when this request's hits did not all come from one score scale.
+    mixed_score_records: int = 0
 
     @property
     def dropped_total(self) -> int:
@@ -436,6 +494,20 @@ class AdapterReport(BaseModel):
     def notes(self) -> list[str]:
         """Human-readable summary, empty when nothing needs saying."""
         out: list[str] = []
+        if self.mixed_score_records:
+            scored = {
+                key: value
+                for key, value in self.score_sources.items()
+                if key != SCORE_SOURCE_UNSCORED and value
+            }
+            detail = ", ".join(f"{k}={v}" for k, v in sorted(scored.items()))
+            out.append(
+                f"{self.mixed_score_records} record(s) mixed retrieval score "
+                f"sources ({detail or 'none scored'}); passage scores were "
+                "cleared so the retriever's own order is preserved instead of "
+                "sorting reranker logits against RRF scores, which are not on a "
+                "comparable scale"
+            )
         if self.dropped_no_id:
             out.append(
                 f"{self.dropped_no_id} hit(s) dropped for having no passage id; "
@@ -493,8 +565,22 @@ class QasperHitAdapter(PassageAdapter):
         passages: list[RetrievedPassage] = []
         report = AdapterReport()
         seen: set[str] = set()
+        sources = [score_source(record) for record in records]
+        report.score_sources = dict(Counter(sources))
+        #: A request is *mixed* when its hits carry scores from more than one
+        #: scale. P2's reranked export scores every hit with the BGE reranker;
+        #: a fusion-only export scores every hit with RRF. A file with both is
+        #: either a partial rerank or two exports concatenated, and sorting the
+        #: two kinds together by number would put every RRF score (about 0.03)
+        #: after every reranker logit (about -10 to +10) regardless of relevance.
+        #: Clearing the scores falls back to the retriever's own final order,
+        #: which is the only ordering that is valid for both kinds at once.
+        mixed_scores = len(
+            {source for source in sources if source != SCORE_SOURCE_UNSCORED}
+        ) > 1
+        report.mixed_score_records = 1 if mixed_scores else 0
 
-        for record in records:
+        for record, source in zip(records, sources):
             text = _pick(record, self.config.text_keys)
             if not isinstance(text, str) or not text.strip():
                 report.dropped_no_text += 1
@@ -523,26 +609,50 @@ class QasperHitAdapter(PassageAdapter):
             paper_id = _pick(record, self.config.paper_id_keys)
             title = _pick(record, self.config.title_keys)
             section = _pick(record, self.config.section_keys)
+            numeric_score = (
+                float(score)
+                if isinstance(score, (int, float)) and not isinstance(score, bool)
+                else None
+            )
+            score_value = None if mixed_scores else numeric_score
 
             passages.append(
                 RetrievedPassage(
                     passage_id=passage_id,
                     text=text,
-                    score=float(score) if isinstance(score, (int, float)) else None,
+                    score=score_value,
                     rank=rank if isinstance(rank, int) and not isinstance(rank, bool) else None,
                     paper_id=str(paper_id) if paper_id is not None else None,
                     title=str(title) if title is not None else None,
                     section=str(section) if section is not None else None,
                     metadata={
-                        key: value
-                        for key, value in record.items()
-                        if key
-                        not in set(self.config.text_keys)
-                        | set(self.config.id_keys)
-                        | set(self.config.score_keys)
-                        | set(self.config.paper_id_keys)
-                        | set(self.config.title_keys)
-                        | set(self.config.section_keys)
+                        **{
+                            key: value
+                            for key, value in record.items()
+                            if key
+                            not in set(self.config.text_keys)
+                            | set(self.config.id_keys)
+                            | set(self.config.score_keys)
+                            | set(self.config.paper_id_keys)
+                            | set(self.config.title_keys)
+                            | set(self.config.section_keys)
+                        },
+                        # ``rrf_score`` and ``reranker_score`` are score
+                        # candidates now, so the exclusion above removes them.
+                        # They are also trace fields a run must stay auditable
+                        # against, so they are put back explicitly; a flat dump
+                        # with only one score field is unaffected.
+                        **{
+                            key: record[key]
+                            for key in NESTED_TRACE_KEYS
+                            if key in record
+                        },
+                        SCORE_SOURCE_KEY: source,
+                        **(
+                            {"p5_retrieval_score": numeric_score}
+                            if mixed_scores and numeric_score is not None
+                            else {}
+                        ),
                     },
                 )
             )

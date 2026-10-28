@@ -24,6 +24,16 @@ retrieval round count. Envelope key names are matched against alias lists
 because the retriever's envelope is not settled yet - see
 ``docs/RETRIEVAL_CONTRACT.md`` §2.
 
+**Which retrieval configuration this is comes from the data, not the filename.**
+Every adapted passage records whether its score came from the reranker, from RRF,
+or from a single retriever, and both output artefacts carry that as
+``retrieval_configuration``. ``--expect-config reranked`` refuses a fusion-only
+dump before a model is loaded; ``--check-only`` prints the classification and
+exits, so the login node can vet a file without a GPU. ``--dataset-role`` says
+what the question set is for, and defaults to ``training-integration`` - the
+default is deliberate: P2's 100-question handoff is not the held-out set, and a
+run must not be able to acquire that label by omission.
+
 Two outputs, and they answer different questions:
 
 * ``--out`` (JSONL) - the answers, one record per question, exactly what P6
@@ -57,7 +67,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.generation.adapters import get_adapter  # noqa: E402
-from src.generation.adapters.retrieval import DEFAULT_ADAPTER, build_request  # noqa: E402
+from src.generation.adapters.retrieval import (  # noqa: E402
+    DEFAULT_ADAPTER,
+    SCORE_SOURCE_FUSION,
+    SCORE_SOURCE_KEY,
+    SCORE_SOURCE_NATIVE,
+    SCORE_SOURCE_RERANKER,
+    SCORE_SOURCE_UNSCORED,
+    build_request,
+)
 from src.generation.generators import (  # noqa: E402
     BackendNotAvailable,
     MockConfig,
@@ -75,6 +93,29 @@ from src.generation.prompts.grounded_qa import PROMPT_VERSION, PromptConfig  # n
 from src.generation.schema import SCHEMA_VERSION, GenerationRequest  # noqa: E402
 
 DEFAULT_OUT = ROOT / "runs" / "week3" / "answers.jsonl"
+
+#: What the dump's scores say about the retrieval configuration. These are the
+#: experiment-ladder ids from ``docs/EVALUATION.md`` spelled out: R3 is
+#: ``fusion-only``, R4 is ``reranked``, and R1/R2 are ``native``. ``mixed`` and
+#: ``unscored`` are not configurations anyone chose - they are states that need
+#: a look before the run counts as evidence.
+RETRIEVAL_CONFIGURATIONS: tuple[str, ...] = (
+    "reranked",
+    "fusion-only",
+    "native",
+    "mixed",
+    "unscored",
+)
+
+#: What the question set is for. The 100-question P2 handoff of 2026-10-28 is
+#: ``training-integration``: useful input for the pipeline, not the held-out
+#: evaluation. Held-out requires the frozen manifest, by construction - see
+#: ``docs/EVALUATION.md`` "Held-out freeze sequence".
+DATASET_ROLES: tuple[str, ...] = (
+    "training-integration",
+    "development",
+    "held-out",
+)
 
 
 def load_payloads(
@@ -217,6 +258,88 @@ def _is_prefix_mismatch(previous: Sequence[str], current: Sequence[str]) -> bool
     return list(shorter) != list(longer[: len(shorter)])
 
 
+def retrieval_profile(requests: Sequence[GenerationRequest]) -> dict[str, Any]:
+    """What retrieval configuration the *adapted* requests actually carry.
+
+    Derived from :data:`SCORE_SOURCE_KEY` on every passage, not from the dump's
+    filename or the flag somebody typed. That is the whole point: a reranked run
+    and a fusion-only run must be separable after the fact, and a file named
+    ``retrieval.jsonl`` says nothing about which one it is.
+
+    A request counts as mixed when its hits carry more than one score scale. The
+    adapter has already cleared the scores in that case (see
+    :meth:`QasperHitAdapter.to_passages_reported`), so the run's ordering is the
+    retriever's own; the profile reports the problem rather than hiding it.
+
+    ``unscored`` is a legitimate result for a dump with no scores at all, and it
+    is also what an all-empty dump produces. It is not silently treated as
+    fusion-only.
+    """
+    counts: Counter[str] = Counter()
+    requests_with_scores = 0
+    requests_with_mixed_scores = 0
+
+    for request in requests:
+        sources = [
+            str(passage.metadata.get(SCORE_SOURCE_KEY, SCORE_SOURCE_UNSCORED))
+            for passage in request.passages
+        ]
+        counts.update(sources)
+        scored = {source for source in sources if source != SCORE_SOURCE_UNSCORED}
+        if scored:
+            requests_with_scores += 1
+        if len(scored) > 1:
+            requests_with_mixed_scores += 1
+
+    scored_sources = {
+        source for source, count in counts.items() if count and source != SCORE_SOURCE_UNSCORED
+    }
+    if not scored_sources:
+        configuration = "unscored"
+    elif scored_sources == {SCORE_SOURCE_RERANKER}:
+        configuration = "reranked"
+    elif scored_sources == {SCORE_SOURCE_FUSION}:
+        configuration = "fusion-only"
+    elif scored_sources == {SCORE_SOURCE_NATIVE}:
+        configuration = "native"
+    else:
+        configuration = "mixed"
+
+    return {
+        "configuration": configuration,
+        "score_sources": {key: counts[key] for key in sorted(counts)},
+        "requests": len(requests),
+        "requests_with_scores": requests_with_scores,
+        "requests_with_mixed_scores": requests_with_mixed_scores,
+    }
+
+
+def is_week3_path(path: Path) -> bool:
+    """True when an output path lives under a ``week3`` directory.
+
+    Week 3 is the fusion-only baseline. A reranked run written beside it is not
+    a formatting problem: the two answer files have the same question ids, so the
+    next comparison silently pairs a reranked answer with a fusion-only one and
+    reports the difference as a prompt or model effect.
+    """
+    return any(part.lower() == "week3" for part in Path(path).parts)
+
+
+def describe_profile(profile: dict[str, Any]) -> str:
+    """One line for the job log, in the vocabulary of the execution plan."""
+    sources = ", ".join(
+        f"{key}={value}" for key, value in profile["score_sources"].items()
+    )
+    label = {
+        "reranked": "reranked (BGE)",
+        "fusion-only": "fusion-only (RRF)",
+        "native": "native single-retriever score",
+        "mixed": "MIXED score scales",
+        "unscored": "no retrieval scores",
+    }.get(profile["configuration"], profile["configuration"])
+    return f"{label} [{sources or 'no hits'}]"
+
+
 def build_generator(args: argparse.Namespace):
     """Construct the backend named on the command line.
 
@@ -286,6 +409,42 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--limit", type=int, default=0, help="answer only the first N payloads"
     )
     parser.add_argument("--tag", default="local")
+    parser.add_argument(
+        "--expect-config",
+        default="auto",
+        choices=("auto", "reranked", "fusion-only", "native"),
+        help=(
+            "refuse the dump unless its adapted scores are this configuration "
+            "(default: auto). Pass 'reranked' for the BGE export: a fusion-only "
+            "file answered under the reranked label is the one error the "
+            "metadata cannot repair afterwards."
+        ),
+    )
+    parser.add_argument(
+        "--dataset-role",
+        default="training-integration",
+        choices=DATASET_ROLES,
+        help=(
+            "what this question set is for (default: training-integration). "
+            "'held-out' additionally requires --held-out-manifest; the P2 "
+            "100-question handoff is training-integration, not held-out."
+        ),
+    )
+    parser.add_argument(
+        "--held-out-manifest",
+        type=Path,
+        default=None,
+        help="the frozen held-out question/configuration manifest; required by --dataset-role held-out",
+    )
+    parser.add_argument(
+        "--check-only",
+        action="store_true",
+        help=(
+            "read and adapt the dump, print its retrieval configuration, and "
+            "exit without loading a model. Run this on the login node before "
+            "spending a GPU slot on the wrong file."
+        ),
+    )
     parser.add_argument("--max-passages", type=int, default=PromptConfig().max_passages)
     parser.add_argument(
         "--max-chars-per-passage",
@@ -332,6 +491,83 @@ def main(argv: list[str] | None = None) -> int:
     if not requests:
         print("[fatal] no payload could be adapted; check the adapter against the dump")
         return 1
+
+    profile = retrieval_profile(requests)
+
+    # Refuse before the model is loaded, not after. A wrong configuration label
+    # cannot be repaired downstream: the answers are already conditioned on
+    # whichever passages the retriever ranked, so the only honest fix is to stop
+    # and point the job at the right file.
+    if args.expect_config != "auto" and profile["configuration"] != args.expect_config:
+        print(
+            f"[fatal] this dump is {describe_profile(profile)}, but "
+            f"--expect-config={args.expect_config} was requested."
+        )
+        if args.expect_config == "reranked" and profile["configuration"] == "fusion-only":
+            print(
+                "        Every hit carries an RRF score and no reranker score. "
+                "This is the Week-3 fusion-only export, not the BGE one."
+            )
+        elif args.expect_config == "fusion-only" and profile["configuration"] == "reranked":
+            print(
+                "        Every hit carries a reranker score. Use a separate "
+                "output path and label it reranked; do not overwrite the "
+                "Week-3 fusion-only baseline."
+            )
+        elif profile["configuration"] == "mixed":
+            print(
+                "        The dump mixes score scales (some hits reranked, some "
+                "not). Ask the retrieval owner for a single-configuration export."
+            )
+        return 1
+
+    held_out_manifest_sha256: str | None = None
+    if args.dataset_role == "held-out":
+        if args.held_out_manifest is None:
+            print(
+                "[fatal] --dataset-role held-out requires --held-out-manifest. "
+                "The held-out question set may be run only after the P6 freeze "
+                "records the final commit and configuration "
+                "(docs/EVALUATION.md, 'Held-out freeze sequence')."
+            )
+            return 1
+        if not args.held_out_manifest.is_file():
+            print(f"[fatal] held-out manifest not found: {args.held_out_manifest}")
+            return 1
+        held_out_manifest_sha256 = hashlib.sha256(
+            args.held_out_manifest.read_bytes()
+        ).hexdigest()
+    elif args.held_out_manifest is not None:
+        print(
+            "[warn] --held-out-manifest is only used with --dataset-role held-out; "
+            "ignoring it"
+        )
+
+    if args.check_only:
+        print(f"payloads read       {len(payloads)}")
+        print(f"requests adapted    {len(requests)}  ({len(errors)} payload error(s))")
+        print(f"retrieval config    {describe_profile(profile)}")
+        print(f"dataset role        {args.dataset_role}")
+        print(f"adapter notes       {len(notes)} payload(s) with a note")
+        return 0
+
+    # The Week-3 baseline's question ids are the same 100 ids. Writing a
+    # reranked answer file beside it makes the next compare_runs call pair a
+    # reranked answer with a fusion-only one and report the difference as a
+    # prompt effect. The guard is narrow: only the configurations that are
+    # definitely not Week 3 are refused, and any other path is allowed.
+    if profile["configuration"] in ("reranked", "mixed") and is_week3_path(args.out):
+        print(
+            f"[fatal] refusing to write a {profile['configuration']} run to {args.out}: "
+            "runs/week3/ is the fusion-only baseline."
+        )
+        print(
+            "        Use a separate path, e.g. "
+            "runs/week6/answers-vllm-bge-reranked-cluster.jsonl."
+        )
+        return 1
+
+    retrieval_sha256 = hashlib.sha256(args.retrieval.read_bytes()).hexdigest()
 
     prompt_config = PromptConfig(
         max_passages=args.max_passages,
@@ -387,6 +623,17 @@ def main(argv: list[str] | None = None) -> int:
                 "request_fingerprints": fingerprints,
                 "requests": len(requests),
                 "retrieval": str(args.retrieval),
+                "retrieval_sha256": retrieval_sha256,
+                "retrieval_configuration": profile["configuration"],
+                "retrieval_profile": profile,
+                "expected_configuration": args.expect_config,
+                "dataset_role": args.dataset_role,
+                "held_out_manifest": (
+                    str(args.held_out_manifest)
+                    if args.dataset_role == "held-out"
+                    else None
+                ),
+                "held_out_manifest_sha256": held_out_manifest_sha256,
                 "adapter": args.adapter,
                 "backend": args.backend,
                 "tag": args.tag,
@@ -425,6 +672,17 @@ def main(argv: list[str] | None = None) -> int:
                 "prompt_version": PROMPT_VERSION,
                 "generated_by": "scripts/generate_from_retrieval.py",
                 "retrieval": str(args.retrieval),
+                "retrieval_sha256": retrieval_sha256,
+                "retrieval_configuration": profile["configuration"],
+                "retrieval_profile": profile,
+                "expected_configuration": args.expect_config,
+                "dataset_role": args.dataset_role,
+                "held_out_manifest": (
+                    str(args.held_out_manifest)
+                    if args.dataset_role == "held-out"
+                    else None
+                ),
+                "held_out_manifest_sha256": held_out_manifest_sha256,
                 "adapter": args.adapter,
                 "backend": args.backend,
                 "tag": args.tag,
@@ -454,6 +712,21 @@ def main(argv: list[str] | None = None) -> int:
     print()
     print(f"payloads read       {len(payloads)}")
     print(f"requests adapted    {len(requests)}  ({len(errors)} payload error(s))")
+    print(f"retrieval config    {describe_profile(profile)}")
+    print(f"dataset role        {args.dataset_role}")
+    if args.dataset_role != "held-out":
+        print(
+            "                    not held-out evaluation; do not report these "
+            "labels as held-out results"
+        )
+    if profile["configuration"] == "mixed":
+        print(
+            "[warn] mixed score scales: passage scores were cleared and the "
+            "retriever's own order was kept. Ask for a single-configuration "
+            "export before treating this run as evidence."
+        )
+    if profile["configuration"] == "unscored":
+        print("[warn] no retrieval scores reached P5; selection follows file order.")
     print(f"answered            {answered}")
     print(f"refused             {len(records) - answered}")
     print(f"adaptation notes    {len(notes)}")

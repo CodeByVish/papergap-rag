@@ -195,6 +195,11 @@ def diagnostics_violations(diagnostics: ParseDiagnostics) -> list[ValidationViol
         drift.append(f"{diagnostics.trailing_text_chars} chars of prose after the JSON")
     if diagnostics.coerced:
         drift.append("coerced fields: " + ", ".join(diagnostics.coerced))
+    if diagnostics.repaired_invalid_escapes:
+        drift.append(
+            f"{diagnostics.invalid_escape_repairs} invalid JSON escape(s) repaired "
+            "(raw LaTeX in a string is the usual cause)"
+        )
     if diagnostics.candidate_index > 0:
         drift.append(f"JSON found at candidate {diagnostics.candidate_index}")
 
