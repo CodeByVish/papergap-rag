@@ -37,3 +37,8 @@ dist/
 # Local reference files
 Instruction.pdf
 ProjectPlan.pdf
+
+# Personal Week 3 notes; retain only the published bilingual reports
+/weekly-work/week-3/*
+!/weekly-work/week-3/week-3-report-en.md
+!/weekly-work/week-3/week-3-report-zn.md

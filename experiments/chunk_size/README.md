@@ -35,7 +35,7 @@ Preparation builds candidate corpora to verify common-paper eligibility but does
 
 ## Retrieval settings
 
-BM25 is selected for this experiment. A beginner's explanation of its inputs, outputs and complete workflow is available in `BM25.en.md` (English) and `BM25.md` (Chinese). Keep the selected mode and all its parameters fixed across chunk sizes; final parameter confirmation remains in `weekly-work/week-3/EXPERIMENT_GAPS.md`. Comparing different modes does not isolate chunk size effects. Select another configuration file with `--config`; `configs/default.yaml` is not read by this runner.
+BM25 is selected for this experiment. A beginner's explanation of its inputs, outputs and complete workflow is available in `BM25.en.md` (English) and `BM25.md` (Chinese). Keep the selected mode and all its parameters fixed across chunk sizes; refer to `criteria.md` and `criteria_zn-CN.md` for the shared experiment criteria and confirmed decisions. Comparing different modes does not isolate chunk size effects. Select another configuration file with `--config`; `configs/default.yaml` is not read by this runner.
 
 | `retrieval.mode` | Active components | Returned score |
 | --- | --- | --- |
