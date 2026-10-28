@@ -1,2 +1,18 @@
 # Preserve experiment bytes so manifest SHA-256 hashes survive Git round trips.
 results/chunk_size/** -text
+# Preserve data and frozen source bytes referenced by provenance manifests.
+data/raw/** -text
+data/processed/** -text
+src/**/*.py text eol=lf
+scripts/*.py text eol=lf
+# These existing sources used CRLF when the pool source hashes were frozen.
+scripts/build_indexes.py text eol=crlf
+scripts/demo_hybrid.py text eol=crlf
+scripts/demo_p1.py text eol=crlf
+src/retrieval/bm25_retriever.py text eol=crlf
+src/retrieval/dense_retriever.py text eol=crlf
+src/retrieval/fusion.py text eol=crlf
+src/retrieval/hybrid_retriever.py text eol=crlf
+src/retrieval/reranker.py text eol=crlf
+src/retrieval/schemas.py text eol=crlf
+src/retrieval/score_cache.py text eol=crlf

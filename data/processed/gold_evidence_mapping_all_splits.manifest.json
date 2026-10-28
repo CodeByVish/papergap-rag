@@ -1,0 +1,71 @@
+{
+  "chunking": {
+    "chunk_overlap_words": 40,
+    "chunk_size_words": 365,
+    "chunking_version": "word-chunking-v1",
+    "normalization_version": "text-normalization-v1",
+    "source_kinds": [
+      "full_text"
+    ],
+    "type_rule": "casefolded non-whitespace runs from passage text",
+    "word_rule": "Unicode-aware non-whitespace runs (str.split)"
+  },
+  "evaluation_design": "all-splits gold reference mappings; usage determined by independent question lists and usage records; coverage alone neither freezes nor invalidates held-out status",
+  "filtering_counts": {
+    "test": {
+      "eligible": 863,
+      "invalid_or_uncovered_answer_evidence": 588,
+      "total": 1451
+    },
+    "train": {
+      "eligible": 1823,
+      "invalid_or_uncovered_answer_evidence": 770,
+      "total": 2593
+    },
+    "validation": {
+      "eligible": 643,
+      "invalid_or_uncovered_answer_evidence": 362,
+      "total": 1005
+    }
+  },
+  "held_out_freeze": false,
+  "inputs": {
+    "export_manifest": {
+      "file": "qasper_export.manifest.json",
+      "sha256": "1cdad8448b1adc6a65a8b314080aba932e0a83c57eeabf23eb611ea4d747e003"
+    },
+    "papers": {
+      "file": "papers.jsonl",
+      "sha256": "905866c186f63dab38979601a0121412d44588cacfa84520242ffcf2f5b198f9"
+    },
+    "passages": {
+      "file": "passages_all_paper_text.jsonl",
+      "sha256": "8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e"
+    },
+    "passages_manifest": {
+      "file": "passages_all_paper_text.manifest.json",
+      "sha256": "46a754cf1da33af77d8d53f08368788ec491c9dca28891bc5dfb44d6f1f84029"
+    },
+    "qa": {
+      "file": "qa.jsonl",
+      "sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e"
+    }
+  },
+  "label_status": "derived gold evidence references; not human relevance labels",
+  "mapping_rule": "unique whole-paragraph evidence; all answers required",
+  "offset_rule": "zero-based half-open Python character offsets in evidence text",
+  "output": {
+    "file": "gold_evidence_mapping_all_splits.jsonl",
+    "rows": 3329,
+    "sha256": "6bfd323ac4ed86d1e33afbffefb681d3d07821070af479fdfba3001ebfb9eaf4"
+  },
+  "passage_match_rule": "any non-whitespace overlap; full union coverage required",
+  "schema_version": "gold-evidence-to-passage-v0-proposed",
+  "scope": "all-splits-reference",
+  "source_splits": [
+    "train",
+    "validation",
+    "test"
+  ],
+  "split_policy_version": "qasper-official-paper-disjoint-v0-proposed"
+}

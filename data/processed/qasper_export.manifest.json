@@ -1,0 +1,55 @@
+{
+  "artifact": "qasper_papers_and_qa",
+  "manifest_schema_version": 1,
+  "outputs": {
+    "papers": {
+      "file": "papers.jsonl",
+      "rows": 1585,
+      "sha256": "905866c186f63dab38979601a0121412d44588cacfa84520242ffcf2f5b198f9"
+    },
+    "qa": {
+      "answer_annotation_count": 7993,
+      "file": "qa.jsonl",
+      "rows": 5049,
+      "sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e"
+    }
+  },
+  "source": {
+    "dataset_id": "allenai/qasper",
+    "local_parser_version": 1,
+    "resolved_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "source_manifest_sha256": "c1b073d330bc649280951304c04bac5796476c926b6a98ff8b1cc22c882fd9e7",
+    "split_files": {
+      "test": {
+        "rows": 416,
+        "sha256": "308380c3da5287ac450582c457a9a75303b8361360dd88e727afd021c8320779"
+      },
+      "train": {
+        "rows": 888,
+        "sha256": "7a25389963d05d97de9462d4e46b2ef367f37b898de55f5833bae7aa4b6e8732"
+      },
+      "validation": {
+        "rows": 281,
+        "sha256": "f3e8f8072bbb42c6f770cdbc311672738683505eef401a7b75e0c08cfb7c5945"
+      }
+    }
+  },
+  "split_counts": {
+    "test": {
+      "answer_annotations": 3554,
+      "papers": 416,
+      "questions": 1451
+    },
+    "train": {
+      "answer_annotations": 2675,
+      "papers": 888,
+      "questions": 2593
+    },
+    "validation": {
+      "answer_annotations": 1764,
+      "papers": 281,
+      "questions": 1005
+    }
+  },
+  "split_policy_version": "qasper-official-paper-disjoint-v0-proposed"
+}

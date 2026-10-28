@@ -12,7 +12,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Requirements and open decisions](docs/REQUIREMENTS.md): rubric mapping and decisions to resolve in Week 1.
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
-- [Local data and JSONL fields](data/README.md): complete QA exports, gold evidence-to-passage mappings, and ordinary-testing scope across all official splits.
+- [Data and JSONL fields](data/README.md): versioned QASPER exports, all-splits gold references, and question-isolated annotation pools on the P3 branch.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
 - [Chunk-size experiment](experiments/chunk_size/README.md): compare word-based chunks and export evidence and readability reviews using P1/P2 retrieval, defaulting to BM25. Select other modes through the JSON `retrieval` block; models load offline by default.
 
@@ -65,7 +65,7 @@ papergap-rag/
 │   └── ui/           # P6: Streamlit
 ├── scripts/          # Reproducible command-line entry points
 ├── tests/            # Module and integration tests
-├── data/             # Local datasets (ignored except README)
+├── data/             # Tracked QASPER data, manifests and bilingual guides
 └── results/          # Shared experiment metrics, reports and reproducibility records
 ```
 

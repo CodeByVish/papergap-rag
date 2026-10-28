@@ -2,56 +2,43 @@
 
 [English](README.md)
 
-原始数据和处理后数据均不纳入 Git。本指南说明版本化 Release 共享方式、本地复现流程及每份处理后文件的字段。所有命令均从仓库根目录、使用项目 Python 3.11 环境运行；先安装 `requirements.txt` 或 `requirements-dev.txt`。
+原始数据、处理后数据及 manifest 纳入 P3 工作分支 `p3-qasper-foundation`。本指南说明 Git 共享方式、本地复现流程及每份处理后文件的字段。所有命令均从仓库根目录、使用项目 Python 3.11 环境运行；先安装 `requirements.txt` 或 `requirements-dev.txt`。
 
-## 数据包与更新
+## 数据版本与更新
 
-约定将 `data/raw/` 与 `data/processed/` 一起作为版本化 GitHub Release 附件发布，并关联 `p3` 的精确提交。保留全部配套 manifest、来源许可声明和溯源信息。代码和中英文文档纳入 Git；数据及压缩包继续忽略。
+将 `data/raw/`、`data/processed/` 与两份指南一起提交，无需 GitHub Releases。保留来源许可声明、上游 revision、生成参数、评估范围及配套 manifest。Git 历史记录每次发布快照，使用精确提交复现指定版本。
 
-本次文档修改尚未发布数据 Release。[仓库 Releases 页面](https://github.com/CodeByVish/papergap-rag/releases) 仅为入口，不表示已有数据包。发布后，应在两份指南中同步填写实际版本对应的附件链接及代码提交。
+在独立的本地暂存目录中重建变化的输出，保留标准文件名，同步重建依赖产物及 manifest。检查哈希与结构，并在两份指南中记录来源、参数、范围和变化后再提交。凭据、缓存、模型权重、索引及个人笔记不纳入共享快照。通过 `.gitattributes` 保留哈希绑定文件的原始字节。
 
-### 发布一个版本
+### 获取数据
 
-1. 在独立的本地暂存目录中重建变化的输出，保留标准文件名，并同步重建依赖产物及 manifest。选定发布文件前检查哈希、结构、范围和引用。新版本验证通过前保留旧的本地快照。
-
-2. 使用新版本名，例如先 `data-v1`、再 `data-v2`；这些只是示例，并非已发布版本。在 Release 说明中记录 `p3` 精确代码提交、上游 revision、解析/规范化/切分版本、切分参数、包含文件、评估范围、变化及验证结果。
-
-3. 仅打包 `data/raw/` 和选定的完整 `data/processed/` 输出，保留相对 `data/` 的路径。每份 JSONL 必须带上对应 manifest。排除凭据、缓存、暂存文件、模型权重、索引及个人笔记。可选检查报告仅在重新生成且明确选中时纳入。
-
-4. 将压缩包和独立的 SHA-256 校验文件上传为 Release 附件。保留旧版本；数据变化后发布新 Release，不静默替换已发布附件。同步更新两份指南中的下载链接。目前采用手动发布，后续如需自动化再单独配置。
-
-以下打包示例假设已选定并验证的文件位于标准目录，且 `tmp/` 已存在。将示例版本改为准备发布的新版本；压缩包顶层为 `raw/` 和 `processed/`。同版本压缩包已存在时，不要覆盖。
+将 P3 工作分支克隆到新目录：
 
 ```powershell
-$packageVersion = 'data-v1'
-$packagePath = "tmp/tmp_qasper-$packageVersion.zip"
-Compress-Archive -LiteralPath data/raw,data/processed -DestinationPath $packagePath
-$packageHash = (Get-FileHash -LiteralPath $packagePath -Algorithm SHA256).Hash.ToLowerInvariant()
-$checksumLine = "$packageHash  tmp_qasper-$packageVersion.zip`n"
-[System.IO.File]::WriteAllText("$packagePath.sha256", $checksumLine, [System.Text.UTF8Encoding]::new($false))
+git clone --branch p3-qasper-foundation https://github.com/CodeByVish/papergap-rag.git
+Set-Location papergap-rag
+git rev-parse HEAD
 ```
 
-### 下载与使用
+复现指定版本时，在干净工作区检出对应的精确提交。原始及处理后数据与 manifest 一起位于 `data/` 下，使用前验证哈希。不要单独修改 JSONL 而不重建对应 manifest 及依赖产物。本地复现使用下文各产物的命令，无需下载 Release 或解压数据包。
 
-选择指定的数据 Release，并检出其记录的代码提交。下载 ZIP 及校验文件，将 `Get-FileHash -LiteralPath <downloaded-zip> -Algorithm SHA256` 的结果与发布的校验值比较，先解压到独立目录。备份已有本地数据后，再将已验证的 `raw/` 和 `processed/` 目录复制到仓库的 `data/` 中。manifest 与数据文件保持相邻，并执行下文检查。不要单独修改 JSONL 而不重建对应 manifest 及依赖产物。
-
-下载数据包不改变评估使用权限：默认策略下，留出集的问题、答案和证据仍受限制。显式的 `all-splits-testing` 产物属于普通测试，不能用于声称独立留出评估结果。
+all-splits 映射属于机械生成的 gold 参考导出。使用下文保存的题单及使用审计确定资格；导出或下载全部划分不授权使用 held-out 题目选参。
 
 ## 目录结构与构建顺序
 
-下列目录树列出标准产物；诊断报告为可选文件，可能不存在。`README_zh-CN.md` 与 `README.md` 一起纳入 Git；生成文件继续忽略。
+下列目录树列出标准产物；诊断报告为可选文件，可能不存在。`README_zh-CN.md`、`README.md` 与所列生成文件一起纳入 Git。
 
 ```text
 data/
 ├── README.md                                           # English guide / 英文指南
 ├── README_zh-CN.md                                     # Chinese guide / 中文指南
-├── raw/                                                # Ignored source data / 忽略的源数据
+├── raw/                                                # Tracked source data / 纳入 Git 的源数据
 │   └── qasper/
 │       ├── manifest.json                               # Source metadata and hashes / 来源及哈希
 │       ├── train.jsonl
 │       ├── validation.jsonl
 │       └── test.jsonl
-└── processed/                                          # Ignored generated outputs / 忽略的生成产物
+└── processed/                                          # Tracked generated outputs / 纳入 Git 的生成产物
     ├── papers.jsonl
     ├── qa.jsonl
     ├── qasper_export.manifest.json
@@ -60,10 +47,14 @@ data/
     ├── paper_catalog.json
     ├── passages_all_paper_text.jsonl
     ├── passages_all_paper_text.manifest.json
-    ├── gold_evidence_mapping.jsonl
-    ├── gold_evidence_mapping.manifest.json
     ├── gold_evidence_mapping_all_splits.jsonl
     ├── gold_evidence_mapping_all_splits.manifest.json
+    ├── qa_for_choosing_chunk_size.jsonl
+    ├── annotation_preparation.manifest.json
+    ├── qa_for_held_out.jsonl
+    ├── qa_for_held_out.manifest.json
+    ├── annotation_pilot/
+    ├── annotation_held_out/
     ├── sample_passages_100.jsonl
     ├── sample_passages_100.manifest.json
     └── qasper_inspection.json                          # Optional diagnostics / 可选诊断
@@ -155,7 +146,7 @@ python -m scripts.build_paper_catalog --papers data/processed/papers.jsonl --pas
 | `papers[].sections[].name` | `string or null` | 规范化的源章节名；缺失且语料中存在空章节 passage 时为 `null`。当前语料构建器丢弃无名称章节。 |
 | `papers[].sections[].passage_count` | `integer` | 该论文、该章节名对应的 passage 数；各章节计数之和等于论文计数。 |
 
-本地复现时，先按本指南相应命令生成 `papers.jsonl` 和所选 passage 语料，再执行目录构建命令。使用 Release 时，遵循前述下载、校验及解压流程，保留与目录匹配的语料；若数据包未包含目录，可在本地生成。本次变更未发布目录的 Release 下载链接。路径只记录所选文件，不包含内容哈希；替换语料后必须重建目录。
+本地复现时，先按本指南相应命令生成 `papers.jsonl` 和所选 passage 语料，再执行目录构建命令。使用 Git 数据时，按上文获取 P3 快照，保留与目录匹配的语料；必要时在本地重建目录。路径只记录所选文件，不包含内容哈希；替换语料后必须重建目录。
 
 ## `data/processed/qa.jsonl`
 
@@ -173,7 +164,7 @@ python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data
 | --- | --- | --- |
 | `question_id` | `string` | 原始问题标识。 |
 | `paper_id` | `string` | 关联 papers.jsonl 的 id。 |
-| `source_split` | `string` | 官方来源划分；普通测试模式也保留此字段。 |
+| `source_split` | `string` | 官方来源划分；独立于评估角色保留。 |
 | `question` | `string` | 原始问题文本。 |
 | `nlp_background` | `string` | 提问者的 NLP 背景。 |
 | `paper_read` | `string` | 原始论文阅读情况记录。 |
@@ -386,109 +377,14 @@ python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-man
 | `output.minimum_words` | `integer` | 要求的最低词数。 |
 | `output.rubric_minimum_met` | `boolean` | 是否满足至少 10,000 块及 100,000 词的要求。 |
 
-## `data/processed/gold_evidence_mapping.jsonl`
-
-不抽样地将符合条件的 train/validation 问题映射到已验证的开发语料。已有的本地旧导出可能缺少 qa_metadata 及标注元数据；需要下表当前字段时，应导出到新路径。映射结构仍为 v0-proposed。
-
-### 生成命令
-
-```powershell
-python -m scripts.export_evidence_mapping --scope development
-```
-
-### 字段表
-
-| 字段名称 | JSON 类型 | 含义 |
-| --- | --- | --- |
-| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed。 |
-| `question_id` | `string` | 原始问题标识。 |
-| `paper_id` | `string` | 来源论文标识。 |
-| `source_split` | `string` | 官方来源划分。 |
-| `question` | `string` | 原始问题文本。 |
-| `qa_metadata` | `object` | 其他原始问答字段；当前导出器原样保留。 |
-| `qa_metadata.nlp_background` | `string` | 提问者的 NLP 背景。 |
-| `qa_metadata.paper_read` | `string` | 原始论文阅读情况记录。 |
-| `qa_metadata.question_writer` | `string` | 原始提问者标识。 |
-| `qa_metadata.search_query` | `string` | 原始检索查询。 |
-| `qa_metadata.topic_background` | `string` | 提问者的主题背景。 |
-| `annotations` | `array<object>` | 分别保留的备选答案及定位后的证据。 |
-| `annotations[].annotation_id` | `string` | 原始标注 ID 转为字符串；缺失时使用答案数组索引。 |
-| `annotations[].worker_id` | `string (if present)` | 当前导出器保留的原始标注者元数据（若存在）。 |
-| `annotations[].answer` | `object` | 原始答案内容。 |
-| `annotations[].answer.evidence` | `array<string>` | 标注的证据文本，可能包含 FLOAT SELECTED 标记。 |
-| `annotations[].answer.extractive_spans` | `array<string>` | 抽取式参考答案片段。 |
-| `annotations[].answer.free_form_answer` | `string` | 自由文本参考答案，可能为空。 |
-| `annotations[].answer.highlighted_evidence` | `array<string>` | 原始高亮证据；不用于段落匹配。 |
-| `annotations[].answer.unanswerable` | `boolean` | 是否标记为无法回答。 |
-| `annotations[].answer.yes_no` | `boolean or null` | 是非题参考答案；其他答案类型为 null。 |
-| `annotations[].evidence_locations` | `array<string>` | 指向 evidence_paragraphs[].location 的非空引用列表。 |
-| `evidence_paragraphs` | `array<object>` | 各答案引用的原始证据段落，已去重。 |
-| `evidence_paragraphs[].location` | `string` | paper_id:section_index:paragraph_index 形式的引用。 |
-| `evidence_paragraphs[].section_index` | `integer` | 原始 full_text 中从零开始的索引。 |
-| `evidence_paragraphs[].paragraph_index` | `integer` | 原始 paragraphs 中从零开始的索引；空白段落也计入。 |
-| `evidence_paragraphs[].text` | `string` | 原始证据段落，保留空白及换行。 |
-| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | 导出问题中为 true：匹配块的并集覆盖全部非空白字符。 |
-| `evidence_paragraphs[].passage_matches` | `array<object>` | 所有与证据存在非空白字符重叠的块。 |
-| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | 所选语料中的精确块标识。 |
-| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | 原始证据段落中的两个 Python 字符偏移，表示左闭右开区间 [start, end)；不是字节、token 或块内偏移。 |
-| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | 此块单独是否覆盖该段落的全部非空白内容。 |
-| `gold_passage_ids` | `array<string>` | 与任一标注证据重叠的块 ID，排序去重；并非人工相关性标签。 |
-
-只有在至少有一个答案、且每个答案的非空证据都能唯一定位到完整正文段落并被语料完整覆盖时，才保留该问题。空证据、`FLOAT SELECTED`、缺失段落、重复文本歧义或覆盖不足会排除整道题。匹配只规范化换行及外部空白，不做模糊匹配或答案子串匹配。备选答案须分组计算覆盖率，不能合并成一个答案。`gold_passage_ids` 包含部分重叠块；单块不一定覆盖完整证据。未入选的块也不能直接视为不相关。问答、答案、证据及派生标签不得写入检索语料。
-
-## `data/processed/gold_evidence_mapping.manifest.json`
-
-开发证据映射的配套文件。当前导出记录 scope=development 及仅开发数据的 evaluation_design；本地旧 manifest 可能没有这两个字段。held_out_freeze=false 不表示创建或冻结了留出问题池。
-
-### 生成命令
-
-```powershell
-python -m scripts.export_evidence_mapping --scope development
-```
-
-### 字段表
-
-| 字段名称 | JSON 类型 | 含义 |
-| --- | --- | --- |
-| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed。 |
-| `split_policy_version` | `string` | 拟议划分策略版本。 |
-| `source_splits` | `array<string>` | 选作证据映射的官方划分。 |
-| `scope` | `string` | development 或 all-splits-testing；旧开发导出中可能缺失。 |
-| `evaluation_design` | `string` | 评估设计含义；旧开发导出中可能缺失。 |
-| `chunking` | `object` | 精确的规范化及切分配置。 |
-| `chunking.source_kinds` | `array<string>` | 当前仅 full_text。 |
-| `chunking.normalization_version` | `string` | 文本规范化实现版本。 |
-| `chunking.chunking_version` | `string` | 按词切分实现版本。 |
-| `chunking.chunk_size_words` | `integer` | 每块最多包含的 Unicode 非空白词段数；当前选用值为 365。 |
-| `chunking.chunk_overlap_words` | `integer` | 相邻块重叠词段数；当前选用值为 40。 |
-| `chunking.word_rule` | `string` | 词数统计规则。 |
-| `chunking.type_rule` | `string` | casefold 后的词型定义（语料及映射 manifest）。 |
-| `inputs` | `object` | papers、qa、export_manifest、passages、passages_manifest 的哈希。 |
-| `inputs.<input>.file` | `string` | 输入基本文件名。 |
-| `inputs.<input>.sha256` | `string` | 输入字节哈希。 |
-| `filtering_counts` | `object` | 按官方划分记录的问题计数；零计数类别可能缺失。 |
-| `filtering_counts.<split>.total` | `integer` | 检查的问题数。 |
-| `filtering_counts.<split>.eligible` | `integer` | 保留的问题数。 |
-| `filtering_counts.<split>.held_out_excluded` | `integer` | 因开发范围限制而排除的问题数。 |
-| `filtering_counts.<split>.invalid_or_uncovered_answer_evidence` | `integer` | 因证据缺失、歧义或覆盖不完整而排除的问题数。 |
-| `mapping_rule` | `string` | 证据须唯一匹配整段；所有答案均须通过。 |
-| `passage_match_rule` | `string` | 任意非空白字符重叠，且匹配并集完整覆盖证据。 |
-| `offset_rule` | `string` | 证据文本中从零开始、左闭右开的 Python 字符偏移。 |
-| `label_status` | `string` | 自动派生的 gold 参考，不是人工相关性标签。 |
-| `held_out_freeze` | `boolean` | false：不是最终留出集冻结记录。 |
-| `output` | `object` | 映射输出清单。 |
-| `output.file` | `string` | 映射 JSONL 基本文件名。 |
-| `output.rows` | `integer` | 符合条件的问题行数。 |
-| `output.sha256` | `string` | 映射 JSONL 精确字节的哈希。 |
-
 ## `data/processed/gold_evidence_mapping_all_splits.jsonl`
 
-显式对 train、validation、test 进行普通测试的导出。默认选用全论文正文语料及独立的 all-splits 输出名。此评估设计放弃 test 的独立留出地位，不得将结果报告为独立留出性能。
+覆盖全部官方划分的全量 gold 参考映射。评估用途由独立题单及实际使用记录决定；文件覆盖范围本身不代表 held-out 已冻结或已失效。旧开发映射及其 manifest 已删除。
 
 ### 生成命令
 
 ```powershell
-python -m scripts.export_evidence_mapping --scope all-splits-testing
+python -m scripts.export_evidence_mapping --scope all-splits-reference
 ```
 
 ### 字段表
@@ -533,12 +429,12 @@ python -m scripts.export_evidence_mapping --scope all-splits-testing
 
 ## `data/processed/gold_evidence_mapping_all_splits.manifest.json`
 
-all-splits 映射的配套文件。scope=all-splits-testing，evaluation_design 明确记录全部官方划分上的普通测试；held_out_freeze 仍为 false。
+all-splits 映射属于机械生成的 gold 参考导出。使用下文保存的题单及使用审计确定资格；导出或下载全部划分不授权使用 held-out 题目选参。
 
 ### 生成命令
 
 ```powershell
-python -m scripts.export_evidence_mapping --scope all-splits-testing
+python -m scripts.export_evidence_mapping --scope all-splits-reference
 ```
 
 ### 字段表
@@ -548,7 +444,7 @@ python -m scripts.export_evidence_mapping --scope all-splits-testing
 | `schema_version` | `string` | gold-evidence-to-passage-v0-proposed。 |
 | `split_policy_version` | `string` | 拟议划分策略版本。 |
 | `source_splits` | `array<string>` | 选作证据映射的官方划分。 |
-| `scope` | `string` | development 或 all-splits-testing；旧开发导出中可能缺失。 |
+| `scope` | `string` | development 或 all-splits-reference；旧开发导出中可能缺失。 |
 | `evaluation_design` | `string` | 评估设计含义；旧开发导出中可能缺失。 |
 | `chunking` | `object` | 精确的规范化及切分配置。 |
 | `chunking.source_kinds` | `array<string>` | 当前仅 full_text。 |
@@ -820,40 +716,9 @@ ID 包含固定来源 revision、解析器版本、规范化/切分版本、切�
 
 `build_passages_from_records` 按论文 ID、来源类型、原始章节索引和块索引确定性排序。私有坐标为 `(paper_id, source_kind, section_index, chunk_index)`，公开 `Passage` 仍为八字段。邻接只在同一来源容器内填充。`validate_built_passages` 拒绝重复 ID、空文本、缺失块序号、悬空链接及不互反或跨容器邻接。不依据输出顺序或显示章节名推断边界。
 
-## 拟议划分策略
+## 问题层面的 held-out 策略
 
-策略为 `qasper-official-paper-disjoint-v0-proposed`，按整篇论文映射：`train -> development`、`validation -> validation`、`test -> held_out`。官方来源划分和项目角色保留在语料或实验 manifest 中，均不参与单块 ID。
-
-固定 revision 的检查显示三划分分别含 $888$、$281$、$416$ 篇论文，划分内部无重复论文 ID，三组两两交集均为空，`observed_paper_disjoint: true`。这些是评审证据，不是运行时硬编码计数。
-
-同一论文的标题、正文、问题、答案、证据及全部派生块必须属于同一项目角色。不按问题或块重新切分/平衡论文，也不将官方划分名称解释为模型训练用途。`src/data/split_policy.py` 的 `validate_paper_disjoint_splits` 要求恰有三个官方划分键、非空且无首尾空白的论文 ID、划分内无重复且划分间无交集；它不读文件、不改输入。
-
-该提案由 `P3-D004` 跟踪，等待 P5/P6 评审。`evaluation.held_out_manifest: null` 表示问题及标注池尚未创建，不允许临时抽取 test 问题调参。未来重新映射须升级策略版本并重做泄漏检查；公开 Passage 结构及 ID 不变，manifest 记录划分、角色、策略、切分配置及输出哈希。
-
-## 留出集资产使用策略
-
-资产分为 `paper_text`、`question`、`answer`、`label`；用途分为 `index_for_inference`、`tuning`、`prompt_design`、`chunk_selection`、`final_evaluation`。`label` 包含人工相关性及从答案/证据派生的监督；提示设计包括模板措辞、few-shot 示例选择、critic/generator 提示迭代。
-
-该策略适用于保留独立最终评估集的流程。显式选用的 `all-splits-testing` 将全部官方划分作为普通测试，并在 manifest 中记录例外；其结果不能声称独立留出性能。其他默认流程保持下表限制。
-
-| 项目角色 | 资产 | 推理索引 | 调参 | 提示设计 | 切分选择 | 最终评估 |
-| --- | --- | --- | --- | --- | --- | --- |
-| `development` 或 `validation` | `paper_text`、`question`、`answer`、`label` | 允许 | 允许 | 允许 | 允许 | 允许 |
-| `held_out` | `paper_text` | 允许 | 禁止 | 禁止 | 禁止 | 禁止 |
-| `held_out` | `question` | 禁止 | 禁止 | 禁止 | 禁止 | 冻结后允许 |
-| `held_out` | `answer` 或 `label` | 禁止 | 禁止 | 禁止 | 禁止 | 冻结后允许 |
-
-`src/data/split_policy.py:assert_data_use_allowed` 是机器可读守卫。调用者须显式提供布尔 `evaluation_frozen`；留出问题仅在冻结后用于最终评估查询，答案/标签仅在冻结后用于最终评分及报告。不从日期、分支、文件或环境变量推断冻结状态。
-
-开发和验证资产可用于调参、提示及切分选择，但必须在读取留出评估资产前记录并冻结所有决定。允许使用监督不代表允许把问题、答案、证据、worker ID、annotation ID 或标签写入检索语料。未来评估入口应仅向 RAG 暴露 `question_id`、`paper_id`、`question`，持久化推理结果后再读取答案及证据评分。
-
-## 留出集索引净化
-
-留出论文正文仅可用于推理证据索引。接收完整原始记录的构建器须在规范化/切分前，按团队批准的正文白名单构造内部视图，排除 `qas` 及嵌套的问题、答案、证据、高亮证据、worker ID 和 annotation ID。正文索引权限不包含同一记录内的监督字段。
-
-语料 manifest 须记录来源划分、项目角色、`SPLIT_POLICY_VERSION`、切分配置及输出哈希；单个 `Passage` 不增加划分字段。留出问题/标注 manifest 与检索语料分离，保留冻结提交及配置，由 `P3-D005` 跟踪。
-
-当前 `data.split_policy.held_out_usage` 允许 `index_paper_text: true`，禁止调参、提示设计和切分选择，并要求最终评估前显式冻结。`evaluation.held_out_manifest: null` 不是临时抽取留出问题的许可。冻结记录及重跑规则仍由 `P3-D005`、`P3-D006` 跟踪，待团队评审。
+Week 4 标注流程跨全部官方划分采用问题层面隔离，允许共享论文，并排除使用记录中的实验题。`src/data/split_policy.py` 的旧官方划分映射仍为早期选参实验的 `v0-proposed` 策略，不用于选择本次标注题单。不得将问答监督信息写入索引；检索仅接收论文正文和已保存的问题。本次候选池冻结不代表下游生成器或代理配置已冻结。
 
 ## 验证与参考快照
 
@@ -868,7 +733,7 @@ git check-ignore -v data/raw/qasper/manifest.json data/processed/papers.jsonl
 
 语料检查器只需已发布的语料和 manifest，不需要原始/导出输入。构建器要求至少 $10{,}000$ 块、$100{,}000$ 原始词及足够的输出词。证据导出器检查论文/问答输入、哈希、语料范围及配置，重建块并验证精确 ID/文本后再映射。目前没有独立的证据映射检查 CLI；问答检查器不能替代映射验证。
 
-下表为已有固定来源的 $365/40$ 参考快照，不表示已发布 Release。新数据包应以自身 manifest 和校验值为准。导出包含 $1{,}585$ 篇论文、$5{,}049$ 个问题及 $7{,}993$ 个答案标注；train、validation、test 分别有 $2{,}593$、$1{,}005$、$1{,}451$ 个问题。
+下表为纳入 Git 的固定 $365/40$ 参考快照。产物变化时须更新配套 manifest。导出包含 $1{,}585$ 篇论文、$5{,}049$ 个问题及 $7{,}993$ 个答案标注；train、validation、test 分别有 $2{,}593$、$1{,}005$、$1{,}451$ 个问题。
 
 | 语料 | 来源论文数 | 索引论文数 | 块数 | 原始词数 | 块内词数 | Casefold 后词型数 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -899,3 +764,370 @@ dataset = datasets.load_dataset(
 ```
 
 这是本地 JSON 加载器，不是 Hub 下载或块构建器，记录仍为论文级。原始文件、生成语料、manifest、源压缩包、缓存及暂存目录均不纳入 Git。只有不再需要且满足实验保留要求时，才清理本地输出。
+
+## 标注候选池复现与使用
+
+旧参数 `--scope all-splits-testing` 仍作为 `all-splits-reference` 的兼容别名，不再代表放弃 held-out 状态。可显式用 `--scope development` 生成独立命名的 `gold_evidence_mapping_development` 文件；本次数据包不保留该产物。排除 gold 映射中 $251$ 道已用题及 $1$ 道所属论文不足 $5$ 个块的题后，合格池有 $3{,}077$ 个 ID；另有 $2$ 个已用 ID 不在 gold 映射中。最终来源为 train $95$ 题、validation $40$ 题、test $65$ 题。
+
+按下文顺序执行四个阶段：`prepare`、`pilot`、`freeze`、`export`。输入为已核验的 $365/40$ 全论文语料、all-splits gold 映射、原始导出、第 $4$ 轮保存题单及全部本地实验使用记录。拒绝覆盖已有输出。复现包须保留历史题单及审计记录，不得按种子重建历史题单。CLI 从仓库根目录运行，不读取 YAML 检索设置。
+
+种子 $20261028$ 和规则在抽样前固定。不得查看 held-out 内容用于调试、选参或修改系统。本地审计排除了 $253$ 个已用 ID，其中 $3$ 个不在 $250$ 道选参题中；不能据此证明未记录的外部使用情况。核验产物包含 $200$ 题、$1{,}000$ 个唯一配对。两套空白 Markdown 对应未来 $2{,}000$ 次独立判断，目前尚未收集人工标签或计算一致率。评估期间保持本次候选池配置不变。
+
+使用 Git 数据时，按上文获取 P3 快照，保留全部配套 manifest 和对应的语料、题单。本地复现先生成原始导出、全论文语料和 all-splits 参考映射，再恢复精确的历史实验产物，最后向未使用的路径运行四个阶段。`--data`、`--history`、`--pilot`、`--output` 用于选择位置；`--data` 内须保留标准输入文件名。再次构建前保存完整快照。分发时仅交付各自的 Markdown 批次；标注者不得查看仓库中的 JSONL 核验文件及 gold 参考。
+
+## `data/processed/qa_for_choosing_chunk_size.jsonl`
+
+从第 $4$ 轮实际保存的题单提取全部 $250$ 题，保持顺序及原文，不按种子重抽。
+
+```powershell
+python -m scripts.build_annotation_pool prepare
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id` | `string` | 原始唯一问题 ID。 |
+| `paper_id` | `string` | 原始论文 ID；允许共享论文。 |
+| `question` | `string` | 原始问题文本，不改写。 |
+| `source_split` | `string` | 官方来源划分，不代表评估角色。 |
+
+## `data/processed/annotation_preparation.manifest.json`
+
+准备阶段的来源及使用审计；包含已无效化实验。
+
+```powershell
+python -m scripts.build_annotation_pool prepare
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed。 |
+| `inputs` | `object<string,string>` | 输入路径到精确 SHA-256 的映射。 |
+| `inputs.<path>` | `string` | 该输入文件的字节哈希。 |
+| `settings` | `object` | 冻结的语料及检索配置。 |
+| `settings.chunk_size_words` | `integer` | $365$ 词。 |
+| `settings.chunk_overlap_words` | `integer` | $40$ 词。 |
+| `settings.top_k` | `integer` | 每题 $5$ 个不同块。 |
+| `usage_audit` | `array<object>` | 全部已保存的本地 results manifest 及题单。 |
+| `usage_audit[].file` | `string` | 审计文件路径。 |
+| `usage_audit[].sha256` | `string` | 审计文件哈希。 |
+| `usage_audit[].question_ids` | `array<string>` | 该次运行已使用的问题 ID。 |
+| `excluded_question_ids` | `array<string>` | 已用题与选参题的 ID 并集。 |
+| `audit_scope` | `string` | 仅覆盖本地已保存记录；未知外部未记录使用。 |
+| `seed` | `integer` | 预先确定的 $20261028$。 |
+| `sampling_rule` | `string` | 排序 ID 后按种子无放回简单随机抽样，保留抽取顺序。 |
+| `scope` | `array<string>` | 全部三个官方划分。 |
+| `isolation` | `string` | 问题层面隔离，允许共享论文。 |
+
+## `data/processed/qa_for_held_out.jsonl`
+
+开发试运行通过后保存的 $200$ 题；正式导出必须使用此文件，不得重新抽题。
+
+```powershell
+python -m scripts.build_annotation_pool freeze
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id` | `string` | 原始唯一问题 ID。 |
+| `paper_id` | `string` | 原始论文 ID；允许共享论文。 |
+| `question` | `string` | 原始问题文本，不改写。 |
+| `source_split` | `string` | 官方来源划分，不代表评估角色。 |
+
+## `data/processed/qa_for_held_out.manifest.json`
+
+冻结题单及配置，不代表未来生成器、代理或提示词已冻结。
+
+```powershell
+python -m scripts.build_annotation_pool freeze
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed。 |
+| `purpose` | `string` | held-out 题单。 |
+| `inputs` | `object<string,string>` | 输入路径到精确 SHA-256 的映射。 |
+| `inputs.<path>` | `string` | 该输入文件的字节哈希。 |
+| `settings` | `object` | 冻结的语料及检索配置。 |
+| `settings.chunk_size_words` | `integer` | $365$ 词。 |
+| `settings.chunk_overlap_words` | `integer` | $40$ 词。 |
+| `settings.top_k` | `integer` | 每题 $5$ 个不同块。 |
+| `code` | `object` | 包含未提交修改的代码身份。 |
+| `code.commit` | `string` | 执行时的 Git HEAD。 |
+| `code.python` | `string` | Python 运行时版本。 |
+| `code.working_tree_status` | `array<string>` | Git 简短状态；运行可能使用未提交代码。 |
+| `code.source_sha256` | `object<string,string>` | 全部 src/scripts Python 文件的精确哈希。 |
+| `code.source_sha256.<path>` | `string` | 源码字节 SHA-256，导出时复核。 |
+| `retriever` | `object` | 现有 P1/P2 适配器返回的元数据。 |
+| `retriever.id` | `string` | p1-p2-static-retrieval 适配器。 |
+| `retriever.mode` | `string` | bm25。 |
+| `retriever.source_commit` | `string` | 上游适配器集成提交；实际代码另由 code 标识。 |
+| `retriever.packages` | `object<string,string or null>` | 实际使用的包版本。 |
+| `retriever.packages.<package>` | `string or null` | 安装的包版本；不可用时为 null。 |
+| `retriever.scope` | `string` | 仅检索所属论文。 |
+| `retriever.persistent_score_cache` | `boolean` | false，不使用持久化分数缓存。 |
+| `retriever.score` | `string` | 原始 BM25 分数。 |
+| `retriever.tie_break` | `string` | 上游稳定排序规则。 |
+| `retriever.bm25` | `object` | 启用的稀疏检索设置。 |
+| `retriever.bm25.enabled` | `boolean` | true。 |
+| `retriever.bm25.tokenizer` | `string` | casefold 与 Unicode 词序列。 |
+| `retriever.bm25.k1` | `number` | $1.5$。 |
+| `retriever.bm25.b` | `number` | $0.75$。 |
+| `retriever.bm25.epsilon` | `number` | $0.25$。 |
+| `retriever.dense` | `object` | 禁用的稠密检索组件。 |
+| `retriever.dense.enabled` | `boolean` | false，不使用稠密检索。 |
+| `retriever.reranker` | `object` | 禁用的重排组件。 |
+| `retriever.reranker.enabled` | `boolean` | false，不使用重排。 |
+| `seed` | `integer` | $20261028$。 |
+| `sampling_rule` | `string` | 预先确定的抽样规则。 |
+| `scope` | `array<string>` | train、validation、test。 |
+| `isolation` | `string` | 问题层面隔离，允许共享论文。 |
+| `eligible_question_ids` | `array<string>` | 抽样前排序的合格题 ID；论文至少有 $5$ 个块。 |
+| `excluded` | `object<string,string>` | gold 映射题 ID 到排除原因的映射。 |
+| `excluded.<question_id>` | `string` | 已使用或所属论文不足 $5$ 个块。 |
+| `prior_usage_excluded_question_ids` | `array<string>` | 全部已用 ID，即使不在 gold 映射中。 |
+| `question_ids` | `array<string>` | 最终题单及顺序。 |
+| `source_split_counts` | `object<string,integer>` | 按官方划分统计的抽样题数。 |
+| `source_split_counts.<split>` | `integer` | 该划分入选的问题数。 |
+| `usage_boundary` | `string` | 禁止根据 held-out 监督或结果选参、开发。 |
+
+## `data/processed/annotation_pilot/pairs.jsonl`
+
+仅用前 $5$ 道选参题，共 $25$ 对。 JSONL 为结构化源；内部 ID 仅用于关联。
+
+```powershell
+python -m scripts.build_annotation_pool pilot
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 稳定的全局编号；正式池为 $1$ 至 $1{,}000$。 |
+| `question_id` | `string` | 原始唯一问题 ID。 |
+| `paper_id` | `string` | 原始论文 ID；允许共享论文。 |
+| `question` | `string` | 原始问题文本，不改写。 |
+| `passage_id` | `string` | 语料中的精确块 ID。 |
+| `paper_title` | `string` | 真实完整论文标题。 |
+| `passage` | `string` | 检索块完整原文。 |
+| `label` | `null or integer` | 初始为 null；后续人工 $0/1$ 标签须按稳定编号及标注者关联。 |
+
+## `data/processed/annotation_pilot/verification.jsonl`
+
+仅供核验，不得分发给标注者。
+
+```powershell
+python -m scripts.build_annotation_pool pilot
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 稳定的全局编号；正式池为 $1$ 至 $1{,}000$。 |
+| `question_id` | `string` | 原始唯一问题 ID。 |
+| `paper_id` | `string` | 原始论文 ID；允许共享论文。 |
+| `question` | `string` | 原始问题文本，不改写。 |
+| `passage_id` | `string` | 语料中的精确块 ID。 |
+| `paper_title` | `string` | 真实完整论文标题。 |
+| `passage` | `string` | 检索块完整原文。 |
+| `label` | `null or integer` | 初始为 null；后续人工 $0/1$ 标签须按稳定编号及标注者关联。 |
+| `retrieval_method` | `string` | bm25，仅核验文件保留。 |
+| `rank` | `integer` | 从 $1$ 开始的原始检索排名。 |
+| `score` | `number` | 原始检索分数。 |
+| `gold_passage_ids` | `array<string>` | 与参考证据重叠的块 ID，不是人工标签。 |
+| `gold_evidence_match` | `boolean` | 该块是否与映射的 gold 段落重叠。 |
+| `evidence_paragraphs` | `array<object>` | 检索后关联的参考证据。 |
+| `evidence_paragraphs[].location` | `string` | 原始证据段落坐标。 |
+| `evidence_paragraphs[].section_index` | `integer` | 原始章节索引，从零开始。 |
+| `evidence_paragraphs[].paragraph_index` | `integer` | 原始段落索引，从零开始。 |
+| `evidence_paragraphs[].text` | `string` | 参考段落正文。 |
+| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | 块并集覆盖全部非空白字符。 |
+| `evidence_paragraphs[].passage_matches` | `array<object>` | 存在重叠的语料块。 |
+| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | 精确匹配的块 ID。 |
+| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | 左闭右开的字符区间 [start,end)。 |
+| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | 单块是否覆盖完整段落。 |
+
+## `data/processed/annotation_pilot/manifest.json`
+
+记录精确输入、代码、配置及全部输出哈希。
+
+```powershell
+python -m scripts.build_annotation_pool pilot
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed。 |
+| `purpose` | `string` | 开发试运行或 held-out 标注候选池。 |
+| `question_count` | `integer` | 试运行 $5$ 题；正式 $200$ 题。 |
+| `pair_count` | `integer` | 试运行 $25$ 对；正式 $1{,}000$ 对。 |
+| `question_ids` | `array<string>` | 已保存的问题顺序。 |
+| `inputs` | `object<string,string>` | 输入路径到精确 SHA-256 的映射。 |
+| `inputs.<path>` | `string` | 该输入文件的字节哈希。 |
+| `settings` | `object` | 冻结的语料及检索配置。 |
+| `settings.chunk_size_words` | `integer` | $365$ 词。 |
+| `settings.chunk_overlap_words` | `integer` | $40$ 词。 |
+| `settings.top_k` | `integer` | 每题 $5$ 个不同块。 |
+| `code` | `object` | 包含未提交修改的代码身份。 |
+| `code.commit` | `string` | 执行时的 Git HEAD。 |
+| `code.python` | `string` | Python 运行时版本。 |
+| `code.working_tree_status` | `array<string>` | Git 简短状态；运行可能使用未提交代码。 |
+| `code.source_sha256` | `object<string,string>` | 全部 src/scripts Python 文件的精确哈希。 |
+| `code.source_sha256.<path>` | `string` | 源码字节 SHA-256，导出时复核。 |
+| `retriever` | `object` | 现有 P1/P2 适配器返回的元数据。 |
+| `retriever.id` | `string` | p1-p2-static-retrieval 适配器。 |
+| `retriever.mode` | `string` | bm25。 |
+| `retriever.source_commit` | `string` | 上游适配器集成提交；实际代码另由 code 标识。 |
+| `retriever.packages` | `object<string,string or null>` | 实际使用的包版本。 |
+| `retriever.packages.<package>` | `string or null` | 安装的包版本；不可用时为 null。 |
+| `retriever.scope` | `string` | 仅检索所属论文。 |
+| `retriever.persistent_score_cache` | `boolean` | false，不使用持久化分数缓存。 |
+| `retriever.score` | `string` | 原始 BM25 分数。 |
+| `retriever.tie_break` | `string` | 上游稳定排序规则。 |
+| `retriever.bm25` | `object` | 启用的稀疏检索设置。 |
+| `retriever.bm25.enabled` | `boolean` | true。 |
+| `retriever.bm25.tokenizer` | `string` | casefold 与 Unicode 词序列。 |
+| `retriever.bm25.k1` | `number` | $1.5$。 |
+| `retriever.bm25.b` | `number` | $0.75$。 |
+| `retriever.bm25.epsilon` | `number` | $0.25$。 |
+| `retriever.dense` | `object` | 禁用的稠密检索组件。 |
+| `retriever.dense.enabled` | `boolean` | false，不使用稠密检索。 |
+| `retriever.reranker` | `object` | 禁用的重排组件。 |
+| `retriever.reranker.enabled` | `boolean` | false，不使用重排。 |
+| `freeze_manifest_sha256` | `string or null` | held-out 冻结 manifest 哈希；试运行时为 null。 |
+| `outputs` | `object<string,string>` | 输出路径到 SHA-256 的映射，不含 manifest 自身。 |
+| `outputs.<path>` | `string` | 输出字节哈希，包含盲审 Markdown。 |
+| `validation` | `string` | 已完成的不变量核验。 |
+
+## `data/processed/annotation_pilot/annotator_A/ and annotator_B/`
+
+两套独立英文 Markdown 视图；正式每套 $10$ 批，每批 $20$ 题、$100$ 对。无 HTML、备注栏、内部 ID、gold、检索方法或分数。每条记录的两份视图须交给不同的人。
+
+```powershell
+python -m scripts.build_annotation_pool pilot
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `Annotator:` | `text` | 回收前填写真实标注者标识。 |
+| `Record NNNN` | `heading` | 对应全局 record_number，不得修改。 |
+| `Paper:` | `text` | 真实完整标题，不显示内部 ID。 |
+| `Question / Passage` | `quoted text` | 原始内容，不得修改。 |
+| `Relevance / Label:` | `blank, 0 or 1` | 仅填写 Label: 0 或 Label: 1，保留全部编号。 |
+
+## `data/processed/annotation_held_out/pairs.jsonl`
+
+正式 $200$ 题、$1{,}000$ 对；同题 $5$ 对相邻，顺序固定。 JSONL 为结构化源；内部 ID 仅用于关联。
+
+```powershell
+python -m scripts.build_annotation_pool export
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 稳定的全局编号；正式池为 $1$ 至 $1{,}000$。 |
+| `question_id` | `string` | 原始唯一问题 ID。 |
+| `paper_id` | `string` | 原始论文 ID；允许共享论文。 |
+| `question` | `string` | 原始问题文本，不改写。 |
+| `passage_id` | `string` | 语料中的精确块 ID。 |
+| `paper_title` | `string` | 真实完整论文标题。 |
+| `passage` | `string` | 检索块完整原文。 |
+| `label` | `null or integer` | 初始为 null；后续人工 $0/1$ 标签须按稳定编号及标注者关联。 |
+
+## `data/processed/annotation_held_out/verification.jsonl`
+
+仅供核验，不得分发给标注者。
+
+```powershell
+python -m scripts.build_annotation_pool export
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 稳定的全局编号；正式池为 $1$ 至 $1{,}000$。 |
+| `question_id` | `string` | 原始唯一问题 ID。 |
+| `paper_id` | `string` | 原始论文 ID；允许共享论文。 |
+| `question` | `string` | 原始问题文本，不改写。 |
+| `passage_id` | `string` | 语料中的精确块 ID。 |
+| `paper_title` | `string` | 真实完整论文标题。 |
+| `passage` | `string` | 检索块完整原文。 |
+| `label` | `null or integer` | 初始为 null；后续人工 $0/1$ 标签须按稳定编号及标注者关联。 |
+| `retrieval_method` | `string` | bm25，仅核验文件保留。 |
+| `rank` | `integer` | 从 $1$ 开始的原始检索排名。 |
+| `score` | `number` | 原始检索分数。 |
+| `gold_passage_ids` | `array<string>` | 与参考证据重叠的块 ID，不是人工标签。 |
+| `gold_evidence_match` | `boolean` | 该块是否与映射的 gold 段落重叠。 |
+| `evidence_paragraphs` | `array<object>` | 检索后关联的参考证据。 |
+| `evidence_paragraphs[].location` | `string` | 原始证据段落坐标。 |
+| `evidence_paragraphs[].section_index` | `integer` | 原始章节索引，从零开始。 |
+| `evidence_paragraphs[].paragraph_index` | `integer` | 原始段落索引，从零开始。 |
+| `evidence_paragraphs[].text` | `string` | 参考段落正文。 |
+| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | 块并集覆盖全部非空白字符。 |
+| `evidence_paragraphs[].passage_matches` | `array<object>` | 存在重叠的语料块。 |
+| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | 精确匹配的块 ID。 |
+| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | 左闭右开的字符区间 [start,end)。 |
+| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | 单块是否覆盖完整段落。 |
+
+## `data/processed/annotation_held_out/manifest.json`
+
+记录精确输入、代码、配置及全部输出哈希。
+
+```powershell
+python -m scripts.build_annotation_pool export
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed。 |
+| `purpose` | `string` | 开发试运行或 held-out 标注候选池。 |
+| `question_count` | `integer` | 试运行 $5$ 题；正式 $200$ 题。 |
+| `pair_count` | `integer` | 试运行 $25$ 对；正式 $1{,}000$ 对。 |
+| `question_ids` | `array<string>` | 已保存的问题顺序。 |
+| `inputs` | `object<string,string>` | 输入路径到精确 SHA-256 的映射。 |
+| `inputs.<path>` | `string` | 该输入文件的字节哈希。 |
+| `settings` | `object` | 冻结的语料及检索配置。 |
+| `settings.chunk_size_words` | `integer` | $365$ 词。 |
+| `settings.chunk_overlap_words` | `integer` | $40$ 词。 |
+| `settings.top_k` | `integer` | 每题 $5$ 个不同块。 |
+| `code` | `object` | 包含未提交修改的代码身份。 |
+| `code.commit` | `string` | 执行时的 Git HEAD。 |
+| `code.python` | `string` | Python 运行时版本。 |
+| `code.working_tree_status` | `array<string>` | Git 简短状态；运行可能使用未提交代码。 |
+| `code.source_sha256` | `object<string,string>` | 全部 src/scripts Python 文件的精确哈希。 |
+| `code.source_sha256.<path>` | `string` | 源码字节 SHA-256，导出时复核。 |
+| `retriever` | `object` | 现有 P1/P2 适配器返回的元数据。 |
+| `retriever.id` | `string` | p1-p2-static-retrieval 适配器。 |
+| `retriever.mode` | `string` | bm25。 |
+| `retriever.source_commit` | `string` | 上游适配器集成提交；实际代码另由 code 标识。 |
+| `retriever.packages` | `object<string,string or null>` | 实际使用的包版本。 |
+| `retriever.packages.<package>` | `string or null` | 安装的包版本；不可用时为 null。 |
+| `retriever.scope` | `string` | 仅检索所属论文。 |
+| `retriever.persistent_score_cache` | `boolean` | false，不使用持久化分数缓存。 |
+| `retriever.score` | `string` | 原始 BM25 分数。 |
+| `retriever.tie_break` | `string` | 上游稳定排序规则。 |
+| `retriever.bm25` | `object` | 启用的稀疏检索设置。 |
+| `retriever.bm25.enabled` | `boolean` | true。 |
+| `retriever.bm25.tokenizer` | `string` | casefold 与 Unicode 词序列。 |
+| `retriever.bm25.k1` | `number` | $1.5$。 |
+| `retriever.bm25.b` | `number` | $0.75$。 |
+| `retriever.bm25.epsilon` | `number` | $0.25$。 |
+| `retriever.dense` | `object` | 禁用的稠密检索组件。 |
+| `retriever.dense.enabled` | `boolean` | false，不使用稠密检索。 |
+| `retriever.reranker` | `object` | 禁用的重排组件。 |
+| `retriever.reranker.enabled` | `boolean` | false，不使用重排。 |
+| `freeze_manifest_sha256` | `string or null` | held-out 冻结 manifest 哈希；试运行时为 null。 |
+| `outputs` | `object<string,string>` | 输出路径到 SHA-256 的映射，不含 manifest 自身。 |
+| `outputs.<path>` | `string` | 输出字节哈希，包含盲审 Markdown。 |
+| `validation` | `string` | 已完成的不变量核验。 |
+
+## `data/processed/annotation_held_out/annotator_A/ and annotator_B/`
+
+两套独立英文 Markdown 视图；正式每套 $10$ 批，每批 $20$ 题、$100$ 对。无 HTML、备注栏、内部 ID、gold、检索方法或分数。每条记录的两份视图须交给不同的人。
+
+```powershell
+python -m scripts.build_annotation_pool export
+```
+
+| 字段名称 | 类型 | 含义 |
+| --- | --- | --- |
+| `Annotator:` | `text` | 回收前填写真实标注者标识。 |
+| `Record NNNN` | `heading` | 对应全局 record_number，不得修改。 |
+| `Paper:` | `text` | 真实完整标题，不显示内部 ID。 |
+| `Question / Passage` | `quoted text` | 原始内容，不得修改。 |
+| `Relevance / Label:` | `blank, 0 or 1` | 仅填写 Label: 0 或 Label: 1，保留全部编号。 |

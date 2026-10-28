@@ -43,4 +43,6 @@ generation:
   abstain_on_insufficient_evidence: true
 evaluation:
   judge_model: null
-  held_out_manifest: null  # Final held-out question pool is not frozen or created.
+  held_out_manifest: null  # Legacy official-split workflow; not the Week 4 pool.
+  annotation_pool_manifest: data/processed/qa_for_held_out.manifest.json
+  annotation_pool_isolation: question  # Shared papers allowed; actual use controls eligibility.

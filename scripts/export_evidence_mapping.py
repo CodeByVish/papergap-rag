@@ -22,8 +22,8 @@ def main() -> int:
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--scope', choices=('development', 'all-splits-testing'), default='development',
-        help='all-splits-testing uses every split as ordinary tests, waiving held-out status',
+        '--scope', choices=('development', 'all-splits-reference', 'all-splits-testing'), default='all-splits-reference',
+        help='all-splits-reference creates reference mappings; question lists govern use',
     )
     defaults = {
         'papers': 'papers.jsonl',
@@ -31,8 +31,8 @@ def main() -> int:
         'export_manifest': 'qasper_export.manifest.json',
         'passages': 'passages.jsonl',
         'passages_manifest': 'passages.manifest.json',
-        'output': 'gold_evidence_mapping.jsonl',
-        'manifest_output': 'gold_evidence_mapping.manifest.json',
+        'output': 'gold_evidence_mapping_development.jsonl',
+        'manifest_output': 'gold_evidence_mapping_development.manifest.json',
     }
     for key, name in defaults.items():
         parser.add_argument(
@@ -40,7 +40,7 @@ def main() -> int:
             default=None,
         )
     arguments = vars(parser.parse_args())
-    if arguments['scope'] == 'all-splits-testing':
+    if arguments['scope'] != 'development':
         defaults.update({
             'passages': 'passages_all_paper_text.jsonl',
             'passages_manifest': 'passages_all_paper_text.manifest.json',

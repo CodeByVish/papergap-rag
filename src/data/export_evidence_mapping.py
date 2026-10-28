@@ -142,8 +142,9 @@ def export_evidence_mapping(
         passages_manifest: Corpus provenance and chunking configuration.
         output: New JSONL destination; existing files are never overwritten.
         manifest_output: New destination for hashes and filtering counts.
-        scope: development excludes test; all-splits-testing includes every split
-            as ordinary test data and explicitly relinquishes held-out status.
+        scope: development excludes test; all-splits-reference includes every
+            split as reference mappings. The legacy all-splits-testing spelling
+            remains an alias; neither spelling decides question usage rights.
 
     Returns:
         Manifest describing the complete export, with per-split filtering counts.
@@ -152,9 +153,10 @@ def export_evidence_mapping(
         ValueError: Inputs disagree or the corpus scope does not match the export.
         FileExistsError: Either output already exists.
     """
-    if scope not in ('development', 'all-splits-testing'):
-        raise ValueError('scope must be development or all-splits-testing')
-    selected_splits = ('train', 'validation', 'test') if scope == 'all-splits-testing' else ('train', 'validation')
+    if scope not in ('development', 'all-splits-reference', 'all-splits-testing'):
+        raise ValueError('scope must be development or all-splits-reference')
+    all_splits = scope != 'development'
+    selected_splits = ('train', 'validation', 'test') if all_splits else ('train', 'validation')
     inputs = (papers, qa, export_manifest, passages, passages_manifest)
     targets = (output, manifest_output)
     resolved = [path.resolve() for path in (*inputs, *targets)]
@@ -167,7 +169,7 @@ def export_evidence_mapping(
         papers_path=papers, manifest_path=export_manifest
     )
     corpus_manifest = json.loads(passages_manifest.read_text(encoding='utf-8'))
-    expected_scope = 'all-paper-text' if scope == 'all-splits-testing' else 'development'
+    expected_scope = 'all-paper-text' if all_splits else 'development'
     if corpus_manifest['scope'] != expected_scope:
         raise ValueError(f'mapping export requires a {expected_scope} corpus')
     if corpus_manifest['output']['file'] != passages.name:
@@ -213,9 +215,9 @@ def export_evidence_mapping(
                 counts[split]['held_out_excluded'] += 1
                 continue
             for asset in ('question', 'answer', 'label'):
-                # The explicitly selected ordinary-testing design waives held-out
-                # status. Never disguise it as a frozen final-evaluation run.
-                if scope == 'all-splits-testing' and split == 'test':
+                # Mechanical reference mapping does not authorize tuning or
+                # decide the status of any independent held-out question list.
+                if all_splits:
                     continue
                 assert_data_use_allowed(
                     project_role=project_role_for_official_split(split),
@@ -251,10 +253,10 @@ def export_evidence_mapping(
         'schema_version': 'gold-evidence-to-passage-v0-proposed',
         'split_policy_version': SPLIT_POLICY_VERSION,
         'source_splits': list(selected_splits),
-        'scope': scope,
+        'scope': 'all-splits-reference' if all_splits else scope,
         'evaluation_design': (
-            'ordinary testing across all official splits; no independent held-out claim'
-            if scope == 'all-splits-testing' else 'development-only evidence references'
+            'all-splits gold reference mappings; usage determined by independent question lists and usage records; coverage alone neither freezes nor invalidates held-out status'
+            if all_splits else 'development-only evidence references'
         ),
         'chunking': settings,
         'inputs': {

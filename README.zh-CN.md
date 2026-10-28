@@ -12,7 +12,7 @@
 - [需求与待定事项](docs/REQUIREMENTS.md)：评分标准映射，以及第一周需要解决的决策。
 - [评估协议](docs/EVALUATION.md)：标注、留出数据和实验对比。
 - [贡献指南](CONTRIBUTING.md)：环境配置、分支、评审和模块分工。
-- [本地数据与 JSONL 字段](data/README.md)：完整问答导出、金标准证据到段落的映射，以及覆盖所有官方数据划分的常规测试范围。
+- [数据与 JSONL 字段](data/README_zh-CN.md)：P3 分支上的版本化 QASPER 导出、全量 gold 参考映射及按问题隔离的标注候选池。
 - [每周进度跟踪](docs/WEEKLY_TRACKER.md)：每次团队会议时更新。
 - [分块大小实验](experiments/chunk_size/README.md)：使用 P1/P2 检索比较按词数分块的方案，并导出证据和可读性评审材料，默认使用 BM25。可通过 JSON 的 `retrieval` 配置块选择其他模式；模型默认离线加载。
 
@@ -65,7 +65,7 @@ papergap-rag/
 │   └── ui/           # P6：Streamlit
 ├── scripts/          # 可复现的命令行入口
 ├── tests/            # 模块与集成测试
-├── data/             # 本地数据集（除 README 外均被 Git 忽略）
+├── data/             # 纳入 Git 的 QASPER 数据、manifest 与双语指南
 └── results/          # 共享实验指标、报告与复现记录
 ```
 

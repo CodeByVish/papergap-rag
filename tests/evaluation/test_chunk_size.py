@@ -186,7 +186,7 @@ def test_mapping_export_verifies_corpus_and_excludes_held_out(
     expected_ids = ['question-train', 'question-validation']
     if scope == 'all-splits-testing':
         expected_ids.insert(0, 'question-test')
-        assert 'no independent held-out claim' in manifest['evaluation_design']
+        assert 'coverage alone neither freezes nor invalidates held-out status' in manifest['evaluation_design']
         assert manifest['filtering_counts']['test']['eligible'] == 1
     else:
         assert manifest['filtering_counts']['test']['held_out_excluded'] == 1
