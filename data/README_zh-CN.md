@@ -6,6 +6,122 @@
 
 ## 数据版本与更新
 
+Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法扩池、跨分支禁用审计和 held-out 资格复核尚未完成，不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+
+## `data/processed/annotation_pilot_multi_v2/questions.jsonl`
+
+本试运行所有产物均使用 `python -m scripts.build_annotation_pool multi-pilot --config configs/annotation_pilot.json` 生成。按保存顺序取选参题单前 $5$ 题，核验题单与 preparation 中的哈希一致，从同一份 $365/40$ 语料索引这些论文的全部 passage。不打开 held-out 题单或结果。CLI 在导入模型前启用离线模式，覆盖可选 processor 探测，结束后恢复原进程环境。首次准备固定版本权重：
+
+```powershell
+python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-small-en-v1.5', revision='5c38ec7c405ec4b44b94cc5a9bb96e735b38267a', cache_dir='.cache/huggingface', allow_patterns=['*.json','*.txt','*.safetensors','1_Pooling/*'], ignore_patterns=['onnx/*','openvino/*'])"
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `paper_id` | `string` | 原始问题与论文 ID。 |
+| `question` | `string` | 未修改的问题原文。 |
+| `source_split` | `string` | 官方 split 来源，不代表评估资格。 |
+
+## `data/processed/annotation_pilot_multi_v2/frozen_config.json`
+
+由相同的 `multi-pilot` 命令生成，是 `configs/annotation_pilot.json` 的精确副本。正式运行前复用此成功配置。此次沿用已有模型及默认融合设置验证可行性，不声称检索质量最优，不用 held-out 内容或结果选参。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | `v0-proposed`。 |
+| `question_count`, `question_selection` | `integer`, `string` | 保存顺序中的前 $5$ 道开发题。 |
+| `chunk_size_words`, `chunk_overlap_words`, `top_k` | `integer` | $365$、$40$、$5$。 |
+| `retrieval` | `object` | 与单路检索器共用的 Hybrid 配置。 |
+| `retrieval.mode` | `string` | `hybrid`，不重排序。 |
+| `retrieval.candidate_k`, `retrieval.rrf_k` | `integer` | 每路最多 $20$ 候选；等权 RRF $1/(60+rank)$，$k=60$。 |
+| `retrieval.dense` | `object` | BGE small English v1.5 推理配置。 |
+| `retrieval.dense.revision` | `string` | 模型及 tokenizer 固定 SHA：`5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`。 |
+| `retrieval.dense.device`, `retrieval.dense.batch_size` | `string`, `integer` | CPU，批大小 $32$。 |
+| `retrieval.dense.cache_folder`, `retrieval.dense.local_files_only` | `string`, `boolean` | 项目内忽略目录，启用离线加载。 |
+
+Dense 使用 L2 归一化向量，经 FAISS `IndexFlatIP` 计算余弦相似度，按 $512$ tokens 截断；问题前缀为 `Represent this sentence for searching relevant passages: `，passage 无前缀，导出保留完整正文。BM25 使用 casefold/Unicode word 分词，`k1=1.5`、`b=0.75`、`epsilon=0.25`。同分按 passage ID 升序，manifest 保存完整有效配置和依赖版本。
+
+## `data/processed/annotation_pilot_multi_v2/pairs.jsonl`
+
+使用 `python -m scripts.build_annotation_pool multi-pilot` 生成。每个 `(question_id, passage_id)` 一行，每题 $5$–$15$ 行。编号按题单顺序及 BM25/Dense/Hybrid 首次发现顺序生成，仅属于本开发版本，不改历史正式池编号。一份最终相关性标签供所有命中该配对的算法共用。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 本版本从 $1$ 开始的稳定编号。 |
+| `question_id`, `paper_id`, `passage_id` | `string` | 原始关联 ID。 |
+| `source_split`, `question`, `paper_title`, `passage` | `string` | 来源、问题原文、真实标题与完整 passage。 |
+| `label` | `null or integer` | 初始为空，后续人工二元相关性。 |
+| `retrieved_by` | `array<string>` | 按 BM25/Dense/Hybrid 顺序保存全部真实来源。 |
+| `display_group` | `string` | 两路或三路共有为 `Common Retrieved Chunks`，否则为唯一来源名称。 |
+| `retrievals` | `array<object>` | 全部算法配对关系及原始排名。 |
+| `retrievals[].method`, `retrievals[].rank`, `retrievals[].score` | `string`, `integer`, `number` | 算法、从 $1$ 开始的原始排名及 BM25/余弦/RRF 原生分数。 |
+
+## `data/processed/annotation_pilot_multi_v2/rankings.jsonl`
+
+使用 `python -m scripts.build_annotation_pool multi-pilot` 生成，每题三行，分别保存各算法完整 top-$5$。计算指标时按原始排名关联共同标签，不按 Markdown 分组顺序计算。池外 passage 相关性未知；池内 Recall@K 只覆盖并集中已标相关记录，gold-reference recall 则受证据映射覆盖范围限制。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `method` | `string` | 问题及公开的算法名称。 |
+| `hits` | `array<object>` | 按原始排名保存的 $5$ 个不同、有效、同论文结果。 |
+| `hits[].passage_id`, `hits[].record_number` | `string`, `integer` | 关联唯一配对。 |
+| `hits[].rank`, `hits[].score` | `integer`, `number` | 原始排名和原生分数。 |
+
+## `data/processed/annotation_pilot_multi_v2/verification.jsonl`
+
+使用 `python -m scripts.build_annotation_pool multi-pilot` 生成，不作为标注视图分发。包含上述 `pairs.jsonl` 的全部字段，并在所有检索结束后关联参考证据，不使用参考初始化人工标签。嵌套证据字段与下方历史 `annotation_held_out/verification.jsonl` 表格保持一致。
+
+| 新增字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `gold_passage_ids` | `array<string>` | 映射的参考 passage ID。 |
+| `gold_evidence_match` | `boolean` | 当前 passage 是否命中映射参考。 |
+| `evidence_paragraphs` | `array<object>` | 原始证据段落及重叠信息。 |
+| `evidence_paragraphs[].location`, `evidence_paragraphs[].text` | `string` | 来源坐标与原始正文。 |
+| `evidence_paragraphs[].section_index`, `evidence_paragraphs[].paragraph_index` | `integer` | 从 $0$ 开始的章节及段落位置。 |
+| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | 并集是否覆盖全部非空白字符。 |
+| `evidence_paragraphs[].passage_matches` | `array<object>` | 参考段落与语料的重叠关系。 |
+| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | 重叠 passage ID。 |
+| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | 原文半开字符区间。 |
+| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | 单个 passage 是否覆盖整段。 |
+
+## `data/processed/annotation_pilot_multi_v2/manifest.json`
+
+使用 `python -m scripts.build_annotation_pool multi-pilot` 生成。输入输出 SHA-256 标识本独立版本，拒绝覆盖已有目录。共享接口仍为 `v0-proposed`，保留历史 BM25 冻结记录及编号。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version`, `purpose` | `string` | 提议版 schema 与开发试运行用途。 |
+| `question_ids`, `question_count`, `pair_count` | `array<string>`, `integer`, `integer` | 有序题单及实际数量。 |
+| `group_counts`, `pair_counts_per_question` | `object<string,integer>` | 各展示组与各题去重配对数。 |
+| `indexed_paper_count`, `indexed_passage_count` | `integer` | 所选论文的完整索引范围。 |
+| `settings` | `object` | 上述 `frozen_config.json` 的全部字段。 |
+| `code` | `object` | 与下方历史 manifest 相同的 `commit`、`python`、`working_tree_status`、`source_sha256.<path>` 字段及类型。 |
+| `inputs.<path>`, `outputs.<path>` | `string` | 输入输出的精确 SHA-256，不含 manifest 自身。 |
+| `retrievers` | `object` | `BM25`、`Dense`、`Hybrid` 三种方法的有效元数据。 |
+| `retrievers.<method>` | `object` | 下方历史 `retriever` 元数据，以及以下 Dense/融合字段。 |
+| `retrievers.<method>.dense` | `object` | 启用状态、上表 Dense 配置、模型/tokenizer 版本、问题前缀、归一化、相似度、索引类型和截断说明。 |
+| `retrievers.<method>.dense.enabled` | `boolean` | 是否启用 Dense。 |
+| `retrievers.<method>.dense.max_seq_length` | `integer` | $512$。 |
+| `retrievers.<method>.dense.model_name`, `tokenizer_revision`, `query_instruction`, `normalization`, `similarity_metric`, `index_type`, `truncation`, `truncation_observation` | `string` | 均为 `dense` 下的同级字段，说明精确编码规则；未测量实际截断频率。 |
+| `retrievers.Hybrid.candidate_k_per_source`, `retrievers.Hybrid.rrf_k`, `retrievers.Hybrid.final_top_k` | `integer` | $20$、$60$、$5$。 |
+| `retrievers.Hybrid.rerank_all_fused_candidates` | `boolean` | False。 |
+| `configuration_status`, `selection_rationale`, `record_number_scope`, `validation` | `string` | 冻结状态、开发选择依据、编号范围和核验说明。 |
+
+## `data/processed/annotation_pilot_multi_v2/annotator_A/` 和 `annotator_B/`
+
+使用 `python -m scripts.build_annotation_pool multi-pilot` 生成，每个槽位为本次 $5$ 道开发题生成一批英文 Markdown，正式新版导出待完成。公开算法与标注者身份，隐藏 gold、分数、排名、内部 ID 和对方标签，无 HTML 或备注栏。两路或三路共有配对只出现一次，按稳定编号排列；独有配对按所属算法原始排名排列。每批最多 $20$ 题，同题不拆批，空分组显示 `None`。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `Annotator:` | `text` | 填姓名或约定标识，不要求匿名。 |
+| `Question NNNN`, `Paper:` | `heading`, `text` | 顺序题号、真实标题，随后引用问题原文。 |
+| `Common Retrieved Chunks`, `BM25`, `Dense`, `Hybrid` | `level-three headings` | 共有组与三种算法独有组。 |
+| `Passage N`, `Relevance N` | `level-four headings` | 每位标注者每个唯一配对出现一次。 |
+| `Retrieved by:` | `text` | 全部真实算法来源。 |
+| `Label:` | `blank, 0 or 1` | 初始空白，独立填写二元相关性。 |
+
+### 历史 BM25 工作流
+
 将 `data/raw/`、`data/processed/` 与两份指南一起提交，无需 GitHub Releases。保留来源许可声明、上游 revision、生成参数、评估范围及配套 manifest。Git 历史记录每次发布快照，使用精确提交复现指定版本。
 
 在独立的本地暂存目录中重建变化的输出，保留标准文件名，同步重建依赖产物及 manifest。检查哈希与结构，并在两份指南中记录来源、参数、范围和变化后再提交。凭据、缓存、模型权重、索引及个人笔记不纳入共享快照。通过 `.gitattributes` 保留哈希绑定文件的原始字节。

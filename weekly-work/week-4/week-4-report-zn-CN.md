@@ -4,6 +4,12 @@
 
 截至 2026/10/28
 
+## 当前扩展：第 $2.3$ 步
+
+完成 BM25/Dense/Hybrid 开发试运行，按保存顺序取前 $5$ 道选参题。三路使用同一份 $365/40$ 语料、问题原文、所选论文的全部 passage 及 top-$5$，得到 $36$ 条唯一配对：共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对。所选 $5$ 篇论文共 $70$ 条 passage。`python -m scripts.build_annotation_pool multi-pilot` 导出到 `data/processed/annotation_pilot_multi_v2/`，结构化文件保留完整排名、分数和 gold 关联，两套独立英文 Markdown 模板公开算法来源并保留空标签，不展示 gold、分数和内部 ID。BGE small revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`、余弦相似度及等权 RRF $20/60$ 保存到 `frozen_config.json`，只验证开发可行性，未使用 held-out 选参。初步 `v1` 快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对及排名文件字节一致。
+
+定向测试 $46$ 项通过。独立落盘核验通过，覆盖输入、输出及当前源码哈希、问题原文、语料标题和正文、并集唯一性、各算法完整排名与 record 关联、检索后 gold 关联及标注视图字段隐藏。已同步双语数据指南和评估、需求记录。下方原 BM25 完成状态及盲审视图描述属于历史记录。下一步为第 $2.4$ 步跨分支实际使用审计；正式三算法扩池、held-out 资格复核、新版正式模板与人工判断待完成。本次未提交或推送。
+
 ## UI 论文选择目录
 
 完成轻量论文目录构建模块，从 `data/processed/papers.jsonl` 提取论文元数据，结合当前配置使用的 `data/processed/passages.jsonl` 生成可选论文和章节列表，供 UI 一次加载。目录仅收录实际存在 passage 的论文和章节；这里的可检索表示有 passage 可参与检索，不保证每次查询命中。UI 接入尚未完成。

@@ -1,5 +1,11 @@
 # Requirements and decisions
 
+## Week 4 multi-system extension status
+
+Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot with the first $5$ saved selection queries and the same $365/40$, original-query, paper-scoped top-$5$ contract. `configs/annotation_pilot.json` and `data/processed/annotation_pilot_multi_v2/frozen_config.json` record the successful BGE small pinned revision, cosine and RRF $20/60$ configuration. Source retrievers and public interfaces are reused unchanged; schemas remain `v0-proposed`. Full provenance and fields are in both data guides.
+
+The original BM25 $200$-question/$1{,}000$-pair pool below is historical. Formal expansion will require the cross-branch banned-list audit and held-out eligibility checks first. The intended common pool is $200$ questions and $5$–$15$ unique pairs per question, with actual $1{,}000$–$3{,}000$ pairs after deduplication. Original per-method top-$5$ ranks share one final relevance label per pair. The pilot discloses algorithm sources and annotator identity; gold evidence is confined to verification, and human labels remain empty. Formal expansion, new formal templates and independent human annotation are pending; the pilot does not establish current held-out eligibility or manual agreement. See `docs/EVALUATION.md` for the current protocol; older blind-view and fixed-count descriptions below apply only to BM25 history.
+
 ## Rubric mapping
 
 | Requirement supplied | Proposed evidence | Owner | Status |

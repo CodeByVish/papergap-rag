@@ -16,6 +16,8 @@ Update this file after the weekly meeting. Link to concrete issues, PRs, artifac
 
 ## Meeting actions
 
+2026/10/28: Week 4 Step $2.3$ completed a development-only three-retriever pilot in `data/processed/annotation_pilot_multi_v2/`: $5$ saved selection questions, $36$ unique pairs, $25$ common, $5$ BM25-only and $6$ Dense-only; no Hybrid-only pairs. Pinned BGE/cosine and RRF $20/60$ configuration is saved before future formal expansion. Source attribution is disclosed, human labels remain blank, and gold is kept in verification. Targeted tests: $46$ passed; independent persisted-artifact checks passed. The Week 4 BM25 snapshot in the table above is historical; cross-branch exclusions, current held-out eligibility and formal expansion remain pending. Next: TODO Step $2.4$.
+
 | Task / issue | Owner | Due | Required input | Reviewable output | Blocking? | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Confirm rubric document/record units | Team | Week 1 | Instructor clarification | Both interpretations confirmed; see REQUIREMENTS.md | No | Confirmed 16 Sep |

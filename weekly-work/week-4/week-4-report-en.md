@@ -4,6 +4,12 @@
 
 Status as of 2026/10/28
 
+## Current extension: Step $2.3$
+
+Completed the development-only BM25/Dense/Hybrid pilot with the first $5$ persisted chunk-selection questions. The same $365/40$ corpus, original queries, complete selected-paper scope and top-$5$ produce $36$ unique pairs: $25$ common, $5$ BM25-only, $6$ Dense-only and no Hybrid-only. The selected $5$ papers contain $70$ passages. `python -m scripts.build_annotation_pool multi-pilot` exports `data/processed/annotation_pilot_multi_v2/`, preserving complete ranks/scores and gold joins in structured files, and two independent English Markdown templates with disclosed sources and blank labels. Gold/scores/internal IDs stay out of the views. BGE small revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`, cosine and equal-weight RRF $20/60$ are frozen in `frozen_config.json`; feasibility was verified without held-out-driven selection. The preliminary `v1` snapshot is retained; `v2` follows an import-only lint correction and has identical pair/ranking bytes.
+
+Targeted tests: $46$ passed. Independent persisted checks passed for input/output/current source hashes, original queries, corpus titles/text, unique union, complete per-method rank-to-record joins, post-retrieval gold association and annotation projection. Both data guides and evaluation/requirements records are updated. Earlier BM25 completion and blind-view descriptions below are historical. The next task is Step $2.4$, the cross-branch actual-use audit; formal three-system expansion, held-out eligibility recheck, new formal templates and human judgments remain pending. No commit or push was performed.
+
 ## Paper catalog for UI selection
 
 Completed a lightweight paper catalog builder that extracts paper metadata from `data/processed/papers.jsonl` and combines it with `data/processed/passages.jsonl`, the passage corpus used by the current configuration, to produce paper and section lists for the UI to load once. The catalog includes only papers and sections that have passages; retrievable here means that passages are available for retrieval, without guaranteeing a match for every query. UI integration is not yet complete.
