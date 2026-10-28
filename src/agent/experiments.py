@@ -26,7 +26,7 @@ from typing import Any
 from src.agent.critic import CriticClient
 from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
-from src.agent.nodes import DEFAULT_TOP_K, MAX_RETRIES, Retriever
+from src.agent.nodes import DEFAULT_TOP_K, MAX_RETRIES, Retriever, SectionSelector
 from src.agent.schemas import AgentState, GapLabel
 
 AnswerFn = Callable[[dict[str, Any]], dict[str, Any]]
@@ -55,6 +55,8 @@ def run_system(
     max_retries: int = MAX_RETRIES,
     top_k: int = DEFAULT_TOP_K,
     answer_fn: AnswerFn | None = None,
+    on_record: Callable[[dict[str, Any]], None] | None = None,
+    section_selector: SectionSelector | None = None,
 ) -> list[dict[str, Any]]:
     """Run every item and return one exported record each.
 
@@ -62,12 +64,16 @@ def run_system(
     one question is recorded as `{"question_id", "error"}` and does not stop the run.
     With `answer_fn`, each successful record also gets `answer` (or `answer_error`
     if generation raised) and `answer_s`; `elapsed_s` still times the agent alone.
+    `on_record` is called with each finished record (including error records) so a
+    long job can write results as it goes and survive being killed.
+    `section_selector` scopes the adaptive arm's retries (src/agent/sections.py).
     """
     graph = build_agent_graph(
         retriever,
         max_retries=max_retries if adaptive else 0,
         top_k=top_k,
         critic_client=critic_client if adaptive else None,
+        section_selector=section_selector if adaptive else None,
     )
     records = []
     for item in items:
@@ -81,9 +87,10 @@ def run_system(
                 )
             )
         except Exception as error:  # noqa: BLE001 - keep a long run going
-            records.append(
-                {"question_id": item.question_id, "error": f"{type(error).__name__}: {error}"}
-            )
+            failed = {"question_id": item.question_id, "error": f"{type(error).__name__}: {error}"}
+            records.append(failed)
+            if on_record is not None:
+                on_record(failed)
             continue
         record = export_record(result)
         record["elapsed_s"] = time.perf_counter() - started
@@ -95,6 +102,8 @@ def run_system(
                 record["answer_error"] = f"{type(error).__name__}: {error}"
             record["answer_s"] = time.perf_counter() - answer_started
         records.append(record)
+        if on_record is not None:
+            on_record(record)
     return records
 
 
