@@ -57,6 +57,7 @@ data/
     ├── qasper_export.manifest.json
     ├── passages.jsonl
     ├── passages.manifest.json
+    ├── paper_catalog.json
     ├── passages_all_paper_text.jsonl
     ├── passages_all_paper_text.manifest.json
     ├── gold_evidence_mapping.jsonl
@@ -126,6 +127,35 @@ python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data
 | `figures_and_tables[].caption` | `string` | 原始图表说明。 |
 | `figures_and_tables[].file` | `string` | 源图表文件引用；并非随包提供的图片。 |
 | `source_split` | `string` | 官方划分：train、validation 或 test。 |
+
+## `data/processed/paper_catalog.json`
+
+供 UI 一次加载论文选择列表的轻量元数据，在选定的 passage 语料构建后生成；UI 尚未集成。下列命令使用 `configs/default.yaml` 中 `data.passages_path` 指定的语料。必填参数 `--passages` 必须指向 UI 检索实际使用的文件；语料变化后，在新的暂存路径重建目录，验证后再替换本地快照。脚本拒绝已存在的输出路径。
+
+### 生成命令
+
+```powershell
+python -m scripts.build_paper_catalog --papers data/processed/papers.jsonl --passages data/processed/passages.jsonl --output data/processed/paper_catalog.json
+```
+
+仅收录实际存在 passage 的论文和章节。导出文件中的论文 ID、语料中的 passage ID 必须唯一；每条 passage 必须有非空正文，并引用导出文件中的论文及规范化章节。论文按导出顺序排列；章节按 `full_text` 中首次出现的顺序排列，规范化后同名的章节合并计数，因为章节过滤使用名称。章节名遵循 passage 规范化规则：统一为 LF 换行并去除首尾空白。缺失或空白元数据字符串为 `null`，缺失作者列表为 `[]`，不推测补写作者。这里的可检索表示有 passage 可参与检索，不保证每次查询命中。
+
+### 字段表
+
+| 字段名 | JSON 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | 暂定目录协议，`v0-proposed`。 |
+| `passages_file` | `string` | 实际 `--passages` 输入路径，使用正斜杠；从仓库根目录构建时，相对路径以仓库根目录为基准。UI 检索必须使用同一份语料。 |
+| `papers` | `array<object>` | 至少有一条 passage 的可选论文。 |
+| `papers[].paper_id` | `string` | 唯一的源论文 ID。 |
+| `papers[].title` | `string or null` | 源标题，缺失时为 `null`。 |
+| `papers[].authors` | `array<string or null>` | 来源提供的作者；缺失字符串为 `null`，缺失作者列表为空。当前固定版本的 QASPER 导出不含作者。 |
+| `papers[].passage_count` | `integer` | 该论文在所选语料中的 passage 总数。 |
+| `papers[].sections` | `array<object>` | 所选语料中实际存在的章节，按原文顺序排列。 |
+| `papers[].sections[].name` | `string or null` | 规范化的源章节名；缺失且语料中存在空章节 passage 时为 `null`。当前语料构建器丢弃无名称章节。 |
+| `papers[].sections[].passage_count` | `integer` | 该论文、该章节名对应的 passage 数；各章节计数之和等于论文计数。 |
+
+本地复现时，先按本指南相应命令生成 `papers.jsonl` 和所选 passage 语料，再执行目录构建命令。使用 Release 时，遵循前述下载、校验及解压流程，保留与目录匹配的语料；若数据包未包含目录，可在本地生成。本次变更未发布目录的 Release 下载链接。路径只记录所选文件，不包含内容哈希；替换语料后必须重建目录。
 
 ## `data/processed/qa.jsonl`
 

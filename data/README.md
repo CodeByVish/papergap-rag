@@ -57,6 +57,7 @@ data/
     ├── qasper_export.manifest.json
     ├── passages.jsonl
     ├── passages.manifest.json
+    ├── paper_catalog.json
     ├── passages_all_paper_text.jsonl
     ├── passages_all_paper_text.manifest.json
     ├── gold_evidence_mapping.jsonl
@@ -126,6 +127,35 @@ python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data
 | `figures_and_tables[].caption` | `string` | Original figure/table caption. |
 | `figures_and_tables[].file` | `string` | Source figure/table file reference; not a bundled image. |
 | `source_split` | `string` | Official split: train, validation, or test. |
+
+## `data/processed/paper_catalog.json`
+
+Lightweight metadata for loading the UI paper selector once. Build it after the selected passage corpus; the UI is not integrated yet. The command below uses `data.passages_path` in `configs/default.yaml`. Always pass the exact file used by UI retrieval through the required `--passages` option; if that corpus changes, rebuild the catalog into a new staging path and replace the local snapshot only after validation. Existing output paths are rejected.
+
+### Generation command
+
+```powershell
+python -m scripts.build_paper_catalog --papers data/processed/papers.jsonl --passages data/processed/passages.jsonl --output data/processed/paper_catalog.json
+```
+
+Only papers and sections with passages appear. Paper IDs in the export and passage IDs in the corpus must be unique; every passage must have nonblank text and reference an exported paper and normalized source section. Papers retain export order; sections retain their first occurrence in `full_text`, with repeated normalized names merged because section filters use names. Section names follow passage normalization (LF line endings and trimmed outer whitespace). Missing/blank metadata strings become `null`, absent authors become `[]`; authors are never inferred. Here, retrievable means a passage exists, not that every query will return it.
+
+### Field table
+
+| Field name | JSON type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | Proposed catalog contract, `v0-proposed`. |
+| `passages_file` | `string` | Exact `--passages` input path with forward slashes; relative paths are relative to the repository root when built there. UI retrieval must use the same corpus. |
+| `papers` | `array<object>` | Selectable papers with at least one passage. |
+| `papers[].paper_id` | `string` | Unique source paper ID. |
+| `papers[].title` | `string or null` | Source title, or `null` when unavailable. |
+| `papers[].authors` | `array<string or null>` | Available source authors; missing strings are `null`, missing author lists are empty. The current pinned QASPER export has no authors. |
+| `papers[].passage_count` | `integer` | Total passage count for this paper in the selected corpus. |
+| `papers[].sections` | `array<object>` | Only sections represented in the selected corpus, in source order. |
+| `papers[].sections[].name` | `string or null` | Normalized source section name, or `null` when unavailable and represented by a null-section passage. The current builder drops unnamed sections. |
+| `papers[].sections[].passage_count` | `integer` | Passage count for this paper and section name; section counts sum to the paper count. |
+
+For local reproduction, first build `papers.jsonl` and the chosen passage corpus using their commands in this guide, then run the catalog command. For Release use, follow the download/checksum/extraction workflow above and retain the matching corpus with the catalog; if the package omits the catalog, reproduce it locally. No catalog Release download is published by this change. The path records the selected file, not a content hash; rebuild after corpus replacement.
 
 ## `data/processed/qa.jsonl`
 
