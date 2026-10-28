@@ -101,6 +101,13 @@ does not enter the held-out set.
 P1's manifest declares a CRLF hash (`0b50e6ee…`) while the committed LF file hashes to
 `89be5063…`; the ID set is identical. P1 should publish the canonical hash.
 
+**The proposed held-out pool needs cleaning before it can be frozen.** P3's
+`annotation_held_out` manifest (`v0-proposed`, 200 questions / 1,000 pairs) contains
+**95 questions from P1's train inventory**, of which **7 were answered by P5 in Week 3,
+Week 5 and Week 6**. The manifest is a proposal, not a freeze, so this is a pre-freeze
+correction: rebuild from the held-out split only or remove the full 2,595-ID development
+union. Details and the seven P5 IDs are in `docs/handoffs/p5_held_out_overlap.json`.
+
 ## 5. Open dependencies
 
 | dependency | owner | status | needed for |
