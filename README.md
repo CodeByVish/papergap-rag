@@ -21,7 +21,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
 | P5 | Pending | Generation, citations and answer API | QA and grounding |
-| P6 | Changyan | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
+| P6 | Changyan Xu | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.
 
@@ -44,7 +44,7 @@ python -m pip install -r requirements-dev.txt
 
 Windows activation: `.venv\Scripts\activate`.
 
-The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No application launch command exists yet.
+The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
 
 ## P1 retrieval: Week 1 / Week 2
 
