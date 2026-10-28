@@ -6,11 +6,116 @@ Raw and processed data and their manifests are tracked on the P3 working branch,
 
 ## Data versions and updates
 
-Week 4 Step $2.5$ is complete: the independent `qa_for_held_out_v2.jsonl` freezes $200$ eligible questions with zero banned overlap. Historical BM25 files are retired and retained with hashes; formal three-algorithm retrieval and new annotation exports remain pending. Current commands and fields are below; later legacy BM25 reproduction sections describe history only.
+Week 4 Step $2.5$ is complete: the independent `qa_for_held_out_v2.jsonl` freezes $200$ eligible questions with zero banned overlap. Historical BM25 files are retired and retained with hashes; formal three-algorithm retrieval is complete as documented below; new annotation exports remain pending. Current commands and fields are below; later legacy BM25 reproduction sections describe history only.
 
-Week 4 Step $2.4.2$ completes the scoped cross-branch exclusion inventory: P1's $2593$, P2's $106$ and P3's $250$ selection IDs merge into $2654$ unique banned questions. All qualifying overlapping sources are retained. No known eligibility records remain unresolved within this scope; unrecorded external/P4–P6 use is not claimed to be covered. Step $2.5$ reconstructs this inventory before the new freeze; add later explicit usage evidence in a new version before further sampling. Formal retrieval remains pending, and historical artifact bytes are unchanged.
+Week 4 Step $2.4.2$ completes the scoped cross-branch exclusion inventory: P1's $2593$, P2's $106$ and P3's $250$ selection IDs merge into $2654$ unique banned questions. All qualifying overlapping sources are retained. No known eligibility records remain unresolved within this scope; unrecorded external/P4–P6 use is not claimed to be covered. Step $2.5$ reconstructs this inventory before the new freeze; add later explicit usage evidence in a new version before further sampling. Formal retrieval is now complete under Step $2.6$; historical artifact bytes are unchanged.
 
-Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal expansion remains pending; Step $2.5$ completes renewed held-out eligibility checks. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
+Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal retrieval is complete under Step $2.6$; Step $2.5$ completes renewed held-out eligibility checks. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
+
+Step $2.6$ now saves fresh formal BM25/Dense/Hybrid retrieval under `data/processed/annotation_common_v2/`. It consumes the persisted $200$-question freeze without resampling, validates the full banned inventory and all historical hashes, and copies the development-frozen $365/40$/paper-scoped/top-$5$ settings before indexing. Every source retains all native ranks/scores; the unique union has one null final label per pair. No historical retrieval result is reused. Gold evidence is not joined in this step. New Markdown export and human annotation remain Steps $2.8$–$2.9$.
+
+Obtain these files and matching inputs from the GitHub P3 branch together with the other tracked data. For local reproduction use `python -m src.data.build_common_pool run --output tmp/tmp_annotation_common_v2`; an existing directory is refused. Load the pinned model from ignored `.cache/huggingface/` as in the pilot instructions below. The CLI sets `HF_HUB_OFFLINE=1` before model imports and restores it afterward. The first attempt omitted this existing development wrapper policy and failed during an optional processor probe before dense indexing completed, with no rankings or pairs produced; its three pre-run files are retained locally in `tmp/tmp_common_pool_failed_processor/`. The successful run changes no retrieval parameters. Use original algorithm ranks with common final labels, never Markdown display order. Unpooled passages remain unjudged; pool Recall@K uses relevant judged union pairs as its denominator, while gold-evidence recall has separate mapping/coverage limits. Isolation is question-level and permits shared papers; no held-out-driven tuning is allowed.
+
+Formal validation: $200$ questions, $1000$ hits per method, $600$ ranking rows, $1532$ unique pairs and $5$–$11$ pairs per question. Common: $975$; BM25-only: $277$; Dense-only: $254$; Hybrid-only: $26$. All labels are null; no human annotation has been completed.
+
+## `data/processed/annotation_common_v2/questions.jsonl`
+
+Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id`, `paper_id` | `string` | Canonical identifiers in saved question order. |
+| `question` | `string` | Original unmodified question. |
+| `source_split` | `string` | Official provenance; no split filter. |
+
+## `data/processed/annotation_common_v2/pairs.jsonl`
+
+Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `record_number` | `integer` | Stable numbering within this formal version, starting at one. |
+| `question_id`, `paper_id`, `passage_id` | `string` | Unique question/passage pair and paper scope. |
+| `source_split`, `question`, `paper_title`, `passage` | `string` | Provenance, original query, real title and full passage text. |
+| `label` | `null` | One shared final relevance label; all initially null. |
+| `retrieved_by[]` | `string` | Ordered BM25/Dense/Hybrid sources. |
+| `retrievals[]` | `object` | One native retrieval relation per source. |
+| `retrievals[].method` | `string` | BM25, Dense or Hybrid. |
+| `retrievals[].rank` | `integer` | Original one-based algorithm rank, one through five. |
+| `retrievals[].score` | `number` | Finite native BM25, cosine or RRF score. |
+| `display_group` | `string` | Common Retrieved Chunks for at least two sources; otherwise the sole method. |
+
+## `data/processed/annotation_common_v2/rankings.jsonl`
+
+Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id`, `method` | `string` | One row per frozen question and method. |
+| `hits[]` | `object` | Exactly five distinct same-paper hits in native rank order. |
+| `hits[].passage_id` | `string` | Canonical corpus passage ID. |
+| `hits[].record_number` | `integer` | Foreign key to the single union pair. |
+| `hits[].rank` | `integer` | Original rank, one through five. |
+| `hits[].score` | `number` | Unmodified finite method score. |
+
+## `data/processed/annotation_common_v2/frozen_config.json`
+
+Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed. |
+| `chunk_size_words`, `chunk_overlap_words`, `top_k`, `question_count` | `integer` | $365$, $40$, $5$ and $200$. |
+| `question_selection`, `scope`, `record_order`, `label_policy` | `string` | Saved questions, paper scope, stable first-encounter numbering and one null label per pair. |
+| `execution.HF_HUB_OFFLINE`, `execution.model_loading` | `string` | Offline setting 1 and the same loading policy as the development CLI. |
+| `retrieval` | `object` | Normalized pilot retrieval configuration; fields described in the pilot frozen-config section. |
+| `retrieval.mode` | `string` | hybrid; no reranker. |
+| `retrieval.candidate_k`, `retrieval.rrf_k` | `integer` | $20$ and $60$; equal-weight RRF. |
+| `retrieval.dense` | `object` | revision/device/batch_size/cache_folder/local_files_only as documented for the pilot; values unchanged. |
+| `retrieval.reranker` | `object` | Inactive normalized defaults; not loaded or used in this run. |
+| `retrieval.reranker.revision`, `retrieval.reranker.device`, `retrieval.reranker.cache_folder` | `string` | Inactive revision, CPU and local cache path. |
+| `retrieval.reranker.batch_size`, `retrieval.reranker.max_length` | `integer` | Inactive defaults $8$ and $512$. |
+| `retrieval.reranker.local_files_only` | `boolean` | Inactive offline default, true. |
+| `retrievers.<method>` | `object` | Complete effective metadata, including nested bm25/dense/reranker, package versions and fusion settings; same fields as the pilot manifest retrievers table. |
+| `retrievers.<method>.id`, `retrievers.<method>.mode`, `retrievers.<method>.source_commit`, `retrievers.<method>.scope`, `retrievers.<method>.score`, `retrievers.<method>.tie_break` | `string` | Implementation identity, method, upstream commit, paper scope, native score semantics and tie rules. |
+| `retrievers.<method>.packages.<package>` | `string` | Installed dependency versions. |
+| `retrievers.<method>.persistent_score_cache`, `retrievers.<method>.bm25.enabled`, `retrievers.<method>.dense.enabled`, `retrievers.<method>.reranker.enabled` | `boolean` | Cache/component flags; no persistent score cache or reranker. |
+| `retrievers.<method>.bm25.tokenizer` | `string` | Casefold plus Unicode word runs; absent for standalone Dense. |
+| `retrievers.<method>.bm25.k1`, `retrievers.<method>.bm25.b`, `retrievers.<method>.bm25.epsilon` | `number` | Active BM25 parameters $1.5$, $0.75$, $0.25$. |
+| `retrievers.<method>.dense.revision`, `retrievers.<method>.dense.device`, `retrievers.<method>.dense.cache_folder`, `retrievers.<method>.dense.model_name`, `retrievers.<method>.dense.tokenizer_revision`, `retrievers.<method>.dense.query_instruction`, `retrievers.<method>.dense.normalization`, `retrievers.<method>.dense.similarity_metric`, `retrievers.<method>.dense.index_type`, `retrievers.<method>.dense.truncation`, `retrievers.<method>.dense.truncation_observation` | `string` | Active dense model/encoding metadata, as specified in the pilot table. |
+| `retrievers.<method>.dense.batch_size`, `retrievers.<method>.dense.max_seq_length` | `integer` | Active dense batch size $32$ and token limit $512$. |
+| `retrievers.<method>.dense.local_files_only` | `boolean` | True for active Dense/Hybrid model loading. |
+| `retrievers.Hybrid.candidate_k_per_source`, `retrievers.Hybrid.rrf_k`, `retrievers.Hybrid.final_top_k` | `integer` | $20$, $60$ and $5$. |
+| `retrievers.Hybrid.rerank_all_fused_candidates` | `boolean` | False. |
+
+## `data/processed/annotation_common_v2/run_inputs.json`
+
+Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `inputs.<path>` | `string` | Pre-run exact-byte SHA-256 of config, pilot freeze, held-out list/manifest, bans, corpus, QA/papers and retirement. |
+| `code.commit`, `code.python` | `string` | HEAD and Python version captured before retrieval. |
+| `code.working_tree_status[]` | `string` | Saved Git short status, including uncommitted implementation. |
+| `code.source_sha256.<path>` | `string` | Exact implementation hashes; src and script sources checked again before writing results. |
+
+## `data/processed/annotation_common_v2/manifest.json`
+
+Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `reason`, `reuse_policy`, `usage_boundary` | `string` | Proposed formal version, rebuild reason, no old-result reuse and evaluation boundaries. |
+| `historical_retained_files.<path>` | `string` | All 25 retired BM25 paths and unchanged byte hashes. |
+| `settings` | `object` | Exact frozen_config.json object; nested fields above. |
+| `inputs.<path>`, `outputs.<path>` | `string` | Exact input/output hashes; manifest does not hash itself. |
+| `code` | `object` | Same nested fields as run_inputs.json above. |
+| `indexed_paper_count`, `indexed_passage_count` | `integer` | Complete selected-paper index size, equivalent under paper-scoped retrieval. |
+| `validation.question_count`, `validation.pair_count`, `validation.ranking_count`, `validation.hits_per_method` | `integer` | 200 questions, actual union size, 600 ranking rows and 1000 hits per method. |
+| `validation.pair_counts_per_question.<question_id>`, `validation.group_counts.<group>` | `integer` | Actual per-question and source-group unique-pair counts. |
+| `validation.pair_count_range[]` | `integer` | Observed minimum and maximum, each within five to fifteen. |
+| `runtime.platform`, `runtime.processor`, `runtime.timing_policy` | `string` | Host details and single-run index-plus-retrieval timing policy; not a latency benchmark. |
+| `runtime.elapsed_seconds` | `number` | Index and retrieval wall time in seconds. |
 
 ## `data/processed/qa_for_held_out_v2.jsonl`
 
@@ -55,7 +160,7 @@ Generated by `python -m src.data.freeze_held_out freeze` and reconstructed by `v
 | `validation.exactly_200_unique`, `validation.banned_intersection_empty`, `validation.at_least_five_passages_per_paper` | `boolean` | Cardinality, exclusion and corpus-capacity checks. |
 | `validation.canonical_question_text`, `validation.retained_history_hashes_verified`, `validation.exclusion_inventory_reconstructed` | `boolean` | Original text, unchanged history and complete banned-inventory reconstruction checks. |
 | `output.path`, `output.sha256` | `string` | Versioned question-list path and exact byte hash. |
-| `next_action` | `string` | Fresh three-algorithm retrieval pending under Step $2.6$. |
+| `next_action` | `string` | Generation-time next action retained verbatim; Step $2.6$ retrieval is now complete in the independent common-pool directory. |
 
 ## `data/processed/historical_bm25_retirement.manifest.json`
 

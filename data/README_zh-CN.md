@@ -6,11 +6,116 @@
 
 ## 数据版本与更新
 
-Week 4 第 $2.5$ 步已完成：独立的 `qa_for_held_out_v2.jsonl` 冻结 $200$ 道合格题，与禁用题单无交集。原 BM25 文件已停用，保留原位及哈希；正式三算法检索和新版标注导出仍待执行。当前命令和字段见下方新增章节，后文旧 BM25 复现章节仅描述历史。
+Week 4 第 $2.5$ 步已完成：独立的 `qa_for_held_out_v2.jsonl` 冻结 $200$ 道合格题，与禁用题单无交集。原 BM25 文件已停用，保留原位及哈希；正式三算法检索已完成，见下方共同池章节；新版标注导出仍待执行。当前命令和字段见下方新增章节，后文旧 BM25 复现章节仅描述历史。
 
-Week 4 第 $2.4.2$ 步已完成本次范围内的跨分支禁用题单：P1 的 $2593$ 题、P2 的 $106$ 题及 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。范围内无已知待核实资格记录，不声称覆盖未记录的外部/P4–P6 用题。第 $2.5$ 步在新版冻结前重建核验此清单；后续明确新增证据须在再次抽样前补充新版本。正式检索仍待执行，历史产物字节未改动。
+Week 4 第 $2.4.2$ 步已完成本次范围内的跨分支禁用题单：P1 的 $2593$ 题、P2 的 $106$ 题及 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。范围内无已知待核实资格记录，不声称覆盖未记录的外部/P4–P6 用题。第 $2.5$ 步在新版冻结前重建核验此清单；后续明确新增证据须在再次抽样前补充新版本。正式检索已在第 $2.6$ 步完成，历史产物字节未改动。
 
-Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法扩池尚未完成；第 $2.5$ 步已完成新版 held-out 资格复核。不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法检索已在第 $2.6$ 步完成；第 $2.5$ 步已完成新版 held-out 资格复核。不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+
+第 $2.6$ 步正式 BM25/Dense/Hybrid 检索保存到 `data/processed/annotation_common_v2/`。直接消费已保存的 $200$ 题，不重新抽题；核验完整禁用清单及全部历史哈希，建索引前保存开发已冻结的 $365/40$/paper-scoped/top-$5$ 配置。各算法保留全部原始排名/分数，每条并集配对共享一份空标签，不复用历史检索结果。本步不关联 gold evidence；新版 Markdown 导出和人工标注仍属第 $2.8$–$2.9$ 步。
+
+从 GitHub P3 分支与其他受跟踪数据一起获取这些文件及匹配输入。本地复现使用 `python -m src.data.build_common_pool run --output tmp/tmp_annotation_common_v2`，拒绝已有目录。按下方开发指引将固定模型放入已忽略的 `.cache/huggingface/`；CLI 在导入模型前设置 `HF_HUB_OFFLINE=1` 并在结束后恢复。首次启动遗漏开发入口已有的离线包装，在可选 processor 探测阶段失败，尚未完成 Dense 索引，未生成排名或配对；其三份运行前文件本地保留于 `tmp/tmp_common_pool_failed_processor/`。成功运行未改变检索参数。计算指标时将各算法原始排名关联共同最终标签，不用 Markdown 展示顺序。候选池外 passage 未判断；池内 Recall@K 的分母为并集中已判断相关的配对，gold-evidence recall 另受映射覆盖限制。采用问题层面隔离，允许共享论文，禁止按 held-out 调参。
+
+正式核验结果：$200$ 题，每算法 $1000$ 次命中，$600$ 行排名，合并为 $1532$ 条唯一配对，每题 $5$–$11$ 条；Common $975$、BM25 独有 $277$、Dense 独有 $254$、Hybrid 独有 $26$。初始标签均为空，尚未进行人工标注。
+
+## `data/processed/annotation_common_v2/questions.jsonl`
+
+使用 `python -m src.data.build_common_pool run` 生成，使用 `python -m src.data.build_common_pool verify` 核验。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `paper_id` | `string` | 原始 ID，保持冻结题单顺序。 |
+| `question` | `string` | 未经修改的问题原文。 |
+| `source_split` | `string` | 官方来源，不按 split 筛选。 |
+
+## `data/processed/annotation_common_v2/pairs.jsonl`
+
+使用 `python -m src.data.build_common_pool run` 生成，使用 `python -m src.data.build_common_pool verify` 核验。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 本正式版本内从一开始的稳定编号。 |
+| `question_id`, `paper_id`, `passage_id` | `string` | 唯一问题/passage 配对及论文范围。 |
+| `source_split`, `question`, `paper_title`, `passage` | `string` | 来源、问题原文、真实标题及完整 passage 正文。 |
+| `label` | `null` | 共享一份最终相关性标签，初始均为空。 |
+| `retrieved_by[]` | `string` | 按 BM25/Dense/Hybrid 顺序保存真实来源。 |
+| `retrievals[]` | `object` | 每个来源对应一份原始检索关系。 |
+| `retrievals[].method` | `string` | BM25、Dense 或 Hybrid。 |
+| `retrievals[].rank` | `integer` | 算法原始排名，从一至五。 |
+| `retrievals[].score` | `number` | 有限的原始 BM25、余弦或 RRF 分数。 |
+| `display_group` | `string` | 至少两路命中归 Common Retrieved Chunks，否则归唯一算法。 |
+
+## `data/processed/annotation_common_v2/rankings.jsonl`
+
+使用 `python -m src.data.build_common_pool run` 生成，使用 `python -m src.data.build_common_pool verify` 核验。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `method` | `string` | 每道冻结问题、每种算法一行。 |
+| `hits[]` | `object` | 按原始排名保存恰好五个不同的同论文命中。 |
+| `hits[].passage_id` | `string` | 语料原始 passage ID。 |
+| `hits[].record_number` | `integer` | 关联唯一并集配对的稳定编号。 |
+| `hits[].rank` | `integer` | 一至五的原始排名。 |
+| `hits[].score` | `number` | 未经修改的有限算法分数。 |
+
+## `data/processed/annotation_common_v2/frozen_config.json`
+
+使用 `python -m src.data.build_common_pool run` 生成，使用 `python -m src.data.build_common_pool verify` 核验。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed。 |
+| `chunk_size_words`, `chunk_overlap_words`, `top_k`, `question_count` | `integer` | $365$、$40$、$5$ 和 $200$。 |
+| `question_selection`, `scope`, `record_order`, `label_policy` | `string` | 保存题单、论文范围、首次遇见顺序编号及每条配对一份空标签。 |
+| `execution.HF_HUB_OFFLINE`, `execution.model_loading` | `string` | 离线值 1，与开发入口相同的模型加载策略。 |
+| `retrieval` | `object` | 规范化的开发冻结配置，字段见开发 frozen-config 章节。 |
+| `retrieval.mode` | `string` | hybrid，不使用重排器。 |
+| `retrieval.candidate_k`, `retrieval.rrf_k` | `integer` | $20$ 和 $60$，等权 RRF。 |
+| `retrieval.dense` | `object` | revision/device/batch_size/cache_folder/local_files_only 见开发章节，值未改变。 |
+| `retrieval.reranker` | `object` | 规范化后的未启用默认值，本次不加载或使用。 |
+| `retrieval.reranker.revision`, `retrieval.reranker.device`, `retrieval.reranker.cache_folder` | `string` | 未启用的 revision、CPU 及本地缓存路径。 |
+| `retrieval.reranker.batch_size`, `retrieval.reranker.max_length` | `integer` | 未启用的默认值 $8$ 和 $512$。 |
+| `retrieval.reranker.local_files_only` | `boolean` | 未启用的离线默认值 true。 |
+| `retrievers.<method>` | `object` | 完整生效元数据，包括嵌套 bm25/dense/reranker、依赖版本和融合配置；字段与开发 manifest 的 retrievers 表一致。 |
+| `retrievers.<method>.id`, `retrievers.<method>.mode`, `retrievers.<method>.source_commit`, `retrievers.<method>.scope`, `retrievers.<method>.score`, `retrievers.<method>.tie_break` | `string` | 实现标识、算法、上游提交、论文范围、原始分数含义及并列规则。 |
+| `retrievers.<method>.packages.<package>` | `string` | 已安装依赖版本。 |
+| `retrievers.<method>.persistent_score_cache`, `retrievers.<method>.bm25.enabled`, `retrievers.<method>.dense.enabled`, `retrievers.<method>.reranker.enabled` | `boolean` | 缓存及组件开关，不使用持久化分数缓存或重排器。 |
+| `retrievers.<method>.bm25.tokenizer` | `string` | Casefold 加 Unicode 单词序列，独立 Dense 不含此字段。 |
+| `retrievers.<method>.bm25.k1`, `retrievers.<method>.bm25.b`, `retrievers.<method>.bm25.epsilon` | `number` | 生效的 BM25 参数 $1.5$、$0.75$、$0.25$。 |
+| `retrievers.<method>.dense.revision`, `retrievers.<method>.dense.device`, `retrievers.<method>.dense.cache_folder`, `retrievers.<method>.dense.model_name`, `retrievers.<method>.dense.tokenizer_revision`, `retrievers.<method>.dense.query_instruction`, `retrievers.<method>.dense.normalization`, `retrievers.<method>.dense.similarity_metric`, `retrievers.<method>.dense.index_type`, `retrievers.<method>.dense.truncation`, `retrievers.<method>.dense.truncation_observation` | `string` | 生效的 Dense 模型及编码元数据，具体含义见开发字段表。 |
+| `retrievers.<method>.dense.batch_size`, `retrievers.<method>.dense.max_seq_length` | `integer` | 生效的 Dense batch size $32$、token 上限 $512$。 |
+| `retrievers.<method>.dense.local_files_only` | `boolean` | 生效的 Dense/Hybrid 模型采用 true，离线加载。 |
+| `retrievers.Hybrid.candidate_k_per_source`, `retrievers.Hybrid.rrf_k`, `retrievers.Hybrid.final_top_k` | `integer` | $20$、$60$ 和 $5$。 |
+| `retrievers.Hybrid.rerank_all_fused_candidates` | `boolean` | False。 |
+
+## `data/processed/annotation_common_v2/run_inputs.json`
+
+使用 `python -m src.data.build_common_pool run` 生成，使用 `python -m src.data.build_common_pool verify` 核验。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `inputs.<path>` | `string` | 运行前配置、开发冻结、题单/manifest、禁用清单、语料、QA/论文及停用记录的精确字节 SHA-256。 |
+| `code.commit`, `code.python` | `string` | 检索前记录的 HEAD 与 Python 版本。 |
+| `code.working_tree_status[]` | `string` | 保存的 Git 短状态，包括未提交实现。 |
+| `code.source_sha256.<path>` | `string` | 精确实现哈希，写结果前重新检查 src 和 scripts。 |
+
+## `data/processed/annotation_common_v2/manifest.json`
+
+使用 `python -m src.data.build_common_pool run` 生成，使用 `python -m src.data.build_common_pool verify` 核验。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `reason`, `reuse_policy`, `usage_boundary` | `string` | 提议中的正式版本、重建原因、不复用旧结果及评估边界。 |
+| `historical_retained_files.<path>` | `string` | 全部 25 个旧 BM25 文件路径及未变的字节哈希。 |
+| `settings` | `object` | 与 frozen_config.json 一致，嵌套字段见上文。 |
+| `inputs.<path>`, `outputs.<path>` | `string` | 精确输入/输出哈希，manifest 不包含自身哈希。 |
+| `code` | `object` | 嵌套字段与上文 run_inputs.json 一致。 |
+| `indexed_paper_count`, `indexed_passage_count` | `integer` | 索引包含所选论文全部 passage，与全语料的 paper-scoped 检索等价。 |
+| `validation.question_count`, `validation.pair_count`, `validation.ranking_count`, `validation.hits_per_method` | `integer` | 200 题、实际并集数量、600 行排名及每算法 1000 次命中。 |
+| `validation.pair_counts_per_question.<question_id>`, `validation.group_counts.<group>` | `integer` | 每题及来源分组的实际唯一配对数量。 |
+| `validation.pair_count_range[]` | `integer` | 实际最小/最大值，均在五至十五范围内。 |
+| `runtime.platform`, `runtime.processor`, `runtime.timing_policy` | `string` | 主机及单次建索引加检索的计时规则，不作为延迟基准。 |
+| `runtime.elapsed_seconds` | `number` | 建索引及检索墙钟秒数。 |
 
 ## `data/processed/qa_for_held_out_v2.jsonl`
 
@@ -55,7 +160,7 @@ python -m src.data.freeze_held_out verify
 | `validation.exactly_200_unique`, `validation.banned_intersection_empty`, `validation.at_least_five_passages_per_paper` | `boolean` | 题数/唯一性、禁用交集及论文容量检查。 |
 | `validation.canonical_question_text`, `validation.retained_history_hashes_verified`, `validation.exclusion_inventory_reconstructed` | `boolean` | 原文一致、历史字节未改动及完整禁用题单重建检查。 |
 | `output.path`, `output.sha256` | `string` | 独立版本题单路径及字节哈希。 |
-| `next_action` | `string` | 第 $2.6$ 步待执行新的三算法检索。 |
+| `next_action` | `string` | 原样保留生成时的下一步说明；第 $2.6$ 步检索现已在独立共同池目录完成。 |
 
 ## `data/processed/historical_bm25_retirement.manifest.json`
 
@@ -1017,7 +1122,7 @@ dataset = datasets.load_dataset(
 
 ## 历史 BM25 标注候选池复现与使用
 
-本节及后续原 `qa_for_held_out` / `annotation_held_out` 字段表仅描述已停用的 BM25 版本。下方命令属于历史记录，停用标记会阻止旧版冻结/正式导出。当前题单使用上方独立 `v2` 命令复现；正式共同评估池检索/导出仍待执行。
+本节及后续原 `qa_for_held_out` / `annotation_held_out` 字段表仅描述已停用的 BM25 版本。下方命令属于历史记录，停用标记会阻止旧版冻结/正式导出。当前题单使用上方独立 `v2` 命令复现；正式共同池检索已完成；新版标注导出仍待执行。
 
 旧参数 `--scope all-splits-testing` 仍作为 `all-splits-reference` 的兼容别名，不再代表放弃 held-out 状态。可显式用 `--scope development` 生成独立命名的 `gold_evidence_mapping_development` 文件；本次数据包不保留该产物。排除 gold 映射中 $251$ 道已用题及 $1$ 道所属论文不足 $5$ 个块的题后，合格池有 $3{,}077$ 个 ID；另有 $2$ 个已用 ID 不在 gold 映射中。最终来源为 train $95$ 题、validation $40$ 题、test $65$ 题。
 
