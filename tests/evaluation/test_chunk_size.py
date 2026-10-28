@@ -12,7 +12,9 @@ from pathlib import Path
 
 import pytest
 
+from scripts.build_corpus import build_corpus
 from src.data.chunking import ChunkingConfig, build_passages_from_record
+from src.data.export_evidence_mapping import export_evidence_mapping, map_question
 from src.data.passage_ids import PassageIdContext
 from src.data.qasper_export import export_qasper
 from src.evaluation.chunk_size_metrics import (
@@ -117,6 +119,94 @@ def test_combined_coverage_and_annotation_groups() -> None:
     assert combined["total_retrieved_words"] == 8
     complete = evaluate_question(annotations, paragraphs, chunks)
     assert complete["fully_covered_annotations"] == ["both", "first"]
+
+
+def test_export_mapping_preserves_partial_spans_and_answer_groups() -> None:
+    """Map all chunks while retaining separate alternative answer evidence sets.
+
+    A partial overlap is never reported as full paragraph coverage, and removing
+    necessary chunks excludes the question rather than yielding incomplete gold.
+    """
+    paper = synthetic_paper()
+    paragraphs = source_paragraphs(paper)
+    chunks = chunk_paper(paper, 4, 2)
+    spans = {item['passage_id']: item['spans'] for item in chunks}
+    question = synthetic_question()
+    question['search_query'] = 'synthetic search'
+    question['answers'][0]['worker_id'] = 'synthetic-worker'
+    mapped = map_question(question, paragraphs, spans)
+    assert mapped is not None
+    assert mapped['qa_metadata'] == {'search_query': 'synthetic search'}
+    assert mapped['annotations'][0]['worker_id'] == 'synthetic-worker'
+    assert [len(item['evidence_locations']) for item in mapped['annotations']] == [2, 1]
+    first = mapped['evidence_paragraphs'][0]
+    assert len(first['passage_matches']) > 1
+    assert not any(item['covers_full_paragraph'] for item in first['passage_matches'])
+    assert first['fully_covered_by_passage_union']
+    for item in mapped['evidence_paragraphs']:
+        for match in item['passage_matches']:
+            start, end = match['source_char_span']
+            assert item['text'][start:end].strip()
+    assert map_question(synthetic_question(), paragraphs, {}) is None
+    invalid = synthetic_question()
+    invalid['answers'][1]['answer']['evidence'] = []
+    assert map_question(invalid, paragraphs, spans) is None
+
+
+@pytest.mark.parametrize('scope', ['development', 'all-splits-testing'])
+def test_mapping_export_verifies_corpus_and_excludes_held_out(
+    exported_inputs: tuple[Path, Path, Path, Path], tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch, scope: str,
+) -> None:
+    """Export all eligible development records and reject stale corpus bytes.
+
+    The fixture also has invalid train evidence and a fully usable test question;
+    test is included only in explicit ordinary-testing mode. Existing outputs
+    must remain intact on rerun.
+    """
+    papers, qa, export_manifest, _ = exported_inputs
+    monkeypatch.setattr('scripts.build_corpus.MIN_PASSAGES', 1)
+    monkeypatch.setattr('scripts.build_corpus.MIN_WORDS', 1)
+    passages = tmp_path / 'tmp_passages.jsonl'
+    passages_manifest = tmp_path / 'tmp_passages.manifest.json'
+    build_corpus(
+        papers=papers, export_manifest=export_manifest, output=passages,
+        manifest_output=passages_manifest, chunk_size_words=4, chunk_overlap_words=2,
+        scope='all-paper-text' if scope == 'all-splits-testing' else 'development',
+    )
+    arguments = {
+        'papers': papers, 'qa': qa, 'export_manifest': export_manifest,
+        'passages': passages, 'passages_manifest': passages_manifest,
+        'output': tmp_path / 'tmp_mapping.jsonl',
+        'manifest_output': tmp_path / 'tmp_mapping.manifest.json',
+        'scope': scope,
+    }
+    manifest = export_evidence_mapping(**arguments)
+    rows = [json.loads(line) for line in arguments['output'].read_text(encoding='utf-8').splitlines()]
+    expected_ids = ['question-train', 'question-validation']
+    if scope == 'all-splits-testing':
+        expected_ids.insert(0, 'question-test')
+        assert 'no independent held-out claim' in manifest['evaluation_design']
+        assert manifest['filtering_counts']['test']['eligible'] == 1
+    else:
+        assert manifest['filtering_counts']['test']['held_out_excluded'] == 1
+    assert [row['question_id'] for row in rows] == expected_ids
+    assert manifest['filtering_counts']['train'] == {
+        'total': 3, 'eligible': 1, 'invalid_or_uncovered_answer_evidence': 2,
+    }
+    corpus_ids = {json.loads(line)['passage_id'] for line in passages.read_text(encoding='utf-8').splitlines()}
+    assert all(set(row['gold_passage_ids']) <= corpus_ids for row in rows)
+    assert manifest['output']['sha256'] == hashlib.sha256(arguments['output'].read_bytes()).hexdigest()
+    before = arguments['output'].read_bytes()
+    with pytest.raises(FileExistsError):
+        export_evidence_mapping(**arguments)
+    assert arguments['output'].read_bytes() == before
+    arguments['output'] = tmp_path / 'tmp_bad_mapping.jsonl'
+    arguments['manifest_output'] = tmp_path / 'tmp_bad_mapping.manifest.json'
+    passages.write_bytes(passages.read_bytes() + b'\n')
+    with pytest.raises(ValueError, match='passage hash'):
+        export_evidence_mapping(**arguments)
+    assert not arguments['output'].exists()
 
 
 @pytest.mark.parametrize(

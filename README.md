@@ -1,5 +1,7 @@
 # PaperGap
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
 **Status:** P3 data preparation and chunk-size evaluation integrate P1/P2 static BM25, dense, hybrid and reranked retrieval. Offline tests cover these paths; real-model runs remain unverified. Generation and the UI are not integrated yet.
@@ -10,6 +12,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Requirements and open decisions](docs/REQUIREMENTS.md): rubric mapping and decisions to resolve in Week 1.
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
+- [Local data and JSONL fields](data/README.md): complete QA exports, gold evidence-to-passage mappings, and ordinary-testing scope across all official splits.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
 - [Chunk-size experiment](experiments/chunk_size/README.md): compare word-based chunks and export evidence and readability reviews using P1/P2 retrieval, defaulting to BM25. Select other modes through the JSON `retrieval` block; models load offline by default.
 
@@ -50,22 +53,24 @@ The dependency files are provisional ranges, not a tested lockfile. Installation
 ## Repository layout
 
 ```text
-docs/                 Plan, requirements, evaluation and team tracker
-configs/              Proposed shared configuration
-src/data/             P3: data preparation
-src/retrieval/        P1/P2: retrievers, fusion and reranking
-src/agent/            P4: planning and adaptive retrieval
-src/generation/       P5: generation and citation validation
-src/evaluation/       P6 + experiment owners: metrics and logging
-src/ui/               P6: Streamlit
-scripts/              Reproducible command-line entry points
-tests/                Module and integration tests
-data/                Local datasets (ignored except README)
-results/              Shared experiment metrics, reports and reproducibility records
+papergap-rag/
+├── docs/             # Plan, requirements, evaluation and team tracker
+├── configs/          # Proposed shared configuration
+├── src/
+│   ├── data/         # P3: data preparation
+│   ├── retrieval/    # P1/P2: retrievers, fusion and reranking
+│   ├── agent/        # P4: planning and adaptive retrieval
+│   ├── generation/   # P5: generation and citation validation
+│   ├── evaluation/   # P6 + experiment owners: metrics and logging
+│   └── ui/           # P6: Streamlit
+├── scripts/          # Reproducible command-line entry points
+├── tests/            # Module and integration tests
+├── data/             # Local datasets (ignored except README)
+└── results/          # Shared experiment metrics, reports and reproducibility records
 ```
 
 ## Assignment delivery
 
-Deadline supplied: **7 November, 11:59 PM SGT**. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
+Deadline supplied: **7 November, 23:59 SGT**. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
 
 **Rubric clarification confirmed by the team:** passage chunks count toward 10,000 documents, and query–passage pairs count toward 1,000 evaluation records. Actual corpus size and annotation agreement still need verification; see [requirements](docs/REQUIREMENTS.md).

@@ -2,6 +2,8 @@
 
 ## Annotation and held-out data
 
+For ordinary testing, the P3 exporter also supports the user-selected `all-splits-testing` design documented in `data/README.md`: all three official splits are eligible for evidence mapping, and `test` is no longer treated as an independent held-out set in that export. Its manifest records this evaluation design explicitly. These ordinary-test results do not demonstrate independent held-out performance or complete the final held-out freeze described below; default development exports and other held-out workflows retain their existing boundaries.
+
 The team confirmed that query–passage pairs count as evaluation records; the proposed design is 100 questions / 1,000 unique pairs. Freeze the chunker before mapping evidence or creating the final annotation pool. Select disjoint development pilot records in Week 2, run a 30–50-record pilot in Week 3, and resolve guideline ambiguity before the Week 5 held-out pool.
 
 Use two independent, blinded judgments per record. Proposed labels are binary relevance (0/1); P3/P5/P6 must define how partial evidence is treated before annotation. Hide retrieval system, score and other annotator's label. Include varied question types, hard negatives and unanswerable examples where practical. Deduplicate by question ID and passage ID. Ten distinct passages may not exist for every paper: validate this before selecting questions; never duplicate records to reach 1,000.

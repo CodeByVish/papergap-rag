@@ -6,23 +6,27 @@ The tree below shows the local layout after acquisition and export. Raw and proc
 
 ```text
 data/
-├── README.md                                 # Acquisition, processing, data contracts, and usage guide
-├── raw/                                      # Downloaded source data; ignored by Git
+├── README.md                                           # Acquisition, processing, data contracts, and usage guide
+├── raw/                                                # Downloaded source data; ignored by Git
 │   └── qasper/
-│       ├── manifest.json                     # Pinned source metadata, split inventory, and checksums
-│       ├── train.jsonl                       # Raw training-split paper records
-│       ├── validation.jsonl                  # Raw development split, named validation locally
-│       └── test.jsonl                        # Raw held-out paper records
-└── processed/                                # Generated local exports; ignored by Git
-    ├── papers.jsonl                          # Paper-only records from all three splits
-    ├── passages.jsonl                        # Development passages; configured default path
-    ├── passages.manifest.json                # Development corpus counts and hashes
-    ├── passages_all_paper_text.jsonl         # Passages from all paper text; inference index
-    ├── passages_all_paper_text.manifest.json  # Inference corpus scope, counts, and hashes
-    ├── qa.jsonl                              # Questions with answer and evidence annotations
-    ├── qasper_export.manifest.json           # Paper and Q&A export provenance, counts, and hashes
-    ├── sample_passages_100.jsonl             # 100-passage reproducibility sample
-    └── sample_passages_100.manifest.json     # Sample selection details and hashes
+│       ├── manifest.json                               # Pinned source metadata, split inventory, and checksums
+│       ├── train.jsonl                                 # Raw training-split paper records
+│       ├── validation.jsonl                            # Raw development split, named validation locally
+│       └── test.jsonl                                  # Raw held-out paper records
+└── processed/                                          # Generated local exports; ignored by Git
+    ├── papers.jsonl                                    # Paper-only records from all three splits
+    ├── passages.jsonl                                  # Development passages; configured default path
+    ├── passages.manifest.json                          # Development corpus counts and hashes
+    ├── passages_all_paper_text.jsonl                   # Passages from all paper text; inference index
+    ├── passages_all_paper_text.manifest.json           # Inference corpus scope, counts, and hashes
+    ├── gold_evidence_mapping.jsonl                     # Eligible development QA evidence-to-passage mappings
+    ├── gold_evidence_mapping.manifest.json             # Mapping provenance and filtering counts
+    ├── gold_evidence_mapping_all_splits.jsonl          # Ordinary-test mappings from all official splits
+    ├── gold_evidence_mapping_all_splits.manifest.json  # All-split export provenance and counts
+    ├── qa.jsonl                                        # Questions with answer and evidence annotations
+    ├── qasper_export.manifest.json                     # Paper and Q&A export provenance, counts, and hashes
+    ├── sample_passages_100.jsonl                       # 100-passage reproducibility sample
+    └── sample_passages_100.manifest.json               # Sample selection details and hashes
 ```
 
 Keep the manifests beside their JSONL files: they preserve provenance and checksums, and the export manifest is required by the passage and sample builders. `passages.jsonl` contains only development/validation paper text and matches `data.passages_path` in `configs/default.yaml`. `passages_all_paper_text.jsonl` includes held-out paper text and is for inference indexing only; do not use held-out questions, answers, evidence, or labels for tuning or prompt design. This compact layout omits the diagnostic inspection report.
@@ -66,6 +70,8 @@ This keeps the paper fields described above, omits `qas`, and adds `source_split
 ```
 
 Each line represents one question. `question_id` identifies it; `paper_id` links it to `papers.jsonl`; `source_split` records its source split; `question` is the query text; and `answers` contains the QASPER annotations described above. `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background` preserve the corresponding question context fields.
+
+The current pinned export already combines all three official splits: $2{,}593$ train questions, $1{,}005$ validation questions, and $1{,}451$ test questions, totaling $5{,}049$ questions and $7{,}993$ answer annotations. They are stored together for completeness; `source_split` preserves their origin. The evidence mapper reads this file directly and joins `paper_id` to `papers.jsonl` and the selected passage corpus. QA records alone do not contain passage IDs or source coordinates, so those joins and text matching are still necessary.
 
 ### `data/processed/passages_all_paper_text.jsonl`
 
@@ -221,9 +227,82 @@ The paper-level invariant is strict: a paper's title, text, questions, answers, 
 
 The configuration is still a proposal under `P3-D004`, pending P5/P6 review. `evaluation.held_out_manifest: null` means that the held-out question and annotation pool has not been created; it is not permission to sample from `test` for tuning. Any future remapping must increment the policy version and repeat the paper-leakage check. The `Passage` schema and passage ID remain unchanged, while corpus manifests must record the source split, project role, policy version, chunking configuration, and relevant output hashes.
 
+## Gold evidence-to-passage export
+
+Run `python -m scripts.export_evidence_mapping` from the repository root after building the development corpus. The command creates `data/processed/gold_evidence_mapping.jsonl` and `data/processed/gold_evidence_mapping.manifest.json`; existing outputs are never overwritten. All input/output paths can be changed with `--papers`, `--qa`, `--export-manifest`, `--passages`, `--passages-manifest`, `--output`, and `--manifest-output`. These generated local artifacts remain outside Git.
+
+For the user-selected ordinary-testing design, run `python -m scripts.export_evidence_mapping --scope all-splits-testing`. This explicitly includes `train`, `validation`, and `test`, reads `passages_all_paper_text.jsonl` and its manifest, and writes `gold_evidence_mapping_all_splits.jsonl` with `gold_evidence_mapping_all_splits.manifest.json` under `data/processed/`. The original official split names remain provenance, but `test` in this export is ordinary test data and is no longer claimed as an independent held-out set. This is a separate evaluation design, not approval of the pending held-out freeze. No neural-network training is needed for selection bias: chunking, retrieval, prompts, and stopping rules can still be tuned to observed questions or results.
+
+The exporter extracts the source-mapping helpers from the chunk-size experiments into `src/data/map_evidence.py`; existing experiment imports remain supported. It verifies the QASPER exports, reads chunking settings from the corpus manifest, and reconstructs every passage in the selected scope to verify its exact ID and content against the supplied corpus. The current corpora use $365$ words and $40$ words overlap. Both modes export every eligible question without sampling. Default `--scope development` excludes `test`; `--scope all-splits-testing` includes it under the ordinary-testing design above. Neither mode creates or freezes a held-out question pool.
+
+A question is eligible only if it has at least one answer annotation and every annotation has a nonempty evidence set that maps completely to unique full-text paragraphs. Empty evidence, `FLOAT SELECTED` markers, missing paragraphs, duplicate-text ambiguity, and incomplete coverage by the supplied corpus exclude the entire question. Matching preserves the experiment's line-ending normalization and outer-whitespace trimming rules; it does not use fuzzy or answer-substring matching.
+
+Each JSONL row contains `question_id`, `paper_id`, `source_split`, `question`, separate `annotations` with original `answer` objects and `evidence_locations`, `evidence_paragraphs`, and deduplicated `gold_passage_ids`. Each evidence paragraph includes original `text`, its zero-based `section_index` and `paragraph_index`, and `passage_matches`. A match stores `passage_id`, a half-open `source_char_span` into that paragraph's original Python string, and `covers_full_paragraph`. `fully_covered_by_passage_union` confirms complete non-whitespace coverage across all matching passages; a long paragraph can require several partial passages. `gold_passage_ids` includes any passage with non-whitespace overlap with annotated evidence, so it must not be interpreted as a list of individually complete evidence passages.
+
+The manifest records input/output SHA-256 hashes, chunking settings, split policy, per-split inclusion/exclusion counts, and mapping semantics. The mapping schema remains `gold-evidence-to-passage-v0-proposed`. These are automatically derived gold references, not human query–passage relevance labels; absence from `gold_passage_ids` does not establish irrelevance. Do not write this supervision into the retrieval corpus.
+
+### Mapping JSONL fields
+
+Each physical line is one complete question object. Arrays retain alternative answer groups; evidence from different answers must not be merged when computing complete-answer evidence coverage. New exports preserve all source QA fields: question context lives in `qa_metadata`, and original answer-annotation fields such as `worker_id` remain in `annotations`. Earlier development mappings may omit `qa_metadata` and annotation metadata; regenerate to a new output path when those fields are needed.
+
+| Field | JSON type | Meaning |
+| --- | --- | --- |
+| `schema_version` | string | `gold-evidence-to-passage-v0-proposed`. |
+| `question_id` | string | Original QASPER question ID. |
+| `paper_id` | string | Links to the source paper and passages. |
+| `source_split` | string | Original `train`, `validation`, or `test`; inclusion depends on export scope. |
+| `question` | string | Original question text. |
+| `qa_metadata` | object | All other original question fields, such as `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background`; source values and types are preserved. |
+| `annotations` | array of objects | All original answer annotations, enriched with located evidence; no alternative answer is discarded. |
+| `evidence_paragraphs` | array of objects | Deduplicated original evidence paragraphs referenced by the annotations. |
+| `gold_passage_ids` | array of strings | Sorted unique IDs of passages overlapping any evidence paragraph; these are derived references, not manual relevance judgments. |
+
+`annotations[]` contains the following fields. Additional source annotation fields are retained unchanged.
+
+| Field | JSON type | Meaning |
+| --- | --- | --- |
+| `annotation_id` | string | Original annotation ID converted to a string; falls back to its answer-array index if absent. |
+| `worker_id` | source value, when present | Original annotator metadata; not used for relevance scoring. |
+| `answer` | object | Original answer object, including all available fields below. |
+| `evidence_locations` | array of strings | Nonempty paragraph references in `paper_id:section_index:paragraph_index` form, linking to `evidence_paragraphs[].location`. |
+
+`annotations[].answer` retains the source fields and values. Not all answer types populate every field.
+
+| Field | JSON type | Meaning |
+| --- | --- | --- |
+| `evidence` | array of strings | Annotated evidence paragraphs, each required to match a unique source paragraph. |
+| `extractive_spans` | array of strings | Extractive answer text, when supplied. |
+| `free_form_answer` | string | Free-form reference answer, when supplied. |
+| `highlighted_evidence` | array of strings | Original highlighted evidence; preserved but not used for paragraph matching. |
+| `unanswerable` | boolean | Original unanswerability flag; questions without usable evidence are excluded by this evidence-focused export. |
+| `yes_no` | boolean or null | Original yes/no answer value. |
+
+`evidence_paragraphs[]` describes the source evidence and its passage coverage.
+
+| Field | JSON type | Meaning |
+| --- | --- | --- |
+| `location` | string | Unique paragraph reference within the question. |
+| `section_index` | integer | Zero-based index into the original paper's `full_text`. |
+| `paragraph_index` | integer | Zero-based index into that section's original `paragraphs`; blank paragraphs still count toward the index. |
+| `text` | string | Original paragraph text, including original line endings and outer whitespace. |
+| `passage_matches` | array of objects | Every passage with non-whitespace overlap with this paragraph. |
+| `fully_covered_by_passage_union` | boolean | Always `true` for exported questions: matching passages jointly cover every non-whitespace source character. |
+
+`evidence_paragraphs[].passage_matches[]` records one passage-to-paragraph overlap.
+
+| Field | JSON type | Meaning |
+| --- | --- | --- |
+| `passage_id` | string | Exact ID in the selected passage corpus. |
+| `source_char_span` | array of two integers | Half-open `[start, end)` offsets in this evidence paragraph's original Python string; character offsets, not bytes or tokens, and not offsets within the passage. |
+| `covers_full_paragraph` | boolean | Whether this passage alone covers all non-whitespace content of the evidence paragraph. Partial matches can still jointly cover it. |
+
+The manifest's `scope`, `source_splits`, and `evaluation_design` describe which questions are eligible for inclusion. `filtering_counts` records totals and eligibility by source split; `inputs` and `output` bind the mappings to exact files by SHA-256. `held_out_freeze: false` states that this artifact is not a final held-out freeze record, including in ordinary-testing mode. Evidence filtering makes the mapping a subset of `qa.jsonl`; the full QA file remains the source for tasks needing unanswerable, figure/table-only, or unresolved-evidence questions.
+
 ## Held-out asset-use policy
 
 The policy distinguishes the assets `paper_text`, `question`, `answer`, and `label` from the purposes `index_for_inference`, `tuning`, `prompt_design`, `chunk_selection`, and `final_evaluation`. `label` includes human relevance labels and supervision derived from answers or evidence; `prompt_design` includes template wording, few-shot example selection, and critic or generator prompt iteration.
+
+This held-out policy applies when retaining an independent final evaluation set. The explicitly selected `all-splits-testing` export above instead treats all official splits as ordinary tests and records that exception in its manifest; its results must not be reported as independent held-out performance. Other default workflows retain the policy below.
 
 The complete policy matrix is:
 
