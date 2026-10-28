@@ -1,6 +1,6 @@
 # Chunk Size Evaluation Criteria
 
-Round 1 uses `config.json` to compare $100$, $200$, and $400$ words per chunk, following `weekly-work/week-3/TODO.md` item $2.4.2.1$. Use the same sampled questions from `data/processed/qa.jsonl`, retriever and overlap in words; retain the completed top-$5$ comparison and add the fixed-word-budget comparison below. Apply the question-selection rules below before sampling. Previous $150/200/250$ experiments are void by the experiment owner's decision and must not contribute to selection or be pooled with this round.
+Round 1 completed the $100/200/400$ words-per-chunk BM25 comparison; its valid results are in `results/chunk_size/round1_bm25_20261028_02/`. Following `weekly-work/week-3/TODO.md` item $2.4.2.2$, the current `config.json` now contains the confirmed Round 2 candidates below, which have not been run. Both rounds compare fixed top-$5$ and fixed $500/1000/2000$-word budgets using the same eligible questions from `data/processed/qa.jsonl`, retriever and overlap in words. Previous $150/200/250$ experiments are void and must not contribute to selection or be pooled with these rounds.
 
 ## Candidate-size rationale and proposal
 
@@ -31,7 +31,34 @@ These primary sources motivate a search range; their settings do not establish a
 | $200$ words | Existing project default, rerun as the control in Round 1; not a published optimum. | Does the current cost–completeness compromise remain competitive? |
 | $400$ words | Double the default, completing a multiplicative range inspired by broad screening [S2] and QASPER context requirements [S3]. This exact value is our design choice. | Does added context improve complete evidence enough to offset extra text, noise and truncation? |
 
-Set Round 2 candidates after inspecting Round 1's quantitative results, with an explicit reason for each value. Do not reuse the void experiments, including their $200$-word result. If an endpoint wins, extend or refine within feasible limits before claiming an optimum. Round 1 execution does not select or run Round 2.
+Do not reuse the void experiments, including their $200$-word result. Use the valid Round 1's `manifest.json` for its historical candidates and controls; the current Round 2 configuration does not reconstruct historical settings.
+
+### Round 2: confirmed refinement plan
+
+Confirmed on 2026/10/28: compare $200/225/250/275/300/325/350/375/400$ words per chunk, giving $9$ candidates at $25$-word intervals within $200$–$400$ words. Only this plan and `config.json` have been updated; the experiment has not been run. Shared interfaces and the final chunk configuration remain `v0-proposed`.
+
+The valid Round 1's `summary.html` supports this range: $100$ words performs no better than $200/400$ on either evidence metric at any fixed budget, while $200$ and $400$ each have advantages that warrant testing intermediate values.
+
+| Fixed budget | $200$ words: hit rate / complete evidence rate | $400$ words: hit rate / complete evidence rate |
+| --- | --- | --- |
+| $500$ words | $38\%/24\%$ | $30\%/26\%$ |
+| $1000$ words | $54\%/42\%$ | $54\%/46\%$ |
+| $2000$ words | $78\%/70\%$ | $72\%/68\%$ |
+
+| Candidates (words) | Reason |
+| --- | --- |
+| $200/400$ | Retain endpoint controls and verify agreement across rounds. |
+| $300$ | Test whether the midpoint improves the cost–coverage compromise. |
+| $250/350$ | Test the lower and upper halves of the range. |
+| $225/275/325/375$ | Refine the spacing to $25$ words to check whether a favorable region is stable. |
+
+These exact values come from local results and a uniform search design; the literature does not establish their optimality. Apply the following execution and selection rules.
+
+1. Retain the valid Round 1's same $50$ questions and order, evidence eligibility, paper scope, BM25 settings, $40$-word overlap, `top_k=5`, `seed=42` and readability source locations. Verify question IDs, order and source locations before execution; a fixed seed does not replace verification.
+2. Save all $9$ configurations under a new `run_id`, retaining and checking the $200/400$ controls without overwriting Round 1. Use both evidence metrics at all $500/1000/2000$-word budgets as the main selection evidence, reporting actual words and exhausted-question counts; use top-$5$ as supplementary evidence.
+3. Do not select longer chunks solely on top-$5$: Round 1's complete evidence rate is $52\%$ for $400$ words versus $40\%$ for $200$, but mean retrieved words also increase from $832.88$ to $1332.72$.
+4. Each question represents $2$ percentage points, so inspect small differences per question. If winners differ across budgets, preserve the cost–coverage tradeoff. If fixed-budget results still favor an endpoint, test $175$ below or $425/450$ above before claiming a global optimum.
+5. Complete readability review before final adoption. BM25 findings do not automatically generalize to dense / hybrid / reranker retrieval; apply the model input-length checks below.
 
 Words remain Unicode non-whitespace spans counted by `\S+` in `src/data/chunking.py`; do not convert published token sizes using a fixed ratio. Token-based splitting, sentence-boundary adjustment and different paragraph-merging rules belong in separate experiments.
 
@@ -64,11 +91,11 @@ For both evidence metrics, match evidence to its source paper and paragraph; a f
 
 ## Evidence coverage at a fixed word budget: execution plan
 
-This `v0-proposed` workflow is implemented for new BM25 runs with `word_budgets` in `config.json`; historical summaries are not retroactively extended. A fixed budget means the same word allowance, not a preselected source interval; configurations may retrieve different text. It measures evidence supplied for reading, not generated-answer quality. Implementation is not a claim that a new Round 1 comparison has been executed.
+This `v0-proposed` workflow was executed in the valid Round 1 and is retained for Round 2, using `word_budgets` in `config.json`; historical summaries are not retroactively extended. A fixed budget means the same word allowance, not a preselected source interval; configurations may retrieve different text. It measures evidence supplied for reading, not generated-answer quality.
 
 ### Budgets and metric definitions
 
-Predefine $B\in\{500,1000,2000\}$ words and apply all three budgets to every chunk size; do not select only a favorable budget after inspecting results. These correspond to the nominal top-$5$ maxima of $100/200/400$-word chunks and are project controls, not literature recommendations. Reuse the valid Round 1's same $50$ questions, order, evidence eligibility, paper scope, BM25 parameters, overlap and seed. Do not resample or use void experiments.
+Predefine $B\in\{500,1000,2000\}$ words and apply all three budgets to every chunk size; do not select only a favorable budget after inspecting results. These originally corresponded to Round 1's nominal top-$5$ maxima for $100/200/400$-word chunks and remain unchanged in Round 2 for comparison across rounds. They are project controls, not literature recommendations. Reuse the valid Round 1's same $50$ questions, order, evidence eligibility, paper scope, BM25 parameters, overlap and seed. Do not resample or use void experiments.
 
 - **Budgeted evidence hit rate**: questions whose retained text jointly covers at least one complete annotated evidence paragraph, divided by all questions in the shared sample.
 - **Budgeted complete evidence rate**: questions whose retained text jointly covers every evidence paragraph of at least one answer annotation, divided by all questions in that sample. These retain the two existing coverage decisions rather than introducing an undefined percentage of evidence covered.
@@ -194,7 +221,7 @@ Use `experiments/chunk_size/config.json` as this experiment's configuration auth
 | --- | --- | --- |
 | `data.overlap_words`: $40$ | `overlap_words`: $40$ | Same chunk overlap setting and current value; use the experiment configuration. |
 | `retrieval.top_k`: $5$ | `top_k`: $5$ | Same retrieval result limit and current value; use the experiment configuration. |
-| `data.chunk_words`: $200$ | `candidates`: $100$, $200$, $400$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
+| `data.chunk_words`: $200$ | `candidates`: $200/225/250/275/300/325/350/375/400$ | Related purpose with a different structure; compare each candidate instead of using the single YAML size. |
 | `seed`: $42$ | `seed`: $42$ | Same purpose and value; use the experiment seed for every sampling stage, without reading YAML. |
 
 The YAML `retrieval` section proposes dense models, a reranker, candidate counts and RRF settings, whereas the experiment JSON currently specifies only `retrieval.mode` as `bm25`. This experiment has confirmed that mode and `top_k=5`. These are not equivalent complete retrieval configurations. The experiment does not inherit YAML model or fusion settings. BM25 algorithm parameters use the implementation's library defaults and remain retriever implementation details, outside the configuration choices or tuning scope of this experiment. See `experiments/chunk_size/BM25.en.md` for BM25 inputs, outputs, workflow and current parameters. See `experiments/chunk_size/README.md` for experiment retrieval-code defaults and optional modes.
@@ -227,7 +254,7 @@ The old `readability_sample_count`, `question_seed` and `readability_seed` confi
 
 ## What to save during evaluation
 
-The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. The `run_id` identifies the comparison run; the configuration directory names are `chunk_size_100`, `chunk_size_200`, and `chunk_size_400`. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, replacing `<size>` with `100`, `200`, or `400`. Share these experiment result files in Git.
+The following output layout is implemented and remains `v0-proposed` pending team confirmation; see `experiments/chunk_size/README.md` for commands. All paths are relative to the repository root. Use a new `run_id` for each comparison run to avoid overwriting results. Keep each size's files under `results/chunk_size/<run_id>/chunk_size_<size>/`, where `<size>` is a value from that round's `candidates`, such as `200`, `225`, or `400` in Round 2. Share these experiment result files in Git.
 
 | Metric | What the code must save | File under the size directory |
 | --- | --- | --- |

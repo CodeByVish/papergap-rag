@@ -1,5 +1,5 @@
 {
-  "candidates": [100, 200, 400],
+  "candidates": [200, 225, 250, 275, 300, 325, 350, 375, 400],
   "overlap_words": 40,
   "top_k": 5,
   "word_budgets": [500, 1000, 2000],

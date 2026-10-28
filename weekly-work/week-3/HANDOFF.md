@@ -1,6 +1,8 @@
 > 只记录当前最新完成的工作和下一步。
 
-最新完成：2026/10/28 按用户要求重新执行 `TODO.md` 的 $2.4.2.1$（Round 1）。使用项目环境 `D:/Apps/Programming/Anaconda/virtue_envs/papergap-rag/python.exe` 执行 `python -m scripts.evaluate_chunk_size run --run-id round1_bm25_20261028_02`，重新构建全部三组分块和 BM25 排序，未复用旧指标。配置为 $100/200/400$ words/chunk、重叠 $40$ words、`top_k=5`、$50$ 个问题、$5$ 篇论文各 $2$ 个可读性段落、`seed=42`；$500/1000/2000$ words 固定预算方案均已执行。
+最新完成：2026/10/28 用户确认 Round 2 使用 $200/225/250/275/300/325/350/375/400$ words/chunk。已更新 `experiments/chunk_size/config.json` 的 `candidates`、中英文 criteria 和 `TODO.md`；Round 2 尚未运行。完整取值依据、控制量和选值规则见 `experiments/chunk_size/criteria_zn-CN.md` 的 Round 2 小节。
+
+最近一次有效运行：按用户要求重新执行 `TODO.md` 的 $2.4.2.1$（Round 1）。使用项目环境 `D:/Apps/Programming/Anaconda/virtue_envs/papergap-rag/python.exe` 执行 `python -m scripts.evaluate_chunk_size run --run-id round1_bm25_20261028_02`，重新构建全部三组分块和 BM25 排序，未复用旧指标。配置为 $100/200/400$ words/chunk、重叠 $40$ words、`top_k=5`、$50$ 个问题、$5$ 篇论文各 $2$ 个可读性段落、`seed=42`；$500/1000/2000$ words 固定预算方案均已执行。历史设置以该运行的 `manifest.json` 为准，当前配置已切换到 Round 2。
 
 当前有效结果位于 `results/chunk_size/round1_bm25_20261028_02/`：共享 `manifest.json`、`summary.json`、`summary.html`、`questions.jsonl`，每个 `chunk_size_<size>/` 下包含 `ranked_chunks.jsonl`、`evidence_review.md`、`readability.md`。结构化输入保留证据位置、完整分块及来源映射，可独立重算指标；manifest 记录配置、代码与工作区状态、输入及结构化文件哈希、依赖、硬件、抽样和排序保存状态。实验结果提交到 Git 共享；原始数据、生成语料和临时脚本保持 Git 忽略。`summary.html` 支持离线查看 top-$5$、各词数预算及待审核状态。
 
@@ -32,4 +34,4 @@
 
 验证：正式运行、`regenerate` 结构化重算和 `summarize` 均正常退出。`tmp/tmp_verify_round1_rerun.ps1` 核验全部输入及结构化文件 SHA-256、候选及控制量、共享问题与顺序、文件非空、逐问题与汇总指标、预算词数约束、预算增大时覆盖不下降、可读性待审核状态，全部通过。通过进程级 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File` 执行核验，未改系统策略。此次未改运行代码，未提交或推送。
 
-下一步：执行 `TODO.md` 的 $2.4.2.2$，结合各预算证据覆盖及耗尽情况选择 Round 2 候选并说明理由；完整结果评估和简洁 `report.md` 属于 $2.4.3$。最终定版前完成可读性审核，规则见中英文 criteria。共享接口、split policy 和输出仍为 `v0-proposed`；本轮仅使用 BM25，真实 dense / hybrid / reranker 模型及截断检查尚未执行。整合来源见 `INTEGRATION_PLAN.md`，配置及重算命令见 `experiments/chunk_size/README.md`。
+下一步：使用新 `run_id` 执行 `TODO.md` 的 $2.4.2.2$（Round 2），先核验与有效 Round 1 的问题 ID、顺序和可读性原文位置一致，并保留 $200/400$ 跨轮对照；完整结果评估和简洁 `report.md` 属于 $2.4.3$。最终定版前完成可读性审核，规则见中英文 criteria。共享接口、split policy 和输出仍为 `v0-proposed`；本轮仅使用 BM25，真实 dense / hybrid / reranker 模型及截断检查尚未执行。整合来源见 `INTEGRATION_PLAN.md`，配置及重算命令见 `experiments/chunk_size/README.md`。
