@@ -6,7 +6,75 @@ Raw and processed data and their manifests are tracked on the P3 working branch,
 
 ## Data versions and updates
 
-Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal expansion, cross-branch exclusion audit and renewed held-out eligibility checks remain pending. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
+Week 4 Step $2.4.2$ completes the scoped cross-branch exclusion inventory: P1's $2593$, P2's $106$ and P3's $250$ selection IDs merge into $2654$ unique banned questions. All qualifying overlapping sources are retained. No known eligibility records remain unresolved within this scope; unrecorded external/P4–P6 use is not claimed to be covered. Add later explicit usage evidence in a new version before sampling. New held-out sampling and formal retrieval remain pending, and historical artifacts are unchanged.
+
+Week 4 Step $2.3$ adds a development-only BM25/Dense/Hybrid pilot under `data/processed/annotation_pilot_multi_v2/`: $5$ questions, $36$ unique pairs, $25$ common pairs, $5$ BM25-only pairs, $6$ Dense-only pairs and no Hybrid-only pairs. Each method has $25$ hits. Formal expansion and renewed held-out eligibility checks remain pending. The earlier BM25 artifacts are historical; do not distribute them as the new common pool. Obtain the pilot data with the tracked artifacts from the GitHub P3 branch. The local `annotation_pilot_multi_v1/` preliminary snapshot is retained; `v2` reran after an import-only lint correction, with identical pair/ranking bytes. Existing output directories are refused; use `--multi-output` with a new path for future runs.
+
+## `data/processed/held_out_exclusion_sources/p1_used_question_ids.jsonl`
+
+Byte-preserving snapshot of `docs/handoffs/p1_used_question_ids.jsonl` from branch `p1/week3-week4`, commit `3bb545c967efe63197cb99a799628162f5c2b512`, containing $2593$ unique IDs. Obtain it with the other data from the GitHub P3 branch. To reproduce the snapshot locally, capture `git show <commit>:docs/handoffs/p1_used_question_ids.jsonl` through Python `subprocess.check_output` and save with `Path.write_bytes`, then compare SHA-256 with `configs/held_out_exclusions.json`. Avoid shell text redirection that changes bytes. Owner quotes and source pins are preserved in the config/manifest. Historical files named inside the inventory need not exist or parse; reducing designated IDs requires explicit owner correction.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id`, `paper_id`, `source_split` | `string` | Delivered QA identity, checked against local QA. |
+| `sources` | `array<string>` | All owner-reported usage paths, kept verbatim. |
+| `usage` | `string` | Owner's usage description. |
+| `usage_categories` | `array<string>` | Owner's detailed usage categories. |
+
+## `data/processed/held_out_exclusion_sources/p2_used_question_ids.jsonl`
+
+Byte-preserving snapshot of `docs/handoffs/p2_used_question_ids.jsonl` from branch `p2/question-usage-inventory`, commit `3b13f22fe6df29d15babea529cf2fc8f13c18f68`, containing $106$ unique IDs. Obtain from the GitHub P3 branch or reproduce through the same Python byte-preserving `git show` route using this commit/path and check the pinned SHA-256.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id`, `paper_id`, `source_split` | `string` | Delivered QA identity. |
+| `sources` | `array<string>` | All owner-reported usage paths. |
+| `usage` | `string` | Owner's usage description. |
+
+## `data/processed/qa_banned_for_held_out.jsonl`
+
+Generate with `python -m src.data.build_held_out_exclusions`; verify existing artifacts with `python -m src.data.build_held_out_exclusions --verify`. Reproduce without replacing shared data using `python -m src.data.build_held_out_exclusions --output tmp/tmp_qa_banned_for_held_out.jsonl`: JSONL bytes match, while the manifest records the new output path and generation identity. Existing outputs are refused. The commands use tracked snapshots, QA and saved preparation/pilot manifests, without network, models, seed reconstruction or parsing historical results. Obtain JSONL, manifest, snapshots and config together from the GitHub P3 branch; no Release is needed.
+
+All owner-designated IDs are banned. Other questions are banned when used to choose or adjust models, parameters, algorithms, prompts or evidence handling; failed/void runs follow the same purpose rule. P3 selection comparisons and three development pilots retain provenance. The old preparation's blanket $253$-ID exclusion is not reused: $3$ functional smoke IDs and the original $200$-question frozen BM25 evaluation are not automatically banned, though other qualifying sources can ban them. Raw export and gold mapping alone do not imply exclusion. Preserved functional-test evidence and decisions are in the config/manifest. No held-out sample is frozen; isolation is question-level and permits shared papers.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id`, `paper_id`, `question`, `source_split` | `string` | Unique ID, matching paper, unmodified original question and official split. |
+| `sources` | `array<object>` | Every qualifying source, preserving overlaps. |
+| `sources[].source_id`, `sources[].usage`, `sources[].exclusion_reason` | `string` | Manifest source key, purpose and exclusion rationale. |
+| `sources[].original_record` | `object` | Entire delivered row, with all original metadata. |
+| `sources[].original_record.question_id` | `string` | Always present; canonical QA join key. |
+| `sources[].original_record.paper_id`, `.question`, `.source_split` | optional `string` | Source-supplied identity/text, checked against QA when present. |
+| `sources[].original_record.sources`, `.usage_categories` | optional `array<string>` | Complete original owner paths/categories. |
+| `sources[].original_record.usage` | optional `string` | Original owner usage description. |
+
+## `data/processed/qa_banned_for_held_out.manifest.json`
+
+Generated and verified by the same commands. Inputs use exact-byte SHA-256; owner sources additionally pin branch/commit/path. Local version records generation HEAD/branch and exact input/implementation hashes, including uncommitted files; it does not claim these files were already committed. Verification allows later HEAD changes while reconstructing rows and checking all saved hashes. Unknown IDs, identity conflicts, duplicate question IDs within a source, changed pins/counts, lost provenance and newly unresolved historical/pilot use fail before writing.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `repository`, `scope`, `exclusion_rule` | `string` | `v0-proposed`, purpose, origin and bounded usage policy. |
+| `local_source_version` | `object` | Generation version. |
+| `local_source_version.branch`, `.commit` | `string` | Local P3 branch and full HEAD SHA. |
+| `implementation` | `object` | Exact source identity. |
+| `implementation.path`, `.sha256` | `string` | Module path and SHA-256. |
+| `inputs` | `object<string,string>` | Config/QA/snapshot/preparation/pilot/evaluation paths to SHA-256. |
+| `owner_inventories` | `array<object>` | Owner source pins and exact statements. |
+| `owner_inventories[].source_id`, `.branch`, `.commit`, `.path`, `.snapshot`, `.sha256`, `.owner_statement` | `string` | Owner key, source identity, snapshot, hash and quote. |
+| `owner_inventories[].question_count` | `integer` | Expected unique count. |
+| `source_counts`, `source_split_counts` | `object<string,integer>` | Pre-union source counts and final split counts. |
+| `question_count`, `provenance_count` | `integer` | Unique questions and qualifying source memberships. |
+| `usage_decisions` | `array<object>` | Purpose decisions for historical P3 use/frozen evaluation. |
+| `usage_decisions[].source_id`, `.path`, `.sha256`, `.decision`, `.usage`, `.reason` | `string` | Source identity/hash, decision, purpose and reason. |
+| `usage_decisions[].question_ids` | `array<string>` | Persisted IDs covered by each decision. |
+| `configuration` | `object` | Deterministic generation settings. |
+| `configuration.join_key`, `.order`, `.sampling` | `string` | ID join, ascending ID order, no sampling. |
+| `configuration.question_fields` | `array<string>` | Canonical retained fields. |
+| `unresolved_records` | `array<object>` | Empty within accepted scope; unknown use blocks generation. |
+| `validation` | `object<string,boolean>` | ID uniqueness, complete fields, identity, full owner/selection/provenance coverage and scoped resolution checks. |
+| `output` | `object` | Final JSONL identity. |
+| `output.path`, `.sha256` | `string` | Output path and SHA-256. |
 
 ## `data/processed/annotation_pilot_multi_v2/questions.jsonl`
 

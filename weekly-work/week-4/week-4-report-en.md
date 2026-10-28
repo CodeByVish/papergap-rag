@@ -4,11 +4,15 @@
 
 Status as of 2026/10/28
 
+## Step $2.4.2$: exclusion inventory completed
+
+The pinned P1 $2593$, P2 $106$ and P3 $250$ selection IDs merge into $2654$ unique banned questions and $3864$ qualifying source memberships in `data/processed/qa_banned_for_held_out.jsonl`. Owner snapshots, exact statements, branch/commit/path pins, hashes, purpose decisions and generation settings are preserved in its manifest and `configs/held_out_exclusions.json`. All identities and provenance passed validation; no known eligibility records remain unresolved within the accepted scope. Unrecorded external/P4–P6 use is outside this claim. Pure functional checks and normal frozen evaluation are not automatic exclusions. Verification: $5$ targeted tests, syntax/lint, source-blob byte equality and full artifact reconstruction passed. Both data guides document reproduction and nested fields. Next: Step $2.5$, preserve/retire historical BM25 outputs and draw a new independent held-out list; no resampling, formal retrieval, commit or push was performed.
+
 ## Current extension: Step $2.3$
 
 Completed the development-only BM25/Dense/Hybrid pilot with the first $5$ persisted chunk-selection questions. The same $365/40$ corpus, original queries, complete selected-paper scope and top-$5$ produce $36$ unique pairs: $25$ common, $5$ BM25-only, $6$ Dense-only and no Hybrid-only. The selected $5$ papers contain $70$ passages. `python -m scripts.build_annotation_pool multi-pilot` exports `data/processed/annotation_pilot_multi_v2/`, preserving complete ranks/scores and gold joins in structured files, and two independent English Markdown templates with disclosed sources and blank labels. Gold/scores/internal IDs stay out of the views. BGE small revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`, cosine and equal-weight RRF $20/60$ are frozen in `frozen_config.json`; feasibility was verified without held-out-driven selection. The preliminary `v1` snapshot is retained; `v2` follows an import-only lint correction and has identical pair/ranking bytes.
 
-Targeted tests: $46$ passed. Independent persisted checks passed for input/output/current source hashes, original queries, corpus titles/text, unique union, complete per-method rank-to-record joins, post-retrieval gold association and annotation projection. Both data guides and evaluation/requirements records are updated. Earlier BM25 completion and blind-view descriptions below are historical. The next task is Step $2.4$, the cross-branch actual-use audit; formal three-system expansion, held-out eligibility recheck, new formal templates and human judgments remain pending. No commit or push was performed.
+Targeted tests: $46$ passed. Independent persisted checks passed for input/output/current source hashes, original queries, corpus titles/text, unique union, complete per-method rank-to-record joins, post-retrieval gold association and annotation projection. Both data guides and evaluation/requirements records are updated. Earlier BM25 completion and blind-view descriptions below are historical. At pilot completion, the next task was Step $2.4$, the cross-branch actual-use audit (now completed to the scope below); formal three-system expansion, held-out eligibility recheck, new formal templates and human judgments remain pending. No commit or push was performed.
 
 ## Paper catalog for UI selection
 

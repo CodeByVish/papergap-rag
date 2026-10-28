@@ -6,7 +6,75 @@
 
 ## 数据版本与更新
 
-Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法扩池、跨分支禁用审计和 held-out 资格复核尚未完成，不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+Week 4 第 $2.4.2$ 步已完成本次范围内的跨分支禁用题单：P1 的 $2593$ 题、P2 的 $106$ 题及 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。范围内无已知待核实资格记录，不声称覆盖未记录的外部/P4–P6 用题；后续明确新增证据须在抽样前补充新版本。新版 held-out 抽样和正式检索仍待执行，历史产物未改动。
+
+Week 4 第 $2.3$ 步新增开发专用 BM25/Dense/Hybrid 试运行，目录为 `data/processed/annotation_pilot_multi_v2/`：$5$ 题、$36$ 条唯一配对，其中共有 $25$ 条、BM25 独有 $5$ 条、Dense 独有 $6$ 条，Hybrid 无独有配对；每种算法各 $25$ 次命中。下方原 BM25 试运行和 held-out 产物保留为历史版本。正式三算法扩池和 held-out 资格复核尚未完成，不应将历史 BM25 模板作为新共同池分发。使用 `python -m scripts.build_annotation_pool multi-pilot` 复现；重跑时用 `--multi-output` 指定新目录。数据与其他受跟踪产物一起从 GitHub P3 分支获取；模型权重单独准备到已忽略的 `.cache/huggingface/`。本地 `annotation_pilot_multi_v1/` 初步快照保留，`v2` 在仅修正 import 的 lint 问题后重跑，两版配对和排名文件字节一致；拒绝覆盖已有目录。
+
+## `data/processed/held_out_exclusion_sources/p1_used_question_ids.jsonl`
+
+逐字节保存分支 `p1/week3-week4`、commit `3bb545c967efe63197cb99a799628162f5c2b512` 的 `docs/handoffs/p1_used_question_ids.jsonl`，共 $2593$ 个唯一 ID。随其他数据从 GitHub P3 分支获取。本地复现快照：使用 Python `subprocess.check_output` 捕获 `git show <commit>:docs/handoffs/p1_used_question_ids.jsonl`，再用 `Path.write_bytes` 保存，核对 `configs/held_out_exclusions.json` 的 SHA-256；避免改变字节的 shell 文本重定向。负责人原话及固定来源保存在 config/manifest。题库引用的历史文件无须存在或重新解析，缩减指定 ID 须有负责人明确更正。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `paper_id`, `source_split` | `string` | 交付的 QA 身份，与本地 QA 核对。 |
+| `sources` | `array<string>` | 负责人报告的全部使用路径，原样保留。 |
+| `usage` | `string` | 负责人描述的用途。 |
+| `usage_categories` | `array<string>` | 负责人提供的细分用途。 |
+
+## `data/processed/held_out_exclusion_sources/p2_used_question_ids.jsonl`
+
+逐字节保存分支 `p2/question-usage-inventory`、commit `3b13f22fe6df29d15babea529cf2fc8f13c18f68` 的 `docs/handoffs/p2_used_question_ids.jsonl`，共 $106$ 个唯一 ID。从 GitHub P3 分支取得，或使用相同 Python 字节保真 `git show` 方法替换 commit/路径后复现，并核对固定 SHA-256。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `paper_id`, `source_split` | `string` | 交付的 QA 身份。 |
+| `sources` | `array<string>` | 负责人报告的全部使用路径。 |
+| `usage` | `string` | 负责人描述的用途。 |
+
+## `data/processed/qa_banned_for_held_out.jsonl`
+
+生成命令：`python -m src.data.build_held_out_exclusions`；已有产物核验：`python -m src.data.build_held_out_exclusions --verify`。本地复现且不替换共享数据：`python -m src.data.build_held_out_exclusions --output tmp/tmp_qa_banned_for_held_out.jsonl`，JSONL 字节相同，manifest 记录新输出路径和生成身份。拒绝覆盖已有输出。命令使用受跟踪的快照、QA、已保存 preparation/pilot manifest，无需网络、模型、随机种子重建或解析历史结果。JSONL、manifest、快照及 config 一起从 GitHub P3 分支获取，无须 Release。
+
+负责人指定 ID 全部禁用。其他题按是否用于选择或调整模型、参数、算法、prompt 或证据处理规则判定，失败/作废实验遵循同一用途规则。P3 历史选参比较和三次开发 pilot 保留来源。旧 preparation 一律禁用的 $253$ 题不直接复用：$3$ 道功能 smoke 题及原 $200$ 题冻结 BM25 评估不自动禁用，但仍可能因其他符合排除条件的来源而禁用。原始导出、gold 映射本身不导致禁用。功能测试原话与用途判定保存在 config/manifest。本文件不冻结 held-out 题单，采用问题层面隔离，允许共享论文。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id`, `paper_id`, `question`, `source_split` | `string` | 唯一 ID、对应论文、未修改问题原文和官方 split。 |
+| `sources` | `array<object>` | 全部符合排除条件的来源，保留重复使用。 |
+| `sources[].source_id`, `sources[].usage`, `sources[].exclusion_reason` | `string` | manifest 来源键、用途和排除理由。 |
+| `sources[].original_record` | `object` | 完整交付行，保留全部原始元数据。 |
+| `sources[].original_record.question_id` | `string` | 必有，用于回连原始 QA。 |
+| `sources[].original_record.paper_id`, `.question`, `.source_split` | 可选 `string` | 来源提供的身份和原文，存在时与 QA 核对。 |
+| `sources[].original_record.sources`, `.usage_categories` | 可选 `array<string>` | 完整负责人原始路径和分类。 |
+| `sources[].original_record.usage` | 可选 `string` | 负责人原始用途描述。 |
+
+## `data/processed/qa_banned_for_held_out.manifest.json`
+
+与题单使用同一命令生成和核验。输入用精确字节 SHA-256，负责人来源另固定分支/commit/路径。本地版本记录生成时 HEAD/分支及输入/实现哈希，包含尚未提交的新文件，不表示这些文件当时已提交。核验允许后续 HEAD 改变，但重建题单并检查全部保存哈希。未知 ID、身份冲突、来源内重复问题 ID、固定哈希/数量变化、来源丢失或新增未决历史/pilot 用途均在写出前报错。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version`, `purpose`, `repository`, `scope`, `exclusion_rule` | `string` | `v0-proposed`、用途、仓库和有范围边界的使用规则。 |
+| `local_source_version` | `object` | 生成版本。 |
+| `local_source_version.branch`, `.commit` | `string` | 本地 P3 分支和完整 HEAD SHA。 |
+| `implementation` | `object` | 精确实现身份。 |
+| `implementation.path`, `.sha256` | `string` | 模块路径及 SHA-256。 |
+| `inputs` | `object<string,string>` | 配置/QA/快照/preparation/pilot/评估路径到 SHA-256 的映射。 |
+| `owner_inventories` | `array<object>` | 负责人来源及原话。 |
+| `owner_inventories[].source_id`, `.branch`, `.commit`, `.path`, `.snapshot`, `.sha256`, `.owner_statement` | `string` | 负责人键、来源身份、快照、哈希及原话。 |
+| `owner_inventories[].question_count` | `integer` | 交付的唯一题数。 |
+| `source_counts`, `source_split_counts` | `object<string,integer>` | 合并前各来源题数、合并后各 split 题数。 |
+| `question_count`, `provenance_count` | `integer` | 唯一问题数及符合排除条件的来源关联数。 |
+| `usage_decisions` | `array<object>` | P3 历史使用/冻结评估的用途判定。 |
+| `usage_decisions[].source_id`, `.path`, `.sha256`, `.decision`, `.usage`, `.reason` | `string` | 来源身份/哈希、判定、用途及理由。 |
+| `usage_decisions[].question_ids` | `array<string>` | 每项判定覆盖的已保存 ID。 |
+| `configuration` | `object` | 确定性生成配置。 |
+| `configuration.join_key`, `.order`, `.sampling` | `string` | 按 ID 回连、ID 升序、不抽样。 |
+| `configuration.question_fields` | `array<string>` | 保留的原始问题字段。 |
+| `unresolved_records` | `array<object>` | 接收范围内为空，未知用途阻止生成。 |
+| `validation` | `object<string,boolean>` | ID 唯一、字段完整、身份一致、负责人/选参/来源完整覆盖和范围内未决记录检查。 |
+| `output` | `object` | 输出题单身份。 |
+| `output.path`, `.sha256` | `string` | 输出路径和 SHA-256。 |
 
 ## `data/processed/annotation_pilot_multi_v2/questions.jsonl`
 
