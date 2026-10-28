@@ -75,12 +75,31 @@ different five passages, not the generator or validator tightening.
 - Record 18 kept the same evidence and answered with 9,000 + 11,000 stated separately —
   a genuine behaviour win, and no derived 20,000.
 
-## 4. P1's used-question inventory (received 2026-10-28)
+## 4. Team-wide question-usage audit (2026-10-28)
 
-P1 uploaded `p1/week3-week4`: 2,593 unique training-question IDs, including the original
-100-question handoff, with paper IDs and usage provenance. **P6 must include this list in
-the team-wide exclusion audit for the final held-out set.** P5's R4 run is
-training-integration data and does not enter that set.
+P1's inventory (`p1/week3-week4`, commit `f0f861b`) lists 2,593 `train` questions,
+including the 100-question handoff. P5 audited its own runs against it and added its
+inventory: **all 100 real questions P5 used are in P1's 2,593; P5 adds zero.** The 8
+`bench-*` IDs are synthetic SciReader samples, listed separately. See
+`docs/handoffs/P5_QUESTION_USAGE.md` and `docs/handoffs/p5_question_usage_manifest.json`.
+
+Cross-module result:
+
+| module | inventory | count | new vs P1 |
+|---|---|---:|---:|
+| P1 | `docs/handoffs/p1_used_question_ids.jsonl` | 2,593 | — |
+| P2 | `p2/question-usage-inventory` | 106 | 0 |
+| P3 | `annotation_pilot_multi_v1/questions.jsonl` | 5 (3 train, 2 validation) | **2** |
+| P5 | `docs/handoffs/p5_used_question_ids.jsonl` | 100 | 0 |
+
+**The only new development exposure is P3's two validation pilot questions**
+(`0ab3df10…`, `729694a9…`). The union found so far is **2,595 IDs**. P6 must exclude this
+union from the held-out pool, and should treat both P1's and P2's scopes as "saved local
+artefacts", not a complete team inventory. P5's R4 run is training-integration data and
+does not enter the held-out set.
+
+P1's manifest declares a CRLF hash (`0b50e6ee…`) while the committed LF file hashes to
+`89be5063…`; the ID set is identical. P1 should publish the canonical hash.
 
 ## 5. Open dependencies
 
