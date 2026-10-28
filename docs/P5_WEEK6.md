@@ -37,38 +37,46 @@ These are **training-integration** examples, not the held-out set.
 `scripts/compare_retrieval_arms.py` and `scripts/reparse_failures.py` are the two
 CPU-only diagnostics added with this work.
 
-## 3. First R4 measurement
+## 3. R4 measurement (job 48513, rerun with the parser fix)
 
-Job `p5-bge-rerank`, exit 0, 100 records, frozen v7 prompt, 1024-token budget:
+Exit 0, 100 records, frozen v7 prompt, 1024-token budget:
 
 | metric | R3/v2 (Week-3 file) | R3/v7 (comparable) | R4/v7 (BGE top-5) |
 |---|---:|---:|---:|
-| answered / refused / downgraded | 84 / 16 / 4 | 85 / 15 / 3 | **78 / 22 / 5** |
+| answered / refused / downgraded | 84 / 16 / 4 | 85 / 15 / 3 | **79 / 21 / 4** |
 | no-cite | 0 | 0 | 0 |
-| error-level | 2 | 1 numeric | 1 `PARSE_ERROR` |
+| error-level | 2 | 1 numeric | **0** |
+| `PARSE_ERROR` | 1 | 0 | 0 |
+| `PROMPT_FORMAT_DRIFT` | 0 | 0 | 1 (record 0) |
 | `PROVENANCE_OVERSTATED` | 23 | 24 | 21 |
 
 The Week-3 column is **not** the control: it is prompt/validator v2. R4 uses v7, so the
-retrieval-arm delta is **−7 answered** against the v7 baseline.
+retrieval-arm delta is **−6 answered, +6 refused, +1 downgraded** against the v7 baseline.
+R4 now has **zero error-level violations**; the v7 baseline's one numeric error (record
+18) is resolved because R4 states 9,000 and 11,000 separately instead of deriving 20,000.
+
+Record 0, which the first run lost to `PARSE_ERROR`, now parses and is answered with one
+`PROMPT_FORMAT_DRIFT` warning: the parser repaired two invalid LaTeX escapes and kept the
+answer. This is the only measured change between the first R4 run and this one.
 
 ### 3.1 Why the answers were lost
 
-`scripts/compare_retrieval_arms.py` checked every flip against the two top-5 sets:
+`scripts/compare_retrieval_arms.py` checked every flip against the two top-5 sets. The
+run shown here has 9 answered→refused and 3 refused→answered flips against v7; the table
+below reflects the rerun (record 0, previously `same_evidence`, is now answered):
 
 | label | count | records |
 |---|---:|---|
 | `evidence_dropped` | **6** | 24, 34, 59, 62, 91, 96 |
 | `evidence_partly_dropped` | 1 | 46 |
-| `same_evidence` | 4 | 0, 18, 43, 60 |
+| `same_evidence` | 3 | 18, 43, 60 |
 | `new_evidence` | 2 | 14, 93 |
 
-**Six of the ten answered→refused flips lost every passage the old answer cited.**
+**Six of the nine answered→refused flips lost every passage the old answer cited.**
 Record 91 (*source of the tables*) has zero overlap between the RRF and BGE top-5;
 record 96 (*English data*) lost all five old citations. This is the reranker selecting a
 different five passages, not the generator or validator tightening.
 
-- Record 0 is the LaTeX parser bug; the reparse recovers it. Expected corrected count
-  after a rerun: **79 / 21 / 4**.
 - Records 43 and 60 kept the cited passage and the model still refused: context-order
   caution, not a retrieval gap.
 - Records 14 and 93 gained answers from passages the R3 arm never retrieved.
