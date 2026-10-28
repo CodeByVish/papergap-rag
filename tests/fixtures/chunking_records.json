@@ -1,0 +1,36 @@
+[
+  {
+    "id": "fixture-paper-a",
+    "title": "Synthetic Paper A",
+    "full_text": [
+      {
+        "section_name": "Repeated Section",
+        "paragraphs": ["alpha beta gamma"]
+      },
+      {
+        "section_name": "Repeated Section",
+        "paragraphs": ["delta epsilon zeta"]
+      }
+    ],
+    "qas": [
+      {
+        "question": "This supervision field must not enter a passage."
+      }
+    ]
+  },
+  {
+    "id": "fixture-paper-b",
+    "title": "Synthetic Paper B",
+    "full_text": [
+      {
+        "section_name": "Other Section",
+        "paragraphs": ["eta theta iota"]
+      }
+    ],
+    "figures_and_tables": [
+      {
+        "caption": "This caption must not enter a passage."
+      }
+    ]
+  }
+]
