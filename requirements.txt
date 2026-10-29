@@ -23,3 +23,7 @@ langchain-community>=0.4.1,<0.4.2
 
 # Streamlit answer generation (also used with Qwen / xAI endpoints).
 openai>=1.66,<3
+
+# Demo service (src/generation/server.py): pure Python, cannot move torch/transformers.
+fastapi>=0.110,<1
+uvicorn>=0.29,<1

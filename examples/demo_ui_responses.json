@@ -1,0 +1,900 @@
+{
+  "generated_by": "scripts/capture_demo_responses.py",
+  "server": "src.generation.server.create_app",
+  "backend": "mock (same code path as vLLM; the generator is the mock)",
+  "answer_keys": [
+    "answer",
+    "citations",
+    "evidence_status",
+    "retrieval_rounds",
+    "provenance"
+  ],
+  "responses": {
+    "answered": {
+      "state": "answered",
+      "note": "A normal answer: evidence_status=SUFFICIENT, citations non-empty, the agent block is present because the input was an AgentState.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": {
+            "question_id": "0038b073b7cca847033177024f9719c971692042",
+            "question": "What result is reported?",
+            "paper_id": "1706.04115",
+            "retrieval_round": 1,
+            "retrieved_passages": [
+              {
+                "passage": {
+                  "passage_id": "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "paper_id": "1706.04115",
+                  "title": "Zero-Shot Relation Extraction via Reading Comprehension",
+                  "section": "results",
+                  "chunk_number": 0,
+                  "text": "The model sets a new state of the art."
+                },
+                "rank": 1,
+                "rrf_score": 0.9,
+                "reranker_score": null
+              }
+            ],
+            "sufficient": true,
+            "gap_label": "NONE",
+            "required_components": [
+              "result"
+            ],
+            "evidence_map": {
+              "result": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            }
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "request_id": "0038b073b7cca847033177024f9719c971692042",
+        "result": {
+          "answer": "The model sets a new state of the art.",
+          "citations": [
+            "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "The model sets a new state of the art.",
+              "passage_ids": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "The model sets a new state of the art.",
+            "citations": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The model sets a new state of the art.",
+                "passage_ids": [
+                  "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "The model sets a new state of the art.",
+            "citations": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The model sets a new state of the art.",
+                "passage_ids": [
+                  "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "mock",
+            "model_id": "mock-generator",
+            "loaded": true,
+            "options": {},
+            "last_generation_stats": null,
+            "scenario": "grounded",
+            "max_claims": 3
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\"answer\": \"The model sets a new state of the art.\", \"citations\": [\"qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"], \"evidence_status\": \"SUFFICIENT\", \"retrieval_rounds\": 1, \"provenance\": [{\"claim\": \"The model sets a new state of the art.\", \"passage_ids\": [\"qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"], \"support\": \"direct\"}]}",
+          "raw_text_chars": 402
+        },
+        "agent": {
+          "paper_id": "1706.04115",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "rewritten_query": null,
+          "required_components": [
+            "result"
+          ],
+          "evidence_map": {
+            "result": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ]
+          },
+          "retrieval_log": []
+        }
+      }
+    },
+    "refused_model": {
+      "state": "refusal (model-declared)",
+      "note": "The model itself declared INSUFFICIENT; the answer is the canonical REFUSAL_ANSWER string and validation.downgraded is false.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": {
+            "question_id": "0038b073b7cca847033177024f9719c971692042",
+            "question": "What result is reported?",
+            "paper_id": "1706.04115",
+            "retrieval_round": 1,
+            "retrieved_passages": [
+              {
+                "passage": {
+                  "passage_id": "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "paper_id": "1706.04115",
+                  "title": "Zero-Shot Relation Extraction via Reading Comprehension",
+                  "section": "results",
+                  "chunk_number": 0,
+                  "text": "The model sets a new state of the art."
+                },
+                "rank": 1,
+                "rrf_score": 0.9,
+                "reranker_score": null
+              }
+            ],
+            "sufficient": true,
+            "gap_label": "NONE",
+            "required_components": [
+              "result"
+            ],
+            "evidence_map": {
+              "result": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            }
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "request_id": "0038b073b7cca847033177024f9719c971692042",
+        "result": {
+          "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+          "citations": [],
+          "evidence_status": "INSUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": []
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "raw_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "violations": [],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "mock",
+            "model_id": "mock-generator",
+            "loaded": true,
+            "options": {},
+            "last_generation_stats": null,
+            "scenario": "refusal",
+            "max_claims": 3
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\"answer\": \"Insufficient evidence in the retrieved passages to answer this question.\", \"citations\": [], \"evidence_status\": \"INSUFFICIENT\", \"retrieval_rounds\": 1, \"provenance\": []}",
+          "raw_text_chars": 179
+        },
+        "agent": {
+          "paper_id": "1706.04115",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "rewritten_query": null,
+          "required_components": [
+            "result"
+          ],
+          "evidence_map": {
+            "result": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ]
+          },
+          "retrieval_log": []
+        }
+      }
+    },
+    "refused_empty_context": {
+      "state": "refusal (no evidence)",
+      "note": "No passages were retrieved, so the model was never called. Violation EMPTY_CONTEXT, raw_text is None in generation.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": {
+            "question_id": "0038b073b7cca847033177024f9719c971692042",
+            "question": "What result is reported?",
+            "paper_id": "1706.04115",
+            "retrieval_round": 1,
+            "retrieved_passages": [],
+            "sufficient": true,
+            "gap_label": "NONE",
+            "required_components": [
+              "result"
+            ],
+            "evidence_map": {}
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "request_id": "0038b073b7cca847033177024f9719c971692042",
+        "result": {
+          "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+          "citations": [],
+          "evidence_status": "INSUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": []
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "raw_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "violations": [
+            {
+              "code": "EMPTY_CONTEXT",
+              "severity": "warning",
+              "message": "no passages were retrieved, so the model was never called; the refusal is the terminal state of the retrieval loop, not a judgement about evidence",
+              "subject": null
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "mock",
+            "model_id": "mock-generator",
+            "loaded": false,
+            "options": {},
+            "last_generation_stats": null,
+            "scenario": "grounded",
+            "max_claims": 3
+          },
+          "prompt_version": "p5-grounded-qa-v7"
+        },
+        "agent": {
+          "paper_id": "1706.04115",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "rewritten_query": null,
+          "required_components": [
+            "result"
+          ],
+          "evidence_map": {},
+          "retrieval_log": []
+        }
+      }
+    },
+    "refused_agent_insufficient": {
+      "state": "refusal (critic)",
+      "note": "P4's critic labelled the gap INSUFFICIENT_INFORMATION; P5 refused without a model call. Violation AGENT_INSUFFICIENT.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": {
+            "question_id": "0038b073b7cca847033177024f9719c971692042",
+            "question": "What result is reported?",
+            "paper_id": "1706.04115",
+            "retrieval_round": 1,
+            "retrieved_passages": [
+              {
+                "passage": {
+                  "passage_id": "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "paper_id": "1706.04115",
+                  "title": "Zero-Shot Relation Extraction via Reading Comprehension",
+                  "section": "results",
+                  "chunk_number": 0,
+                  "text": "The model sets a new state of the art."
+                },
+                "rank": 1,
+                "rrf_score": 0.9,
+                "reranker_score": null
+              }
+            ],
+            "sufficient": false,
+            "gap_label": "INSUFFICIENT_INFORMATION",
+            "required_components": [
+              "result"
+            ],
+            "evidence_map": {
+              "result": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            }
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "request_id": "0038b073b7cca847033177024f9719c971692042",
+        "result": {
+          "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+          "citations": [],
+          "evidence_status": "INSUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": []
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "raw_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "violations": [
+            {
+              "code": "AGENT_INSUFFICIENT",
+              "severity": "warning",
+              "message": "the agent's critic labelled the gap INSUFFICIENT_INFORMATION, so P5 refused without calling the model",
+              "subject": null
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "mock",
+            "model_id": "mock-generator",
+            "loaded": false,
+            "options": {},
+            "last_generation_stats": null,
+            "scenario": "grounded",
+            "max_claims": 3
+          },
+          "prompt_version": "p5-grounded-qa-v7"
+        },
+        "agent": {
+          "paper_id": "1706.04115",
+          "sufficient": false,
+          "gap_label": "INSUFFICIENT_INFORMATION",
+          "rewritten_query": null,
+          "required_components": [
+            "result"
+          ],
+          "evidence_map": {
+            "result": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ]
+          },
+          "retrieval_log": []
+        }
+      }
+    },
+    "downgraded": {
+      "state": "downgraded to refusal",
+      "note": "The model cited a passage it was not given. The validator replaced the answer with a refusal: downgraded=true and an ERROR-level violation. The UI should badge this differently from a normal refusal.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": {
+            "question_id": "0038b073b7cca847033177024f9719c971692042",
+            "question": "What result is reported?",
+            "paper_id": "1706.04115",
+            "retrieval_round": 1,
+            "retrieved_passages": [
+              {
+                "passage": {
+                  "passage_id": "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "paper_id": "1706.04115",
+                  "title": "Zero-Shot Relation Extraction via Reading Comprehension",
+                  "section": "results",
+                  "chunk_number": 0,
+                  "text": "The model sets a new state of the art."
+                },
+                "rank": 1,
+                "rrf_score": 0.9,
+                "reranker_score": null
+              }
+            ],
+            "sufficient": true,
+            "gap_label": "NONE",
+            "required_components": [
+              "result"
+            ],
+            "evidence_map": {
+              "result": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            }
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "request_id": "0038b073b7cca847033177024f9719c971692042",
+        "result": {
+          "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+          "citations": [],
+          "evidence_status": "INSUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": []
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Insufficient evidence in the retrieved passages to answer this question.",
+            "citations": [],
+            "evidence_status": "INSUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": []
+          },
+          "raw_result": {
+            "answer": "The model sets a new state of the art.",
+            "citations": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "1706.04115_appendix_99"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The model sets a new state of the art.",
+                "passage_ids": [
+                  "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "HALLUCINATED_CITATION",
+              "severity": "error",
+              "message": "citation '1706.04115_appendix_99' is not a retrieved passage; the retriever returned 1 passage(s)",
+              "subject": "1706.04115_appendix_99"
+            },
+            {
+              "code": "CITATION_PROVENANCE_MISMATCH",
+              "severity": "warning",
+              "message": "citation(s) not referenced by any provenance claim: 1706.04115_appendix_99",
+              "subject": "1706.04115_appendix_99"
+            }
+          ],
+          "downgraded": true,
+          "downgrade_reason": "error_violation",
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "mock",
+            "model_id": "mock-generator",
+            "loaded": true,
+            "options": {},
+            "last_generation_stats": null,
+            "scenario": "hallucinated_citation",
+            "max_claims": 3
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\"answer\": \"The model sets a new state of the art.\", \"citations\": [\"qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"1706.04115_appendix_99\"], \"evidence_status\": \"SUFFICIENT\", \"retrieval_rounds\": 1, \"provenance\": [{\"claim\": \"The model sets a new state of the art.\", \"passage_ids\": [\"qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"], \"support\": \"direct\"}]}",
+          "raw_text_chars": 428
+        },
+        "agent": {
+          "paper_id": "1706.04115",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "rewritten_query": null,
+          "required_components": [
+            "result"
+          ],
+          "evidence_map": {
+            "result": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ]
+          },
+          "retrieval_log": []
+        }
+      }
+    },
+    "warning_partial": {
+      "state": "answered with warnings",
+      "note": "The answer is kept; the violation is WARNING-level. This is the state that needs a warnings badge rather than a refusal badge.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": {
+            "question_id": "0038b073b7cca847033177024f9719c971692042",
+            "question": "What result is reported?",
+            "paper_id": "1706.04115",
+            "retrieval_round": 1,
+            "retrieved_passages": [
+              {
+                "passage": {
+                  "passage_id": "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "paper_id": "1706.04115",
+                  "title": "Zero-Shot Relation Extraction via Reading Comprehension",
+                  "section": "results",
+                  "chunk_number": 0,
+                  "text": "The model sets a new state of the art."
+                },
+                "rank": 1,
+                "rrf_score": 0.9,
+                "reranker_score": null
+              }
+            ],
+            "sufficient": true,
+            "gap_label": "NONE",
+            "required_components": [
+              "result"
+            ],
+            "evidence_map": {
+              "result": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ]
+            }
+          }
+        }
+      },
+      "status": 200,
+      "body": {
+        "request_id": "0038b073b7cca847033177024f9719c971692042",
+        "result": {
+          "answer": "The model sets a new state of the art. This finding is consistent with the broader direction of the field and strengthens the overall argument.",
+          "citations": [
+            "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "The model sets a new state of the art.",
+              "passage_ids": [
+                "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "The model sets a new state of the art. This finding is consistent with the broader direction of the field and strengthens the overall argument.",
+            "citations": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The model sets a new state of the art.",
+                "passage_ids": [
+                  "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "The model sets a new state of the art. This finding is consistent with the broader direction of the field and strengthens the overall argument.",
+            "citations": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The model sets a new state of the art.",
+                "passage_ids": [
+                  "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "UNSUPPORTED_CLAIM",
+              "severity": "warning",
+              "message": "no supporting evidence found in provenance claims (best token recall 0.00 < 0.35): 'This finding is consistent with the broader direction of the field and strengthens the overall argument.'",
+              "subject": "This finding is consistent with the broader direction of the field and strengthens the overall argument."
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "mock",
+            "model_id": "mock-generator",
+            "loaded": true,
+            "options": {},
+            "last_generation_stats": null,
+            "scenario": "partial",
+            "max_claims": 3
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\"answer\": \"The model sets a new state of the art. This finding is consistent with the broader direction of the field and strengthens the overall argument.\", \"citations\": [\"qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"], \"evidence_status\": \"SUFFICIENT\", \"retrieval_rounds\": 1, \"provenance\": [{\"claim\": \"The model sets a new state of the art.\", \"passage_ids\": [\"qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"], \"support\": \"direct\"}]}",
+          "raw_text_chars": 507
+        },
+        "agent": {
+          "paper_id": "1706.04115",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "rewritten_query": null,
+          "required_components": [
+            "result"
+          ],
+          "evidence_map": {
+            "result": [
+              "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ]
+          },
+          "retrieval_log": []
+        }
+      }
+    },
+    "bad_request": {
+      "state": "client error",
+      "note": "No question and no record: 400. This is a UI bug, not a refusal - FastAPI's own validation errors use the same {'detail': ...} shape.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "paper_id": "1706.04115"
+        }
+      },
+      "status": 400,
+      "body": {
+        "detail": "'question' must be a non-empty string (or send 'record')"
+      }
+    },
+    "free_form_unconfigured": {
+      "state": "service unavailable",
+      "note": "Free-form input while no retriever is wired: 503. The UI should disable the input and show the detail, not retry.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "question": "What result is reported?",
+          "paper_id": "1706.04115"
+        }
+      },
+      "status": 503,
+      "body": {
+        "detail": "free-form retrieval is not configured on this server; restart it with --retriever module:factory, or send a full 'record' exported by the agent"
+      }
+    },
+    "citation_text": {
+      "state": "citation text lookup",
+      "note": "POST /passages resolves cited ids to text. 'missing' lists ids the corpus dump does not contain; show them as missing, do not crash.",
+      "request": {
+        "method": "POST",
+        "path": "/passages",
+        "body": {
+          "ids": [
+            "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "qasper-passage-v1-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          ]
+        }
+      },
+      "status": 200,
+      "body": {
+        "passages": {
+          "qasper-passage-v1-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+            "text": "The model sets a new state of the art.",
+            "paper_id": "1706.04115",
+            "title": "Zero-Shot Relation Extraction via Reading Comprehension",
+            "section": "results"
+          }
+        },
+        "missing": [
+          "qasper-passage-v1-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      }
+    },
+    "health": {
+      "state": "liveness",
+      "note": "What GET /health returns; use it for the status badge and the tunnel check.",
+      "request": {
+        "method": "GET",
+        "path": "/health",
+        "body": null
+      },
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "backend": "mock",
+        "model_id": "mock-generator",
+        "prompt_version": "p5-grounded-qa-v7",
+        "retrieval": false,
+        "passage_text": true,
+        "top_k": 5,
+        "papers": 1,
+        "warmup_seconds": null,
+        "uptime_seconds": 0.0
+      }
+    },
+    "papers": {
+      "state": "paper selector",
+      "note": "GET /papers: the paper ids the UI may offer. Empty when --papers-from is unset.",
+      "request": {
+        "method": "GET",
+        "path": "/papers",
+        "body": null
+      },
+      "status": 200,
+      "body": {
+        "papers": [
+          "1706.04115"
+        ]
+      }
+    },
+    "busy": {
+      "state": "busy",
+      "note": "Shape of the 429 body (not captured live: it needs two concurrent requests). The UI should retry after ~20 s, not treat it as an answer.",
+      "request": {
+        "method": "POST",
+        "path": "/answer",
+        "body": {
+          "record": "..."
+        }
+      },
+      "status": 429,
+      "body": {
+        "detail": "the demo server answers one question at a time; wait for the current answer (p90 ~17 s) and retry"
+      }
+    }
+  }
+}
