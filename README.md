@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1/P2/P3 retrieval integration now runs on real QASPER passages, including hybrid RRF and BGE reranking. P5 generation is integrated (v7 prompt/validator) and the R4 BGE-reranked path is measured; labelled retrieval evaluation, adaptive agent runs, the held-out freeze and the UI remain pending. See [P2 real-data integration and results](docs/P2_WEEK2.md) and [P5 Week 6](docs/P5_WEEK6.md).
+**Status:** P1/P2 real-data retrieval and evaluation tools, P4 agent components, P5 v7 generation with R4 reranked inputs, and the Streamlit UI are available. P5 reports Qwen generation measurements on training-integration examples; real-Qwen validation of P4's critic, final held-out evaluation and acceptance of the complete shared pipeline remain pending. See [P1 experiments](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md), [P5 Week 6](docs/P5_WEEK6.md) and the [29 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026).
 
 ## Start here
 
@@ -11,6 +11,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
+- [P1 used-question inventory](docs/handoffs/P1_QUESTION_USAGE.md): prior development usage for the team held-out exclusion audit.
 
 ## Team
 
@@ -45,6 +46,10 @@ python -m pip install -r requirements-dev.txt
 Windows activation: `.venv\Scripts\activate`.
 
 The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
+
+The UI currently uses `IndexedRetriever` and a direct LLM client. Connecting it
+to the shared P1/P2 retrieval, P4 orchestration and P5 `GroundedQAPipeline`
+remains an integration and acceptance task.
 
 ## P1 retrieval: Week 1 / Week 2
 
@@ -83,7 +88,65 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate smoke check. See the [P1 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for the completed CLI run, regression results and preliminary synthetic timings. P3 real corpus integration is now verified in the [P2 real-data handoff](docs/P2_WEEK2.md). Labelled retrieval metrics and formal failure analysis remain separate work. Keep real data, model weights, caches, indexes and generated results in the ignored local directories; only the small synthetic fixture belongs in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending compatible gold mappings and the agreed P6 evaluation protocol; P1/P2 metric tooling is available. Keep real data, model weights, caches, indexes and generated results in ignored local directories; only small synthetic fixtures belong in Git.
+
+## P1 retrieval: Week 3 / Week 4
+
+The real-data workflow and reproducible PowerShell commands are documented in
+[P1 Week 3 / Week 4](docs/P1_WEEK3_WEEK4.md). It runs P3's pinned data preparation
+in a separate worktree and validates its Passage JSONL and manifests before
+using the existing P1 retrievers. The recorded development convention indexes
+train plus validation paper text and queries **train only**; the split policy
+remains `v0-proposed`.
+
+`python -B -m scripts.run_p1_experiment --help` describes the experiment entry
+point. It loads the saved Dense index, saves/reloads a reproducible BM25 JSON
+snapshot, verifies both complete Passage mappings, and writes `results.jsonl`,
+`queries.jsonl` and `run.json` to a new or empty output directory. `--limit`
+limits queries only; the full corpus remains indexed. Zero-hit questions are
+retained. The run records input hashes, model revision, code state, source
+hashes and retrieval latency. BM25 loading rebuilds its in-memory term index;
+Dense loading reuses the stored passage vectors without re-encoding them.
+The `evaluate` subcommand audits saved rankings and adapts independently supplied
+labels; see the [provisional evaluation contract](docs/P1_EVALUATION.md).
+
+The original `retrieve(query, paper_id, top_k)` callback remains supported.
+Both independent retrievers also accept keyword-only `section="Results"`
+with exact matching before top-K selection. Callers can supply a rewritten
+query directly. Merged P2 Hybrid retrieval forwards exact sections to both
+callbacks, and the P4 graph accepts a caller-supplied section selector. P4 still
+owns the per-paper selector and same-round unscoped fallback. The historical
+P1 integration checks used fixed request bindings; they do not establish
+dynamic section selection. See [section interfaces](docs/P2_AGENT_CACHE.md).
+
+P1 saved-ranking scoring and P2 retrieval evaluation/pooling tools are
+available. Compatible gold evidence-to-passage mappings, relevance rules and
+the approved held-out/configuration freeze remain external inputs. This
+workflow exports real retrieval candidates and latency; quality metrics remain
+unavailable until those inputs are supplied. See the [P2 evaluation handoff](docs/P2_EVALUATION_HANDOFF.md)
+and the linked P1 verification record for scope and limitations.
+
+The Week 3/4 delivery branch includes main's merged P2 and P4 APIs.
+`python -B -m scripts.run_p1_integration --help` describes the bounded integration
+check using existing artifacts and fixed request sections. It does not establish
+dynamic section selection or real critic quality. The [18 October integration](docs/P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026)
+records historical execution. The [28 October checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026)
+records the question-use handoff; see the [29 October checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026)
+for the current branch refresh and validation.
+
+## P2 real-data Hybrid and reranking
+
+`python -B -m scripts.demo_hybrid --help` is now available from main. The CLI
+loads the supplied Passage JSONL and saved Dense index, checks their mapping,
+and runs RRF; `--bge` enables optional BGE reranking. See [P2 commands, model
+revisions and measured pilot](docs/P2_WEEK2.md) for inputs, offline cache controls
+and `scripts.benchmark_p2`. Use dependencies appropriate to your platform;
+the documented macOS ARM64 lock and repair procedure are platform-specific.
+
+P1's 100-question handoff remains RRF-only with null reranker fields. P2's later
+independent reranked export is recorded separately and does not change the P1
+package's provenance or establish a retrieval-quality gain. See the [separate
+artifact records](docs/P1_WEEK3_WEEK4.md#separate-p1-and-p2-artifacts).
 
 ## Repository layout
 
