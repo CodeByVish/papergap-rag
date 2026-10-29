@@ -1,0 +1,52 @@
+{
+  "format_version": "p5-held-out-overlap-audit-v1",
+  "prepared_on": "2026-10-28",
+  "owner": "P5",
+  "audited_manifest": {
+    "branch": "p3-qasper-foundation",
+    "path": "data/processed/annotation_held_out/manifest.json",
+    "schema_version": "v0-proposed",
+    "question_count": 200,
+    "pair_count": 1000,
+    "freeze_manifest_sha256": "d4ebf304d27b4219866a9d6417e40f5325949503a1b0eee36b00799cfc5647d6"
+  },
+  "development_inventories": {
+    "p1_train": {
+      "path": "docs/handoffs/p1_used_question_ids.jsonl (branch p1/week3-week4, commit f0f861b)",
+      "question_count": 2593
+    },
+    "p2": {
+      "path": "docs/handoffs/p2_used_question_ids.jsonl (branch p2/question-usage-inventory)",
+      "question_count": 106
+    },
+    "p3_pilot": {
+      "path": "data/processed/annotation_pilot_multi_v1/questions.jsonl (branch p3-qasper-foundation)",
+      "question_count": 5
+    },
+    "p5": {
+      "path": "docs/handoffs/p5_used_question_ids.jsonl",
+      "question_count": 100
+    },
+    "union_question_count": 2595
+  },
+  "overlap": {
+    "with_p1_train": 95,
+    "with_p2": 7,
+    "with_p3_pilot": 0,
+    "with_p5": 7,
+    "with_development_union": 95,
+    "held_out_not_in_p1_train": 105
+  },
+  "p5_overlap_ids": [
+    "00bcdffff7e055f99aaf1b05cf41c98e2748e948",
+    "00ef9cc1d1d60f875969094bb246be529373cb1d",
+    "0106bd9d54e2f343cc5f30bb09a5dbdd171e964b",
+    "0427ca83d6bf4ec113bc6fec484b2578714ae8ec",
+    "04f72eddb1fc73dd11135a80ca1cf31e9db75578",
+    "06095a4dee77e9a570837b35fc38e77228664f91",
+    "09a993756d2781a89f7ec5d7992f812d60e24232"
+  ],
+  "finding": "95 of the 200 proposed held-out questions are P1 train questions that have already been used in development; 7 of them were answered by P5 in the Week-3, Week-5 and Week-6 runs.",
+  "ownership": "P3/P6 own the held-out pool. This file is an informational ID cross-check, not a P5 action item; P5's own inventory adds no new IDs.",
+  "scope_note": "P1's and P2's manifests describe saved local artefacts, not a complete team inventory. The 95-overlap count is a lower bound on train contamination."
+}

@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1 BM25/Dense experiments use P3's real development corpus. Merged P2 work provides Hybrid/RRF, optional BGE reranking, batch exports, section forwarding, score caching and evaluation/pooling tools. P4 provides a rule-based planner and evidence mapper, a gap-driven rewriter, an optional LLM critic and a static/adaptive experiment harness. Real Qwen validation and final quality results remain pending. See [P1 experiments and integration](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md) and the [28 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026).
+**Status:** P1/P2 real-data retrieval and evaluation tools, P4 agent components, P5 v7 generation with R4 reranked inputs, and the Streamlit UI are available. P5 reports Qwen generation measurements on training-integration examples; real-Qwen validation of P4's critic, final held-out evaluation and acceptance of the complete shared pipeline remain pending. See [P1 experiments](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md), [P5 Week 6](docs/P5_WEEK6.md) and the [29 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026).
 
 ## Start here
 
@@ -21,8 +21,8 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | P2 | Vishakha | Hybrid fusion and reranking | Hybrid and reranking ablations |
 | P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
-| P5 | Pending | Generation, citations and answer API | QA and grounding |
-| P6 | Changyan | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
+| P5 | Junyu Hu | Generation, citations and answer API (v7/R4 integrated) | QA and grounding |
+| P6 | Changyan Xu | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.
 
@@ -45,7 +45,11 @@ python -m pip install -r requirements-dev.txt
 
 Windows activation: `.venv\Scripts\activate`.
 
-The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No integrated Streamlit entry point exists on the inspected main; the separate P6 UI remains in PR #7.
+The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
+
+The UI currently uses `IndexedRetriever` and a direct LLM client. Connecting it
+to the shared P1/P2 retrieval, P4 orchestration and P5 `GroundedQAPipeline`
+remains an integration and acceptance task.
 
 ## P1 retrieval: Week 1 / Week 2
 
@@ -126,8 +130,9 @@ The Week 3/4 delivery branch includes main's merged P2 and P4 APIs.
 `python -B -m scripts.run_p1_integration --help` describes the bounded integration
 check using existing artifacts and fixed request sections. It does not establish
 dynamic section selection or real critic quality. The [18 October integration](docs/P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026)
-records historical execution; see the [28 October checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026)
-for the current branch refresh and question-use handoff.
+records historical execution. The [28 October checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026)
+records the question-use handoff; see the [29 October checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026)
+for the current branch refresh and validation.
 
 ## P2 real-data Hybrid and reranking
 

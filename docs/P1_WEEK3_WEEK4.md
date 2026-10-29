@@ -4,7 +4,7 @@ Owner: Junlin Yin. This workflow reuses the Week 1/2 BM25 and BGE/FAISS
 retrievers. P3 produces the data in a separate worktree; no P3 branch merge is
 required. P2 fusion/reranking and the P3/P4/P5/P6 implementations are unchanged.
 
-> Current delivery: [18 October main integration after P2 merge](#main-integration-after-p2-merge-18-october-2026). PR #5 is now merged. Earlier open-PR, separate-checkout, uncommitted or deferred-delivery statements describe their original checkpoints, including [Phase 3](#phase-3-git-delivery-and-final-code-validation). Experimental provenance is unchanged. [Phase 2 source review](#phase-2-p2-source-review-and-delivery-entry-points) remains an unpublished P2 review draft, and [eight qualitative cases](#fixed-sample-qualitative-analysis-of-saved-baselines) remain pending human review.
+> Current delivery: [29 October main sync after UI and generation merge](WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026). Earlier open-PR, separate-checkout, uncommitted or deferred-delivery statements describe their original checkpoints, including [Phase 3](#phase-3-git-delivery-and-final-code-validation) and [18 October integration](#main-integration-after-p2-merge-18-october-2026). Experimental provenance is unchanged. [Phase 2 source review](#phase-2-p2-source-review-and-delivery-entry-points) remains an unpublished P2 review draft, and [eight qualitative cases](#fixed-sample-qualitative-analysis-of-saved-baselines) remain pending human review.
 
 ## Data and development convention
 

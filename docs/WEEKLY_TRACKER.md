@@ -2,7 +2,7 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
-> Current P1 delivery: [28 October question-use handoff and main sync](#p1-question-usage-handoff-and-main-sync-28-october-2026). Earlier PR states, integration limitations and test counts describe their original dated checkpoints; they are not current validation results.
+> Current P1 delivery: [29 October main sync after UI and generation merge](#p1-main-sync-after-ui-and-generation-merge-29-october-2026). Earlier PR states, integration limitations and test counts describe their original dated checkpoints; they are not current validation results.
 
 | Week | Dates | Exit checkpoint | Status |
 | --- | --- | --- | --- |
@@ -591,3 +591,44 @@ are in `results/p1-refresh-20261028/`.
 The inventory's 2,593 IDs, paper/split mapping, three zero-hit questions and
 29 source-file hashes were independently checked. The question-use inventory
 reuses saved evidence without rerunning retrieval or rebuilding indexes.
+
+## P1 main sync after UI and generation merge: 29 October 2026
+
+Main `10e52e926cc6f22395fe8fc180dd7c114950195a` adds the merged P6 UI (#7)
+and P5 generation (#15). It is integrated into `p1/week3-week4` with a normal
+merge for [PR #8](https://github.com/CodeByVish/papergap-rag/pull/8), preserving
+P1 parent `3bb545c967efe63197cb99a799628162f5c2b512` and the prior question-use
+handoff. This refresh conflicted only in README's shared status and launch
+instructions; the tracker had no new merge conflict. Both owners' content
+was retained. Earlier conflict resolutions remain part of the branch history.
+
+All incoming P5/P6 code, dependencies, tests, handoffs and owner names are
+preserved. P1 production code and tests did not require changes for this
+refresh. The P5 R4 training-integration measurements remain historical P5
+evidence; no new Qwen run is claimed. The UI now has a launch command but
+uses its separate indexed retrieval and direct LLM path. Acceptance of the
+complete shared P1/P2/P4/P5/UI pipeline remains a separate integration task.
+
+Fresh validation in the project's Python 3.11 environment, with
+`HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`:
+
+```text
+python -B -m pytest tests -q --tb=short -p no:cacheprovider
+718 passed in 31.95s
+```
+
+The run includes the new P5 generation and Streamlit mock tests alongside
+P1/P2/P4 regression coverage. It does not download models or establish real
+end-to-end answer quality. The 28 October 698-test result above remains tied
+to its earlier main version. Detailed local validation is recorded in
+`results/p1-main-sync-20261029/pytest.json`.
+
+Ruff check/format passed for all 11 P1 Python files in the PR delta; the P1
+integration CLI help/import check also passed. Content checks preserved all
+51 incoming non-README files, all three P1 inventory files and 29 historical
+artifact hashes. The existing tracker/report histories, local Markdown links
+and anchors, and the PR delta's whitespace check passed.
+
+PR mergeability, CI status and another member's review must be checked
+separately after pushing. This branch synchronization does not record a
+review approval or a merge of PR #8 into main.

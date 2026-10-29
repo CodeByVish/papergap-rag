@@ -20,3 +20,6 @@ rouge-score>=0.1.2,<0.2
 ragas>=0.4,<0.5
 langchain-community>=0.4.1,<0.4.2
 # vLLM / quantization / GPU FAISS: decide after target GPU is confirmed.
+
+# Streamlit answer generation (also used with Qwen / xAI endpoints).
+openai>=1.66,<3
