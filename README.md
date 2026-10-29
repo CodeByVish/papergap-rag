@@ -2,7 +2,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1/P2/P3 retrieval integration now runs on real QASPER passages, including hybrid RRF and BGE reranking. A small training-only ranking/latency pilot is complete; labelled retrieval evaluation, the agent, generation and the UI remain pending. See [P2 real-data integration and results](docs/P2_WEEK2.md).
+**Status:** P1/P2/P3 retrieval integration now runs on real QASPER passages, including hybrid RRF and BGE reranking. P5 generation is integrated (v7 prompt/validator) and the R4 BGE-reranked path is measured; labelled retrieval evaluation, adaptive agent runs, the held-out freeze and the UI remain pending. See [P2 real-data integration and results](docs/P2_WEEK2.md) and [P5 Week 6](docs/P5_WEEK6.md).
 
 ## Start here
 
@@ -20,7 +20,7 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | P2 | Vishakha | Hybrid fusion and reranking | Hybrid and reranking ablations |
 | P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
-| P5 | Pending | Generation, citations and answer API | QA and grounding |
+| P5 | Pending | Generation, citations and answer API (v7/R4 integrated) | QA and grounding |
 | P6 | Changyan Xu | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.

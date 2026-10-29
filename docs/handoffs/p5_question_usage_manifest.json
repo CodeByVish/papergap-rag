@@ -1,0 +1,50 @@
+{
+  "format_version": "p5-question-usage-v1",
+  "owner": "P5",
+  "prepared_on": "2026-10-28",
+  "scope": "QASPER questions answered by P5 runs in this workspace, plus the cluster R4 run. Synthetic benchmark questions are listed separately. Not a claim about unsaved or external runs.",
+  "inventory": {
+    "path": "docs/handoffs/p5_used_question_ids.jsonl",
+    "sha256": "ec0795f85ef3ca329b836af3e8859ee368504c23452a8e221ec2de3e88bd975c",
+    "sha256_canonicalization": "UTF-8 file with LF line endings",
+    "question_count": 100,
+    "paper_count": 93,
+    "source_split_counts": {
+      "train": 100
+    },
+    "in_p1_inventory": 100,
+    "not_in_p1_inventory": []
+  },
+  "cross_check": {
+    "p1_inventory": {
+      "path": "docs/handoffs/p1_used_question_ids.jsonl (branch p1/week3-week4, commit f0f861b)",
+      "computed_sha256_lf": "89be5063f405a3a63718567b793580a2bac0e2e41f7a60ac5e8c89ddc9746744",
+      "declared_sha256": "0b50e6eeb65a072f76ffa4d7a390e7345a4986fc19c622fe61fb5da4ce16fbab",
+      "line_ending_note": "P1's declared hash is the CRLF serialisation of the same 2,593 rows; the committed blob is LF. The audit compared IDs, not hashes.",
+      "question_count": 2593
+    },
+    "overlap": 100,
+    "p5_only": []
+  },
+  "synthetic_exclusions": {
+    "ids": [
+      "bench-b01",
+      "bench-b02",
+      "bench-b03",
+      "bench-b04",
+      "bench-b05",
+      "bench-b06",
+      "bench-b07",
+      "bench-b08"
+    ],
+    "reason": "Fictional SciReader/SQuAD benchmark samples, not QASPER questions; no held-out QASPER exclusion is required."
+  },
+  "usage_category_counts": {
+    "p4_agentstate_fixture": 1,
+    "week3_evidence_binding": 100,
+    "week4_agentstate": 1,
+    "week5_quality": 100,
+    "week6_bge_reranked": 100
+  },
+  "note": "Every real question in this inventory is a train-split question already present in P1's used-question inventory. P5 adds no new QASPER question IDs."
+}
