@@ -100,18 +100,23 @@ def test_fourth_method_corruption_rejected(damage):
         validate_pool(questions, corpus, pairs, rankings, FOUR_METHODS)
 
 
-def test_archived_fallback_checks_exact_bytes(monkeypatch, tmp_path):
+@pytest.mark.parametrize(
+    "directory",
+    ["annotation_pilot_multi_v2", "annotation_common_v2", "annotation_common_v2_markdown"],
+)
+def test_archived_fallback_checks_exact_bytes(monkeypatch, tmp_path, directory):
     """Read deleted legacy blobs while preferring current bytes and strict hashes.
 
     Args:
         monkeypatch: Isolate Git responses and the current working directory.
         tmp_path: Empty synthetic checkout without legacy working files.
+        directory: Explicitly retired directory allowed to use historical bytes.
     """
     import hashlib
     from pathlib import Path
 
     monkeypatch.chdir(tmp_path)
-    path = Path("data/processed/annotation_pilot_multi_v2/frozen_config.json")
+    path = Path("data/processed") / directory / "frozen_config.json"
 
     def git_output(command, **kwargs):
         """Provide one archived blob without invoking external Git.

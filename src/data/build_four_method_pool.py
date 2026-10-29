@@ -14,6 +14,7 @@ from pathlib import Path
 
 from src.data.build_annotation_pool import (
     DATA,
+    artifact_bytes,
     code_identity,
     load_corpus,
     read_jsonl,
@@ -131,6 +132,7 @@ def inputs_for_run(pilot: bool) -> tuple[list, list, dict, dict, dict]:
 
     Returns:
         Questions, full paper corpus, settings, input hashes and retained hashes.
+        Retired v2 artifacts are read from Git without restoring working files.
     """
     settings = configuration()
     if pilot:
@@ -168,16 +170,19 @@ def inputs_for_run(pilot: bool) -> tuple[list, list, dict, dict, dict]:
         inputs.update(
             snapshot([CONFIG, PILOT / "manifest.json", PILOT / "frozen_config.json"])
         )
+        old_manifest = json.loads(artifact_bytes(HISTORY / "manifest.json"))
+        templates = DATA / "annotation_common_v2_markdown" / "manifest.json"
+        old_templates = json.loads(artifact_bytes(templates))
+        # Frozen inventories survive deletion; directory scans lose retired paths.
         history = snapshot(
             sorted(
                 [
-                    *HISTORY.rglob("*.*"),
-                    *(DATA / "annotation_common_v2_markdown").rglob("*.*"),
+                    HISTORY / "manifest.json",
+                    templates,
+                    *map(Path, old_manifest["outputs"]),
+                    *map(Path, old_templates["outputs"]),
                 ]
             )
-        )
-        old_manifest = json.loads(
-            (HISTORY / "manifest.json").read_text(encoding="utf-8")
         )
         history.update(old_manifest["historical_retained_files"])
     return questions, corpus, settings, inputs, history

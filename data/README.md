@@ -6,7 +6,9 @@ Raw and processed data and their manifests are tracked on the P3 working branch,
 
 ## Data versions and updates
 
-Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. Human labels, agreement and adjudication remain pending. The v2 pool/templates retain their bytes as history.
+The obsolete three-method `annotation_common_v2/` and `annotation_common_v2_markdown/` directories have been removed from the checkout because they omit BGE reranking. Use only `annotation_common_v3/` and `annotation_common_v3_markdown/` for annotation. The v2 bytes remain in Git history; v3 verification reads them there and checks the original hashes without restoring the directories. To inspect the historical artifacts and the v2 field tables below, use a separate checkout of a commit that contains them. A full clone with that history is required.
+
+Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. Human labels, agreement and adjudication remain pending. The v2 pool/templates are available only in Git history.
 
 The scoped exclusion inventory combines P1's $2593$, P2's $106$ and P3's $250$ selection IDs into $2654$ unique banned questions, retaining all qualifying overlapping sources. It does not claim coverage of unrecorded external/P4–P6 use. Isolation is question-level and permits shared papers. Add explicit new usage evidence in a new inventory version before further sampling; held-out content or results must not guide system choices.
 
@@ -639,8 +641,8 @@ data/
     ├── qa_for_held_out_v2.jsonl
     ├── qa_for_held_out_v2.manifest.json
     ├── historical_bm25_retirement.manifest.json
-    ├── annotation_common_v2/
-    ├── annotation_common_v2_markdown/
+    ├── annotation_common_v3/
+    ├── annotation_common_v3_markdown/
     ├── held_out_exclusion_sources/
     ├── qa_banned_for_held_out.jsonl
     ├── qa_banned_for_held_out.manifest.json

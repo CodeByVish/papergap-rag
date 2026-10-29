@@ -33,12 +33,12 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     """Read structured records without printing their potentially private text.
 
     Args:
-        path: UTF-8 JSONL artifact.
+        path: UTF-8 JSONL artifact; retired annotation data may live in Git.
 
     Returns:
         Parsed rows in persisted order.
     """
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    return [json.loads(line) for line in artifact_bytes(path).decode("utf-8").splitlines()]
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -120,7 +120,7 @@ def artifact_bytes(path: Path) -> bytes:
 
     Args:
         path: Repository-relative data artifact. Git fallback is restricted to
-            legacy annotation directories removed by the cleanup commit.
+            explicitly retired annotation directories removed from the checkout.
 
     Returns:
         Exact current bytes, or the last added/modified Git blob for a missing
@@ -136,6 +136,8 @@ def artifact_bytes(path: Path) -> bytes:
         "annotation_pilot",
         "annotation_pilot_multi_v1",
         "annotation_pilot_multi_v2",
+        "annotation_common_v2",
+        "annotation_common_v2_markdown",
     }
     if (
         path.is_absolute()

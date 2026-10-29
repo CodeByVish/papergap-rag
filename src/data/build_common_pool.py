@@ -262,12 +262,12 @@ def verify(output: Path) -> dict:
     """Verify saved hashes and cross-file mappings without model inference.
 
     Args:
-        output: Completed formal output directory.
+        output: Completed formal output directory, including retired Git data.
 
     Returns:
         Reconstructed validation counts, after all inputs and history pass.
     """
-    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    manifest = json.loads(artifact_bytes(output / "manifest.json"))
     verify_snapshot(manifest["inputs"])
     verify_snapshot(manifest["outputs"])
     verify_snapshot(manifest["historical_retained_files"])
@@ -277,11 +277,11 @@ def verify(output: Path) -> dict:
     if read_jsonl(output / "questions.jsonl") != questions:
         raise ValueError("questions differ from saved held-out list")
     if (
-        json.loads((output / "frozen_config.json").read_text(encoding="utf-8"))
+        json.loads(artifact_bytes(output / "frozen_config.json"))
         != settings
     ):
         raise ValueError("formal config differs from pre-run freeze")
-    provenance = json.loads((output / "run_inputs.json").read_text(encoding="utf-8"))
+    provenance = json.loads(artifact_bytes(output / "run_inputs.json"))
     if provenance != {"inputs": inputs, "code": manifest["code"]}:
         raise ValueError("pre-run provenance differs from manifest")
     validation = validate_pool(

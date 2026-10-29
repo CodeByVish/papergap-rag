@@ -6,7 +6,9 @@
 
 ## 数据版本与更新
 
-第 $4$ 周第 $3$ 步已完成。`data/processed/annotation_common_v3/` 保存 BM25、Dense、Hybrid RRF、Hybrid RRF followed by BGE reranking 在原冻结 $200$ 题上的全新检索：每算法 $1000$ 次命中，$800$ 行排名，共 $1853$ 条唯一配对，每题 $6$–$14$ 条。原三算法的 $600$ 组 passage ID 及排名与 v2 完全一致，分数也全部一致。`data/processed/annotation_common_v3_markdown/` 保存两套独立空白英文标注文件，每套 $10$ 批、每批 $20$ 道完整问题，各批配对数为 $179,185,187,188,174,187,190,191,177,195$。第 $4$ 步仅使用此核验通过的四算法版本，安排两位不同人员独立完成 $3706$ 次初始判断；人工标签、一致率及裁决待执行。v2 共同池和模板字节不变，作为历史版本保留。
+旧三算法目录 `annotation_common_v2/` 和 `annotation_common_v2_markdown/` 缺少 BGE 重排结果，已从工作目录删除。标注仅使用 `annotation_common_v3/` 和 `annotation_common_v3_markdown/`。v2 原始字节保留在 Git 历史中；v3 核验从历史读取并核对原哈希，不恢复旧目录。查看历史产物及下方 v2 字段表时，请在独立工作副本中检出包含这些文件的历史提交；须保留完整 Git 历史。
+
+第 $4$ 周第 $3$ 步已完成。`data/processed/annotation_common_v3/` 保存 BM25、Dense、Hybrid RRF、Hybrid RRF followed by BGE reranking 在原冻结 $200$ 题上的全新检索：每算法 $1000$ 次命中，$800$ 行排名，共 $1853$ 条唯一配对，每题 $6$–$14$ 条。原三算法的 $600$ 组 passage ID 及排名与 v2 完全一致，分数也全部一致。`data/processed/annotation_common_v3_markdown/` 保存两套独立空白英文标注文件，每套 $10$ 批、每批 $20$ 道完整问题，各批配对数为 $179,185,187,188,174,187,190,191,177,195$。第 $4$ 步仅使用此核验通过的四算法版本，安排两位不同人员独立完成 $3706$ 次初始判断；人工标签、一致率及裁决待执行。v2 共同池和模板仅保留在 Git 历史中。
 
 本次范围内的禁用清单将 P1 的 $2593$、P2 的 $106$ 和 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。不声称覆盖未记录的外部/P4–P6 用题。采用问题层面隔离，允许共享论文。后续明确新增的用题证据须在再次抽样前补充新清单版本；禁止根据 held-out 内容或结果选择系统配置。
 
@@ -639,8 +641,8 @@ data/
     ├── qa_for_held_out_v2.jsonl
     ├── qa_for_held_out_v2.manifest.json
     ├── historical_bm25_retirement.manifest.json
-    ├── annotation_common_v2/
-    ├── annotation_common_v2_markdown/
+    ├── annotation_common_v3/
+    ├── annotation_common_v3_markdown/
     ├── held_out_exclusion_sources/
     ├── qa_banned_for_held_out.jsonl
     ├── qa_banned_for_held_out.manifest.json
