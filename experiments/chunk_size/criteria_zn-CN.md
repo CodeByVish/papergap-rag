@@ -212,7 +212,7 @@ Round 1 已完成每块 $100/200/400$ words 的 BM25 比较，有效结果见 `r
 | `data.chunk_words`：$200$ | `candidates`：$325/365/375$ | 用途相关但结构不同；实验逐一比较 Round 4 候选大小，不采用 YAML 的单一大小。 |
 | `seed`：$42$ | `seed`：$42$ | 用途和值相同；所有抽样过程使用实验配置中的种子，不读取 YAML。 |
 
-YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 等提案设置，实验 JSON 当前仅指定 `retrieval.mode` 为 `bm25`，本次实验已确认使用此模式及 `top_k=5`。两者不是同一完整检索配置；本实验不会继承 YAML 的模型或融合参数。BM25 算法参数沿用实现的库默认值，属于检索器实现细节，不作为本次实验的待选配置或调优内容；输入、输出、完整流程及当前参数见 `experiments/chunk_size/BM25.md`。实验检索代码的缺省值和可选模式见 `experiments/chunk_size/README.md`。
+YAML 的 `retrieval` 部分列出稠密模型、重排模型、候选数和 RRF 等提案设置，实验 JSON 当前仅指定 `retrieval.mode` 为 `bm25`，本次实验已确认使用此模式及 `top_k=5`。两者不是同一完整检索配置；本实验不会继承 YAML 的模型或融合参数。BM25 算法参数沿用实现的库默认值，属于检索器实现细节，不作为本次实验的待选配置或调优内容；输入、输出、完整流程及当前参数见 `experiments/algorithms/BM25.md`。实验检索代码的缺省值和可选模式见 `experiments/chunk_size/README.md`。
 
 除开头已列出的 `candidates` 外，当前实验 JSON 的通用设置如下；新增 validation 设置见 Round 4 方案；比较各候选分块大小时保持这些设置一致。
 
