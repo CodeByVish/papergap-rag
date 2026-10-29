@@ -78,9 +78,17 @@ class P5ApiClient:
 
     def papers(self):
         data = self._request('GET', '/papers').get('papers')
-        if not isinstance(data, list) or any(not isinstance(p, dict) or not isinstance(p.get('paper_id'), str) or not p['paper_id'] for p in data):
-            raise ApiError('failed', 'Paper catalogue must contain paper_id objects; confirm the contract with P5.')
-        return data
+        if not isinstance(data, list):
+            raise ApiError('failed', 'Paper catalogue must be a list.')
+        normalized = []
+        for paper in data:
+            if isinstance(paper, str) and paper.strip():
+                normalized.append({'paper_id': paper})
+            elif isinstance(paper, dict) and isinstance(paper.get('paper_id'), str) and paper['paper_id'].strip():
+                normalized.append(paper)
+            else:
+                raise ApiError('failed', 'Paper catalogue contains an invalid paper ID.')
+        return normalized
 
     def answer_record(self, record):
         if not isinstance(record, dict) or not record:

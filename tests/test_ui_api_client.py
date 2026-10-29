@@ -78,3 +78,9 @@ def test_explicit_auth_redaction(monkeypatch):
     api.config = config
     api.answer_question('q', 'p')
     assert session.request.call_args.kwargs['headers'] == {'Authorization': 'Bearer private-test-token'}
+
+
+@pytest.mark.parametrize('papers,expected', [(['1706.04115'], [{'paper_id': '1706.04115'}]), ([], [])])
+def test_formal_p5_string_catalogue(papers, expected):
+    api, _ = client({'papers': papers})
+    assert api.papers() == expected
