@@ -1,8 +1,11 @@
 # Acceptance criteria and test cases
 
-Status: proposed; no cases have been executed for the new UI.
+Status: current acceptance specification with local evidence and remaining gates.
+Updated after rebase onto main 97e33b2 (2026-10-29). Levels below are intended
+verification levels, not a claim that every row passed at every level. See the
+[completion summary](UI_PORT_COMPLETION_SUMMARY.md) for observed results.
 Test levels: U = pure unit; A = Streamlit AppTest; S = live local P5 mock service;
-E = P5's real deployment. Synthetic fixtures are permitted in Git. P5's captured
+E = P6-operated real cluster deployment (P5 may reproduce it). Synthetic fixtures are permitted in Git. P5's captured
 responses are read as supplied and never manually edited; regeneration uses P5's
 capture script. Do not commit raw QASPER records or generated corpora/results.
 
@@ -32,57 +35,73 @@ capture script. Do not commit raw QASPER records or generated corpora/results.
 | T22 / R12 | Fake token and hostile HTML in server content/error | Token absent from rendered output/log messages; no unsafe HTML execution | U,A |
 | T23 / R06 | Sufficient result with unexpected severity or contradictory downgrade | Visible inconsistent-response warning; not labeled clean | U,A |
 | T24 / R03,R05,R08 | Run real P5 mock server; record -> answer -> citation lookup | Actual HTTP request/response path renders without AppTest exceptions; IDs resolve or degrade as advertised | S |
-| T25 / R01–R12 | P5 launches approved real environment; submit approved development record | Real backend metadata, final state, citations and timing inspected; no mock presented as real | E |
-| T26 / R04 | P5 real health retrieval=true, run approved paper-scoped query | Returned answer/trace tied to chosen paper; if false, mark blocked by retrieval capability rather than pass | E |
-| T27 / R09,R10 | P5 submits from two sessions while one is running | Busy request gives 429 without corrupting first answer; UI recovers on manual retry | E |
-
+| T25 / R01–R12 | P6 launches approved real environment; submit approved development record | Real backend metadata, final state, citations and timing inspected; no mock presented as real | E |
+| T26 / R04 | Real health retrieval=true, run approved paper-scoped query | Returned answer/trace tied to chosen paper; if false, mark blocked by retrieval capability rather than pass | E |
+| T27 / R09,R10 | Operator submits from two sessions while one is running | Busy request gives 429 without corrupting first answer; UI recovers on manual retry | E |
 | T28 / R13,R14 | Create workspaces A/B and separate UI sessions | Distinct IDs and isolated histories; no global cached answer leaks | U,A |
 | T29 / R14 | Switch paper after questions; use an ambiguous follow-up | New paper context creates new conversation; independent-question guidance; no history added to request | U,A |
 | T30 / R13,R15 | Execute identical query twice and rerun same exported record | New client_run_id for each attempt; original question/request identifiers preserved | U,A,S |
 | T31 / R15 | Simulate A completion after active workspace changes to B; deliver duplicate completion | Only A's captured run updated once; B unchanged | U,A |
 | T32 / R16 | Timeout after dispatch; manually retry | First attempt outcome_unknown, second has new ID/retry link; no automatic retry or cancellation claim | U,A,E |
-| T33 / R18 | Service echoes matching/mismatching/no IDs | Matching IDs associated; mismatch flagged; absent optional backend ID shown unavailable; JSON contract unchanged | U,A,S |
+| T33 / R18 | Current service has no correlation extension; optionally review future echo cases | Local routing works without headers; backend run ID unavailable. Echo/mismatch handling is deferred and not implemented. | U,A; future S |
 | T34 / R15 | Two runs cite same ID with different lookup outcomes | Evidence stays attached to owning run; one lookup error does not fail another answer | U,A |
 | T35 / R17 | Select five runs for export, including mock/failure/missing metadata | Valid sanitized JSON; answer vs citation latency distinct; unknown metadata retained; mock timings not labeled live performance | U,A,E |
 | T36 / R09,R14 | Slow synchronous call while multiple workspaces exist | One pending call across session, truthful processing spinner; no fabricated stage progress or unverified switching promise | A,E |
-| T37 / R03,R14 | Compare record Demo mode and free-query mode | Distinct labels; original record preserved; no claim replay performs fresh retrieval | A,S |
-| T38 / R13–R18 | P5 real environment runs identical query twice, then another browser session | Run IDs/headers reflect actual agreement; no history crossing sessions; 429 handled; evidence recorded | E |
+| T37 / R03,R14 | Compare record Demo mode and free-query mode | Distinct labels; original record preserved; no claim supplied-state generation performs fresh retrieval | A,S |
+| T38 / R13–R18 | P6 real environment runs identical query twice, then another browser session | Local run IDs are distinct; no ID headers are sent; no history crossing sessions; 429 handled; evidence recorded | E |
 | T39 / R11,R14 | Clear active/non-active/pending workspace and reach history limit | Only intended non-pending history removed; pending clear blocked; limit prompts export/clear without silent eviction | U,A |
 | T40 / R14 | Reconnect/refresh or open new browser tab | No durable/shared history promise; no wrong association with abandoned executions | A,E |
 
-## Execution and evidence
+## Recorded evidence and scope
 
-After implementation, run the targeted unit and AppTest suite, then the actual
-P5 mock-service smoke path. Record commands, exit codes, test counts, Python and
-package versions, service/UI commit IDs, and any skips in the completion summary.
-Use a clean lightweight UI environment to verify no GPU/index dependency is
-required. Also run affected existing tests when imports/dependencies change.
-Do not repeatedly broaden tests after relevant checks pass without a new concern.
+The post-rebase combined suite returned **100 passed, 1 skipped**. T24 also passed
+separately against the actual running P5 mock API with synthetic input and auth.
+The default opt-in skip does not mean the server or contract is missing. P5's
+socket smoke passed 15/15 using a test retriever. None establishes a real P2/GPU
+or adaptive-agent pass.
 
-Planned targeted command (files will be added during implementation):
+| Case group | Local evidence / limits |
+| --- | --- |
+| T01–T07,T18–T21 | Config/shape/error/file and AppTest dispatch/capability checks exist; not every edge case at every listed level was exercised. String-paper IDs and stale-catalogue disabling have regression tests. |
+| T08–T16,T23 | Unit classification and AppTest rendering/fallback checks; actual P5 mock record/citation integration passed. No real semantic correctness or full-corpus coverage claim. |
+| T17,T36 | Timeout configuration and single-pending state guard checked; synthetic browser walkthrough completed. Long GPU-call/spinner/reconnect behavior remains E-level work. |
+| T22 | Token/config/error redaction and no unsafe HTML usage are covered by tests/code inspection; dedicated adversarial HTML browser execution was not recorded. |
+| T24 | Passed actual P5 mock service/UI smoke separately; default external-service test stays opt-in. |
+| T25–T27,T38,T40 | Real-cluster execution pending P6; T26 additionally needs the real factory. New-session state isolation is locally tested, not durable reconnect recovery. |
+| T28–T32,T34–T35,T37,T39 | State/AppTest/export and record/free-mode checks cover implemented behavior. Late-result protection is a pure-state simulation; this synchronous UI has no background completion worker. Some combined scenarios remain manual/E-level checks. |
+| T33 | Current no-header path implemented; proposed echo/mismatch checks deferred, not a release blocker. |
+
+To repeat the UI unit/AppTest checks in an installed UI environment:
 
 ```bash
 python -m pytest -q tests/test_ui_api_client.py tests/test_ui_view_models.py tests/test_ui_record_loader.py tests/test_ui_conversation_state.py tests/test_ui.py
 ```
 
-The exact opt-in smoke command will be documented after the real P5 package and
-mock scenario controls are inspected. In-process mocked HTTP tests alone do not
-satisfy T24. Inspect the actual browser layout for loading, long answers, long
-citation IDs, expanded validation, and narrow windows; record observations.
+For the synthetic localhost HTTP check, add tests/test_ui_p5_smoke.py. For an
+actual already-running P5 mock service, configure URL/auth/record path as in
+[the handoff](P6_UI_handoff.md) and opt in:
+
+```bash
+P5_RUN_SMOKE=1 python -m pytest -q tests/test_ui_p5_smoke.py::test_actual_p5_service
+```
+
+The latter makes two sequential answer calls and verifies shape/rendering, not
+model execution quality. Inspect backend metadata/violations/logs for real Qwen
+acceptance. The complete 100-test command and environment history are in the
+completion summary. Never hand-edit P5's captured samples.
 
 ## Release gates
 
-1. User reviews design before source implementation, including the linked
-   [user stories and API proposal](UI_PORT_USER_STORIES_AND_API.md).
-2. P5 contract and record sample are available; mismatches resolved with owners.
-3. Relevant unit/AppTest checks and T24 pass; record outstanding limitations honestly.
-4. P6 provides completion summary and runnable P5 E2E handoff.
-5. P5 records E cases as pass/fail/blocked with capability flags. Missing retrieval
-   or corpus is an explicit limitation, not proof of complete E2E functionality.
-6. Another member reviews the PR before merge. Shared milestone updates go in
-   `docs/WEEKLY_TRACKER.md` with actual result/PR links.
+1. Design review: complete; implementation was authorized after review.
+2. Local contract reconciliation: complete. Formal P5 files are in main; approved
+   account-specific real input/runtime paths still need operator confirmation.
+3. Local tests and actual mock T24: passed as recorded. T33 extensions remain deferred.
+4. Completion summary and handoff: delivered, with the current real-environment guide.
+5. P6 records E cases as pass/fail/blocked with revision/capability evidence. Missing
+   retrieval/text is a limitation, not proof that the corresponding live feature works.
+6. Another member reviews before merge. Shared milestones belong in
+   docs/WEEKLY_TRACKER.md; private runtime artifacts remain outside Git.
 
-P5 real verification additionally covers T32,T35,T36,T38,T40. Unsupported
-correlation headers do not block client-only routing tests; record them as
-unsupported, not implemented. Five live free-query runs remain blocked while
-retrieval=false; exported-record runs are a distinct demonstration path.
+Five live free-query runs remain blocked until the real retriever is supplied and
+retrieval=true. Exported-state inference is a separate real-model demonstration
+path. Fresh P4 graph execution requires additional integration beyond this port.

@@ -1,36 +1,41 @@
-# P6 UI port integration
+# P6 UI integration documentation
 
-Status: **design approved; UI implemented and locally tested; P5 service integration pending**.
-Branch: `P6/UI-port-integration`, created from local `main` on 2026-10-29.
+Updated: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
+Reviewed runtime code: `4584e2c`, rebased onto `origin/main` at `97e33b2`.
+P5 service/contract implementation: `ef5f7a3`, included in that main revision.
 
-Review in this order:
+## Current status
 
-1. [Requirements and architecture](UI_PORT_REQUIREMENTS.md)
-2. [User stories, multi-conversation UI and API contract](UI_PORT_USER_STORIES_AND_API.md)
-3. [Acceptance criteria and test cases](UI_PORT_ACCEPTANCE.md)
-4. [Task breakdown and specifications](UI_PORT_TASKS.md)
+- Design approved; UI implemented. The current branch contains both UI and P5
+  service after rebase. No separate demo-service merge is needed.
+- Post-rebase tests: **100 passed, 1 skipped**. The default suite's external-service
+  smoke is opt-in. It previously passed separately against the actual P5 mock API.
+- P6 operates its own cluster job, tunnel and laptop UI, as requested by P5's latest
+  message. P5 owns service code; P1/P2 own retrieval; P4 owns agent integration.
+- P6 cluster/GPU E2E remains unexecuted. Own account/runtime/data paths need
+  confirmation. A real free-query retriever factory is not supplied, and the
+  current free-query service path does not execute the P4 adaptive agent graph.
 
-The source for this proposal is P5's `P6_demo_ui_20261029.txt` handoff supplied
-by the user. Its contents describe the intended integration contract, not
-evidence that the service is available in this checkout. P5's field-level
-`docs/P6_UI_CONTRACT.md` must be checked before implementing parsers.
+## Read in this order
 
-The user approved implementation after design review. See
-[completion summary](UI_PORT_COMPLETION_SUMMARY.md) for actual test evidence and
-[P6 handoff to P5](P6_UI_handoff.md) for usage, interface assumptions and real E2E.
-The planning documents below retain their proposed contract decisions; the
-completion summary distinguishes implemented behavior from pending P5 verification.
+| Document | Purpose |
+| --- | --- |
+| [Completion summary](UI_PORT_COMPLETION_SUMMARY.md) | Delivered behavior, exact verification evidence and remaining gates |
+| [P6 real-environment E2E guide](P6_REAL_ENV_E2E_GUIDE.md) | P6 account setup, GPU job, single-hop tunnel, UI and real-environment acceptance |
+| [P6 UI handoff to P5](P6_UI_handoff.md) | Usage, confirmed API compatibility, optional interface extensions and owner checklist |
+| [Requirements and architecture](UI_PORT_REQUIREMENTS.md) | Current R01–R18 scope, actual modules/functions and session storage |
+| [User stories and API](UI_PORT_USER_STORIES_AND_API.md) | Query/run identity, routing, lifecycle and timing/export definitions |
+| [Acceptance cases](UI_PORT_ACCEPTANCE.md) | T01–T40 criteria, evidence levels and deferred checks |
+| [Task specifications](UI_PORT_TASKS.md) | I0–I7 deliverables, implemented status and outstanding owner work |
+| [macOS dependency snapshot](requirements-ui-macos-py314.txt) | Earlier clean UI/test environment; not a server/GPU or cross-platform lockfile |
 
-The expanded design also maps Assignment.pdf pages 2–4 to user stories, session/
-conversation/message/run identities, synchronous result routing, five-query timing
-export, and P5 delivery dependencies. Correlation headers are proposals requiring
-P5 agreement; the existing request bodies remain unchanged.
+The authoritative field-level API is [P5 UI contract](../P6_UI_CONTRACT.md),
+implemented by [the server](../../src/generation/server.py). For cluster operation,
+use the P6 E2E guide alongside [P5's operating manual](../DEMO_OPTION_C.md).
+The P6 guide reflects the latest owner decision and single-hop tunnel method;
+older P5-operated/ProxyJump descriptions elsewhere are not the selected setup.
 
-
-## P6 self-operated cluster deployment update
-
-P5's latest message authorizes the P6-owned job/tunnel/UI configuration. Read
-[P6 real-environment E2E guide](P6_REAL_ENV_E2E_GUIDE.md) for verified service
-compatibility, account/runtime prerequisites and the remaining fresh-retrieval /
-adaptive-agent gaps. The actual P5 mock API has now been exercised locally;
-earlier missing-artifact notes in the completion summary are historical.
+All shared documents are in English. Passage schemas and split mappings remain
+`v0-proposed`. Keep credentials, real records, corpus/index/model artifacts and
+exported production results outside Git. No real-model or semantic-quality claim
+follows from local mock tests.
