@@ -8,7 +8,7 @@
   "scope": "Saved P1 artifacts present in the local workspace; not a complete team inventory or evidence about unsaved/external runs.",
   "inventory": {
     "path": "docs/handoffs/p1_used_question_ids.jsonl",
-    "sha256": "0b50e6eeb65a072f76ffa4d7a390e7345a4986fc19c622fe61fb5da4ce16fbab",
+    "sha256": "89be5063f405a3a63718567b793580a2bac0e2e41f7a60ac5e8c89ddc9746744",
     "question_count": 2593,
     "paper_count": 888,
     "source_split_counts": {
@@ -30,6 +30,15 @@
       "saved_ranking_qualitative_inspection": 3,
       "smoke_or_integration": 7
     }
+  },
+  "publication": {
+    "corrected_on": "2026-10-29",
+    "encoding": "UTF-8 without BOM",
+    "line_endings": "LF",
+    "sha256_scope": "Exact inventory bytes stored in Git and downloaded from GitHub; hash read_bytes() without newline conversion.",
+    "previous_local_crlf_sha256": "0b50e6eeb65a072f76ffa4d7a390e7345a4986fc19c622fe61fb5da4ce16fbab",
+    "inventory_content_reference_commit": "bfc161331d0f24c98c7b0209a2caeca6de5fd50e",
+    "correction": "The original manifest recorded the local CRLF file hash. The inventory Git blob was already LF and remains unchanged; all 2593 records are identical. Historical source-file hashes and generation records retain their original byte scope."
   },
   "source_files": [
     {

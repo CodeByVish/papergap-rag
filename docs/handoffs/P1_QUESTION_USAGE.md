@@ -6,6 +6,49 @@ Owner: P1 / Junlin Yin. Prepared on **2026-10-28** for the team-wide question ex
 
 This is exclusion metadata: no question text, answers, evidence, passages, ranks or scores are published here. Retrieval exposure does not imply model training or human inspection of every question.
 
+## Canonical publication hash
+
+The published inventory uses UTF-8 without a BOM and LF line endings. Its
+SHA-256, also recorded in `inventory.sha256` in the manifest, is:
+
+```text
+89be5063f405a3a63718567b793580a2bac0e2e41f7a60ac5e8c89ddc9746744
+```
+
+On **2026-10-29**, the manifest was corrected from the original local CRLF
+hash (`0b50e6ee...`) to the published LF hash. The inventory already stored in
+Git has not changed; all 2,593 records, including their metadata, are identical.
+The manifest retains the old local hash under `publication` for provenance.
+Historical source-file hashes and the original `prepared_on` date are unchanged.
+
+The local `results/p1-question-usage-20261028/validation.json` records the original
+generation check, which used CRLF bytes. It is not the corrected publication
+verification. The scoped `.gitattributes` pins LF for the three P1 handoff files,
+including Windows checkouts with `core.autocrlf=true`.
+
+Verify exact bytes after cloning the corrected branch, or downloading its raw
+inventory and manifest files into these paths:
+
+```python
+import hashlib
+import json
+from pathlib import Path
+
+root = Path("docs/handoffs")
+payload = (root / "p1_used_question_ids.jsonl").read_bytes()
+manifest = json.loads((root / "p1_question_usage_manifest.json").read_bytes())
+assert b"\r" not in payload and not payload.startswith(b"\xef\xbb\xbf")
+actual = hashlib.sha256(payload).hexdigest()
+assert actual == manifest["inventory"]["sha256"]
+print(actual)
+```
+
+For future generation, write explicit LF bytes (or use `write_text` with
+`encoding="utf-8", newline="\n"`) before calculating the hash. Also compare
+the staged/committed inventory bytes with the manifest and verify a raw download
+after publishing. The original local generation script remains historical and
+uses the platform's default text newline behavior.
+
 ## Scope and provenance
 
 The source checkout was `6828629debe89e73740a3f49037bc98bb8c65143` on `p1/week3-week4`. The ignored local experiment files have their own historical commits and SHA-256 hashes; the checkout commit does not imply that those files were tracked by Git or generated at that commit. [p1_question_usage_manifest.json](p1_question_usage_manifest.json) records each selected source and the complete saved-artifact ID coverage audit.

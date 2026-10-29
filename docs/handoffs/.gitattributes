@@ -1,0 +1,4 @@
+# Pin publication bytes for the P1 question-use handoff only.
+p1_used_question_ids.jsonl text eol=lf
+p1_question_usage_manifest.json text eol=lf
+P1_QUESTION_USAGE.md text eol=lf
