@@ -101,3 +101,16 @@ record files (actionable error rather than app failure). Final totals are 42 UI
 passes plus 34 regression passes, with one explicit actual-P5-service skip.
 No push, PR or merge has been performed; GitHub CLI is unavailable in this
 workspace. The local branch and handoff are ready for review and later sharing.
+
+
+## Follow-up: P5 service contract verified
+
+After P5 supplied branch `p5/demo-service` (`ef5f7a3`), the actual server was
+assembled with the UI in a temporary isolated checkout. P5 server + UI client
+tests: 35 passed; P5 socket smoke: 15/15; authenticated actual-P5-mock + UI
+record/citation smoke: 1 passed. The `/papers` string-array contract is now
+supported by the UI. P5's latest message selects P6-owned cluster deployment.
+See [P6_REAL_ENV_E2E_GUIDE.md](P6_REAL_ENV_E2E_GUIDE.md) for remaining
+account/runtime prerequisites, the unavailable real retriever factory and the
+current free-input path's lack of P4 graph execution. These local mock results
+do not establish GPU/cluster E2E success.

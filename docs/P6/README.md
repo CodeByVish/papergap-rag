@@ -25,3 +25,12 @@ The expanded design also maps Assignment.pdf pages 2–4 to user stories, sessio
 conversation/message/run identities, synchronous result routing, five-query timing
 export, and P5 delivery dependencies. Correlation headers are proposals requiring
 P5 agreement; the existing request bodies remain unchanged.
+
+
+## P6 self-operated cluster deployment update
+
+P5's latest message authorizes the P6-owned job/tunnel/UI configuration. Read
+[P6 real-environment E2E guide](P6_REAL_ENV_E2E_GUIDE.md) for verified service
+compatibility, account/runtime prerequisites and the remaining fresh-retrieval /
+adaptive-agent gaps. The actual P5 mock API has now been exercised locally;
+earlier missing-artifact notes in the completion summary are historical.

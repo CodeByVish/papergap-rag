@@ -1,8 +1,12 @@
 # P6 UI handoff to P5
 
 Date: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
-Status: UI implementation and local tests complete; **actual P5 service integration
-and real-model E2E are pending**. This handoff does not certify cluster deployment.
+Update: P5 supplied `p5/demo-service` (`ef5f7a3`) and selected P6-owned cluster
+operation. Actual P5 mock integration has now passed locally; real-cluster E2E
+remains pending. See [the current execution guide](P6_REAL_ENV_E2E_GUIDE.md).
+The original handoff below records the earlier deployment assumptions.
+
+Status: UI implementation and local tests complete; **real-model E2E is pending**. This handoff does not certify cluster deployment.
 Use the final branch commit containing this file; base commit is
 `10e52e926cc6f22395fe8fc180dd7c114950195a`.
 
@@ -114,7 +118,7 @@ The client uses the 2026-10-29 handoff baseline. Please confirm these concrete s
 | Endpoint | Client expectation / P5 confirmation needed |
 | --- | --- |
 | `GET /health` | JSON object with boolean `retrieval` and `passage_text`. Optional `mode` is displayed/exported verbatim; absent means unknown. Consider supplying explicit mock/live mode for reproducibility. |
-| `GET /papers` | `{"papers": [{"paper_id": "...", "title": "..."}]}`. Title optional; paper_id required nonempty string. Confirm actual row keys before live free-query testing. |
+| `GET /papers` | `{"papers": ["paper-id", ...]}` confirmed in P5 contract. UI normalizes IDs internally and also accepts legacy paper_id objects. |
 | `POST /answer` | Exactly `{"question": "...", "paper_id": "..."}` OR `{"record": <original state>}`. No conversation history or extra IDs in JSON. |
 | Answer 200 | `request_id`, result's five keys, validation with boolean downgraded and violations list of objects, and generation object. Status exactly SUFFICIENT/INSUFFICIENT; citations list of strings, provenance list, retrieval_rounds nonnegative integer. Confirm severity/code fields; WARNING is currently recognized case-insensitively. |
 | `POST /passages` | `{"ids": ["..."]}` -> `{"passages": {id: {"text": "...", ...}}, "missing": [...]}`. Missing IDs/503 preserve final answer and IDs. |
