@@ -1,12 +1,12 @@
 # User journeys, conversations and execution contract
 
-Status: design proposal, pending implementation review and P5 contract reconciliation.
-This document extends the requirements, acceptance matrix and task specifications;
-it does not claim that P5 has implemented the proposed correlation headers.
+Status: approved and implemented local UI behavior; aligned with code `4584e2c`
+and P5 contract `ef5f7a3` inherited from main `97e33b2`. Updated 2026-10-29.
+Correlation-header extensions below are explicitly deferred and not implemented.
 
 ## Handout alignment
 
-Source: `Assignment.pdf`, AI6127 2026, pages 2–4 (reviewed 2026-10-29).
+Source: the previously reviewed design mapping of `Assignment.pdf`, AI6127 2026, pages 2–4. The table is product/report alignment, not evidence of completed real-query evaluation.
 
 | Handout requirement | Product behavior / evidence |
 | --- | --- |
@@ -28,13 +28,13 @@ It does not send conversation history to generation or change P4's agent state.
 | --- | --- | --- | --- |
 | US01 | As a reader, I select a paper and ask a complete question | Health-gated paper selector, question form and synchronous `/answer` | T02,T06,T07,T26 |
 | US02 | As a reader, I organize questions in multiple workspaces | New/select conversation sidebar; one paper per free-query workspace; creating a new paper context creates a new conversation | T28,T29 |
-| US03 | As a reader, I know which question produced an answer | Render immutable submission snapshot and local/backend identifiers | T30,T31,T33 |
+| US03 | As a reader, I know which question produced an answer | Render captured submission, local run ID and P5 request_id; backend run ID unavailable | T30,T31,T33 |
 | US04 | As a reader, I inspect grounding | Citations resolve via `/passages`; validation distinguishes six answer states | T08–T16,T34 |
 | US05 | As a presenter, I explain agent behavior | Expand only supplied trace, provenance and round counts; no fabricated progress stages | T14,T17,T36 |
-| US06 | As a presenter, I rehearse without free retrieval | Separate exported-record Demo mode submits original AgentState and is labeled as replay input, not fresh retrieval | T04,T24,T37 |
+| US06 | As a presenter, I rehearse without free retrieval | Separate exported-record Demo mode submits original AgentState and is labeled as exported-state input, not fresh retrieval | T04,T24,T37 |
 | US07 | As an evaluator, I record five query runs and speed | Export selected session runs with timestamps, latency definition, capability/mode and outcome | T35 |
 | US08 | As a user, I recover from busy or failed calls | Preserve prior results, distinguish rejected/failed/unknown outcome; explicit manual retry | T18,T19,T32 |
-| US09 | As P5, I reproduce the UI on my laptop | Lightweight install, environment configuration, mock smoke and real deployment checklist | T24–T27,T38 |
+| US09 | As P6 or P5, I reproduce the UI on my own laptop | Lightweight install, environment configuration, mock smoke and real deployment checklist | T24–T27,T38 |
 
 ## UI layout and behavior
 
@@ -62,36 +62,36 @@ the selected record's own paper/question identity.
 
 Version 1 retains multiple questions and responses in session memory. It does
 not promise persistence across refresh/reconnect, browser tabs, or server restart.
-Use a proposed limit of 10 workspaces and 50 runs per workspace, subject to user
-review; at the limit prompt the user to export/clear, never silently evict pending
+The implemented limits are 10 workspaces and 50 runs per workspace; at the limit
+prompt the user to export/clear, never silently evict pending
 or completed runs. Clear applies only to a selected non-pending workspace and
-does not cancel server work. Pending workspaces cannot be deleted or cleared.
+does not cancel server work. Pending workspaces cannot be deleted or cleared;
+the current UI disables clear/remove for all workspaces while a session call is pending.
 
 At most one answer call is pending per UI session across all its workspaces.
 Other sessions can still collide; P5's 429 is authoritative across sessions.
-Browsing an existing workspace while waiting is desirable, but a blocking
-Streamlit call may prevent immediate interaction. Verify actual behavior in I4/I5;
-do not introduce background workers or promise interactive switching without
-review. Always bind completion to its captured owner, even after a UI rerun.
+The implementation uses blocking Streamlit calls and has no background worker;
+interactive switching while processing is not promised. Always bind completion to
+its captured owner, even after a UI rerun.
 
 ## Identity model
 
 | Identifier | Meaning / owner | Lifetime and rules |
 | --- | --- | --- |
 | `ui_session_id` | UI-generated UUID for one Streamlit session | Local isolation only; not a login, authorization token or durable browser identity |
-| `conversation_id` | UI-generated UUID for a workspace | Owns mode, paper binding, messages and runs; no implied model memory |
+| `conversation_id` | UI-generated UUID for a workspace | Owns mode, paper binding and runs; no implied model memory |
 | `message_id` | UI-generated UUID for a question/display message | Links a question to one or more explicit execution attempts |
 | `client_run_id` | UI-generated UUID created before dispatch | Unique per explicit attempt, including retry and rerun of identical inputs |
 | `run_id` | Proposed P5-generated unique accepted execution ID | Optional until agreed; distinct across executions; never fabricated by UI as a backend ID |
-| `request_id` / question ID | Existing P5 response or dataset identifier | Preserve original meaning; uniqueness across repeated executions is not established |
+| `request_id` / question ID | P5 response/business identifier | Adapter picks request_id/question_id/qid/id when supplied; free input currently uses a ui-epoch-milliseconds identifier. Neither is the UI execution key |
 
 ```text
 ui_session_id
   conversation A / paper X
-    message Q1 -> client run A1 -> optional backend R1
-               -> explicit rerun A2 -> optional backend R2
+    message Q1 -> client run A1 -> backend ID unavailable
+               -> manual retry A2 -> backend ID unavailable
   conversation B / paper Y
-    message Q2 -> client run B1 -> optional backend R3
+    message Q2 -> client run B1 -> backend ID unavailable
 ```
 
 The client already knows which synchronous call owns its response; local mapping
@@ -102,14 +102,15 @@ or history is stored in process-global caches shared across users.
 ## Run lifecycle and result routing
 
 Create a run before dispatch with immutable `client_run_id`, `conversation_id`,
-`message_id`, mode, paper ID, question or record identity, UTC submitted timestamp,
-and capability snapshot. Keep raw records local rather than duplicating them into
-export metadata. Store full P5 response, optional server ID, outcome, safe error,
+`message_id`, submission identity, UTC submitted timestamp, and capability snapshot.
+Mode/paper binding belongs to the owning workspace; question/paper or selected-record
+label/index is copied into the run submission. Keep raw records local rather than
+duplicating them into export metadata. Store full P5 response, outcome, safe error,
 elapsed time and citation lookup state on that run.
 
 ```text
 pending -> completed          valid HTTP 200 answer, including refusal
-        -> rejected           known HTTP 400/401/429/503 response
+        -> rejected           any non-200 response; specific messages for 400/401/429/503
         -> failed             invalid success payload or locally confirmed failure
         -> outcome_unknown    timeout/disconnect after possible dispatch
 ```
@@ -121,9 +122,9 @@ not turn a completed answer into a failed generation.
 
 Capture the run ID and workspace ID when sending. Write the response to that
 specific run, never to whichever workspace happens to be active at completion.
-Ignore duplicate terminal completions; a mismatched echoed ID is a contract error
-and must not attach a response to another run. A late A response cannot overwrite
-B. Manual retry creates a new attempt linked to the same question and, optionally,
+Ignore duplicate terminal transitions. No correlation headers are currently sent
+or inspected; echoed-ID validation is deferred with that extension. A late A
+response cannot overwrite B. Manual retry creates a new attempt linked to the same question and, optionally,
 `retry_of_client_run_id`. Identical input text is not an execution identity.
 Citation cards are keyed by client run ID and passage ID, not globally by the
 currently selected question. Refresh and display actions never regenerate answers.
@@ -133,30 +134,34 @@ may still be processing.” Do not automatically retry or claim cancellation.
 Without a result-recovery endpoint, the abandoned response cannot be recovered
 after the client connection is lost. Manual retry can execute the question again.
 
-## Interface baseline from P5's 2026-10-29 handoff
+## Confirmed interface from P5 contract on main
 
 P6 calls P5, not P2 directly:
 
 ```text
-P6 UI -> P5 /answer -> P2 retriever + P4 agent where integrated
-                   -> P5 generation / validator -> response -> owning UI run
+P6 UI -> P5 /answer
+  record form   -> generation / validator on supplied state
+  question form -> configured retriever (one call) -> generation / validator
+  response      -> captured owning UI run -> optional citation lookup
 ```
 
-P5 is the interface contact; P5 coordinates retrieval/trace changes with P2/P4.
-Exported-state submission must not be described as triggering new retrieval unless
-the actual P5 contract establishes that behavior.
+P5 owns the interface and coordinates retrieval/trace integration with P2/P4.
+P6 operates its own job/tunnel/UI. Record mode runs fresh generation on supplied
+state; it does not rerun retrieval or the agent. Free input requires a real factory,
+not delivered here. The current free-input endpoint does not execute P4's graph.
 
 | Endpoint | Handoff baseline | UI behavior |
 | --- | --- | --- |
-| `GET /health` | `retrieval`, `passage_text` capability flags | Gate dependent controls; unknown is not ready |
-| `GET /papers` | `{"papers": [...]}` | Exact paper-row fields pending formal contract |
+| `GET /health` | Boolean retrieval/passage_text plus backend/model_id/prompt_version | Gate capabilities. No mode field is supplied; UI/export may show unknown. |
+| `GET /papers` | `{"papers": ["paper-id", ...]}` | Normalize IDs to internal paper_id objects; no titles required. |
 | `POST /answer` | Exactly one of `{"question": "...", "paper_id": "..."}` or `{"record": <exported AgentState>}` | No extra body fields or message history without P5 agreement |
 | `POST /passages` | `{"ids": [...]}` -> `{"passages": {id: {text, paper_id, title, section}}, "missing": [...]}` | Batch deduplicated citations; preserve missing IDs |
 
 The response is P5's answer record: `request_id`, frozen five-key `result`,
 `validation`, `generation`, and `agent` only for exported AgentState input according
-to this handoff. Do not require agent trace for free queries or invent its contents.
-HTTP 200 includes refusal; error bodies use `{"detail": "..."}`. Preserve 400,
+to the formal contract. Do not require agent trace for free queries or invent its contents.
+When token auth is enabled, use Authorization: Bearer on /answer and /passages;
+/health and /papers are open. HTTP 200 includes refusal; error bodies use `{"detail": "..."}`. Preserve 400,
 401, 429 and 503 behavior described in the requirements. No streaming, >=120-second
 answer timeout, one model request at a time. The reported p90 of about 17 seconds
 is P5's handoff measurement, not a new UI benchmark.
@@ -201,29 +206,32 @@ human interpretation. A future backend inference/retrieval timing field must be
 separately labeled and agreed; do not derive inference speed from UI elapsed time.
 
 Export a user-selected set of runs as downloadable JSON containing UI export
-schema version, IDs, submission snapshot, transport outcome, answer record,
-capabilities, mock/live status if known, timing definitions and available
-model/prompt/revision metadata. Missing metadata stays unknown. No tokens, raw
-AgentState dump or unrequested corpus content. This is a local download, not a Git
-artifact. Five mock runs establish UI behavior, not real querying performance;
+schema version, run/conversation/message IDs, submission snapshot, transport
+outcome, filtered answer record, capability snapshot, service_mode, timing definition
+and requested citation evidence. It does not export the whole session/workspace
+store. Model/prompt/revision metadata is retained only when supplied in generation;
+missing metadata is not synthesized. P5 health currently lacks mode, so service_mode
+is unknown unless a service explicitly supplies it. Save raw health/backend evidence
+separately for live runs. Agent state and sensitive-key metadata are omitted; requested
+evidence, answers and provenance text remain and need review before sharing. This
+is a local download, not a Git artifact. Five mock runs establish UI behavior, not real querying performance;
 five real free-input runs are needed to demonstrate live querying when available.
 
-## P5 delivery and decision checklist
+## Delivery status and remaining owners
 
-| Item | Owner / status | Required action |
+| Item | Owner / current status | Remaining action |
 | --- | --- | --- |
-| Service, tunnel, GPU job and demo Streamlit operation | P5, promised in handoff | Supply compatible revision and launch instructions |
-| UI entry point, requirements and mock smoke | P6, planned | Deliver tested code after design approval |
-| Formal contract, 12 captured states and capture script | P5, referenced, not verified here | Obtain files; never hand-edit captures |
-| Cluster launch script | P5, `scripts/cluster/80_demo_server.sbatch` referenced | P5 operates; P6 records compatible version, not scheduler guesses |
-| Free-query retriever | P2/P5, not connected per handoff | Keep free input disabled until `retrieval=true`; real query acceptance blocked |
-| Passage corpus | P5/P3, not deployed per handoff | Keep citation IDs usable until `passage_text=true` |
-| Exported AgentState input | P5/P4, sample needed | Confirm shape and local file; captures of answers are not valid input records |
-| Existing request_id semantics | P5, open | Document question versus execution identity |
-| Correlation headers / backend run ID | P5/P6, proposal | Agree or explicitly retain client-only correlation |
-| Session/workspace history and five-run export | P6, proposed local UI scope | No backend conversation storage required |
-| Free-query trace and retrieval fields | P4/P2/P5, conditional | Display only provided metadata; avoid schema changes without owner review |
+| Service, contract, 12 captures, capture script, Slurm script | P5; present through main 97e33b2 | Maintain compatibility; no artifact-request blocker remains |
+| UI/client/workspace tracking/export | P6; implemented and locally tested | Review and real-environment rehearsal |
+| Job, tunnel and demo UI operation | P6 per latest deployment decision | Confirm own quota/runtime/paths and execute the E2E guide |
+| Actual P5 mock integration | Passed locally with synthetic record and Bearer token | Do not label as GPU success |
+| Approved real development record inputs | P5/P4/P6; account-specific path pending | Identify readable cluster file and matching local copy |
+| Free-query factory and data/index config | P2/P5; not supplied | Provide real module:factory; keep free input disabled until available |
+| Citation corpus | P3/P5/P6; service accepts corpus or retrieval dump | Configure readable path; record coverage and missing IDs |
+| request_id semantics | Inspected in current code | Preserve business/question ID; use client_run_id for attempts |
+| Correlation headers/backend run IDs | Deferred; not sent or validated | Owner review before any extension; not a current release prerequisite |
+| Fresh P4 adaptive-agent execution | Not implemented by this server endpoint | Separate P4/P5 integration if required |
 
-Before implementation, reconcile these decisions with `docs/P6_UI_CONTRACT.md`.
-The P5 E2E handoff must list agreed/unsupported headers, identity meanings,
-multi-session busy behavior, capability limitations and five-query timing evidence.
+Use [the handoff](P6_UI_handoff.md) for the compact contract/usage reference and
+[the real-environment guide](P6_REAL_ENV_E2E_GUIDE.md) for execution. Local tests,
+actual mock API checks and real-cluster evidence remain distinct.

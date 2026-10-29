@@ -1,189 +1,183 @@
 # P6 UI handoff to P5
 
-Date: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
-Update: P5 supplied `p5/demo-service` (`ef5f7a3`) and selected P6-owned cluster
-operation. Actual P5 mock integration has now passed locally; real-cluster E2E
-remains pending. See [the current execution guide](P6_REAL_ENV_E2E_GUIDE.md).
-The original handoff below records the earlier deployment assumptions.
+Updated: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
+Reviewed UI code: `4584e2c`; base main: `97e33b2`, including P5 service `ef5f7a3`.
+Status: local UI and actual P5 mock integration verified; real-cluster E2E pending.
 
-Status: UI implementation and local tests complete; **real-model E2E is pending**. This handoff does not certify cluster deployment.
-Use the final branch commit containing this file; base commit is
-`10e52e926cc6f22395fe8fc180dd7c114950195a`.
+## Ownership and delivered source
 
-## What P6 delivers
+P6 operates its **own** cluster job, tunnel and laptop Streamlit, per P5's latest
+message (configuration 2 in the P5 operations manual). P5 owns the service code and
+model-serving configuration; P2 owns the real retrieval adapter/data dependencies;
+P4 owns the adaptive-agent integration. P5 can reproduce the same UI on its own
+account/laptop but is not required to operate P6's rehearsal.
 
-- `src/ui/app.py`: lightweight Streamlit client for P5's four endpoints.
-- Separate HTTP client, response rendering models, local exported-record loader,
-  session/workspace/run tracking and JSON timing export under `src/ui/`.
-- Normal/warning answers, three refusal reasons and validator-block presentation,
-  original rejected answer, citation text with ID-only fallback, and diagnostics.
-- Independent questions in paper-bound workspaces, distinct execution IDs, explicit
-  retry lineage, session isolation, timeout outcome-unknown behavior and limits.
-- Tests, a synthetic HTTP fixture, and an opt-in actual P5 mock-service smoke test.
+The current rebased P6 branch contains both service and UI. There is no missing
+server/contract/capture-script delivery and no separate P5-branch merge required.
+Use the branch version containing this handoff; main alone does not yet contain
+the P6 UI port. Sources:
 
-P6 does not deliver a model service, retrieval implementation, tunnel, GPU job or
-new backend conversation API. Existing generation/retrieval modules are unchanged.
+- [P5 field-level API](../P6_UI_CONTRACT.md), [service](../../src/generation/server.py),
+  [cluster script](../../scripts/cluster/80_demo_server.sbatch).
+- [UI entry point](../../src/ui/app.py), api_client/view_models/record_loader/
+  conversation_state modules, requirements-ui.txt and tests.
+- [Completion evidence](UI_PORT_COMPLETION_SUMMARY.md) and
+  [P6 real-environment execution guide](P6_REAL_ENV_E2E_GUIDE.md).
 
-## Required P5 delivery before integration
+No model service, real retriever, agent graph or shared schema was changed by the
+UI port. The service is inherited from main; all passage/split proposals remain
+`v0-proposed`.
 
-Please supply the compatible service branch/commit, `docs/P6_UI_CONTRACT.md`,
-`docs/DEMO_OPTION_C.md`, `examples/demo_ui_responses.json`, capture script,
-service dependency/launch instructions and a small approved exported AgentState
-input file outside Git. Those artifacts were absent from this checkout and its
-cached P5 branch at implementation time. No P5-captured sample was hand-edited.
+## Install and run the UI
 
-The standalone handoff command `PYTHONPATH=src python -m nlp_p5.server --backend mock`
-was not runnable here because that package is absent. Please confirm the actual
-command for the delivered shared repository; do not substitute a guessed import.
+First start the service and tunnel as described in the E2E guide. Use a separate
+lightweight laptop environment, not the pinned cluster vLLM environment.
 
-## Install and launch on P5's laptop
-
-Keep the working service/model environment separate from the lightweight UI env.
-From the repository root on macOS/Linux:
+Bash (start bash first on macOS if using zsh):
 
 ```bash
-python -m venv .venv-ui
+python3 -m venv .venv-ui
 source .venv-ui/bin/activate
 python -m pip install -r requirements-ui.txt
 export P5_API_BASE=http://127.0.0.1:8000
-export P5_RECORDS_PATH=/absolute/local/path/to/exported-agent-states.jsonl
+export P5_RECORDS_PATH='/absolute/local/path/to/exported-states.jsonl'
+export P5_AUTH_HEADER=Authorization
+export P5_AUTH_SCHEME=Bearer
+read -r -s -p 'Enter the server demo token: ' P5_API_TOKEN
+printf '\n'
+export P5_API_TOKEN
 python -m streamlit run src/ui/app.py --server.address 127.0.0.1
 ```
 
-On Windows PowerShell:
+PowerShell (enter the same token as the server; no literal token in source):
 
 ```powershell
 python -m venv .venv-ui
 .\.venv-ui\Scripts\Activate.ps1
 python -m pip install -r requirements-ui.txt
 $env:P5_API_BASE = 'http://127.0.0.1:8000'
-$env:P5_RECORDS_PATH = 'C:\local\exported-agent-states.jsonl'
+$env:P5_RECORDS_PATH = 'C:\local\exported-states.jsonl'
+$env:P5_AUTH_HEADER = 'Authorization'
+$env:P5_AUTH_SCHEME = 'Bearer'
+$demoToken = Read-Host 'Enter the server demo token' -AsSecureString
+$env:P5_API_TOKEN = [System.Net.NetworkCredential]::new('', $demoToken).Password
 python -m streamlit run src/ui/app.py --server.address 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8501`. P5 first starts the approved GPU service and tunnel
-using P5's own runbook. Both API and UI addresses refer to **P5's laptop** under
-Option C. P6 does not connect to P5's localhost remotely.
+The token is stored in process environment for the client; never save its value
+in a committed script or print the environment while collecting evidence.
+For a token-free loopback mock, leave P5_API_TOKEN/P5_AUTH_HEADER/P5_AUTH_SCHEME
+unset. Network-bound real jobs require a server token; setting only P5_API_TOKEN
+is insufficient for this UI's explicit auth configuration.
 
-| Environment variable | Behavior |
+Open `http://127.0.0.1:8501` on the operator's laptop. Under the selected deployment,
+127.0.0.1:8000 is **P6's** local tunnel, not P5's computer. Do not expose the laptop
+API/UI on the LAN to work around a missing tunnel.
+
+| Variable | Current behavior |
 | --- | --- |
-| `P5_API_BASE` | Default `http://127.0.0.1:8000`; HTTP(S), no embedded credentials/query/fragment |
-| `P5_RECORDS_PATH` | Local JSON array or JSONL of original exported states; required for Demo record mode |
-| `P5_ANSWER_TIMEOUT` | Answer read timeout, default 120 seconds, allowed 120–3600 |
-| `P5_API_TOKEN` | Optional token, never committed; requires an explicitly configured auth header |
-| `P5_AUTH_HEADER` | Explicit confirmed header: Authorization, X-API-Key, X-Auth-Token or X-Demo-Token |
-| `P5_AUTH_SCHEME` | Optional prefix, e.g. Bearer only if confirmed; empty means send token verbatim |
+| P5_API_BASE | Default http://127.0.0.1:8000; HTTP(S), no embedded credentials/query/fragment |
+| P5_RECORDS_PATH | Local nonempty JSON array/JSONL of original exported inputs, required for Demo record mode |
+| P5_ANSWER_TIMEOUT | Read timeout, default 120 seconds; allowed 120–3600 |
+| P5_API_TOKEN | Same value chosen for the server's DEMO_TOKEN; never committed |
+| P5_AUTH_HEADER | Set Authorization for the confirmed P5 service |
+| P5_AUTH_SCHEME | Set Bearer for the confirmed P5 service |
 
-Authentication configuration is provisional: P6 does not assert which header P5
-uses. Connection timeout is 5 seconds; health/papers/passages read timeout is 10
-seconds. There are no automatic POST retries. The macOS/Python 3.14 clean resolved
-snapshot is `requirements-ui-macos-py314.txt`; it is not a tested Windows/cluster
-lockfile. See the completion summary for tested versions.
+Connection timeout is 5 seconds; auxiliary read timeout is 10 seconds. No automatic
+POST retries. [The dependency snapshot](requirements-ui-macos-py314.txt) is an
+earlier macOS/Python 3.14 UI environment, not a server/Windows/GPU lockfile.
 
-## How to use the UI
+## User workflow
 
-1. Click **Refresh service**. Confirm capability flags and service mode; unknown
-   mode must not be presented as live evidence.
-2. With retrieval enabled, select a paper and create a **Free question** workspace.
-   Enter a complete question and Submit. Each question is independent: previous
-   messages are not passed to the model. New paper context uses a new workspace.
-3. Without retrieval, choose **Demo record**, create a workspace, select an exported
-   state and Submit. The selected object is submitted unchanged. This demonstrates
-   generation from supplied state, not newly executed retrieval.
-4. Wait for the non-streaming response. The UI uses synchronous HTTP; workspace
-   switching during processing is not promised. One request is allowed per session;
-   other sessions can still receive backend 429.
-5. Inspect final answer/refusal and citations. Validator blocks show the final
-   refusal plus reason; the original model answer is inside a rejected-answer
-   expander. Missing passage text retains the citation ID.
-6. The run caption identifies the execution. Submit again creates a new attempt.
-   To explicitly link a retry of the latest matching submission, check **Manual
-   retry** before Submit. A timeout does not cancel server inference.
-7. Select five runs in the sidebar and download JSON. Answer HTTP time includes
-   waiting/processing/transport and excludes citation lookup/rendering; it is not
-   isolated model inference latency. Citation HTTP time is separate.
-8. Export before clearing/removing a workspace. History is session-only, limited
-   to 10 workspaces and 50 attempts each; no silent eviction. Refresh/reconnect,
-   another tab or a server restart may lose history. No abandoned-run recovery API.
+1. Refresh service and inspect capabilities. P5 health has no mode field, so the
+   UI may show unknown. Inspect/save backend/model/prompt information separately.
+2. For real generation without a fresh retriever, create a Demo record workspace,
+   select an approved exported input and Submit. The state is sent unchanged;
+   generation is fresh, retrieval/agent state is supplied rather than rerun.
+3. When a real factory is configured and retrieval=true, select a paper and create
+   a Free question workspace. Each complete question is independent; history is
+   not sent to generation. A new paper context requires a new workspace.
+4. Wait for a single non-streaming response. Blocking calls may prevent workspace
+   browsing. The UI guards one pending call per session; the backend handles
+   collisions between sessions with 429.
+5. Inspect accepted answer/refusal, citations and diagnostics. A validator block
+   prominently shows the final refusal/reason and labels the original answer as
+   rejected. Missing text keeps the citation ID visible.
+6. Repeated submits have different client_run_id values. Check Manual retry to
+   explicitly link the latest matching question to another execution. Timeout
+   means outcome unknown, not cancellation; manual retry can duplicate work.
+7. Select five runs and download JSON for the report. Answer/citation HTTP timings
+   are distinct and do not isolate inference speed. Export omits agent state and
+   sensitive-key metadata but retains answer/provenance/requested evidence text.
+8. Export before clear/remove. Limits are 10 workspaces / 50 attempts each. History
+   is session-only; refresh/reconnect/new tabs may lose it. No server-run recovery.
 
-Exports omit the agent field (which can contain raw AgentState) and sensitive-key
-metadata; they retain answer/provenance text. Review downloaded content before
-sharing. Do not commit real exported states or downloaded run results.
+## Confirmed contract and interface-change requirements
 
-## Interface compatibility and changes requested from P5
+**No mandatory new endpoint or JSON field is requested.** The current client is
+compatible with P5's supplied contract; it preserves the frozen result payload.
 
-**No mandatory new endpoint, JSON body field, or frozen result change is required.**
-The client uses the 2026-10-29 handoff baseline. Please confirm these concrete shapes:
-
-| Endpoint | Client expectation / P5 confirmation needed |
+| Interface | Confirmed behavior |
 | --- | --- |
-| `GET /health` | JSON object with boolean `retrieval` and `passage_text`. Optional `mode` is displayed/exported verbatim; absent means unknown. Consider supplying explicit mock/live mode for reproducibility. |
-| `GET /papers` | `{"papers": ["paper-id", ...]}` confirmed in P5 contract. UI normalizes IDs internally and also accepts legacy paper_id objects. |
-| `POST /answer` | Exactly `{"question": "...", "paper_id": "..."}` OR `{"record": <original state>}`. No conversation history or extra IDs in JSON. |
-| Answer 200 | `request_id`, result's five keys, validation with boolean downgraded and violations list of objects, and generation object. Status exactly SUFFICIENT/INSUFFICIENT; citations list of strings, provenance list, retrieval_rounds nonnegative integer. Confirm severity/code fields; WARNING is currently recognized case-insensitively. |
-| `POST /passages` | `{"ids": ["..."]}` -> `{"passages": {id: {"text": "...", ...}}, "missing": [...]}`. Missing IDs/503 preserve final answer and IDs. |
-| HTTP errors | 400/401/429/503 receive distinct safe UI messages. Remote detail text is not displayed to avoid accidental credential/stack disclosure. |
+| GET /health | Boolean retrieval/passage_text plus backend, model_id, prompt_version and operational metadata; mode absent |
+| GET /papers | `{"papers": ["paper-id", ...]}`; normalized to internal objects by the UI, with object-list backward compatibility |
+| POST /answer | Client sends either `{"question": "...", "paper_id": "..."}` or `{"record": <original state>}`; no history or local run IDs in JSON |
+| Answer 200 | request_id, five-key result, validation and generation; optional supplied agent trace. Refusal is still success. |
+| Result fields | answer string, citations string list, SUFFICIENT/INSUFFICIENT, nonnegative retrieval_rounds integer and provenance list |
+| Validation | Boolean downgraded, violations object list with code/severity/message/subject, optional raw_result and downgrade_reason |
+| POST /passages | IDs -> passages map plus missing list; missing text/503 preserves answer and IDs |
+| Auth | Authorization: Bearer when token configured; health/papers open. UI can send the configured header on all calls. |
+| Errors | 400/401/429/503 mapped to safe distinct messages; raw remote detail/exception content is not shown |
 
-P5 owns schema approval. If the formal contract differs, agree an explicit client
-adapter with P6; do not change shared answer/passage/split schemas silently.
-Passage schemas and split mappings remain `v0-proposed`.
+request_id is a business/question identifier, not the UI execution identity.
+Exported input IDs pass through the adapter; free-query IDs currently use a ui-
+epoch-milliseconds value. Local UUID client_run_id identifies every attempt.
 
-**Optional correlation extension, not implemented or required:** discuss
-`X-Client-Run-ID` request/echo and `X-Run-ID` response. Current UI sends neither,
-uses local UUID correlation, and displays backend run ID unavailable. Please
-confirm existing request_id semantics; a question ID is not a unique execution
-ID. Header validation/echoing/error behavior, backend allocation and log propagation
-need agreement before support is added. No idempotency or recovery is implied.
+**Deferred optional extensions:** X-Client-Run-ID request/echo and X-Run-ID response,
+explicit mode and richer reproducibility metadata. No ID header is currently sent,
+validated or echoed by the UI. Agree semantics, validation, allocation/logging and
+error behavior before adding support. Correlation does not supply idempotency,
+cancellation or recovery, and is not required for local routing.
 
-## Run actual P5 mock-service smoke
+**Dependencies, not API changes:** P2/P5 must supply the real retriever factory and
+matching CPU/index/cache configuration for free queries. The current server calls
+that retriever once then generates; fresh P4 critic/retry execution needs separate
+P4/P5 work. A supplied trace does not demonstrate fresh agent execution.
 
-Start P5's real mock server, then in the UI environment set the URL/record path
-above and run:
+## Verification and remaining E2E
+
+The actual P5 mock API with Bearer auth and synthetic state passed the P6 running-
+service UI smoke separately. Post-rebase combined tests: 100 passed, 1 default
+opt-in skip. See the completion summary for exact commands and non-additive counts.
+
+To rerun against an already running mock or real service, set the environment above:
 
 ```bash
 python -m pip install pytest
 P5_RUN_SMOKE=1 python -m pytest -q tests/test_ui_p5_smoke.py::test_actual_p5_service
 ```
 
-PowerShell:
+PowerShell: set `$env:P5_RUN_SMOKE = '1'` then run the same pytest target without
+the Bash prefix. The check makes **two sequential answer calls** and validates
+shape/rendering/citations, not semantic quality or successful model inference.
+When not opted in it is skipped intentionally; the server code is not missing.
 
-```powershell
-$env:P5_RUN_SMOKE = '1'
-python -m pytest -q tests/test_ui_p5_smoke.py::test_actual_p5_service
-```
-
-This calls health, submits the first exported record, conditionally resolves
-citations, and executes the record workflow through Streamlit AppTest. It sends
-**two sequential answer calls**; use an approved cheap development record. Missing
-service/input is a failure when opted in. Without opt-in, this test is explicitly
-skipped, not counted as verified P5 integration.
-
-## Real-environment E2E checklist
-
-Record UI/server commits, OS/Python/dependency versions, model revision, prompt,
-GPU/job identifier, capability flags, dataset/index versions and timing policy.
-Use approved development inputs; avoid tuning with held-out examples.
-
-| Check | Expected evidence | Initial status |
+| Remaining check | Owner / status | Required evidence |
 | --- | --- | --- |
-| Preflight | Health reachable through P5 tunnel; actual mode/capabilities recorded | Pending P5 |
-| Exported record | Original question, completed run ID, final result and diagnostics displayed | Pending P5 |
-| Normal/warning/refusals | Verify six display states using approved captures/scenarios | Pending P5 |
-| Validator downgrade | Final refusal plus clearly rejected raw answer/reason | Pending P5 |
-| Citation capability on/off | Text/metadata when available; ID-only/missing fallback otherwise | Pending P5 |
-| Free question | Chosen paper/question goes to P5 retriever; record five actual queries if available | Blocked if retrieval=false |
-| Repeated question | Different client_run_id each execution; request_id meaning unchanged | Pending P5 |
-| Separate sessions | No shared UI history; backend busy request produces 429 safely | Pending P5 |
-| Slow answer | Spinner/no duplicate dispatch; manual retry on timeout, outcome unknown retained | Pending P5 |
-| Export | Five selected runs; correct timing definitions, mode, available metadata; no token/state dump | Pending P5 |
-| Refresh/reconnect | No persistence/recovery promise; no wrong reassociation of abandoned work | Pending P5 |
+| Own-account allocation/runtime/tunnel | P6, not executed | Readable complete weights/venv/input, actual job/node/end time, health backend |
+| Real exported-state generation | P6 with P5 runtime support, pending | Generation-eligible input, vLLM/Qwen metadata/logs, no hidden generation/parser failure |
+| Real citation coverage | P6/P3/P5, pending | Actual lookup text/missing IDs and configured dump/corpus hash |
+| Fresh free-query retrieval | P2/P5 factory missing | Real configured retriever, matching paper/index coverage, five live-query runs |
+| Fresh adaptive agent trace | P4/P5, outside current service path | Actual graph execution and generated critic/retry evidence |
+| GPU concurrency/timeout/session/reconnect/export | P6, pending real rehearsal | T27,T32,T35,T36,T38,T40 pass/fail/blocked records |
 
-Record each as pass/fail/blocked with date, observed latency, sanitized screenshot
-or issue reference and owner. A capability-off path passing does not establish the
-corresponding live feature works. Mock results do not certify model correctness,
-semantic faithfulness or real querying performance.
+Use [the E2E guide](P6_REAL_ENV_E2E_GUIDE.md) for commands and the results form.
+No HTTP 200/refusal alone establishes successful real inference. Inspect violations:
+EMPTY_CONTEXT/AGENT_INSUFFICIENT can skip the model; GENERATION_ERROR/PARSE_ERROR
+must not be counted as a healthy generated answer.
 
-Troubleshooting: unreachable API -> P5 service/tunnel; 401 -> P5 auth configuration;
-400/schema mismatch -> P5/P6 contract reconciliation; 429 -> manual retry after
-about 20 seconds; passage 503 -> P5/P3 corpus deployment; retrieval=false -> P5/P2
-retriever integration; timeout -> outcome unknown, consult P5 logs before retrying.
+Escalation: connectivity/allocation -> P6 operator and cluster support; service/model
+failure -> P5; auth -> runner's matching DEMO_TOKEN/UI config; catalogue/contract ->
+P5/P6; missing real retrieval -> P2/P5; full corpus -> P3/P5; adaptive graph -> P4/P5.
+Keep raw inputs, production results and tokens outside Git; obtain member review
+before merge into main.

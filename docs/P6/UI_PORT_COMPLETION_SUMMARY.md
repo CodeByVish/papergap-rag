@@ -1,116 +1,96 @@
 # P6 UI port completion summary
 
-Date: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
-Base: `10e52e926cc6f22395fe8fc180dd7c114950195a`.
-Status: local implementation complete; actual P5 integration and real E2E pending.
+Updated: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
+Reviewed code commits: `0f5e78b` (UI) and `4584e2c` (P5 catalogue compatibility),
+rebased onto main `97e33b2`, which includes P5 service `ef5f7a3`.
+Status: **UI and actual P5 mock integration verified locally; P6 real-cluster E2E pending**.
 
 ## Delivered behavior
 
-The UI now calls P5's HTTP service instead of loading retrieval/model providers.
-It supports paper-scoped independent questions and original exported-state input,
-six answer presentations plus inconsistent-response warnings, validator rejected
-answers, provenance/trace diagnostics and citation lookup with ID-only fallback.
-Each run owns its immutable submission, response, errors, timing and evidence.
-Workspace/session UUIDs isolate histories; repeated queries receive different run
-IDs, explicit retries retain lineage, and duplicate terminal results are ignored.
-Timeout/disconnect retains an outcome-unknown attempt without retry or cancellation.
-Session-only history is bounded to 10 workspaces / 50 attempts each. Selected-run
-exports separate answer HTTP and citation latency and omit agent/state dumps and
-sensitive-key metadata. P5 request_id is preserved as a business identifier.
+The Streamlit entry point calls P5's HTTP API. It supports paper-scoped independent
+questions when retrieval is configured, and original exported-state submissions
+when it is not. Final answers, warnings, refusal reasons, validator-blocked raw
+answers, provenance and optional supplied agent trace are inspectable. Citation
+lookup falls back to IDs without discarding the final answer.
 
-## Code architecture and changes
+Session/workspace/run UUIDs keep results attached to their captured submission.
+Identical submissions create distinct runs; explicit manual retries retain lineage.
+A timeout/disconnect is outcome_unknown, not cancellation. Display actions do not
+regenerate answers. Limits are 10 workspaces and 50 attempts per workspace; clearing
+is explicit and history is session-only. JSON export supports five selected runs,
+separate answer/citation HTTP timing, and sensitive-key/agent-state omission.
 
-| File | Implemented responsibilities |
+## Actual code architecture
+
+| File | Implemented interfaces and responsibilities |
 | --- | --- |
-| `src/ui/api_client.py` | ApiConfig/P5ApiClient/ApiError: URL/config validation, four HTTP endpoints, explicit configurable authentication, safe errors, >=120s answer read timeout and no automatic retry |
-| `src/ui/view_models.py` | parse_answer_record, classify_answer, citation_ids, build_evidence_cards: response validation and pure display mapping |
-| `src/ui/record_loader.py` | load_records/record_label: local JSON/JSONL inputs, actionable file/row errors, reject answer captures |
-| `src/ui/conversation_state.py` | new_session/create_conversation/begin_run/finish_run/attach_evidence/clear_conversation/export_runs: identity, ownership, guarded lifecycle, retry lineage, limits and sanitized downloads |
-| `src/ui/app.py` | Connection/capability controls, immutable paper workspaces, record/free forms, response/history rendering, submit_request orchestration, manual retry and export |
-| `src/ui/README.md`, `requirements-ui.txt` | Actual usage, lightweight dependencies, auth/config, verification commands |
-| `tests/test_ui*.py`, `tests/ui_http_fixture.py` | Unit, AppTest, actual localhost synthetic HTTP integration and opt-in P5 smoke |
-| `tests/test_legacy_ui_adapters.py` | Preserved meaningful prompt/index/provider unit tests from the replaced legacy UI tests |
+| `src/ui/api_client.py` | ApiConfig.from_env, P5ApiClient.health/papers/answer_record/answer_question/passages, ApiError; URL/auth/timeout validation, string-paper normalization, safe transport errors, no automatic POST retry |
+| `src/ui/view_models.py` | parse_answer_record, classify_answer, citation_ids, build_evidence_cards; pure validation and display mapping |
+| `src/ui/record_loader.py` | load_records, record_label; JSON-array/JSONL input, malformed-file/row errors, answer-capture rejection |
+| `src/ui/conversation_state.py` | new_session, create_conversation, begin_run, finish_run, attach_evidence, clear_conversation, export_runs; captured ownership and guarded terminal transitions |
+| `src/ui/app.py` | refresh, submit_request, render_answer, main; capability-gated forms, workspaces/history, manual retry, diagnostics and export |
+| `tests/test_ui*.py`, `tests/ui_http_fixture.py` | UI unit/AppTest, localhost synthetic HTTP integration and opt-in running-service smoke |
+| `tests/test_legacy_ui_adapters.py` | Preserved reusable prompt/retrieval/provider adapter checks |
 
-Actual pure-state functions consolidate the proposed complete/reject/fail/unknown
-helpers into one guarded `finish_run` function. No backend schemas or existing
-retrieval/generation modules changed. Correlation headers/backend run IDs remain
-unsupported pending P5 agreement; client-only routing is implemented.
+Existing retrieval/generation modules were not changed by the UI port. P5's
+server is now inherited from main. No new endpoint, answer body field or shared
+passage/split schema was introduced. Backend execution IDs/correlation headers
+remain deferred; the current UI uses only local run routing.
 
 ## Verification evidence
 
-All commands ran from the repository root. Relevant final checks returned exit 0.
-Local socket tests required sandbox permission for localhost listeners.
+The post-rebase command below ran successfully against the combined current tree:
 
 ```bash
-/private/tmp/p6-ui-clean-env/bin/python -m pip install -r requirements-ui.txt pytest
-/private/tmp/p6-ui-clean-env/bin/python -m pytest -q tests/test_ui_api_client.py tests/test_ui_view_models.py tests/test_ui_record_loader.py tests/test_ui_conversation_state.py tests/test_ui.py tests/test_ui_p5_smoke.py
-.venv/bin/python -m pytest -q tests/test_legacy_ui_adapters.py tests/test_generation_week6.py tests/test_qwen_client.py
+.venv/bin/python -m pytest -q tests/test_ui_api_client.py tests/test_ui_view_models.py tests/test_ui_record_loader.py tests/test_ui_conversation_state.py tests/test_ui.py tests/test_ui_p5_smoke.py tests/test_server.py tests/test_legacy_ui_adapters.py tests/test_generation_week6.py tests/test_qwen_client.py
 ```
 
-| Check | Result |
+| Evidence | Result and interpretation |
 | --- | --- |
-| Clean-environment UI suite | 42 passed, 1 skipped; actual P5 smoke is the explicit skip |
-| Existing adapter/generation/Qwen-client regression | 34 passed |
-| Existing-environment combined UI unit/AppTest + regressions | 73 passed before the final clean-environment verification (synthetic HTTP adds one separate case) |
-| Real localhost synthetic HTTP -> Streamlit -> answer -> citation | Passed; does not constitute P5 service verification |
-| Browser walkthrough | Created free-query workspace, entered/submitted synthetic question, verified owning run/status/timing and expanded citation |
-| Browser layout | Narrow viewport: headings/metadata wrap, answer and expandable evidence remain readable; sidebar collapses normally |
-| Patch whitespace | Checked with git diff --check |
+| Post-rebase combined suite | **100 passed, 1 skipped**: 44 UI checks, 22 server checks, 34 existing adapter/generation/Qwen checks. External-service smoke was not opted in for this command. |
+| Actual P5 mock API + P6 UI | **1 passed separately**, before rebase in an isolated combined checkout: Bearer auth, synthetic exported state, actual sockets, citation lookup and Streamlit record submission. |
+| P5 socket smoke | **15/15 passed separately**, including free-form on/off and simultaneous `{200,429}`. Its retriever is a test fixture, not P2's real factory. |
+| Clean lightweight environment, initial implementation | **42 passed, 1 skipped** before the two later paper-catalogue tests; no Qwen, GPU, Java, FAISS or PyTorch needed. This is historical clean-environment evidence, not the latest combined-suite count. |
+| Browser walkthrough | Submitted a synthetic independent question; inspected owning run, status/timing and expanded citation. Narrow viewport wrapped the main content. |
+| Rebase preservation | range-diff confirmed both P6 patches unchanged apart from commit IDs; no conflicts. |
+| Documentation reconciliation | 8 Markdown files reviewed; 34 local links, 22 Bash syntax blocks, 1 embedded Python block, table shape, R01–R18/T01–T40 numbering and documented app/state function names checked. No runtime code changed in this documentation pass. |
 
-Runtime: macOS 26.6.2 arm64, Python 3.14.7. Existing environment: Streamlit 1.64.0,
-requests 2.34.2, pytest 9.1.1, OpenAI 1.109.1, Pydantic 2.13.5. Clean environment:
-Streamlit 1.66.1, requests 2.34.2, pytest 9.2.0, OpenAI 2.54.0, Pydantic 2.14.1.
-The clean dependency snapshot is `requirements-ui-macos-py314.txt`. No model weights,
-Java, FAISS, PyTorch or cluster account was needed for the clean UI test suite.
-The legacy OpenAI/Pydantic dependency declarations remain for existing consumers;
-the new UI does not import their generation clients.
+Earlier counts such as 35 server/client tests and 43 UI unit/AppTest checks are
+subsets of the combined coverage, not additive totals. The external-service test
+being skipped by default does not invalidate its separately recorded mock pass.
+No P6 GPU/cluster tests have been performed.
 
-## Acceptance coverage and remaining gates
+Runtime: macOS 26.6.2 arm64, Python 3.14.7. Post-rebase existing environment:
+Streamlit 1.64.0, requests 2.34.2, pytest 9.1.1, OpenAI 1.109.1, Pydantic 2.13.5.
+Earlier clean environment: Streamlit 1.66.1, requests 2.34.2, pytest 9.2.0,
+OpenAI 2.54.0, Pydantic 2.14.1. The accompanying
+[dependency snapshot](requirements-ui-macos-py314.txt) records that clean
+UI environment; it excludes the full P5 server/vLLM stack and does not establish
+Windows, Python 3.12 or cluster reproducibility.
 
-Local tests cover transport request shapes/errors/timeouts, six display states,
-invalid response handling, record files, citation fallback, rerender dispatch
-counts, clear behavior, multi-workspace ownership, duplicate completion, repeat
-IDs, retry lineage, limits and five-run export. These exercise the implemented
-portions of T01–T23 and T28–T39. This is not a claim that every listed test level
-or every real-world scenario in the design was executed.
+## Remaining gates and limitations
 
-- T24 remains pending against **P5's actual mock service**. The synthetic HTTP
-  integration passes separately. P5's formal contract/server/captures/input sample
-  were absent; field assumptions are enumerated in the handoff.
-- T25–T27 and real-environment portions of T32,T35,T36,T38,T40 require P5.
-- T33 header echo/mismatch cases are not implemented because no correlation
-  extension was agreed. No such header is sent or backend execution ID fabricated.
-- Real slow-call browser behavior, long production responses, reconnection and
-  multi-session GPU busy behavior require P5's deployment; no async switching or
-  cancellation is promised.
-- Free queries and live five-query performance remain blocked when retrieval=false;
-  original citation text remains conditional on passage_text=true.
-- P5 field-level contract reconciliation (I1) and actual-service portion of I5
-  remain open. Independent implementation proceeded using the supplied handoff.
-- No actual model-quality, semantic-grounding or final held-out evaluation claim.
+- T24 passed against the actual P5 mock service with synthetic input. P5's contract,
+  server, capture script, samples and cluster script are now present in this tree.
+- Real-cluster cases T25–T27 and E-level portions of T32,T35,T36,T38,T40 remain
+  pending P6 execution. P6 must confirm quota, runtime/weight paths, approved real
+  development records, token and forwarding under its own account.
+- Fresh questions require the real P2/P5 retriever factory and matching data/indexes.
+  The current free-query endpoint performs one retrieval call then generation; it
+  does not run P4's adaptive graph. Supplied trace is not evidence of a fresh run.
+- T33's proposed header echo/mismatch extension is deferred. No ID header is sent,
+  checked or echoed by the UI; there is no durable backend run recovery.
+- Live long-call behavior, GPU concurrency, reconnection and full-corpus citation
+  coverage are not established by local tests. Browser checking used synthetic text.
+- P5 health lacks mode, so UI/export may say unknown. Preserve raw health and
+  generation backend metadata externally for live-run evidence. Export does not
+  synthesize missing model/code revisions or isolate inference latency.
+- Unknown insufficient-result codes currently fall back to the Model refusal label.
+  Inspect validation details: GENERATION_ERROR/PARSE_ERROR or a skipped model call
+  must not be counted as a successful real-model generation merely because HTTP=200.
+- No persistent history, streaming, cancellation, contextual multi-turn prompting,
+  semantic citation-faithfulness guarantee or gold-answer scoring was implemented.
 
-The downstream handoff is [P6_UI_handoff.md](P6_UI_handoff.md). It replaces the
-planned filename `P5_UI_E2E_HANDOFF.md` at the user's request. It includes usage,
-interface confirmations/optional changes, actual P5 smoke command and real E2E
-results checklist. P5 should record pass/fail/blocked with environment revisions
-and sanitized evidence. Shared schemas/split mappings remain `v0-proposed`.
-
-Final review also added tests for a paper disappearing from the refreshed
-catalogue (existing workspace submission is disabled) and invalid UTF-8 local
-record files (actionable error rather than app failure). Final totals are 42 UI
-passes plus 34 regression passes, with one explicit actual-P5-service skip.
-No push, PR or merge has been performed; GitHub CLI is unavailable in this
-workspace. The local branch and handoff are ready for review and later sharing.
-
-
-## Follow-up: P5 service contract verified
-
-After P5 supplied branch `p5/demo-service` (`ef5f7a3`), the actual server was
-assembled with the UI in a temporary isolated checkout. P5 server + UI client
-tests: 35 passed; P5 socket smoke: 15/15; authenticated actual-P5-mock + UI
-record/citation smoke: 1 passed. The `/papers` string-array contract is now
-supported by the UI. P5's latest message selects P6-owned cluster deployment.
-See [P6_REAL_ENV_E2E_GUIDE.md](P6_REAL_ENV_E2E_GUIDE.md) for remaining
-account/runtime prerequisites, the unavailable real retriever factory and the
-current free-input path's lack of P4 graph execution. These local mock results
-do not establish GPU/cluster E2E success.
+Use [the P6 E2E guide](P6_REAL_ENV_E2E_GUIDE.md) for execution and
+[the handoff](P6_UI_handoff.md) for API/ownership review. Shared schemas and split
+mappings remain `v0-proposed`; a reviewer must approve before merge into main.

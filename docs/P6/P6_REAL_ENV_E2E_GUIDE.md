@@ -1,9 +1,9 @@
 # P6 real-environment end-to-end test guide
 
-Verified against P5 branch `p5/demo-service`, commit `ef5f7a3`, on 2026-10-29
-(Singapore). P6 UI baseline: `52cd29a`, plus the paper-catalogue compatibility fix
-in the commit containing this guide. No cluster job was submitted during this
-review; P6's account, quota, files and tunnel have not been verified remotely.
+Updated after rebase on 2026-10-29 (Singapore). Reviewed UI code: `4584e2c`;
+base main: `97e33b2`, including P5 service/contract `ef5f7a3`. The current P6 branch
+contains both implementations. No P6 cluster job was submitted during this work;
+account, quota, files and forwarding remain to be verified remotely.
 
 ## Decision: can P6 run it?
 
@@ -16,9 +16,9 @@ However, the complete operational information chain is not yet closed:
 
 | Test scope | Can proceed when | Remaining dependency |
 | --- | --- | --- |
-| Laptop UI + actual P5 mock API | Both code branches are assembled; CPU Python deps installed | Verified locally during this review |
+| Laptop UI + actual P5 mock API | Current rebased P6 checkout; CPU Python deps installed | Verified locally during this review |
 | Laptop -> tunnel -> GPU -> real Qwen generation/validation -> citations | Own cluster access/allocation, readable weights, working vLLM environment and approved input dump | Account-specific availability and paths not supplied/verified |
-| Fresh user question -> retrieval -> real Qwen -> citations | Above plus a real retriever factory, its dependencies/indexes and matching paper list | P5 explicitly reports free-form retrieval is not connected; factory absent in inspected branches |
+| Fresh user question -> retrieval -> real Qwen -> citations | Above plus a real retriever factory, its dependencies/indexes and matching paper list | P5 explicitly reports free-form retrieval is not connected; real factory absent in the current checkout |
 | Fresh query -> P4 adaptive agent/critic/retries -> generation | An explicit service integration that runs P4's agent | Current free-form endpoint only calls the retriever once and then answer_record; no P4 graph execution |
 
 The first real-GPU path uses an **exported retrieval/agent state as input** and
@@ -30,6 +30,9 @@ fully verified fresh-query RAG/agent chain.
 
 1. P6's cluster username, login/VPN procedure and Slurm GPU quota. Confirm whether
    a partition/account flag is required; P5's script leaves those unspecified.
+   The demo requests one GPU, 8 CPUs, 48 GiB RAM and up to six hours. It does not
+   pin the GPU model: confirm an A40 (~45 GiB) or a P5-approved equivalent, rather
+   than assuming every available GPU can hold this configuration.
 2. A P6-readable persistent root, free storage/quota, complete Qwen3-8B checkpoint
    and exact revision. P5's `~/p5` is P5's home, not automatically P6's resources.
 3. P6's own working vLLM Python environment, or an explicitly approved compatible
@@ -51,16 +54,13 @@ P6 chooses a demo bearer token and configures the same value on server and UI.
 
 ## What was actually checked locally
 
-The branches were assembled in an isolated temporary directory without merging
-P5's changes into the P6 work branch. Using the actual P5 server code:
-
-- P6 UI unit/AppTest checks after the compatibility fix: **43 passed**.
-- P5 server tests plus UI HTTP-client tests: **35 passed** (overlapping client coverage, not an additive total).
-- P5 `scripts/smoke_demo_server.py`: **15/15 checks passed**, including the
-  simultaneous-request `{200,429}` result and configured/unconfigured retrieval.
-- P6 opt-in `test_actual_p5_service`: **1 passed**, using P5's running mock API,
-  Bearer authentication, synthetic exported input, real sockets, citation lookup
-  and the Streamlit record workflow. No GPU, real weights or cluster involved.
+Post-rebase combined tests returned **100 passed, 1 skipped**. The default skip
+is the opt-in running-service check. That check separately passed against the
+actual P5 mock API with Bearer authentication, synthetic input and the Streamlit
+record/citation workflow. P5's socket smoke also passed **15/15**, including busy
+handling and test-retriever on/off behavior. These are distinct evidence types,
+not real GPU or P2 retrieval measurements; see the
+[completion summary](UI_PORT_COMPLETION_SUMMARY.md) for exact commands/counts.
 
 Confirmed interface correction: `/papers` is `{"papers": ["paper-id", ...]}`,
 not a list of paper objects. P6 now normalizes string IDs internally; existing
@@ -72,28 +72,36 @@ P5 `/health` reports `backend`/`model_id`/`prompt_version`, not `mode`. The UI m
 therefore display mode unknown. Use saved health and answer backend metadata to
 establish real-vs-mock evidence; do not infer live status from an open port.
 
-## 1. Assemble the same source on laptop and cluster
+## 1. Use the same current source on laptop and cluster
 
-The server and UI are on separate branches; either branch alone is insufficient.
-Do this in a clean integration checkout, preserving other work:
+The current `P6/UI-port-integration` branch has already been rebased onto main
+`97e33b2`; P5's service is included. **Do not repeat the old separate-branch merge.**
+In the existing local P6 checkout, inspect source identity without changing it:
 
 ```bash
-git fetch origin P6/UI-port-integration p5/demo-service
-git switch -c codex/p6-real-e2e origin/P6/UI-port-integration
-git merge --no-edit origin/p5/demo-service
+git branch --show-current
+git rev-parse HEAD
+git merge-base --is-ancestor 97e33b2 HEAD
+git merge-base --is-ancestor 4584e2c HEAD
+```
+
+For a new laptop or cluster checkout, the branch owner must first publish the
+reviewed rebased branch. This guide does not push or rewrite the remote branch.
+Do not assume an older remote P6 branch contains the current code. Once published,
+clone into a new directory rather than resetting another workspace:
+
+```bash
+git clone --branch P6/UI-port-integration https://github.com/CodeByVish/papergap-rag.git papergap-p6-e2e
+cd papergap-p6-e2e
+git merge-base --is-ancestor 97e33b2 HEAD
+git merge-base --is-ancestor 4584e2c HEAD
 git rev-parse HEAD
 ```
 
-The remote P6 branch must first contain the commit with this guide/catalogue fix.
-If it does not, its owner must push the reviewed branch first. Do not silently
-run an older remote UI. Resolve/review any conflicts; record the actual P6 and P5
-commits and combined revision. No merge into main is required to rehearse.
-
-For the cluster, use the identical integration checkout/commit. If the combined
-branch is not published, transfer a reviewed source archive to a separate cluster
-folder, or repeat the same reviewed merge there and record both parent revisions.
-Do not transfer laptop virtualenvs, secrets, model files or datasets as Git source.
-Verify these exist in both checkouts:
+Both ancestor checks must exit 0. Record the same exact source commit on laptop
+and cluster; no merge into main is needed to rehearse. If a reviewed source archive
+is used instead, record its originating commit and archive hash. Do not transfer
+laptop virtualenvs/secrets or put data/models in Git. Confirm both trees contain:
 
 ```bash
 test -f src/generation/server.py
@@ -105,7 +113,7 @@ test -f docs/P6_UI_CONTRACT.md
 ## 2. Laptop CPU preflight before spending GPU quota
 
 Commands below use **Bash**. Start `bash` first if using macOS zsh and follow the
-same shell syntax throughout. From the combined repository root:
+same shell syntax throughout. From the current P6 repository root:
 
 ```bash
 python3 -m venv .venv-ui
@@ -118,17 +126,26 @@ This installs only the UI plus CPU mock-server/test dependencies. It does not
 install the complete research requirements or download Qwen. `pydantic` is already
 in requirements-ui. Do not install the laptop dependency snapshot into vLLM.
 
-Start a mock API in a separate terminal in this environment:
+For a record-mode mock UI rehearsal, create a synthetic input (no real dataset):
 
 ```bash
-python -m src.generation.server --backend mock --port 8000
+mkdir -p results/p6-ui
+python - <<'PYMOCK'
+import json
+from pathlib import Path
+from src.generation.server import WARMUP_RECORD
+Path('results/p6-ui/mock-inputs.jsonl').write_text(json.dumps(WARMUP_RECORD) + '\n')
+PYMOCK
+export P5_RECORDS_PATH="$PWD/results/p6-ui/mock-inputs.jsonl"
+python -m src.generation.server --backend mock --port 8000 --papers-from "$P5_RECORDS_PATH" --passages-from "$P5_RECORDS_PATH"
 ```
 
-Without record files/retriever configuration it reports retrieval=false and has
-no citation corpus. That is expected; the socket smoke above supplies synthetic
-fixtures internally. To test actual exported inputs, pass the approved dump using
-`--papers-from` and `--passages-from`, and configure the UI record path. Shut down
-the local mock API before using local port 8000 for the cluster tunnel.
+In a second terminal, activate the same UI environment, set P5_API_BASE to localhost
+port 8000 and P5_RECORDS_PATH to that file's absolute path, and launch Streamlit as
+in the handoff. Leave token settings unset for this token-free loopback mock.
+Choose Demo record. retrieval=false is expected; the synthetic passage lookup is
+available. This is a CPU mock check, not real generation/retrieval evidence. Shut
+down the local mock API before reserving local port 8000 for the cluster tunnel.
 
 ## 3. Prepare P6's cluster account once
 
@@ -141,7 +158,7 @@ export P6_LOGIN_HOST='10.96.189.12'
 ssh "$P6_CLUSTER_USER@$P6_LOGIN_HOST"
 ```
 
-On the cluster login node, enter the combined source checkout. Check allocation
+On the cluster login node, enter the same reviewed P6 source checkout. Check allocation
 options and create persistent directories **before** submitting Slurm jobs:
 
 ```bash
@@ -182,6 +199,11 @@ The documented vLLM default is `vllm==0.11.0` with Transformers <5, not the newe
 vLLM. Verify the available Python module spelling using `module avail python`;
 `python312` is P5's measured value, not guaranteed for every account/site.
 
+The service defaults are max_new_tokens=1024, max_model_len=32768 and
+vLLM gpu_memory_utilization=0.85. Step 80 exposes token/top-k environment knobs,
+not arbitrary constructor overrides. Confirm with P5 before changing the pinned
+stack, context budget or GPU settings; record actual configuration with results.
+
 Set an explicit working venv after setup (replace the path with the one printed
 in step 30's log; do not use a literal placeholder):
 
@@ -197,7 +219,7 @@ will be selected by P5_RECORDS_PATH. Do not assume P5's home files are readable.
 
 ## 4. Submit the real demo service under P6's account
 
-On the cluster login node, from the combined repository root in Bash:
+On the cluster login node, from the P6 repository root in Bash:
 
 ```bash
 export P5_ROOT="$HOME/p6-demo-runtime"
@@ -271,7 +293,7 @@ A mock backend or empty passage index is not a real-generation/text-display pass
 
 ## 6. Start Streamlit and prove actual model generation
 
-In a separate laptop Bash terminal, from the combined checkout:
+In a separate laptop Bash terminal, from the P6 checkout:
 
 ```bash
 source .venv-ui/bin/activate
