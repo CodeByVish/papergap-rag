@@ -15,7 +15,7 @@ safety net, not a sufficiency judge.
 from __future__ import annotations
 
 import json
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from src.agent.nodes import gap_classifier
 from src.agent.schemas import AgentState, CriticOutput, GapLabel
@@ -30,25 +30,27 @@ class LLMClient(Protocol):
     def complete(self, prompt: str) -> str: ...
 
 
+@runtime_checkable
+class ChatClient(Protocol):
+    """A client that takes `[{"role": ..., "content": ...}]` chat messages.
+
+    Preferred when available: the system/user split is how Qwen3 is meant to be
+    prompted. A client with both methods is used through `chat`.
+    """
+
+    def chat(self, messages: list[dict[str, str]]) -> str: ...
+
+
 class CriticOutputError(ValueError):
     """The model reply could not be parsed or failed deterministic validation."""
 
 
-_PROMPT = """\
+_SYSTEM = """\
 You are an evidence critic for a question-answering system over one research paper.
 Decide whether the retrieved passages contain enough evidence to answer the question.
-Judge only from the passages below; do not use outside knowledge.
+Judge only from the passages you are given; do not use outside knowledge.
 
-Question: {question}
-Question type: {question_type}
-
-Evidence the answer needs:
-{requirements}
-
-Retrieved passages:
-{passages}
-
-Reply with one JSON object and nothing else:
+Reply with one JSON object and nothing else, in exactly this shape:
 {{
   "sufficient": true or false,
   "gap_label": one of {labels},
@@ -59,8 +61,19 @@ Reply with one JSON object and nothing else:
 Rules:
 - If sufficient is true, gap_label must be "NONE" and missing_components must be [].
 - If sufficient is false, gap_label must be one of the other labels:
-{label_help}
-"""
+{label_help}"""
+
+_USER = """\
+Question: {question}
+Question type: {question_type}
+
+Evidence the answer needs:
+{requirements}
+
+Retrieved passages:
+{passages}
+
+Reply with one JSON object and nothing else."""
 
 _LABEL_HELP = {
     GapLabel.MISSING_METHOD: "the method or approach is not described",
@@ -73,8 +86,8 @@ _LABEL_HELP = {
 }
 
 
-def build_critic_prompt(state: AgentState) -> str:
-    """Render the critic prompt for the current question and retrieved passages."""
+def build_critic_messages(state: AgentState) -> list[dict[str, str]]:
+    """Chat messages for the critic: schema and labels in system, evidence in user."""
     requirements = "\n".join(
         f"- {r.name}: {r.description}" for r in state.evidence_requirements
     ) or "- (none specified)"
@@ -83,29 +96,55 @@ def build_critic_prompt(state: AgentState) -> str:
         f"{hit.passage.text[:MAX_PASSAGE_CHARS]}"
         for hit in state.retrieved_passages
     ) or "(no passages were retrieved)"
-    return _PROMPT.format(
-        question=state.question,
-        question_type=state.question_type.value if state.question_type else "unknown",
-        requirements=requirements,
-        passages=passages,
-        labels=", ".join(f'"{label.value}"' for label in GapLabel),
-        label_help="\n".join(f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()),
-    )
+    return [
+        {
+            "role": "system",
+            "content": _SYSTEM.format(
+                labels=", ".join(f'"{label.value}"' for label in GapLabel),
+                label_help="\n".join(f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()),
+            ),
+        },
+        {
+            "role": "user",
+            "content": _USER.format(
+                question=state.question,
+                question_type=state.question_type.value if state.question_type else "unknown",
+                requirements=requirements,
+                passages=passages,
+            ),
+        },
+    ]
+
+
+def build_critic_prompt(state: AgentState) -> str:
+    """The same messages as one string, for clients that only take a prompt."""
+    return "\n\n".join(message["content"] for message in build_critic_messages(state))
 
 
 def parse_critic_output(raw: str) -> CriticOutput:
-    """Parse a model reply into `CriticOutput`, tolerating prose and code fences."""
-    start, end = raw.find("{"), raw.rfind("}")
-    if start == -1 or end <= start:
-        raise CriticOutputError("reply contains no JSON object")
-    try:
-        data = json.loads(raw[start : end + 1])
-    except json.JSONDecodeError as error:
-        raise CriticOutputError(f"invalid JSON: {error}") from error
-    try:
-        return CriticOutput.model_validate(data)
-    except ValueError as error:  # pydantic.ValidationError subclasses ValueError
-        raise CriticOutputError(f"schema violation: {error}") from error
+    """Parse a model reply into `CriticOutput`.
+
+    Scans for JSON objects instead of trusting the first and last brace, so prose,
+    code fences and stray braces around the object are tolerated; the first object
+    that matches the schema wins.
+    """
+    decoder = json.JSONDecoder()
+    last_error = "reply contains no JSON object"
+    for index, char in enumerate(raw):
+        if char != "{":
+            continue
+        try:
+            data, _ = decoder.raw_decode(raw, index)
+        except json.JSONDecodeError as error:
+            last_error = f"invalid JSON: {error}"
+            continue
+        if not isinstance(data, dict):
+            continue
+        try:
+            return CriticOutput.model_validate(data)
+        except ValueError as error:  # pydantic.ValidationError subclasses ValueError
+            last_error = f"schema violation: {error}"
+    raise CriticOutputError(last_error)
 
 
 def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
@@ -146,21 +185,37 @@ def rule_based_critic(state: AgentState) -> CriticOutput:
     )
 
 
-def make_critic_node(client: LLMClient | None = None, max_attempts: int = DEFAULT_ATTEMPTS):
-    """Build the critic node. Each round's outcome is appended to `critic_log`."""
+CriticClient = LLMClient | ChatClient
+MAX_RAW_REPLY_CHARS = 2000
+
+
+def _ask(client: CriticClient, state: AgentState) -> str:
+    if isinstance(client, ChatClient):
+        return client.chat(build_critic_messages(state))
+    return client.complete(build_critic_prompt(state))
+
+
+def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEFAULT_ATTEMPTS):
+    """Build the critic node. Each round's outcome is appended to `critic_log`.
+
+    The log keeps every raw model reply (cut to MAX_RAW_REPLY_CHARS) so the first
+    real traces can be inspected to validate the prompt.
+    """
     if max_attempts < 1:
         raise ValueError("max_attempts must be at least 1")
 
     def critic_node(state: AgentState) -> dict:
         errors: list[str] = []
+        raw_replies: list[str] = []
         output: CriticOutput | None = None
         source = "rules"
         if client is not None and state.retrieved_passages:
             source = "fallback"
-            prompt = build_critic_prompt(state)
             for _ in range(max_attempts):
                 try:
-                    output = parse_critic_output(client.complete(prompt))
+                    raw = _ask(client, state)
+                    raw_replies.append(raw[:MAX_RAW_REPLY_CHARS])
+                    output = parse_critic_output(raw)
                     validate_critic_output(output, state)
                     source = "llm"
                     break
@@ -176,6 +231,7 @@ def make_critic_node(client: LLMClient | None = None, max_attempts: int = DEFAUL
             "sufficient": output.sufficient,
             "gap_label": output.gap_label.value,
             "errors": errors,
+            "raw_replies": raw_replies,
         }
         return {
             "sufficient": output.sufficient,
