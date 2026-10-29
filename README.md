@@ -4,7 +4,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P3 data preparation and chunk-size evaluation integrate P1/P2 static BM25, dense, hybrid and reranked retrieval. Fresh BM25/Dense/Hybrid runs produced the verified $200$-question/$1532$-pair common evaluation pool. The original BM25 annotation export is retired history; two source-disclosed English annotation sets are ready in `data/processed/annotation_common_v2_markdown/`; human labels remain pending. Real-model reranking, generation and UI integration remain unverified. See the [evaluation protocol](docs/EVALUATION.md) and [bilingual Week 4 report](weekly-work/week-4/week-4-report-en.md).
+**Status:** The four-method common pool contains $1853$ unique pairs from the unchanged $200$ held-out questions. Two blank English sets are ready in `data/processed/annotation_common_v3_markdown/`; Step $4$ needs $3706$ independent initial judgments from two people per pair. Real BGE reranking is verified; human labels, generation and UI integration remain pending. See the [evaluation protocol](docs/EVALUATION.md) and [data guide](data/README.md).
 
 ## Start here
 

@@ -140,10 +140,11 @@ Dense 内部在问题前加 `Represent this sentence for searching relevant pass
 
 | 项目 | 当前设置或行为 |
 | --- | --- |
-| 三方法配置 | `configs/annotation_pilot.json`：`mode="hybrid"`、`candidate_k=20`、`rrf_k=60`、`top_k=5`。 |
+| 保留的三方法配置 | `configs/annotation_pilot.json`：`mode="hybrid"`、`candidate_k=20`、`rrf_k=60`、`top_k=5`。 |
 | 分块配置 | 约 $365$ words，重叠 $40$ words；属于项目配置，不是 Hybrid 的固有限制。 |
 | Dense 模型版本 | `BAAI/bge-small-en-v1.5`，revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`。 |
-| 三方法重排 | `build_multi_retriever_pilot.py` 不传 scorer，不启用 BGE 重排。 |
+| 三方法重排 | `build_multi_retriever_pilot.py` 在三方法模式下不传 scorer，不启用 BGE 重排。 |
+| 四方法正式评估 | `configs/annotation_four.json` 冻结新增的 BGE 重排；`python -m src.data.build_common_pool run --four` 统一重新检索，`annotation_common_v3/` 为当前核验通过的共同池。完整配置、字段与复现见[数据指南](../../data/README_zh-CN.md)。 |
 | 实验可选模式 | `hybrid` 只做 RRF；`hybrid_rerank` 对整个融合候选并集做 BGE 重排。 |
 | 模型长度 | Dense 单文本默认上限 $512$ tokens；BGE 重排默认问题与分块对上限 $512$ tokens。words 不等于 tokens。 |
 

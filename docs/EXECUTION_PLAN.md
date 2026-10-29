@@ -6,7 +6,7 @@
 
 ### Mandatory components
 
-Current Week 4 evaluation design supersedes the original fixed-count annotation plan: the scoped cross-branch exclusions and `qa_for_held_out_v2.jsonl` freeze are complete; fresh BM25/Dense/Hybrid top-$5$ retrieval forms `annotation_common_v2/` with $200$ questions and $1532$ actual unique pairs. The old BM25 templates are retired history. New source-disclosed English views (Step $2.8$) are complete in `data/processed/annotation_common_v2_markdown/`; two independent judgments per unique pair (Step $2.9$) remain pending. See `docs/EVALUATION.md` and the bilingual data guides for authoritative commands, fields, source scope and held-out boundaries. The annotation count is a minimum requirement, not a quota; the agent, reranker and citation features below remain project design choices as clarified in `docs/REQUIREMENTS.md`.
+Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. Human labels, agreement and adjudication remain pending. The v2 pool/templates retain their bytes as history. See [evaluation protocol](EVALUATION.md) and [data guide](../data/README.md) for commands, fields and eligibility boundaries.
 
 * QASPER knowledge base with at least 10,000 passage documents
 * BM25 sparse retrieval
@@ -803,10 +803,10 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 ## P3
 
 * Consume the frozen $200$ questions in `qa_for_held_out_v2.jsonl`; do not redraw or stratify using content/results.
-* Retain the completed, fresh BM25/Dense/Hybrid native top-$5$ lists and their $1532$-pair union in `annotation_common_v2/`.
+* Use the verified four-method native top-$5$ lists and $1853$-pair union in `annotation_common_v3/`; retain v2 as history.
 * Deduplicate by `(question_id, passage_id)` and preserve stable record mappings and all original ranks/scores.
 * Keep gold evidence in separate verification/reference data; never insert it into retrieval results or annotation views.
-* Step $2.8$ is complete: retain `annotation_common_v2_markdown/` pristine templates; verify with `python -m src.data.export_common_annotations verify`. Assign separate copies in Step $2.9$; each slot has $10$ batches of $20$ questions with variable record counts and no HTML or notes field.
+* Step $3$ is complete: retain `annotation_common_v3_markdown/` pristine templates; verify with `python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown`. Assign separate copies in Step $4$; each slot has $10$ batches of $20$ questions with variable record counts and no HTML or notes field.
 
 ## P4
 
@@ -854,7 +854,7 @@ After the annotation pool is created:
 
 ## Shared annotation work
 
-Each of the $1532$ unique pairs must receive two independent judgments from different people: $3064$ initial judgments in total. Assignment remains pending; do not use the former fixed-$1000$ allocation. Keep all pairs for a question in one batch, and coordinate workload using actual union counts.
+Each of the $1853$ unique pairs must receive two independent judgments from different people: $3706$ initial judgments in total. Assignment remains pending; do not use the former fixed-$1000$ allocation. Keep all pairs for a question in one batch, and coordinate workload using actual union counts.
 
 Views disclose algorithm sources and annotator names or agreed identifiers. Annotators must not see the other person's label or negotiate judgments before submitting their own. Preserve returned originals, both raw labels and a separate adjudicated label. Check agreement before adjudication against the assignment's $80\%$ threshold. All methods share each pair's final label, evaluated in native rank order; unpooled passages remain unjudged.
 

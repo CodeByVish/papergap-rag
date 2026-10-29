@@ -19,18 +19,25 @@ from src.data.build_annotation_pool import (
 )
 from src.data.build_common_pool import DEFAULT_OUTPUT as POOL
 from src.data.build_common_pool import verify as verify_pool
-from src.data.build_multi_retriever_pilot import METHODS, render_multi_batches
+from src.data.build_multi_retriever_pilot import (
+    FOUR_METHODS,
+    METHODS,
+    render_multi_batches,
+)
 
 OUTPUT = POOL.with_name("annotation_common_v2_markdown")
 IDENTITY_INSTRUCTION = "Enter your name or agreed identifier after `Annotator:`."
 
 
-def validate_views(rows: list[dict], output: Path) -> list[dict]:
+def validate_views(
+    rows: list[dict], output: Path, methods: tuple[str, ...] = METHODS
+) -> list[dict]:
     """Check every persisted view against source fields and independent ordering.
 
     Args:
         rows: Canonical pool records in saved question order.
         output: Export directory containing both annotator slots.
+        methods: Frozen algorithm order used by this pool version.
 
     Returns:
         Per-batch coverage counts shared by both slots.
@@ -88,9 +95,9 @@ def validate_views(rows: list[dict], output: Path) -> list[dict]:
                     != f"{number:04d}\n\nPaper: {title}\n\n{quoted_question}\n"
                 ):
                     raise ValueError("question number, title or text changed")
-                if len(parts) != 4:
+                if len(parts) != len(methods) + 1:
                     raise ValueError("missing or extra display groups")
-                for group, part in zip(("Common Retrieved Chunks", *METHODS), parts):
+                for group, part in zip(("Common Retrieved Chunks", *methods), parts):
                     # Derive membership from sources, independently of display_group.
                     members = [
                         r
@@ -139,21 +146,22 @@ def validate_views(rows: list[dict], output: Path) -> list[dict]:
     return batches
 
 
-def export(output: Path) -> dict:
+def export(output: Path, pool: Path = POOL) -> dict:
     """Validate the frozen pool, create new views and save reproducibility hashes.
 
     Args:
         output: Unused directory; existing exports and human edits are refused.
+        pool: Verified historical or four-method pool directory.
 
     Returns:
         Verified counts, after source and output bytes have been checked.
     """
     if output.exists():
         raise FileExistsError(output)
-    counts = verify_pool(POOL)
+    counts, methods = source_pool(pool)
     inputs = snapshot(
         [
-            POOL / name
+            pool / name
             for name in (
                 "manifest.json",
                 "pairs.jsonl",
@@ -162,16 +170,16 @@ def export(output: Path) -> dict:
             )
         ]
     )
-    rows = read_jsonl(POOL / "pairs.jsonl")
+    rows = read_jsonl(pool / "pairs.jsonl")
     output.mkdir(parents=True)
-    render_multi_batches(rows, output)
+    render_multi_batches(rows, output, methods)
     for path in sorted(output.rglob("*.md")):
         text = path.read_text(encoding="utf-8").replace(
             "Annotator: \n\n", f"Annotator: \n\n{IDENTITY_INSTRUCTION}\n\n", 1
         )
         with path.open("w", encoding="utf-8", newline="\n") as handle:
             handle.write(text)
-    batches = validate_views(rows, output)
+    batches = validate_views(rows, output, methods)
     verify_snapshot(inputs)
     write_json(
         output / "manifest.json",
@@ -190,26 +198,44 @@ def export(output: Path) -> dict:
             "slots": ["A", "B"],
             "batches": batches,
             "outputs": snapshot(sorted(output.rglob("*.md"))),
-            "policy": "two independent blank copies; assign distinct people in Step 2.9; no gold, scores, native ranks or internal IDs in views; use saved rankings for metrics",
+            "policy": "two independent blank copies; assign distinct people in Step 4; no gold, scores, native ranks or internal IDs in views; use saved rankings for metrics",
         },
     )
-    return verify(output)
+    return verify(output, pool)
 
 
-def verify(output: Path) -> dict:
+def source_pool(pool: Path) -> tuple[dict, tuple[str, ...]]:
+    """Select the strict verifier from the source manifest's method contract.
+
+    Args:
+        pool: Complete source directory; never inferred from annotation text.
+
+    Returns:
+        Verified counts and the ordered display methods.
+    """
+    manifest = json.loads((pool / "manifest.json").read_text(encoding="utf-8"))
+    if manifest["settings"].get("methods") == list(FOUR_METHODS):
+        from src.data.build_four_method_pool import verify as verify_four
+
+        return verify_four(pool), FOUR_METHODS
+    return verify_pool(pool), METHODS
+
+
+def verify(output: Path, pool: Path = POOL) -> dict:
     """Verify pristine templates and all frozen input/history hashes read-only.
 
     Args:
         output: Completed export; collect human-edited copies separately.
+        pool: Source version whose full pair coverage is required.
 
     Returns:
         Counts without exposing question, passage or evidence content.
     """
-    counts = verify_pool(POOL)
+    counts, methods = source_pool(pool)
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
     verify_snapshot(manifest["inputs"])
     verify_snapshot(manifest["outputs"])
-    batches = validate_views(read_jsonl(POOL / "pairs.jsonl"), output)
+    batches = validate_views(read_jsonl(pool / "pairs.jsonl"), output, methods)
     if (
         manifest["batches"] != batches
         or manifest["question_count"] != counts["question_count"]
@@ -234,9 +260,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("run", "verify"))
     parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument("--pool", type=Path, default=POOL)
     args = parser.parse_args()
     print(
-        json.dumps(export(args.output) if args.action == "run" else verify(args.output))
+        json.dumps(
+            export(args.output, args.pool)
+            if args.action == "run"
+            else verify(args.output, args.pool)
+        )
     )
 
 

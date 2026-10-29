@@ -32,13 +32,14 @@ from src.evaluation.chunk_size_retrieval import (
 )
 
 METHODS = ("BM25", "Dense", "Hybrid")
+FOUR_METHODS = ("BM25", "Dense", "Hybrid RRF", "Hybrid RRF followed by BGE reranking")
 DEFAULT_CONFIG = Path("configs/annotation_pilot.json")
 DEFAULT_OUTPUT = DATA / "annotation_pilot_multi_v2"
 Retrieve = Callable[[str, str, int], list[tuple[str, float]]]
 
 
 def build_retrievers(corpus: list[dict], settings: dict) -> dict[str, Retrieve]:
-    """Share one sparse and one dense index across all three methods.
+    """Share sparse/dense indexes, optionally adding full-candidate BGE scoring.
 
     Args:
         corpus: All passages belonging to the selected development papers.
@@ -86,18 +87,33 @@ def build_retrievers(corpus: list[dict], settings: dict) -> dict[str, Retrieve]:
 
         return retrieve
 
+    if settings["mode"] == "hybrid_rerank":
+        from src.retrieval.reranker import BGEReranker
+
+        reranked = HybridRetriever(
+            sparse.retrieve,
+            dense.retrieve,
+            scorer=BGEReranker(**settings["reranker"]),
+            candidate_k=settings["candidate_k"],
+            rrf_k=settings["rrf_k"],
+        )
+        return dict(zip(FOUR_METHODS, map(callback, (sparse, dense, hybrid, reranked))))
     return dict(zip(METHODS, map(callback, (sparse, dense, hybrid))))
 
 
 def pool_rankings(
-    questions: list[dict], corpus: list[dict], retrievers: dict[str, Retrieve]
+    questions: list[dict],
+    corpus: list[dict],
+    retrievers: dict[str, Retrieve],
+    methods: tuple[str, ...] = METHODS,
 ) -> tuple[list[dict], list[dict]]:
     """Validate complete top-five lists and union by question/passage pair.
 
     Args:
         questions: Unique development questions in persisted order.
         corpus: Same corpus used by every retriever, without evidence fields.
-        retrievers: Exactly BM25, Dense and Hybrid callbacks.
+        retrievers: Exactly the callbacks named in methods.
+        methods: Ordered three- or four-method contract; defines numbering.
 
     Returns:
         Pair records with all source ranks/scores, and complete ranking records.
@@ -107,12 +123,12 @@ def pool_rankings(
     """
     unique_rows(questions, "question_id")
     passages = unique_rows(corpus, "passage_id")
-    if set(retrievers) != set(METHODS):
-        raise ValueError("exactly BM25, Dense and Hybrid are required")
+    if methods not in (METHODS, FOUR_METHODS) or set(retrievers) != set(methods):
+        raise ValueError("retrievers must match the three- or four-method contract")
     pairs, rankings = [], []
     for question in questions:
         union = {}
-        for method in METHODS:
+        for method in methods:
             hits = retrievers[method](question["question"], question["paper_id"], 5)
             if len(hits) != 5 or len({pid for pid, _ in hits}) != 5:
                 raise ValueError("each method must return five distinct passages")
@@ -199,12 +215,15 @@ def join_gold(pairs: list[dict], gold: dict[str, dict]) -> list[dict]:
     return verification
 
 
-def render_multi_batches(rows: list[dict], output: Path) -> None:
+def render_multi_batches(
+    rows: list[dict], output: Path, methods: tuple[str, ...] = METHODS
+) -> None:
     """Export algorithm-disclosed views, grouping twenty questions per batch.
 
     Args:
         rows: Unique pair records with complete source attribution.
         output: New run directory; slot subdirectories must not already exist.
+        methods: Frozen method order used for exclusive display groups.
 
     Gold, scores, ranks and internal IDs never enter this projection. Common
     pairs use stable record order; exclusive pairs use their source rank.
@@ -246,7 +265,7 @@ def render_multi_batches(rows: list[dict], output: Path) -> None:
                         "",
                     ]
                 )
-                for group in ("Common Retrieved Chunks", *METHODS):
+                for group in ("Common Retrieved Chunks", *methods):
                     selected = [r for r in question_rows if r["display_group"] == group]
                     selected.sort(
                         key=lambda r: (

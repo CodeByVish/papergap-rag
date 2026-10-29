@@ -6,13 +6,321 @@
 
 ## 数据版本与更新
 
-当前正式 BM25/Dense/Hybrid 评估使用 `qa_for_held_out_v2.jsonl`、`annotation_common_v2/` 和 `annotation_common_v2_markdown/`。冻结题单含 $200$ 道合格题，与禁用题单无交集。每算法 $1000$ 次命中，$600$ 行排名合并为 $1532$ 条唯一 question-passage 配对，每题 $5$–$11$ 条。Common $975$ 条、BM25 独有 $277$ 条、Dense 独有 $254$ 条、Hybrid 独有 $26$ 条。初始标签均为空，人工标注待执行。
+第 $4$ 周第 $3$ 步已完成。`data/processed/annotation_common_v3/` 保存 BM25、Dense、Hybrid RRF、Hybrid RRF followed by BGE reranking 在原冻结 $200$ 题上的全新检索：每算法 $1000$ 次命中，$800$ 行排名，共 $1853$ 条唯一配对，每题 $6$–$14$ 条。原三算法的 $600$ 组 passage ID 及排名与 v2 完全一致，分数也全部一致。`data/processed/annotation_common_v3_markdown/` 保存两套独立空白英文标注文件，每套 $10$ 批、每批 $20$ 道完整问题，各批配对数为 $179,185,187,188,174,187,190,191,177,195$。第 $4$ 步仅使用此核验通过的四算法版本，安排两位不同人员独立完成 $3706$ 次初始判断；人工标签、一致率及裁决待执行。v2 共同池和模板字节不变，作为历史版本保留。
 
 本次范围内的禁用清单将 P1 的 $2593$、P2 的 $106$ 和 P3 的 $250$ 道选参题合并为 $2654$ 道唯一禁用题，保留全部符合排除条件的重复来源。不声称覆盖未记录的外部/P4–P6 用题。采用问题层面隔离，允许共享论文。后续明确新增的用题证据须在再次抽样前补充新清单版本；禁止根据 held-out 内容或结果选择系统配置。
 
-两套独立空白英文 Markdown 各含 $10$ 批，每批 $20$ 题，覆盖全部 $1532$ 条配对，公开算法来源和标注者身份。A/B 仅为待分配的模板槽位；$3064$ 次独立判断、裁决前一致率及裁决待执行。计算指标时使用算法原始排名和共用最终标签。池内 recall 使用并集中已判断相关配对；QASPER passage-reference recall 使用映射的 `gold_passage_ids`，受证据定位和语料覆盖限制。详见[当前标注与指标协议](../docs/EVALUATION.md#current-annotation-and-metric-protocol)。
+第四算法先在前 $5$ 道已保存开发题上验证，得到 $45$ 条配对，再在正式运行前通过 `configs/annotation_four.json` 和 `annotation_pilot_four_v3/frozen_config.json` 冻结。BGE reranker base revision 为 `2cfc18c9415c912f9d8155881c133215df768a70`，CPU、批大小 $8$、问题与 passage 对按 longest-first 截断至 $512$ token，使用原始 logit，同分按 RRF 降序、passage ID 升序。对 BM25 top-$20$ 和 Dense top-$20$ 的完整融合并集评分后取最终 top-$5$；等权 RRF $k=60$ 及原三算法配置不变。未使用 held-out 调参或重新抽题。
 
-现有文件及配套 manifest 随其他数据从 GitHub P3 分支获取。各产物章节记录生成命令和字段结构；复现需要 manifest 记录的精确输入，生成时拒绝已有输出路径。正式检索使用 `python -m src.data.build_common_pool run --output tmp/tmp_annotation_common_v2`，固定 $365/40$/paper-scoped/top-$5$ 配置和已保存的题目顺序。模型放在已忽略的 `.cache/huggingface/`，导入模型前设置 `HF_HUB_OFFLINE=1`，结束后恢复原环境。
+清理提交 `685a08c` 删除了旧 pilot/BM25 文件，但现有 manifest 仍要求其哈希。核验现优先读取当前文件，仅对缺失的历史标注文件读取本地 Git blob，核对原 SHA-256，不恢复已删除的工作文件；复现须保留完整 Git 历史。共同池核验器直接检查冻结题单及输入哈希、原文与顺序、禁用交集和论文资格，不重新抽题；旧 freeze 重建命令仍需要旧工作文件。
+
+新缓存先联网准备以下固定模型文件，只保留 safetensors 权重、配置和 tokenizer，避免重复下载其他权重格式；后续运行离线加载。
+
+```powershell
+python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-small-en-v1.5', revision='5c38ec7c405ec4b44b94cc5a9bb96e735b38267a', cache_dir='.cache/huggingface', allow_patterns=['*.json', '*.safetensors', 'vocab.txt'])"
+python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-reranker-base', revision='2cfc18c9415c912f9d8155881c133215df768a70', cache_dir='.cache/huggingface', allow_patterns=['*.json', '*.safetensors', 'sentencepiece.bpe.model'])"
+```
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+```
+
+本地复现时将正式池输出改为 `--output tmp/tmp_annotation_common_v3`，导出使用对应 `--pool` 和 `--output tmp/tmp_annotation_common_v3_markdown`；开发复现使用 `--output tmp/tmp_annotation_pilot_four_v3`。拒绝已有目录。数据及 manifest 随 GitHub `p3` 工作分支获取。模型仅放在忽略的 `.cache/huggingface/`。下方 v2 章节仅说明历史产物，禁止将其用于第 $4$ 步。
+
+## `data/processed/annotation_common_v3/questions.jsonl`
+
+生成及核验命令：
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id, paper_id` | `string` | 原始问题及论文 ID，保持保存顺序。 |
+| `question` | `string` | 问题原文。 |
+| `source_split` | `string` | 官方来源 split，不表示评估用途。 |
+
+## `data/processed/annotation_pilot_four_v3/questions.jsonl`
+
+字段及类型沿用本指南上方 `questions.jsonl` 表。仅使用前 $5$ 道已保存开发题、$5$ 篇论文、$70$ 条 passage；得到 $45$ 条唯一配对、$20$ 行排名、每算法 $25$ 次命中。`pilot=true`，历史映射与对比为空，开发模式不读取 held-out 题单或 gold。
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id, paper_id` | `string` | 与上方对应正式产物字段约束相同。 |
+| `question` | `string` | 与上方对应正式产物字段约束相同。 |
+| `source_split` | `string` | 与上方对应正式产物字段约束相同。 |
+
+## `data/processed/annotation_common_v3/pairs.jsonl`
+
+生成及核验命令：
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 本版本内首次遇见顺序生成的稳定编号。 |
+| `question_id, paper_id, passage_id` | `string` | 唯一问题与 passage 配对及论文范围。 |
+| `source_split, question, paper_title, passage` | `string` | 来源 split、问题原文、真实标题和完整正文。 |
+| `label` | `null` | 初始为空，命中该配对的算法共用最终标签。 |
+| `retrieved_by[]` | `string` | 按冻结算法顺序保存全部真实来源。 |
+| `retrievals[]` | `object` | 每个来源对应一条原始命中关系。 |
+| `retrievals[].method` | `string` | 四算法之一的冻结名称。 |
+| `retrievals[].rank` | `integer` | 算法原始排名 1 至 5。 |
+| `retrievals[].score` | `number` | 有限的 BM25、余弦、RRF 或 BGE 原始 logit。 |
+| `display_group` | `string` | 至少两算法命中归入 Common Retrieved Chunks，否则归入唯一来源。 |
+
+## `data/processed/annotation_pilot_four_v3/pairs.jsonl`
+
+字段及类型沿用本指南上方 `pairs.jsonl` 表。仅使用前 $5$ 道已保存开发题、$5$ 篇论文、$70$ 条 passage；得到 $45$ 条唯一配对、$20$ 行排名、每算法 $25$ 次命中。`pilot=true`，历史映射与对比为空，开发模式不读取 held-out 题单或 gold。
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `question_id, paper_id, passage_id` | `string` | 与上方对应正式产物字段约束相同。 |
+| `source_split, question, paper_title, passage` | `string` | 与上方对应正式产物字段约束相同。 |
+| `label` | `null` | 与上方对应正式产物字段约束相同。 |
+| `retrieved_by[]` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrievals[]` | `object` | 与上方对应正式产物字段约束相同。 |
+| `retrievals[].method` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrievals[].rank` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `retrievals[].score` | `number` | 与上方对应正式产物字段约束相同。 |
+| `display_group` | `string` | 与上方对应正式产物字段约束相同。 |
+
+## `data/processed/annotation_common_v3/rankings.jsonl`
+
+生成及核验命令：
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id, method` | `string` | 每道题、每算法一行。 |
+| `hits[]` | `object` | 按原始排名保存五条不同且有效的同论文命中。 |
+| `hits[].passage_id` | `string` | 语料中的 passage ID。 |
+| `hits[].record_number` | `integer` | 指向唯一配对的编号。 |
+| `hits[].rank` | `integer` | 算法原始排名 1 至 5。 |
+| `hits[].score` | `number` | 未经修改的算法有限原始分数。 |
+
+## `data/processed/annotation_pilot_four_v3/rankings.jsonl`
+
+字段及类型沿用本指南上方 `rankings.jsonl` 表。仅使用前 $5$ 道已保存开发题、$5$ 篇论文、$70$ 条 passage；得到 $45$ 条唯一配对、$20$ 行排名、每算法 $25$ 次命中。`pilot=true`，历史映射与对比为空，开发模式不读取 held-out 题单或 gold。
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `question_id, method` | `string` | 与上方对应正式产物字段约束相同。 |
+| `hits[]` | `object` | 与上方对应正式产物字段约束相同。 |
+| `hits[].passage_id` | `string` | 与上方对应正式产物字段约束相同。 |
+| `hits[].record_number` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `hits[].rank` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `hits[].score` | `number` | 与上方对应正式产物字段约束相同。 |
+
+## `data/processed/annotation_common_v3/frozen_config.json`
+
+生成及核验命令：
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed，待团队确认。 |
+| `chunk_size_words, chunk_overlap_words, top_k` | `integer` | $365$、$40$ 和 $5$。 |
+| `methods[]` | `string` | BM25、Dense、Hybrid RRF、Hybrid RRF followed by BGE reranking。 |
+| `scope, candidate_policy, record_order` | `string` | 问题原文、论文范围、完整融合并集和原始排名首次遇见编号。 |
+| `retrieval.mode` | `string` | hybrid_rerank，四算法复用归一化配置。 |
+| `retrieval.candidate_k, retrieval.rrf_k` | `integer` | 每来源至多 $20$ 条，等权 RRF 的 $k=60$。 |
+| `retrieval.dense.revision` | `string` | BGE small English v1.5 固定为 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a。 |
+| `retrieval.reranker.revision` | `string` | BGE reranker base 固定为 2cfc18c9415c912f9d8155881c133215df768a70。 |
+| `retrieval.dense.device, retrieval.reranker.device` | `string` | 两个模型均使用 cpu。 |
+| `retrieval.dense.batch_size, retrieval.reranker.batch_size` | `integer` | 分别为 $32$ 和 $8$。 |
+| `retrieval.reranker.max_length` | `integer` | 问题与 passage 对合计至多 $512$ token。 |
+| `retrieval.dense.cache_folder, retrieval.reranker.cache_folder` | `string` | 解析后的已忽略 .cache/huggingface 路径。 |
+| `retrieval.dense.local_files_only, retrieval.reranker.local_files_only` | `boolean` | 均为 true，运行前准备固定模型文件。 |
+| `execution.HF_HUB_OFFLINE` | `string` | 模型导入前设为 1，CLI 在 finally 中恢复。 |
+| `execution.persistent_score_cache` | `boolean` | false，重新执行模型评分。 |
+| `reranker_inference.model_name, reranker_inference.truncation, reranker_inference.score, reranker_inference.tie_break` | `string` | BAAI/bge-reranker-base；longest-first 截断；float32 原始 logit；依次按 logit 降序、RRF 降序、passage ID 升序。 |
+| `reranker_inference.padding` | `boolean` | true，按推理批次填充。 |
+| `retrievers.<method>` | `object` | 完整嵌套字段沿用下方 v2 frozen-config 章节的 retrievers 表，组件开关按实际算法设置。 |
+| `retrievers.<method>.reranker.revision, .device, .cache_folder, .model_name, .tokenizer_revision, .length_limit, .truncation_observation` | `string` | 第四算法的模型与 tokenizer revision、设备、缓存、成对长度约束和观察限制；元数据不声称实测截断。 |
+| `retrievers.<method>.reranker.batch_size, .max_length` | `integer` | 第四算法实际使用 $8$ 和 $512$。 |
+| `retrievers.<method>.reranker.local_files_only, .enabled, .padding, .truncation, .raw_logits` | `boolean` | 第四算法启用的重排配置均为 true。 |
+| `retrievers.<method>.candidate_k_per_source, .rrf_k, .final_top_k` | `integer` | 两个 Hybrid 版本均为 $20$、$60$、$5$。 |
+| `retrievers.<method>.rerank_all_fused_candidates` | `boolean` | 仅第四算法为 true，评分前不截取 top-5。 |
+
+## `data/processed/annotation_pilot_four_v3/frozen_config.json`
+
+字段及类型沿用本指南上方 `frozen_config.json` 表。仅使用前 $5$ 道已保存开发题、$5$ 篇论文、$70$ 条 passage；得到 $45$ 条唯一配对、$20$ 行排名、每算法 $25$ 次命中。`pilot=true`，历史映射与对比为空，开发模式不读取 held-out 题单或 gold。
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version` | `string` | 与上方对应正式产物字段约束相同。 |
+| `chunk_size_words, chunk_overlap_words, top_k` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `methods[]` | `string` | 与上方对应正式产物字段约束相同。 |
+| `scope, candidate_policy, record_order` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.mode` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.candidate_k, retrieval.rrf_k` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.dense.revision` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.reranker.revision` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.dense.device, retrieval.reranker.device` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.dense.batch_size, retrieval.reranker.batch_size` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.reranker.max_length` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.dense.cache_folder, retrieval.reranker.cache_folder` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrieval.dense.local_files_only, retrieval.reranker.local_files_only` | `boolean` | 与上方对应正式产物字段约束相同。 |
+| `execution.HF_HUB_OFFLINE` | `string` | 与上方对应正式产物字段约束相同。 |
+| `execution.persistent_score_cache` | `boolean` | 与上方对应正式产物字段约束相同。 |
+| `reranker_inference.model_name, reranker_inference.truncation, reranker_inference.score, reranker_inference.tie_break` | `string` | 与上方对应正式产物字段约束相同。 |
+| `reranker_inference.padding` | `boolean` | 与上方对应正式产物字段约束相同。 |
+| `retrievers.<method>` | `object` | 与上方对应正式产物字段约束相同。 |
+| `retrievers.<method>.reranker.revision, .device, .cache_folder, .model_name, .tokenizer_revision, .length_limit, .truncation_observation` | `string` | 与上方对应正式产物字段约束相同。 |
+| `retrievers.<method>.reranker.batch_size, .max_length` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `retrievers.<method>.reranker.local_files_only, .enabled, .padding, .truncation, .raw_logits` | `boolean` | 与上方对应正式产物字段约束相同。 |
+| `retrievers.<method>.candidate_k_per_source, .rrf_k, .final_top_k` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `retrievers.<method>.rerank_all_fused_candidates` | `boolean` | 与上方对应正式产物字段约束相同。 |
+
+## `data/processed/annotation_common_v3/run_inputs.json`
+
+生成及核验命令：
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `inputs.<path>` | `string` | 运行前输入 SHA-256，包括语料、题单、禁用清单和冻结配置。 |
+| `code.commit, code.python` | `string` | 运行前 Git HEAD 和 Python 版本。 |
+| `code.working_tree_status[]` | `string` | 运行前短状态，包含未提交修改。 |
+| `code.source_sha256.<path>` | `string` | 保存结果前再次核验的 src/scripts 源码哈希。 |
+| `history.<path>` | `string` | 未变的 v2 共同池、模板及历史 BM25 哈希；开发模式为空。 |
+
+## `data/processed/annotation_pilot_four_v3/run_inputs.json`
+
+字段及类型沿用本指南上方 `run_inputs.json` 表。仅使用前 $5$ 道已保存开发题、$5$ 篇论文、$70$ 条 passage；得到 $45$ 条唯一配对、$20$ 行排名、每算法 $25$ 次命中。`pilot=true`，历史映射与对比为空，开发模式不读取 held-out 题单或 gold。
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `inputs.<path>` | `string` | 与上方对应正式产物字段约束相同。 |
+| `code.commit, code.python` | `string` | 与上方对应正式产物字段约束相同。 |
+| `code.working_tree_status[]` | `string` | 与上方对应正式产物字段约束相同。 |
+| `code.source_sha256.<path>` | `string` | 与上方对应正式产物字段约束相同。 |
+| `history.<path>` | `string` | 与上方对应正式产物字段约束相同。 |
+
+## `data/processed/annotation_common_v3/manifest.json`
+
+生成及核验命令：
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version, purpose, reason, usage_boundary` | `string` | 暂定结构、运行用途、重建原因及 held-out 与空标签边界。 |
+| `pilot` | `boolean` | 仅开发试运行为 true。 |
+| `settings` | `object` | 与 frozen_config.json 完全相同，嵌套字段见上表。 |
+| `inputs.<path>, outputs.<path>, historical_retained_files.<path>` | `string` | 输入、输出和历史 SHA-256；优先当前字节，已删除旧产物使用本地 Git 历史核对。 |
+| `code` | `object` | 嵌套身份字段与 run_inputs.json 相同。 |
+| `historical_comparison.rankings_compared, .identical_id_rank_lists, .identical_score_lists` | `integer` | 正式运行对比原三算法 $600$ 组排名；另报分数一致数；开发模式为空对象。 |
+| `indexed_passage_count, indexed_paper_count` | `integer` | 所选论文完整索引的 passage 数和论文数。 |
+| `validation.question_count, .pair_count, .ranking_count, .hits_per_method` | `integer` | 实际题数、唯一配对数、原始排名行数和每算法命中数。 |
+| `validation.pair_counts_per_question.<question_id>, validation.group_counts.<group>` | `integer` | 每题和每展示分组的实际唯一配对数。 |
+| `validation.pair_count_range[]` | `integer` | 观察到的最小、最大值，须位于 $5$–$20$。 |
+| `runtime.platform, runtime.policy` | `string` | 主机及单次 CPU 建索引和四算法耗时口径，不是延迟基准。 |
+| `runtime.elapsed_seconds` | `number` | 建索引及检索的实际秒数。 |
+
+## `data/processed/annotation_pilot_four_v3/manifest.json`
+
+字段及类型沿用本指南上方 `manifest.json` 表。仅使用前 $5$ 道已保存开发题、$5$ 篇论文、$70$ 条 passage；得到 $45$ 条唯一配对、$20$ 行排名、每算法 $25$ 次命中。`pilot=true`，历史映射与对比为空，开发模式不读取 held-out 题单或 gold。
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version, purpose, reason, usage_boundary` | `string` | 与上方对应正式产物字段约束相同。 |
+| `pilot` | `boolean` | 与上方对应正式产物字段约束相同。 |
+| `settings` | `object` | 与上方对应正式产物字段约束相同。 |
+| `inputs.<path>, outputs.<path>, historical_retained_files.<path>` | `string` | 与上方对应正式产物字段约束相同。 |
+| `code` | `object` | 与上方对应正式产物字段约束相同。 |
+| `historical_comparison.rankings_compared, .identical_id_rank_lists, .identical_score_lists` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `indexed_passage_count, indexed_paper_count` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `validation.question_count, .pair_count, .ranking_count, .hits_per_method` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `validation.pair_counts_per_question.<question_id>, validation.group_counts.<group>` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `validation.pair_count_range[]` | `integer` | 与上方对应正式产物字段约束相同。 |
+| `runtime.platform, runtime.policy` | `string` | 与上方对应正式产物字段约束相同。 |
+| `runtime.elapsed_seconds` | `number` | 与上方对应正式产物字段约束相同。 |
+
+## `data/processed/annotation_common_v3_markdown/annotator_A/` / `annotator_B/`
+
+```powershell
+python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `Annotator:` | `text` | 初始为空的身份栏，第 4 步分配两位不同人员。 |
+| `Question NNNN; Paper:; quoted question` | `text/headings` | 全局题号、真实标题和问题原文。 |
+| `Common Retrieved Chunks; four method sections` | `headings` | 至少两来源放入 Common 并按编号排列；独有结果按原排名；空分组为 None。 |
+| `Passage N; Relevance N; Retrieved by:` | `text/headings` | 每条配对在每套中出现一次，展示完整引用正文和真实来源。 |
+| `Label:` | `empty text` | 仅填写 Label: 0 或 Label: 1；有用的部分证据也相关，仅主题重合不足。 |
+
+各套 $10$ 批，每批 $20$ 题。隐藏 gold、分数、排名、内部 ID 和另一人的标签；不生成 HTML 或备注栏。保留空白模板和每人回收原件；空白核验器有意拒绝已填写标签的副本。
+
+## `data/processed/annotation_common_v3_markdown/manifest.json`
+
+使用上一节相同的导出与核验命令。
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `schema_version, purpose, policy` | `string` | v0-proposed；独立空白且公开来源的视图，按原始排名计算指标。 |
+| `inputs.<path>, outputs.<path>, source_sha256.<path>` | `string` | 共同池输入、Markdown 输出及生成代码 SHA-256。 |
+| `question_count, pair_count_per_annotator` | `integer` | 保存题数和每套实际唯一配对数。 |
+| `slots[]` | `string` | A、B 模板槽位，不代表已分配人员。 |
+| `batches[].batch, .question_count, .pair_count` | `integer` | 从 1 开始的批号、完整题数和实际配对数。 |
 
 ## `data/processed/annotation_common_v2_markdown/annotator_A/` 和 `annotator_B/`
 

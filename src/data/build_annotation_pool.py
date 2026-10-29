@@ -7,6 +7,7 @@ Gold references are joined only after retrieval and never enter blind views.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import platform
 import random
@@ -111,7 +112,61 @@ def snapshot(paths: list[Path]) -> dict[str, str]:
     Returns:
         Repository-relative paths mapped to SHA-256 values.
     """
-    return {p.as_posix(): file_hash(p) for p in paths}
+    return {p.as_posix(): artifact_hash(p) for p in paths}
+
+
+def artifact_bytes(path: Path) -> bytes:
+    """Read current bytes or a deliberately removed legacy data blob from Git.
+
+    Args:
+        path: Repository-relative data artifact. Git fallback is restricted to
+            legacy annotation directories removed by the cleanup commit.
+
+    Returns:
+        Exact current bytes, or the last added/modified Git blob for a missing
+        legacy artifact. Callers still check its pre-existing manifest hash.
+
+    Raises:
+        FileNotFoundError: A current input or an unarchived artifact is absent.
+    """
+    if path.is_file():
+        return path.read_bytes()
+    legacy = {
+        "annotation_held_out",
+        "annotation_pilot",
+        "annotation_pilot_multi_v1",
+        "annotation_pilot_multi_v2",
+    }
+    if (
+        path.is_absolute()
+        or path.parts[:2] != ("data", "processed")
+        or len(path.parts) < 4
+        or path.parts[2] not in legacy
+    ):
+        raise FileNotFoundError(path)
+    commit = subprocess.check_output(
+        ["git", "log", "-1", "--diff-filter=AM", "--format=%H", "--", path.as_posix()],
+        text=True,
+    ).strip()
+    if not commit:
+        raise FileNotFoundError(path)
+    return subprocess.check_output(["git", "show", f"{commit}:{path.as_posix()}"])
+
+
+def artifact_hash(path: Path) -> str:
+    """Hash current or archived legacy bytes without restoring deleted files.
+
+    Args:
+        path: Artifact accepted by artifact_bytes; existing files take priority.
+
+    Returns:
+        SHA-256 digest compared against immutable generation-time manifests.
+    """
+    return (
+        file_hash(path)
+        if path.is_file()
+        else hashlib.sha256(artifact_bytes(path)).hexdigest()
+    )
 
 
 def verify_snapshot(hashes: dict[str, str]) -> None:
@@ -121,7 +176,7 @@ def verify_snapshot(hashes: dict[str, str]) -> None:
         hashes: Persisted path-to-SHA-256 mapping.
     """
     for name, expected in hashes.items():
-        if file_hash(Path(name)) != expected:
+        if artifact_hash(Path(name)) != expected:
             raise ValueError(f"frozen file changed: {name}")
 
 
@@ -453,7 +508,9 @@ def freeze(data: Path, pilot: Path) -> None:
         pilot: Successfully completed pilot run directory.
     """
     if (data / "historical_bm25_retirement.manifest.json").exists():
-        raise ValueError("legacy freeze retired; use python -m src.data.freeze_held_out")
+        raise ValueError(
+            "legacy freeze retired; use python -m src.data.freeze_held_out"
+        )
     targets = [data / "qa_for_held_out.jsonl", data / "qa_for_held_out.manifest.json"]
     if any(path.exists() for path in targets):
         raise FileExistsError("held-out outputs already exist; never resample")

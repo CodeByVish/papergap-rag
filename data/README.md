@@ -6,13 +6,321 @@ Raw and processed data and their manifests are tracked on the P3 working branch,
 
 ## Data versions and updates
 
-The current formal BM25/Dense/Hybrid evaluation uses `qa_for_held_out_v2.jsonl`, `annotation_common_v2/` and `annotation_common_v2_markdown/`. The frozen list contains $200$ eligible questions with zero banned overlap. Each algorithm contributes $1000$ hits; $600$ ranking rows yield $1532$ unique question-passage pairs, with $5$–$11$ pairs per question. Group counts are $975$ common, $277$ BM25-only, $254$ Dense-only and $26$ Hybrid-only. Labels are initially null; human annotation remains pending.
+Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. Human labels, agreement and adjudication remain pending. The v2 pool/templates retain their bytes as history.
 
 The scoped exclusion inventory combines P1's $2593$, P2's $106$ and P3's $250$ selection IDs into $2654$ unique banned questions, retaining all qualifying overlapping sources. It does not claim coverage of unrecorded external/P4–P6 use. Isolation is question-level and permits shared papers. Add explicit new usage evidence in a new inventory version before further sampling; held-out content or results must not guide system choices.
 
-Two independent blank English Markdown sets each contain $10$ batches of $20$ questions and all $1532$ pairs. Sources and annotator identity are disclosed. A/B are template slots awaiting assignment; $3064$ independent judgments, pre-adjudication agreement and adjudication remain pending. Use native algorithm ranks with shared final labels for metrics. Pool recall uses judged relevant union members; QASPER passage-reference recall uses mapped `gold_passage_ids` subject to evidence-location and corpus-coverage limits. See [the current annotation and metric protocol](../docs/EVALUATION.md#current-annotation-and-metric-protocol).
+The fourth method was checked on the first $5$ saved development questions ($45$ pairs), then frozen before formal retrieval in `configs/annotation_four.json` and `annotation_pilot_four_v3/frozen_config.json`. BGE reranker base revision `2cfc18c9415c912f9d8155881c133215df768a70`, CPU, batch $8$, longest-first query/passage truncation at $512$ tokens, raw logits and ties by descending RRF then ascending passage ID are fixed. Score the full union of BM25 top-$20$ and Dense top-$20$ before selecting final top-$5$; equal-weight RRF $k=60$ and all original three-method settings remain unchanged. No held-out-driven tuning or resampling occurred.
 
-Obtain the existing files and companion manifests from the GitHub P3 branch. Artifact sections record generation commands and field schemas. Reproduction requires the exact inputs recorded by each manifest; generation refuses existing output paths. Formal retrieval uses `python -m src.data.build_common_pool run --output tmp/tmp_annotation_common_v2`, fixed $365/40$/paper-scoped/top-$5$ settings and the saved question order. Model loading uses ignored `.cache/huggingface/` with `HF_HUB_OFFLINE=1` set before model imports and restored afterward.
+Cleanup commit `685a08c` had removed older pilot/BM25 files while their hashes remained required by existing manifests. Verification now checks current files first and reads only missing legacy annotation blobs from local Git history, checking the original SHA-256 without restoring deleted working files. Use a full Git clone containing that history. The common-pool verifier checks the saved held-out list hash, input hashes, canonical text/order, bans and paper eligibility without drawing questions again; the legacy freeze reconstruction command still expects its old working files.
+
+For a new cache, download these pinned models first with network access. Retain safetensors, configuration and tokenizer files, avoiding duplicate weight formats; subsequent inference loads offline.
+
+```powershell
+python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-small-en-v1.5', revision='5c38ec7c405ec4b44b94cc5a9bb96e735b38267a', cache_dir='.cache/huggingface', allow_patterns=['*.json', '*.safetensors', 'vocab.txt'])"
+python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-reranker-base', revision='2cfc18c9415c912f9d8155881c133215df768a70', cache_dir='.cache/huggingface', allow_patterns=['*.json', '*.safetensors', 'sentencepiece.bpe.model'])"
+```
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+```
+
+For local reproduction use `--output tmp/tmp_annotation_common_v3`, then the corresponding `--pool` and `--output tmp/tmp_annotation_common_v3_markdown`; reproduce the pilot with `--output tmp/tmp_annotation_pilot_four_v3`. Existing directories are refused. Obtain data and manifests from the GitHub `p3` working branch. Models remain only in ignored `.cache/huggingface/`. The v2 sections below describe history; do not use v2 for Step $4$.
+
+## `data/processed/annotation_common_v3/questions.jsonl`
+
+Generation and verification:
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id, paper_id` | `string` | Canonical question and paper identifiers; persisted order. |
+| `question` | `string` | Unmodified query text. |
+| `source_split` | `string` | Official provenance, not the evaluation role. |
+
+## `data/processed/annotation_pilot_four_v3/questions.jsonl`
+
+Field names and types follow the `questions.jsonl` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id, paper_id` | `string` | Same field contract as the corresponding formal artifact above. |
+| `question` | `string` | Same field contract as the corresponding formal artifact above. |
+| `source_split` | `string` | Same field contract as the corresponding formal artifact above. |
+
+## `data/processed/annotation_common_v3/pairs.jsonl`
+
+Generation and verification:
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `record_number` | `integer` | Stable first-encounter numbering within this version only. |
+| `question_id, paper_id, passage_id` | `string` | Unique query/passage identity and paper scope. |
+| `source_split, question, paper_title, passage` | `string` | Source split, original question, real title and complete passage. |
+| `label` | `null` | One initially null final label shared by retrieving methods. |
+| `retrieved_by[]` | `string` | All actual methods in frozen method order. |
+| `retrievals[]` | `object` | One native hit relation for every retrieving method. |
+| `retrievals[].method` | `string` | One of the four frozen method names. |
+| `retrievals[].rank` | `integer` | Native rank 1 through 5. |
+| `retrievals[].score` | `number` | Finite BM25 score, cosine, RRF score or raw BGE logit. |
+| `display_group` | `string` | Common Retrieved Chunks for at least two sources; otherwise the sole method. |
+
+## `data/processed/annotation_pilot_four_v3/pairs.jsonl`
+
+Field names and types follow the `pairs.jsonl` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `record_number` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `question_id, paper_id, passage_id` | `string` | Same field contract as the corresponding formal artifact above. |
+| `source_split, question, paper_title, passage` | `string` | Same field contract as the corresponding formal artifact above. |
+| `label` | `null` | Same field contract as the corresponding formal artifact above. |
+| `retrieved_by[]` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrievals[]` | `object` | Same field contract as the corresponding formal artifact above. |
+| `retrievals[].method` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrievals[].rank` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `retrievals[].score` | `number` | Same field contract as the corresponding formal artifact above. |
+| `display_group` | `string` | Same field contract as the corresponding formal artifact above. |
+
+## `data/processed/annotation_common_v3/rankings.jsonl`
+
+Generation and verification:
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id, method` | `string` | One row per question and method. |
+| `hits[]` | `object` | Exactly five distinct valid same-paper hits in native order. |
+| `hits[].passage_id` | `string` | Canonical passage identifier. |
+| `hits[].record_number` | `integer` | Foreign key to the unique union pair. |
+| `hits[].rank` | `integer` | Original algorithm rank 1 through 5. |
+| `hits[].score` | `number` | Unmodified finite native score. |
+
+## `data/processed/annotation_pilot_four_v3/rankings.jsonl`
+
+Field names and types follow the `rankings.jsonl` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `question_id, method` | `string` | Same field contract as the corresponding formal artifact above. |
+| `hits[]` | `object` | Same field contract as the corresponding formal artifact above. |
+| `hits[].passage_id` | `string` | Same field contract as the corresponding formal artifact above. |
+| `hits[].record_number` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `hits[].rank` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `hits[].score` | `number` | Same field contract as the corresponding formal artifact above. |
+
+## `data/processed/annotation_common_v3/frozen_config.json`
+
+Generation and verification:
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | v0-proposed; team confirmation pending. |
+| `chunk_size_words, chunk_overlap_words, top_k` | `integer` | $365$, $40$ and $5$. |
+| `methods[]` | `string` | BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking. |
+| `scope, candidate_policy, record_order` | `string` | Original-query paper scope; full fused union; stable native first-encounter numbering. |
+| `retrieval.mode` | `string` | hybrid_rerank; all four backends share its normalized configuration. |
+| `retrieval.candidate_k, retrieval.rrf_k` | `integer` | $20$ per source and equal-weight RRF $k=60$. |
+| `retrieval.dense.revision` | `string` | 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a (BGE small English v1.5). |
+| `retrieval.reranker.revision` | `string` | 2cfc18c9415c912f9d8155881c133215df768a70 (BGE reranker base). |
+| `retrieval.dense.device, retrieval.reranker.device` | `string` | cpu for both models. |
+| `retrieval.dense.batch_size, retrieval.reranker.batch_size` | `integer` | $32$ and $8$ respectively. |
+| `retrieval.reranker.max_length` | `integer` | $512$ tokens for the query/passage pair. |
+| `retrieval.dense.cache_folder, retrieval.reranker.cache_folder` | `string` | Resolved ignored .cache/huggingface path. |
+| `retrieval.dense.local_files_only, retrieval.reranker.local_files_only` | `boolean` | true; prepare pinned model files before running. |
+| `execution.HF_HUB_OFFLINE` | `string` | 1 before model imports, restored by CLI finally block. |
+| `execution.persistent_score_cache` | `boolean` | false; fresh model scoring. |
+| `reranker_inference.model_name, reranker_inference.truncation, reranker_inference.score, reranker_inference.tie_break` | `string` | BAAI/bge-reranker-base; longest-first pair truncation; raw float32 logit; descending logit then RRF then ascending passage ID. |
+| `reranker_inference.padding` | `boolean` | true; padding within each inference batch. |
+| `retrievers.<method>` | `object` | Active metadata follows the complete nested retrievers field table in the v2 frozen-config section below. Component flags reflect each backend. |
+| `retrievers.<method>.reranker.revision, .device, .cache_folder, .model_name, .tokenizer_revision, .length_limit, .truncation_observation` | `string` | Fourth-method model/tokenizer revision, device, cache, pair length contract and observation limit; metadata does not claim measured token truncation. |
+| `retrievers.<method>.reranker.batch_size, .max_length` | `integer` | $8$ and $512$ for the active fourth backend. |
+| `retrievers.<method>.reranker.local_files_only, .enabled, .padding, .truncation, .raw_logits` | `boolean` | true for the active fourth backend. |
+| `retrievers.<method>.candidate_k_per_source, .rrf_k, .final_top_k` | `integer` | $20$, $60$, $5$ for both hybrid variants. |
+| `retrievers.<method>.rerank_all_fused_candidates` | `boolean` | true only for the fourth method; no early top-five truncation. |
+
+## `data/processed/annotation_pilot_four_v3/frozen_config.json`
+
+Field names and types follow the `frozen_config.json` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | Same field contract as the corresponding formal artifact above. |
+| `chunk_size_words, chunk_overlap_words, top_k` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `methods[]` | `string` | Same field contract as the corresponding formal artifact above. |
+| `scope, candidate_policy, record_order` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.mode` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.candidate_k, retrieval.rrf_k` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.dense.revision` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.reranker.revision` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.dense.device, retrieval.reranker.device` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.dense.batch_size, retrieval.reranker.batch_size` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.reranker.max_length` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.dense.cache_folder, retrieval.reranker.cache_folder` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrieval.dense.local_files_only, retrieval.reranker.local_files_only` | `boolean` | Same field contract as the corresponding formal artifact above. |
+| `execution.HF_HUB_OFFLINE` | `string` | Same field contract as the corresponding formal artifact above. |
+| `execution.persistent_score_cache` | `boolean` | Same field contract as the corresponding formal artifact above. |
+| `reranker_inference.model_name, reranker_inference.truncation, reranker_inference.score, reranker_inference.tie_break` | `string` | Same field contract as the corresponding formal artifact above. |
+| `reranker_inference.padding` | `boolean` | Same field contract as the corresponding formal artifact above. |
+| `retrievers.<method>` | `object` | Same field contract as the corresponding formal artifact above. |
+| `retrievers.<method>.reranker.revision, .device, .cache_folder, .model_name, .tokenizer_revision, .length_limit, .truncation_observation` | `string` | Same field contract as the corresponding formal artifact above. |
+| `retrievers.<method>.reranker.batch_size, .max_length` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `retrievers.<method>.reranker.local_files_only, .enabled, .padding, .truncation, .raw_logits` | `boolean` | Same field contract as the corresponding formal artifact above. |
+| `retrievers.<method>.candidate_k_per_source, .rrf_k, .final_top_k` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `retrievers.<method>.rerank_all_fused_candidates` | `boolean` | Same field contract as the corresponding formal artifact above. |
+
+## `data/processed/annotation_common_v3/run_inputs.json`
+
+Generation and verification:
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `inputs.<path>` | `string` | Pre-run input SHA-256, including corpus, questions, bans and freezes. |
+| `code.commit, code.python` | `string` | Pre-run Git HEAD and Python version. |
+| `code.working_tree_status[]` | `string` | Exact pre-run short status, including uncommitted changes. |
+| `code.source_sha256.<path>` | `string` | src/scripts source hashes checked again before saving results. |
+| `history.<path>` | `string` | Unchanged v2 pool/templates and retired BM25 hashes; empty for development. |
+
+## `data/processed/annotation_pilot_four_v3/run_inputs.json`
+
+Field names and types follow the `run_inputs.json` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `inputs.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
+| `code.commit, code.python` | `string` | Same field contract as the corresponding formal artifact above. |
+| `code.working_tree_status[]` | `string` | Same field contract as the corresponding formal artifact above. |
+| `code.source_sha256.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
+| `history.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
+
+## `data/processed/annotation_common_v3/manifest.json`
+
+Generation and verification:
+
+```powershell
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version, purpose, reason, usage_boundary` | `string` | Proposed schema, run purpose, rebuild reason and held-out/no-label boundaries. |
+| `pilot` | `boolean` | true only for the development run. |
+| `settings` | `object` | Exact frozen_config.json object, with all nested fields documented above. |
+| `inputs.<path>, outputs.<path>, historical_retained_files.<path>` | `string` | Exact input/output/history SHA-256; current bytes preferred, deleted legacy blobs checked in local Git history. |
+| `code` | `object` | Same nested identity fields as run_inputs.json. |
+| `historical_comparison.rankings_compared, .identical_id_rank_lists, .identical_score_lists` | `integer` | Formal comparison of $600$ original rankings; score equality reported independently; pilot object is empty. |
+| `indexed_passage_count, indexed_paper_count` | `integer` | Complete selected-paper index sizes. |
+| `validation.question_count, .pair_count, .ranking_count, .hits_per_method` | `integer` | Actual questions, unique pairs, native ranking rows and hits per method. |
+| `validation.pair_counts_per_question.<question_id>, validation.group_counts.<group>` | `integer` | Actual unique-pair counts per question and display group. |
+| `validation.pair_count_range[]` | `integer` | Observed minimum/maximum within $5$–$20$. |
+| `runtime.platform, runtime.policy` | `string` | Host and single CPU/index-plus-four-method timing policy, not a latency benchmark. |
+| `runtime.elapsed_seconds` | `number` | Wall-clock seconds for indexing/retrieval. |
+
+## `data/processed/annotation_pilot_four_v3/manifest.json`
+
+Field names and types follow the `manifest.json` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
+
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version, purpose, reason, usage_boundary` | `string` | Same field contract as the corresponding formal artifact above. |
+| `pilot` | `boolean` | Same field contract as the corresponding formal artifact above. |
+| `settings` | `object` | Same field contract as the corresponding formal artifact above. |
+| `inputs.<path>, outputs.<path>, historical_retained_files.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
+| `code` | `object` | Same field contract as the corresponding formal artifact above. |
+| `historical_comparison.rankings_compared, .identical_id_rank_lists, .identical_score_lists` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `indexed_passage_count, indexed_paper_count` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `validation.question_count, .pair_count, .ranking_count, .hits_per_method` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `validation.pair_counts_per_question.<question_id>, validation.group_counts.<group>` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `validation.pair_count_range[]` | `integer` | Same field contract as the corresponding formal artifact above. |
+| `runtime.platform, runtime.policy` | `string` | Same field contract as the corresponding formal artifact above. |
+| `runtime.elapsed_seconds` | `number` | Same field contract as the corresponding formal artifact above. |
+
+## `data/processed/annotation_common_v3_markdown/annotator_A/` / `annotator_B/`
+
+```powershell
+python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `Annotator:` | `text` | Initially blank identity; assign two distinct people in Step 4. |
+| `Question NNNN; Paper:; quoted question` | `text/headings` | Global saved question number, real paper title and original query. |
+| `Common Retrieved Chunks; four method sections` | `headings` | At least two sources in Common record order; exclusives in native rank; empty groups None. |
+| `Passage N; Relevance N; Retrieved by:` | `text/headings` | One occurrence per pair per slot, full quoted passage and all true sources. |
+| `Label:` | `empty text` | Only Label: 0 or Label: 1; helpful partial evidence is relevant; topic overlap alone is insufficient. |
+
+Each slot has $10$ batches of $20$ complete questions. Hide gold, scores, ranks, internal IDs and the other person's labels; generate no HTML or notes field. Preserve pristine templates and returned originals separately; the pristine verifier intentionally rejects filled labels.
+
+## `data/processed/annotation_common_v3_markdown/manifest.json`
+
+Use the export and verification commands in the preceding section.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version, purpose, policy` | `string` | v0-proposed; independent blank source-disclosed views and preserved native-rank metric policy. |
+| `inputs.<path>, outputs.<path>, source_sha256.<path>` | `string` | Pool inputs, Markdown outputs and generation source SHA-256. |
+| `question_count, pair_count_per_annotator` | `integer` | Saved questions and actual unique pairs in each slot. |
+| `slots[]` | `string` | A and B template slots, not assigned people. |
+| `batches[].batch, .question_count, .pair_count` | `integer` | One-based batch number, complete questions and actual pairs. |
 
 ## `data/processed/annotation_common_v2_markdown/annotator_A/` and `annotator_B/`
 

@@ -1,5 +1,7 @@
 # Weekly tracker
 
+2026/10/29: Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. Human labels, agreement and adjudication remain pending. The v2 pool/templates retain their bytes as history. See [data guide](../data/README.md) and [Week 4 report](../weekly-work/week-4/week-4-report-en.md).
+
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
 | Week | Dates | Exit checkpoint | Status |

@@ -1,0 +1,95 @@
+{
+  "batches": [
+    {
+      "batch": 1,
+      "pair_count": 179,
+      "question_count": 20
+    },
+    {
+      "batch": 2,
+      "pair_count": 185,
+      "question_count": 20
+    },
+    {
+      "batch": 3,
+      "pair_count": 187,
+      "question_count": 20
+    },
+    {
+      "batch": 4,
+      "pair_count": 188,
+      "question_count": 20
+    },
+    {
+      "batch": 5,
+      "pair_count": 174,
+      "question_count": 20
+    },
+    {
+      "batch": 6,
+      "pair_count": 187,
+      "question_count": 20
+    },
+    {
+      "batch": 7,
+      "pair_count": 190,
+      "question_count": 20
+    },
+    {
+      "batch": 8,
+      "pair_count": 191,
+      "question_count": 20
+    },
+    {
+      "batch": 9,
+      "pair_count": 177,
+      "question_count": 20
+    },
+    {
+      "batch": 10,
+      "pair_count": 195,
+      "question_count": 20
+    }
+  ],
+  "inputs": {
+    "data/processed/annotation_common_v3/manifest.json": "cfc38c9447ff598c71f7b8ce5ba91dbe5247288aac19c5df4d3d81417118240f",
+    "data/processed/annotation_common_v3/pairs.jsonl": "2915d5b789f3adfc73487636aa26bf74b34a64c6f42c584dceeb4871330f8602",
+    "data/processed/annotation_common_v3/questions.jsonl": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+    "data/processed/annotation_common_v3/rankings.jsonl": "b5c04581f01693503d0a8586e24c38f76b50a54c493207e2e1e1e8ae2e9193f2"
+  },
+  "outputs": {
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_01.md": "e384f6bc81b45e4d7df43b3911bde67ee2988c9c8918e7290a143990855697f4",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_02.md": "eccc3f0c49b571954838e9bc87f77ebcd4b4d605556334d6cebf11e2fe2cac54",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_03.md": "e0e533e0a0ea3ec5d784c576c7c97fcfac0a351488c7397837dd10f722b39049",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_04.md": "df5d353c47c4b97d2ad158eda030048717ad925e39c2b6dac8c7c0867e709714",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_05.md": "e381a9663a06358c5efd1cb977e0801e9398c9085165b45ca4e67f26242111e8",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_06.md": "f34f0b1ff7367a334675eb97380cd9c8d0ebd25c62cc67340f5722899166ca9e",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_07.md": "79da474ae62abf8b6397a9a47718a478ae118bf0c380375f5c4e7c8cc47b59ca",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_08.md": "397f9a25b4b2cbb10da5dd83d96aaa00929b3863c8a7d90b49ad206c30d887dc",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_09.md": "39bcbff81c510c1d670c5c4ceb254c1f283628914d1bb4371085de6bda066748",
+    "data/processed/annotation_common_v3_markdown/annotator_A/batch_10.md": "8ab5bd280674fb0dbf973555a2cfecdd2a11c3dabf6b882ecf40475a9c9c1eab",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_01.md": "e384f6bc81b45e4d7df43b3911bde67ee2988c9c8918e7290a143990855697f4",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_02.md": "eccc3f0c49b571954838e9bc87f77ebcd4b4d605556334d6cebf11e2fe2cac54",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_03.md": "e0e533e0a0ea3ec5d784c576c7c97fcfac0a351488c7397837dd10f722b39049",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_04.md": "df5d353c47c4b97d2ad158eda030048717ad925e39c2b6dac8c7c0867e709714",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_05.md": "e381a9663a06358c5efd1cb977e0801e9398c9085165b45ca4e67f26242111e8",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_06.md": "f34f0b1ff7367a334675eb97380cd9c8d0ebd25c62cc67340f5722899166ca9e",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_07.md": "79da474ae62abf8b6397a9a47718a478ae118bf0c380375f5c4e7c8cc47b59ca",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_08.md": "397f9a25b4b2cbb10da5dd83d96aaa00929b3863c8a7d90b49ad206c30d887dc",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_09.md": "39bcbff81c510c1d670c5c4ceb254c1f283628914d1bb4371085de6bda066748",
+    "data/processed/annotation_common_v3_markdown/annotator_B/batch_10.md": "8ab5bd280674fb0dbf973555a2cfecdd2a11c3dabf6b882ecf40475a9c9c1eab"
+  },
+  "pair_count_per_annotator": 1853,
+  "policy": "two independent blank copies; assign distinct people in Step 4; no gold, scores, native ranks or internal IDs in views; use saved rankings for metrics",
+  "purpose": "blank source-disclosed held-out annotation views; human judgments pending",
+  "question_count": 200,
+  "schema_version": "v0-proposed",
+  "slots": [
+    "A",
+    "B"
+  ],
+  "source_sha256": {
+    "src/data/build_multi_retriever_pilot.py": "07db8e5b30919c4d3f9769fee4b42d0001e6c6574589a55d463923428656d985",
+    "src/data/export_common_annotations.py": "ba8bb7a05cb02e9d1fd7bfaf3223c37373409cf9f6d24299a399dfe7544bc82b"
+  }
+}

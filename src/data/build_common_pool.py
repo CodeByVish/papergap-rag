@@ -19,6 +19,7 @@ from pathlib import Path
 from src.data.build_annotation_pool import (
     DATA,
     SETTINGS,
+    artifact_bytes,
     code_identity,
     load_corpus,
     read_jsonl,
@@ -33,7 +34,7 @@ from src.data.build_multi_retriever_pilot import (
     build_retrievers,
     pool_rankings,
 )
-from src.data.freeze_held_out import OUTPUT, RETIREMENT, freeze
+from src.data.freeze_held_out import OUTPUT, RETIREMENT
 from src.evaluation.chunk_size_retrieval import normalize_retrieval, retriever_metadata
 
 DEFAULT_OUTPUT = DATA / "annotation_common_v2"
@@ -49,11 +50,15 @@ def prepare() -> tuple[list[dict], list[dict], dict, dict]:
         input hashes. The freeze reconstruction checks eligibility only; its
         reconstructed draw is never used as the retrieval input.
     """
-    freeze(verify_only=True)
-    pilot_manifest = json.loads((PILOT / "manifest.json").read_text(encoding="utf-8"))
+    frozen = json.loads(
+        OUTPUT.with_suffix(".manifest.json").read_text(encoding="utf-8")
+    )
+    verify_snapshot(frozen["inputs"])
+    verify_snapshot({OUTPUT.as_posix(): frozen["output"]["sha256"]})
+    pilot_manifest = json.loads(artifact_bytes(PILOT / "manifest.json"))
     verify_snapshot(pilot_manifest["outputs"])
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
-    if config != json.loads((PILOT / "frozen_config.json").read_text(encoding="utf-8")):
+    if config != json.loads(artifact_bytes(PILOT / "frozen_config.json")):
         raise ValueError("configuration differs from the development freeze")
     if any(config[key] != SETTINGS[key] for key in SETTINGS):
         raise ValueError("requires 365/40 and top-five")
@@ -61,6 +66,11 @@ def prepare() -> tuple[list[dict], list[dict], dict, dict]:
     if retrieval["mode"] != "hybrid":
         raise ValueError("requires the frozen hybrid configuration without reranking")
     questions = read_jsonl(OUTPUT)
+    canonical = unique_rows(read_jsonl(DATA / "qa.jsonl"), "question_id")
+    if [q["question_id"] for q in questions] != frozen["question_ids"] or any(
+        any(q[k] != canonical[q["question_id"]][k] for k in q) for q in questions
+    ):
+        raise ValueError("saved question order or canonical question fields changed")
     ids = set(unique_rows(questions, "question_id"))
     banned = unique_rows(
         read_jsonl(DATA / "qa_banned_for_held_out.jsonl"), "question_id"
@@ -69,6 +79,8 @@ def prepare() -> tuple[list[dict], list[dict], dict, dict]:
         raise ValueError("requires exactly 200 unique non-banned questions")
     papers = {q["paper_id"] for q in questions}
     corpus = [p for p in load_corpus(DATA) if p["paper_id"] in papers]
+    if any(Counter(p["paper_id"] for p in corpus)[paper] < 5 for paper in papers):
+        raise ValueError("each frozen paper requires at least five passages")
     settings = {
         "schema_version": "v0-proposed",
         **SETTINGS,
@@ -111,7 +123,11 @@ def prepare() -> tuple[list[dict], list[dict], dict, dict]:
 
 
 def validate_pool(
-    questions: list[dict], corpus: list[dict], pairs: list[dict], rankings: list[dict]
+    questions: list[dict],
+    corpus: list[dict],
+    pairs: list[dict],
+    rankings: list[dict],
+    methods: tuple[str, ...] = METHODS,
 ) -> dict:
     """Reconstruct all pairs from persisted rankings and check exact equality.
 
@@ -120,6 +136,7 @@ def validate_pool(
         corpus: Complete same-paper passages with canonical text and titles.
         pairs: Persisted union including labels and source ranks/scores.
         rankings: One complete top-five list per question and method.
+        methods: Ordered algorithm contract, retaining historical defaults.
 
     Returns:
         Counts of unique pairs, per-question sizes and display groups.
@@ -129,7 +146,7 @@ def validate_pool(
             with the canonical pair mapping, text, ranks, scores or blank labels.
     """
     saved = {(r["question_id"], r["method"]): r["hits"] for r in rankings}
-    expected = {(q["question_id"], m) for q in questions for m in METHODS}
+    expected = {(q["question_id"], m) for q in questions for m in methods}
     if len(saved) != len(rankings) or set(saved) != expected:
         raise ValueError("missing, duplicate or unknown method/question ranking")
     by_query = {(q["question"], q["paper_id"]): q["question_id"] for q in questions}
@@ -165,15 +182,15 @@ def validate_pool(
         return retrieve
 
     rebuilt, native = pool_rankings(
-        questions, corpus, {m: callback(m) for m in METHODS}
+        questions, corpus, {m: callback(m) for m in methods}, methods
     )
     if rebuilt != pairs or native != rankings:
         raise ValueError("pairs/rankings differ from canonical union or native ranks")
     counts = Counter(p["question_id"] for p in pairs)
     if set(counts) != {q["question_id"] for q in questions} or any(
-        not 5 <= n <= 15 for n in counts.values()
+        not 5 <= n <= 5 * len(methods) for n in counts.values()
     ):
-        raise ValueError("each question requires 5..15 unique pairs")
+        raise ValueError("pair count outside the algorithm union bounds")
     return {
         "question_count": len(questions),
         "pair_count": len(pairs),
@@ -284,7 +301,8 @@ def main() -> None:
     Only counts are printed; no held-out content or relevance is displayed.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("run", "verify"))
+    parser.add_argument("action", choices=("run", "verify", "pilot"))
+    parser.add_argument("--four", action="store_true")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
     # Match the development CLI: optional processor probes omit local_files_only.
@@ -292,7 +310,14 @@ def main() -> None:
     previous_offline = os.environ.get("HF_HUB_OFFLINE")
     os.environ["HF_HUB_OFFLINE"] = "1"
     try:
-        result = run(args.output) if args.action == "run" else verify(args.output)
+        if args.four:
+            from src.data.build_four_method_pool import dispatch
+
+            result = dispatch(args.action, args.output)
+        elif args.action == "pilot":
+            parser.error("pilot requires --four")
+        else:
+            result = run(args.output) if args.action == "run" else verify(args.output)
     finally:
         if previous_offline is None:
             os.environ.pop("HF_HUB_OFFLINE", None)

@@ -140,10 +140,11 @@ The final RRF order is `B, A, D, C`. With `top_k=2` and no reranking, the output
 
 | Item | Current setting or behavior |
 | --- | --- |
-| Three-method configuration | `configs/annotation_pilot.json`: `mode="hybrid"`, `candidate_k=20`, `rrf_k=60`, `top_k=5`. |
+| Retained three-method configuration | `configs/annotation_pilot.json`: `mode="hybrid"`, `candidate_k=20`, `rrf_k=60`, `top_k=5`. |
 | Chunking | About $365$ words with $40$ words of overlap; project settings, not inherent Hybrid limits. |
 | Dense model revision | `BAAI/bge-small-en-v1.5`, revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`. |
-| Three-method reranking | `build_multi_retriever_pilot.py` supplies no scorer and does not enable BGE reranking. |
+| Three-method reranking | In three-method mode, `build_multi_retriever_pilot.py` supplies no scorer and does not enable BGE reranking. |
+| Formal four-method evaluation | `configs/annotation_four.json` freezes the added BGE reranker; `python -m src.data.build_common_pool run --four` reruns all methods into the current verified `annotation_common_v3/` pool. Full settings, fields and reproduction: [data guide](../../data/README.md). |
 | Optional experiment modes | `hybrid` uses RRF alone; `hybrid_rerank` applies BGE reranking to the entire fused candidate union. |
 | Model lengths | Dense defaults to $512$ tokens per input text; BGE reranking defaults to $512$ tokens per question/passage pair. Words and tokens are different units. |
 

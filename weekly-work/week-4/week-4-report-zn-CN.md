@@ -4,65 +4,29 @@
 
 截至 2026/10/29
 
-## Question-passage held-out 标注文件准备
+## 四算法 held-out 共同池及标注准备：第 $3$ 步
 
-整理已用于开发的禁用题，排除后独立冻结 $200$ 道 held-out 问题。按开发阶段冻结的 $365/40$ 分块配置，分别用 BM25、Dense、Hybrid 在问题所属论文内检索 top-$5$，合并去重得到 $1532$ 条 question-passage 配对，再导出两套独立的英文 Markdown 标注模板。当前标签全部为空，人员分配和人工判断尚未开展。
+第 $4$ 周第 $3$ 步已完成。`data/processed/annotation_common_v3/` 保存 BM25、Dense、Hybrid RRF、Hybrid RRF followed by BGE reranking 在原冻结 $200$ 题上的全新检索：每算法 $1000$ 次命中，$800$ 行排名，共 $1853$ 条唯一配对，每题 $6$–$14$ 条。原三算法的 $600$ 组 passage ID 及排名与 v2 完全一致，分数也全部一致。`data/processed/annotation_common_v3_markdown/` 保存两套独立空白英文标注文件，每套 $10$ 批、每批 $20$ 道完整问题，各批配对数为 $179,185,187,188,174,187,190,191,177,195$。第 $4$ 步仅使用此核验通过的四算法版本，安排两位不同人员独立完成 $3706$ 次初始判断；人工标签、一致率及裁决待执行。v2 共同池和模板字节不变，作为历史版本保留。
 
-### 涉及代码
+第四算法先在前 $5$ 道已保存开发题上验证，得到 $45$ 条配对，再在正式运行前通过 `configs/annotation_four.json` 和 `annotation_pilot_four_v3/frozen_config.json` 冻结。BGE reranker base revision 为 `2cfc18c9415c912f9d8155881c133215df768a70`，CPU、批大小 $8$、问题与 passage 对按 longest-first 截断至 $512$ token，使用原始 logit，同分按 RRF 降序、passage ID 升序。对 BM25 top-$20$ 和 Dense top-$20$ 的完整融合并集评分后取最终 top-$5$；等权 RRF $k=60$ 及原三算法配置不变。未使用 held-out 调参或重新抽题。
 
-| 代码路径 | 工作内容 |
-| --- | --- |
-| `src/data/build_held_out_exclusions.py` | 汇总 P1/P2 指定题库及已保存的 P3 开发用题，生成禁用清单。 |
-| `src/data/freeze_held_out.py` | 排除禁用题、冻结新版题单，保留并停用旧 BM25 产物。 |
-| `src/data/build_common_pool.py` | 按冻结配置执行三路检索，保存原始排名并合并唯一配对。 |
-| `src/data/build_multi_retriever_pilot.py` | 提供三路检索、配对合并和 Markdown 分批渲染的共用逻辑。 |
-| `src/data/export_common_annotations.py` | 从已保存配对导出 A/B 两套空白模板，核验内容、分组、编号及文件哈希。 |
-| `tests/data/test_held_out_exclusions.py`、`test_freeze_held_out.py`、`test_common_pool.py`、`test_multi_retriever_pilot.py`、`test_common_annotation_export.py` | 覆盖禁用题、抽样冻结、配对去重、排名关联及模板导出核验。 |
+实现复用 `build_common_pool.py`、`build_multi_retriever_pilot.py`、`export_common_annotations.py`，新增 `build_four_method_pool.py` 负责第四算法的冻结和历史排名对比；共享检索接口不变。字段、复现命令和完整模型配置见[数据指南](../../data/README_zh-CN.md)，标注及指标规则见[评估协议](../../docs/EVALUATION.md#current-annotation-and-metric-protocol)。Common 为至少两算法命中，独有分节按原始排名；公开来源，隐藏 gold、分数和内部 ID。使用原始算法排名关联共用最终标签，不按 Markdown 顺序计算指标。池外 passage 未判断，池内 recall 不代表完整论文 recall。
 
-### 涉及文件
+清理提交 `685a08c` 删除了旧 pilot/BM25 文件，但现有 manifest 仍要求其哈希。核验现优先读取当前文件，仅对缺失的历史标注文件读取本地 Git blob，核对原 SHA-256，不恢复已删除的工作文件；复现须保留完整 Git 历史。共同池核验器直接检查冻结题单及输入哈希、原文与顺序、禁用交集和论文资格，不重新抽题；旧 freeze 重建命令仍需要旧工作文件。
 
-以下路径均相对于仓库根目录；前三项配置位于 `configs/`，其余数据产物位于 `data/processed/`。
+```powershell
+python -m src.data.build_common_pool pilot --four
+python -m src.data.build_common_pool run --four
+python -m src.data.build_common_pool verify --four
+python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
+```
 
-| 文件或目录 | 用途 |
-| --- | --- |
-| `configs/held_out_exclusions.json`、`configs/held_out_sampling_v2.json`、`configs/annotation_pilot.json` | 禁用来源、抽样规则及开发阶段冻结的检索配置。 |
-| `data/processed/qa_banned_for_held_out.jsonl`、`qa_banned_for_held_out.manifest.json` | 禁用题清单及来源记录。 |
-| `data/processed/qa_for_held_out_v2.jsonl`、`qa_for_held_out_v2.manifest.json` | 当前正式使用的冻结题单及抽样记录。 |
-| `data/processed/passages_all_paper_text.jsonl`、`papers.jsonl` | 检索正文及论文标题来源。 |
-| `data/processed/annotation_common_v2/` | 保存题单、唯一配对、各算法原始排名、冻结配置、运行输入和 manifest。 |
-| `data/processed/annotation_common_v2_markdown/annotator_A/batch_01.md` 至 `batch_10.md`，以及 `annotator_B/` 下的同名文件 | 队友需要评审的正式标注模板；A/B 内容相同，供不同人员独立填写。 |
-| `data/processed/annotation_common_v2_markdown/manifest.json` | 模板来源、批次数量及文件哈希记录。 |
-| `data/processed/historical_bm25_retirement.manifest.json` | 旧 BM25 文件的停用与保留记录。 |
+运行主机：`Windows-10-10.0.26200-SP0`，处理器标识 `Intel64 Family 6 Model 154 Stepping 3, GenuineIntel`，Python `3.11.16`。单次 CPU 建索引及四算法检索共 $2128.66$ 秒，不是延迟基准。依赖版本、输入与历史哈希、运行前代码 commit 和源码哈希均保存在 manifest。
 
-### 每份 Markdown 的固定模板
+已核对 `Instruction.pdf` 第 $4$ 页 Question $4$：至少 $1000$ 条人工标注 records、至少 $80\%$ 一致率，推荐三人并允许两人。第 $3$ 步只完成待标注产物，尚不满足人工标注要求。未提交或推送。
 
-每套共 $10$ 份 `.md`，每份包含 $20$ 道问题；每题有 $5$–$11$ 个去重 passage，因此各批配对数不同。所有文件使用以下结构：
-
-| 层级 | 固定内容 |
-| --- | --- |
-| 文件头 | `# Passage relevance annotation`、空白 `Annotator:`、英文判断说明：能帮助回答问题（含部分有效证据）记为 `1`，否则记为 `0`；仅主题相近不足以判相关。 |
-| 问题 | `## Question 0001` 形式的全局问题编号，随后是 `Paper:` 论文标题和引用格式的问题原文。 |
-| 分组 | 依次为 `### Common Retrieved Chunks`、`### BM25`、`### Dense`、`### Hybrid`。Common 收录至少两种算法命中的配对，后三组仅收录各算法独有配对；空组显示 `None`。 |
-| Passage | `#### Passage <编号>`、`Retrieved by:` 算法来源及引用格式的完整 passage 正文。Common 按稳定记录编号排列，独有组按对应算法原始排名排列。 |
-| 判断栏 | `#### Relevance <同一编号>` 和空白 `Label:`；填写 `Label: 0` 或 `Label: 1`。 |
-
-填写文件头的标注者姓名或约定标识后，逐条判断相关性，保留正文及编号。模板公开算法来源，不展示 gold 证据、检索分数、原始排名数值或内部 ID；同一配对仅出现一次，并用稳定编号关联回结构化配对文件。
-
-## 当前重建状态：第 $2.5$–$2.8$ 步
-
-独立的 `data/processed/qa_for_held_out_v2.jsonl` 冻结 $200$ 题，与 $2654$ 道禁用题无交集。全量 gold 映射的 $3329$ 题排除 $1884$ 道禁用题后，得到 $1445$ 道合格候选。抽样前固定种子 $2026102805$、ID 升序及 Python `Random(seed).sample` 规则。实际抽中 validation $78$ 题、test $122$ 题，覆盖 $174$ 篇论文，不设 split 配额或筛选。采用问题层面隔离，允许共享论文。接收范围为 P1/P2 负责人指定题库及已保存的 P3 开发用途；纯功能检查、原始导出、gold 映射及正常冻结评估不自动禁用。不声称覆盖未记录的外部/P4–P6 用题；后续明确新增开发用途证据须补充清单并复核资格。
-
-原 BM25 题单及标注产物已停用，全部 $25$ 个文件和哈希由 `historical_bm25_retirement.manifest.json` 原位保留。停用不等于全部旧题受污染：$95$ 道旧题因其他来源禁用，$13$ 道合格旧题随机再次抽中。不复用旧配对、排名、分数、标签或编号。下方旧 BM25 章节仅描述历史产物与命令，不是当前交付；其中旧任务编号以当前 Week 4 清单为准。
-
-BM25、Dense、Hybrid 已按开发阶段冻结的 $365/40$/paper-scoped/top-$5$ 配置分别重新检索，保存到 `data/processed/annotation_common_v2/`。每算法 $1000$ 次命中，$600$ 行排名合并为 $1532$ 条唯一配对，每题 $5$–$11$ 条；Common $975$ 条、BM25 独有 $277$ 条、Dense 独有 $254$ 条、Hybrid 独有 $26$ 条。数量来自实际并集去重，不固定为 $1000$ 条；设计范围为每题 $5$–$15$ 条。全部标签为空；新版正式 Markdown 已导出至下方独立目录，本次投影不生成 gold 关联核验文件。双语数据指南已说明现有六项产物、嵌套字段、冻结模型及融合配置、GitHub P3 获取方式和本地复现。
-
-第 $2.7$ 步同步双语数据指南与报告、评估协议、需求文档、执行计划、项目概览、共享周追踪及本地交接和清单。再次执行只读 `python -m src.data.build_common_pool verify` 通过：$200$ 题、$1532$ 条配对、$600$ 行排名、每算法 $1000$ 次命中，并核验匹配输入及全部保留的历史哈希。本次文档任务未重跑检索、重新抽样或修改数据，未提交或推送。
-
-第 $2.8$ 步已完成：`data/processed/annotation_common_v2_markdown/` 保存两套独立空白英文 Markdown，每套 $10$ 批，每批 $20$ 题，覆盖全部 $1532$ 条唯一配对。来源、分组、独有结果原始排名顺序、稳定编号、标题、问题和正文均与 JSONL 一致。每套各批配对数为 $156,158,156,155,146,152,151,152,144,162$。使用 `python -m src.data.export_common_annotations verify` 只读核验。A/B 仅为模板槽位，尚未分配实际人员；第 $2.9$ 步的分配、$3064$ 次独立判断、裁决前一致率及裁决待执行。未重新检索，冻结共同池和全部历史文件字节未变。
-
-第 $2.9$ 步待执行：每条唯一配对分配两位不同标注者独立判断，共需 $2\times1532=3064$ 次初始判断。保留各自原件和原始标签，检查完整性及合法性，先算裁决前一致率，再保留独立的最终裁决标签。`Instruction.pdf` 第 $4$ 页 Question $4$ 要求至少 $1000$ 条人工标注 records、至少 $80\%$ 一致率，推荐三位标注者并允许两位；仅建池尚未满足要求。各算法按原始排名关联共同最终标签计算指标，不按 Markdown 顺序计算。池内 Recall@K 仅覆盖并集中已判断相关配对；QASPER evidence-reference recall 单独使用映射的 `gold_passage_ids`，受映射及覆盖限制。池外 passage 仍未判断。禁止使用 held-out 内容或结果调参；未来生成器和 agent 配置仍须单独冻结。见[评估协议](../../docs/EVALUATION.md#current-annotation-and-metric-protocol)。
-
-第 $2.8$ 步核验：$26$ 项定向测试和 `tests/` 下全部 $570$ 项测试通过；字符、语法、Ruff 和 diff 检查通过。只读导出核验覆盖两套模板、冻结输入及保留的历史文件，最终复现的 Markdown 字节完全一致。双语数据指南已记录生成与核验命令及全部新增产物字段。
+核验：`tests/` 下全部 $577$ 项测试通过。四算法共同池和 Markdown 核验入口均通过，覆盖原始排名对比、冻结输入、配对映射、空标签展示、每套完整覆盖和历史哈希。当前源码哈希仍与正式运行一致。
 
 ## 历史完成记录：第 $2.4.2$ 步
 
