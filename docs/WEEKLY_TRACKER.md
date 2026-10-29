@@ -158,3 +158,15 @@ from merging implementation. The verified 100-question handoff is uploaded
 to the team Drive folder (link in P2_BATCH_HANDOFF.md). Report text now reflects
 P4's implemented LLM critic interface and includes reproducible historical
 100-question timing summaries, explicitly not final quality results.
+
+
+## P6 Option C UI port — 29 October 2026
+
+On `P6/UI-port-integration`, the Streamlit entry point now calls P5's HTTP API,
+with local run/workspace isolation, validation/citation displays and timing export.
+Clean UI verification: 42 passed, 1 explicitly skipped actual-P5-service check;
+adapter/generation/Qwen regression: 34 passed. See
+[completion evidence](P6/UI_PORT_COMPLETION_SUMMARY.md) and
+[P5 UI handoff](P6/P6_UI_handoff.md). Actual P5 mock/live integration is pending
+its formal contract, service and input artifacts; no team freeze or real E2E
+completion is implied.
