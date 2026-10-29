@@ -1,206 +1,188 @@
-"""Launch from the repository root: python -m streamlit run src/ui/app.py."""
-
-import time
-from urllib.parse import urlparse
-
+"""P5 Option C UI. Run from the repository root with Streamlit."""
+import os
+from time import perf_counter
 import streamlit as st
-from streamlit.errors import StreamlitSecretNotFoundError
+from src.ui.api_client import ApiConfig, ApiError, P5ApiClient
+from src.ui.view_models import parse_answer_record, classify_answer, citation_ids, build_evidence_cards
+from src.ui.record_loader import load_records, record_label
+from src.ui.conversation_state import new_session, create_conversation, begin_run, finish_run, attach_evidence, clear_conversation, export_runs
 
-from src.generation.llm_client import generate
-from src.generation.prompting import build_messages, citation_warnings
-from src.ui.services import get_retriever, missing_artifacts, rag_config
-
-st.set_page_config(page_title="PaperRAG", page_icon="📄", layout="wide")
-
-
-def render_result(result, diagnostics):
-    st.chat_message("user").write(result["question"])
-    if result.get("error"):
-        st.error(result["error"])
-    if result.get("answer"):
-        st.chat_message("assistant").markdown(result["answer"])
-        for warning in (citation_warnings(result["answer"], result["passages"]) if result.get("use_rag", True) else []):
-            st.warning(warning)
-        if result.get("use_rag", True):
-            st.caption("Citation labels are checked; support for each claim still needs review.")
-        else:
-            st.caption("Direct chat · no paper retrieval or evidence citations")
-    passages = result.get("passages", [])
-    st.caption(
-        f"{result['provider']} · {result['model']} · {len(passages)} passages · {result['seconds']:.2f}s"
-    )
-    if passages:
-        with st.expander("Sources and evidence", expanded=True):
-            for row in passages:
-                st.subheader(
-                    f"[{row['evidence_id']}] {row.get('title', row['paper_id'])}"
-                )
-                section = " › ".join(row.get("section_path", [])) or "Unknown section"
-                st.caption(
-                    f"{section} · page {row.get('page_start', 'unknown')} · {row['paper_id']}"
-                )
-                st.text(row["text"])
-                url = row.get("source_url", "")
-                if urlparse(url).scheme in {"http", "https"} and urlparse(url).netloc:
-                    st.link_button("Open source paper", url)
-                st.divider()
-    if diagnostics:
-        with st.expander("Diagnostics"):
-            st.json(
-                {
-                    "provider": result["provider"],
-                    "model": result["model"],
-                    "seconds": round(result["seconds"], 3),
-                    "chunk_ids": [p["chunk_id"] for p in passages],
-                    "rrf_scores": [p.get("rrf_score") for p in passages],
-                }
-            )
+st.set_page_config(page_title='PaperGap', page_icon='📄', layout='wide')
 
 
-def provider_configured(config):
-    return isinstance(config, dict) and all(
-        isinstance(config.get(k), str)
-        and config[k].strip()
-        and not config[k].strip().startswith(("replace-", "configure-"))
-        for k in ("api_key", "base_url", "model")
-    )
+def refresh(client):
+    st.session_state.health = {}
+    st.session_state.papers = []
+    st.session_state.connection_error = None
+    try:
+        st.session_state.health = client.health()
+        if st.session_state.health['retrieval']:
+            st.session_state.papers = client.papers()
+    except ApiError as exc:
+        st.session_state.connection_error = str(exc)
+
+
+def submit_request(client, state, cid, submission, health, record=None, retry_of=None):
+    run = begin_run(state, cid, submission, health, retry_of)
+    rid = run['client_run_id']
+    start = perf_counter()
+    try:
+        payload = client.answer_record(record) if record is not None else client.answer_question(submission['question'], submission['paper_id'])
+        elapsed = (perf_counter() - start) * 1000
+        parsed = parse_answer_record(payload)
+        finish_run(state, cid, rid, 'completed', answer=parsed, elapsed=elapsed)
+    except ApiError as exc:
+        finish_run(state, cid, rid, exc.kind, error=str(exc), elapsed=(perf_counter() - start) * 1000)
+        return
+    except ValueError:
+        finish_run(state, cid, rid, 'failed', error='Answer response does not match the P5 contract.', elapsed=(perf_counter() - start) * 1000)
+        return
+    except Exception:
+        finish_run(state, cid, rid, 'outcome_unknown', error='Unexpected client failure; service outcome is unknown. Refresh service before retrying manually.', elapsed=(perf_counter() - start) * 1000)
+        return
+    ids = citation_ids(parsed)
+    cards = dict.fromkeys(ids)
+    if health.get('passage_text') and ids:
+        start = perf_counter()
+        try:
+            cards = build_evidence_cards(ids, client.passages(ids))
+            attach_evidence(state, cid, rid, cards, (perf_counter() - start) * 1000)
+        except ApiError as exc:
+            attach_evidence(state, cid, rid, cards, (perf_counter() - start) * 1000, str(exc))
+    else:
+        attach_evidence(state, cid, rid, cards)
+
+
+def render_answer(run):
+    submission = run['submission']
+    st.subheader(submission.get('question') or submission.get('record_label', 'Exported state'))
+    st.caption(f"Paper: {submission.get('paper_id') or 'record-owned'} · Run: {run['client_run_id']} · {run['outcome']}")
+    if run['error']:
+        st.error(run['error'])
+    record = run['answer_record']
+    if not record:
+        return
+    status = classify_answer(record)
+    if status == 'Answered':
+        st.success(status)
+    else:
+        st.warning(status)
+    st.markdown(record['result']['answer'])
+    if record['validation']['downgraded']:
+        st.warning('Validator reason: ' + str(record['validation'].get('downgrade_reason') or 'Unavailable'))
+        with st.expander('Rejected model answer — not the accepted answer'):
+            raw = record['validation'].get('raw_result')
+            st.text(raw.get('answer', 'Unavailable') if isinstance(raw, dict) else 'Unavailable')
+    st.caption(f"Request ID: {record['request_id']} · Backend run ID unavailable · Answer HTTP: {run['answer_http_elapsed_ms']:.0f} ms · Retrieval rounds: {record['result']['retrieval_rounds']}")
+    if run.get('evidence_error'):
+        st.info('Citation lookup unavailable; answer retained. ' + run['evidence_error'])
+    for pid, row in run['evidence'].items():
+        with st.expander('Citation: ' + pid):
+            st.code(pid, language=None)
+            if row:
+                st.text(str(row.get('title', '')))
+                st.caption(f"{row.get('paper_id', '')} · {row.get('section', '')}")
+                st.text(row['text'])
+            else:
+                st.info('Passage text unavailable')
+    with st.expander('Validation, provenance, generation and supplied agent trace'):
+        st.json({k: record[k] for k in ('validation', 'generation', 'agent') if k in record})
+        st.json(record['result']['provenance'])
+    st.divider()
 
 
 def main():
-    st.title("📄 PaperRAG")
-    st.caption("Ask about NLP papers. Follow every answer back to the evidence.")
+    st.title('PaperGap — evidence-grounded QA')
+    st.caption('Each question is independent. Workspace history is not sent to the model. Session history may be lost on refresh or reconnect.')
     try:
-        secrets = st.secrets.to_dict()
-    except StreamlitSecretNotFoundError:
-        secrets = {}
-    except Exception:  # noqa: BLE001 - redact configuration details at the UI boundary
-        st.error("Could not read .streamlit/secrets.toml. Check its TOML syntax.")
+        client = P5ApiClient(ApiConfig.from_env())
+    except ValueError as exc:
+        st.error(str(exc))
         return
-
+    if 'workspace_state' not in st.session_state:
+        st.session_state.workspace_state = new_session()
+    state = st.session_state.workspace_state
+    if 'health' not in st.session_state:
+        refresh(client)
     with st.sidebar:
-        st.header("Settings")
-        providers = secrets.get("llm", {})
-        choices = ["qwen", "grok", "groq"]
-        default = next(
-            (i for i, name in enumerate(choices)
-             if isinstance(providers, dict) and provider_configured(providers.get(name))),
-            0,
-        )
-        provider = st.selectbox("LLM provider", choices, index=default)
-        config = providers.get(provider, {}) if isinstance(providers, dict) else {}
-        if not isinstance(config, dict):
-            config = {}
-        st.caption(f"Model: {config.get('model', 'Not configured')}")
-        top_k = st.slider("Evidence passages", 3, 10, 5)
-        diagnostics = st.toggle("Show diagnostics", value=False)
-        if st.button("Clear answer", use_container_width=True):
-            st.session_state.pop("result", None)
-        st.caption(
-            "Only the latest answer is kept in this browser session. Questions are independent."
-        )
-
-    configured = provider_configured(config)
-    try:
-        cfg = rag_config(secrets.get("rag", {}))
-        missing = missing_artifacts(cfg)
-    except (TypeError, ValueError):
-        st.error("Invalid [rag] configuration. Use the supplied secrets example.")
-        return
-    mode = st.sidebar.radio(
-        "Answer mode", ["Paper RAG", "Direct chat"], index=1 if missing else 0
-    )
-    use_rag = mode == "Paper RAG"
-    if not use_rag:
-        st.info("Direct chat: answers use the model's knowledge, without paper retrieval or evidence citations.")
-    ready = configured and (not use_rag or not missing)
-    if not ready:
-        st.info("Finish setup to start asking questions.")
-        with st.expander("Setup checklist", expanded=True):
-            if not configured:
-                st.write(
-                    f"Configure the API key, endpoint and model for {provider} in .streamlit/secrets.toml."
-                )
-            if use_rag and missing:
-                st.write("Build the indexes offline. Missing artifacts:")
-                st.code("\n".join(missing), language=None)
-            st.write("See src/ui/README.md for setup and index-build commands.")
-    elif "result" not in st.session_state:
-        st.info(
-            "Try: What problem does this paper address, and which experiments support its claims?"
-        )
-
-    question = st.chat_input(
-        "Ask about methods, experiments, findings, or limitations"
-    )
-    if question and question.strip():
-        started = time.perf_counter()
-        result = {
-            "question": question.strip(),
-            "provider": provider,
-            "model": config.get("model", "Not configured"),
-            "passages": [],
-        }
-        if not ready:
-            result["error"] = (
-                f"Configure the API key, endpoint and model for {provider} in .streamlit/secrets.toml."
-                if not configured else
-                "Paper RAG requires the missing artifacts listed above. Select Direct chat to ask without retrieval."
-            )
-        elif len(question) > 4000:
-            result["error"] = (
-                "Please shorten your question to 4,000 characters or fewer."
-            )
-        else:
+        st.header('Connection')
+        if st.button('Refresh service'):
+            refresh(client)
+        health = st.session_state.health
+        if st.session_state.connection_error:
+            st.error(st.session_state.connection_error)
+        st.caption(f"Retrieval: {health.get('retrieval', 'unknown')} · Passage text: {health.get('passage_text', 'unknown')}")
+        st.caption('Service mode: ' + str(health.get('mode', 'unknown')))
+        mode = st.radio('New workspace mode', ['Free question', 'Demo record'])
+        papers = st.session_state.papers
+        paper = st.selectbox('Paper for new workspace', papers, format_func=lambda p: p.get('title') or p['paper_id']) if mode == 'Free question' and papers else None
+        if mode == 'Free question' and not health.get('retrieval'):
+            st.info('Free input disabled: service retrieval is unavailable.')
+        if st.button('New workspace', disabled=bool(state['pending_client_run_id']) or (mode == 'Free question' and not paper)):
             try:
-                if use_rag:
-                    with st.spinner("Retrieving evidence…"):
-                        passages = get_retriever(cfg).retrieve(question.strip(), top_k=top_k)
-                else:
-                    passages = []
-                if use_rag and not passages:
-                    result["error"] = "No evidence was retrieved. Try another question or check your indexes."
-                else:
-                    if use_rag:
-                        system, user, evidence = build_messages(question.strip(), passages)
-                        result["passages"] = evidence
-                    else:
-                        system = (
-                            "You are a helpful assistant. Paper retrieval is disabled. "
-                            "Do not invent evidence citations or claim to have searched the paper corpus."
-                        )
-                        user = question.strip()
-                    result["use_rag"] = use_rag
-                    with st.spinner("Generating answer…"):
-                        answer = generate(provider, config, system, user)
-                    if not answer.strip():
-                        result["error"] = (
-                            "The provider returned an empty answer. Please try again."
-                        )
-                    else:
-                        result["answer"] = answer
-            except Exception as exc:  # noqa: BLE001 - provider errors may contain credentials
-                from openai import (
-                    APIConnectionError,
-                    APITimeoutError,
-                    AuthenticationError,
-                    RateLimitError,
-                )
+                create_conversation(state, mode, paper['paper_id'] if paper else None)
+            except ValueError as exc:
+                st.error(str(exc))
+        choices = list(state['conversations'])
+        if choices:
+            current = state['active_conversation_id']
+            cid = st.selectbox('Workspace', choices, index=choices.index(current),
+                               format_func=lambda c: f"{state['conversations'][c]['mode']} · {state['conversations'][c]['paper_id'] or 'exported records'} · {c[:8]}")
+            state['active_conversation_id'] = cid
+            if st.button('Clear workspace', disabled=bool(state['pending_client_run_id'])):
+                clear_conversation(state, cid)
+            if st.button('Remove workspace', disabled=bool(state['pending_client_run_id'])):
+                clear_conversation(state, cid, remove=True)
+                st.rerun()
+        all_runs = [r for c in state['conversations'].values() for r in c['runs'].values()]
+        selected = st.multiselect('Select runs to export (choose five for report)', [r['client_run_id'] for r in all_runs])
+        if selected:
+            st.download_button('Download selected runs', export_runs(state, selected), 'papergap-ui-runs.json', 'application/json')
+    cid = state['active_conversation_id']
+    if cid is None:
+        st.info('Create a workspace in the sidebar. Demo record mode works without free-query retrieval.')
+        return
+    conversation = state['conversations'][cid]
+    st.header(conversation['mode'] + ': ' + (conversation['paper_id'] or 'exported AgentState inputs'))
+    for run in conversation['runs'].values():
+        render_answer(run)
+    record = None
+    submission = None
+    health = st.session_state.health
+    disabled = not health or bool(state['pending_client_run_id']) or len(conversation['runs']) >= 50
+    if conversation['mode'] == 'Demo record':
+        st.info('Uses an exported state as input; does not establish fresh retrieval.')
+        path = os.getenv('P5_RECORDS_PATH')
+        if not path:
+            st.info('Set P5_RECORDS_PATH to a local JSON array or JSONL file supplied by P5.')
+            return
+        try:
+            records = load_records(path)
+        except ValueError as exc:
+            st.error(str(exc))
+            return
+        index = st.selectbox('Exported record', range(len(records)), format_func=lambda i: record_label(records[i], i))
+        record = records[index]
+        submission = {'record_index': index, 'record_label': record_label(record, index), 'paper_id': record.get('paper_id'), 'question': record.get('question') if isinstance(record.get('question'), str) else None}
+    else:
+        paper_available = conversation['paper_id'] in {p['paper_id'] for p in st.session_state.papers}
+        question = st.text_area('Complete question', disabled=not health.get('retrieval', False) or not paper_available)
+        if not paper_available:
+            st.info('Workspace paper is unavailable in the current catalogue. Refresh service or create a new workspace.')
+        disabled = disabled or not health.get('retrieval') or not paper_available or not question.strip()
+        submission = {'question': question.strip(), 'paper_id': conversation['paper_id']}
+    if len(conversation['runs']) >= 50:
+        st.info('Run limit reached. Export and clear this workspace.')
+    previous = list(conversation['runs'].values())
+    retry_of = None
+    if previous and previous[-1]['submission'] == submission:
+        if st.checkbox('Manual retry of the last matching question (new execution)'):
+            retry_of = previous[-1]['client_run_id']
+    if st.button('Submit', disabled=disabled):
+        with st.spinner('Processing — the service may take up to 120 seconds or longer. No streaming.'):
+            submit_request(client, state, cid, submission, health, record, retry_of)
+        st.rerun()
 
-                if isinstance(exc, AuthenticationError):
-                    message = "Provider authentication failed. Check the API key and endpoint."
-                elif isinstance(exc, RateLimitError):
-                    message = "The provider rate or quota limit was reached. Try later or check your account."
-                elif isinstance(exc, (APIConnectionError, APITimeoutError)):
-                    message = "Could not reach the provider. Check the endpoint and network, then retry."
-                elif isinstance(exc, (ImportError, FileNotFoundError)):
-                    message = "Retrieval dependencies or artifacts are missing. Follow src/ui/README.md and check Java."
-                else:
-                    message = "The request failed. Check the configured model, index metadata and runtime setup, then retry."
-                result["error"] = message
-        result["seconds"] = time.perf_counter() - started
-        st.session_state["result"] = result
-    if "result" in st.session_state:
-        render_result(st.session_state["result"], diagnostics)
 
-
-main()
+if __name__ == '__main__':
+    main()

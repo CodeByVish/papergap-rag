@@ -1,94 +1,80 @@
-# PaperRAG UI
+# PaperGap Option C UI
 
-Run commands from the repository root. All Streamlit presentation code lives in
-`src/ui/`; retrieval and generation live in their existing `src/` packages.
+The entry point is a P5 HTTP client. It does not load models, indexes, Java or
+retrieval libraries. P5 operates the real service and tunnel. The former provider
+UI has been replaced; its reusable provider/retrieval adapters remain available.
 
-## Launch
+## Install and run
 
-Activate your virtual environment (see the root README). For a new environment
-with the optional Pyserini backend, use Python 3.12 and Java 21, as recommended
-by its linked installation guide.
-For just the UI, without downloading retrieval dependencies:
+From the repository root, create/activate a Python environment:
 
 ```bash
+python -m venv .venv-ui
+source .venv-ui/bin/activate
 python -m pip install -r requirements-ui.txt
-python -m streamlit run src/ui/app.py
+export P5_API_BASE=http://127.0.0.1:8000
+export P5_RECORDS_PATH=/absolute/local/path/to/p5-exported-states.jsonl
+python -m streamlit run src/ui/app.py --server.address 127.0.0.1
 ```
 
-Open http://localhost:8501. The app opens without credentials or indexes and
-shows a setup checklist. It does not invent sample answers. Stop with Ctrl+C.
+PowerShell configuration after activating the environment:
 
-## Enable real answers
-
-1. Copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`.
-   Set `api_key`, `base_url`, and `model` for at least one provider (`qwen`,
-   `grok`, or `groq`). Use the endpoint and model available to your account. Keep this
-   ignored file private. The sidebar displays the configured model.
-   For Groq, configure `[llm.groq]` using the example endpoint and a model
-   available to your account, then select **groq** in the sidebar.
-   Groq is separate from **grok**, which uses xAI.
-2. Install the retrieval dependencies:
-   `python -m pip install -r requirements-indexes.txt`.
-   Pyserini also needs Java 21; consult
-   [Pyserini's installation instructions](https://github.com/castorini/pyserini#installation).
-3. Prepare `data/chunks.jsonl`: one nonempty passage per line, with unique
-   `chunk_id`, nonempty `paper_id` and `text`, and preferably `title`,
-   `section_path` (list of strings), `page_start`, `page_end`, and `source_url`.
-   Use the schema in the implementation plan. Existing P3 `passage_id` records
-   need an explicit export to this format. Exclude evaluation questions/answers.
-4. Build indexes offline using the same corpus and embedding model:
-
-```bash
-python scripts/export_pyserini.py --chunks data/chunks.jsonl --output data/pyserini_collection
-python -m pyserini.index.lucene --collection JsonCollection --input data/pyserini_collection --index indexes/sparse/lucene --generator DefaultLuceneDocumentGenerator --threads 4 --storeRaw
-python scripts/build_dense_index.py --chunks data/chunks.jsonl --output indexes/dense --model sentence-transformers/all-MiniLM-L6-v2
-python -m streamlit run src/ui/app.py
+```powershell
+$env:P5_API_BASE = 'http://127.0.0.1:8000'
+$env:P5_RECORDS_PATH = 'C:\local\p5-exported-states.jsonl'
+python -m streamlit run src/ui/app.py --server.address 127.0.0.1
 ```
 
-The dense builder writes `chunks.faiss`, `row_ids.json`, and `config.json` together.
-Update `[rag]` in secrets if you change paths or the embedding model. Relative
-artifact paths resolve from the repository root. Restart after rebuilding indexes
-to clear cached resources. Index creation never runs inside the UI.
+Open `http://127.0.0.1:8501`. The record file is a JSON array or JSONL of original
+exported AgentState objects. Answer captures are not valid inputs. Keep real
+records outside Git. Exact input-state validation belongs to P5; the UI checks
+container shape and passes the selected object unchanged.
 
-## Ask and inspect
+`P5_ANSWER_TIMEOUT` defaults to 120 seconds (allowed range 120–3600); connection
+timeout is 5 seconds and auxiliary read timeout is 10 seconds. No POST retries.
+If authentication is enabled, obtain exact header/scheme from P5 first. Set both
+`P5_API_TOKEN` and `P5_AUTH_HEADER`; `P5_AUTH_SCHEME` is optional (e.g. `Bearer`
+only if P5 confirms). Supported header names are Authorization, X-API-Key,
+X-Auth-Token and X-Demo-Token. No token is required by default. Never commit tokens.
+These are client configuration options, not a claim about P5's actual auth scheme.
 
-Select a configured provider, choose 3–10 evidence passages, then submit a question
-in the bottom input. Retrieval searches the entire corpus, fuses BM25 and dense
-rankings, and sends the selected passages to the provider. Name papers in your
-question when comparing them; this baseline has no strict paper/year filter.
+## Use
 
-Answers use `[E1]` citations matching the **Sources and evidence** cards. Expand
-sources to read passages and open paper links. Enable **Show diagnostics** for
-latency, chunk IDs and RRF scores. Unknown or missing citation labels trigger a
-warning; label checking does not prove that a passage supports a claim.
+1. Refresh service; inspect retrieval and passage-text capabilities.
+2. Create a Free question workspace with a selected paper, or a Demo record
+   workspace and select an exported state. Free input is disabled without retrieval.
+3. Submit one complete independent question. Wait for the non-streaming answer.
+   Workspace history is not sent to the model. A blocking request may prevent
+   workspace interaction; no background processing or cancellation is promised.
+4. Inspect answer/refusal, warning or validator block; expand citations and
+   diagnostics. Rejected model text is clearly separated from the final answer.
+5. Each submission gets a new client run ID; P5 request_id keeps its own meaning.
+   To link a retry, check the manual-retry option for the last matching submission.
+   Timeout/disconnect means outcome unknown, not cancellation.
+6. Select five runs in the sidebar and download their JSON for reporting. Timings
+   cover answer HTTP waiting/processing, not isolated inference; citations are timed
+   separately. Mock/unknown timings cannot establish live querying performance.
 
-Only the latest question/result is kept in session memory. Changing display
-settings does not call the API again; a new submitted question does. **Clear
-answer** removes the displayed result. Failed generation retains retrieved
-sources. No persistent chat history, uploads, adaptive agent loop, or reranker
-is enabled in this baseline.
+History is session-only: max 10 workspaces and 50 attempts per workspace. Export
+and clear/remove explicitly at the limit. Clear cannot cancel pending inference.
+Refresh/reconnect/new browser tabs may lose history and cannot recover server runs.
+Exports omit agent state and sensitive-key configuration; review downloaded text
+before sharing because answer content and provenance are retained.
 
-The app selects the first configured provider. Without indexes, it defaults to
-**Direct chat**, which calls the selected model without paper evidence or citations.
-Choose **Paper RAG** for retrieval-backed answers after building the indexes.
-The input stays editable during setup; submitting with incomplete configuration
-shows an actionable message without calling the provider. Authentication, rate limits, connection
-failures and empty responses produce UI messages without raw exception details
-or credentials. Dense retrieval always finds nearest neighbors, so inspect the
-evidence even if a question is outside the corpus.
-
-## Verification and hosting
+## Test
 
 ```bash
 python -m pip install pytest
-python -m pytest -q tests/test_ui.py tests/test_p2.py
+python -m pytest -q tests/test_ui_api_client.py tests/test_ui_view_models.py tests/test_ui_record_loader.py tests/test_ui_conversation_state.py tests/test_ui.py tests/test_ui_p5_smoke.py
 ```
 
-UI tests use Streamlit AppTest with fake retriever/provider boundaries; they do
-not download models or call a paid API. Real retrieval additionally needs the
-index artifacts, Java and model weights. The full application dependency file
-is `requirements.txt`; the optional Lucene adapter adds `requirements-indexes.txt`.
+The default HTTP integration test starts a localhost **synthetic** fixture. It is
+not P5's mock service. The separate P5 test is skipped unless explicitly enabled:
 
-For hosting, use `src/ui/app.py` as the entry point, install the optional index
-dependencies and compatible Java, provision the artifacts, and set deployment
-secrets. A host without Java cannot run this Lucene backend.
+```bash
+P5_RUN_SMOKE=1 python -m pytest -q tests/test_ui_p5_smoke.py::test_actual_p5_service
+```
+
+This requires P5's actual running service and `P5_RECORDS_PATH`; missing inputs or
+service failures fail the explicitly requested check. See
+[the P5 handoff](../../docs/P6/P6_UI_handoff.md) for contract assumptions and E2E steps.
