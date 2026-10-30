@@ -205,6 +205,9 @@ def compute_metrics(
         "critic_fallback_rate": _rate(
             sum(e["source"] == "fallback" for e in critic_entries), len(critic_entries)
         ),
+        "critic_thinking_drift_rate": _rate(
+            sum(bool(e.get("thinking_drift")) for e in critic_entries), len(critic_entries)
+        ),
         "mean_elapsed_s": _mean([r["elapsed_s"] for r in ok if "elapsed_s" in r]),
     }
 

@@ -21,7 +21,7 @@
 #
 # PRECONDITIONS this script cannot create:
 #   * PASSAGES and DENSE_INDEX exist (python -m scripts.build_corpus / build_indexes)
-#   * the repo checkout contains P5's src/generation (PR #15)
+#   * the repo checkout contains P5's src/generation (on main)
 #   * Qwen3-8B weights are at MODEL_DIR
 #
 #SBATCH --job-name=p4-agent
@@ -107,7 +107,7 @@ import importlib, sys
 need = ["vllm", "torch", "faiss", "sentence_transformers", "rank_bm25", "langgraph", "pydantic"]
 missing = [m for m in need if importlib.util.find_spec(m) is None]
 try:
-    import src.generation  # noqa: F401  (P5, PR #15)
+    import src.generation  # noqa: F401  (P5, on main)
 except Exception as error:
     missing.append(f"src.generation ({error})")
 if missing:

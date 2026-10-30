@@ -208,8 +208,49 @@ def test_no_generation_stack_needed_for_the_rule_based_run():
 
 def test_missing_p5_package_gives_a_clear_error(monkeypatch):
     monkeypatch.setitem(sys.modules, "src.generation", None)  # import raises ImportError
-    with pytest.raises(SystemExit, match="PR #15"):
+    with pytest.raises(SystemExit, match="not importable"):
         runner.build_generation(args(critic="generator"))
+
+
+def _fake_p5(monkeypatch, prompt_version="p5-grounded-qa-v7"):
+    """Stand-ins for src.generation so the wiring is testable without P5's package."""
+    import types
+
+    seen = {}
+    package = types.ModuleType("src.generation")
+    package.PROMPT_VERSION = prompt_version
+    package.GroundedQAPipeline = lambda generator: ("pipeline", generator)
+    package.make_answer_fn = lambda pipeline: "answer_fn"
+    generators = types.ModuleType("src.generation.generators")
+
+    def get_generator(name, **kwargs):
+        seen["name"], seen["kwargs"] = name, kwargs
+        return object()
+
+    generators.get_generator = get_generator
+    package.generators = generators
+    monkeypatch.setitem(sys.modules, "src.generation", package)
+    monkeypatch.setitem(sys.modules, "src.generation.generators", generators)
+    return seen
+
+
+def test_answers_use_p5s_frozen_token_budget(monkeypatch):
+    seen = _fake_p5(monkeypatch)
+    _, _, answer_fn = runner.build_generation(args(answers="p5", model_id="/models/q"))
+    assert answer_fn == "answer_fn"
+    assert seen["kwargs"] == {"model_id": "/models/q", "max_new_tokens": 1024}
+
+
+def test_mock_generator_gets_no_token_budget(monkeypatch):
+    seen = _fake_p5(monkeypatch)
+    runner.build_generation(args(answers="p5", generator="mock"))
+    assert "max_new_tokens" not in seen["kwargs"]
+
+
+def test_a_different_p5_prompt_version_is_refused(monkeypatch):
+    _fake_p5(monkeypatch, prompt_version="p5-grounded-qa-v3")
+    with pytest.raises(SystemExit, match="p5-grounded-qa-v3"):
+        runner.build_generation(args(answers="p5"))
 
 
 def test_parse_args_defaults_and_choices():

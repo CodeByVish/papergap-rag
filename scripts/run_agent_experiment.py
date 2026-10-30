@@ -44,6 +44,9 @@ from src.agent.experiments import (
 )
 
 ARMS = ("static", "adaptive")
+# P5's frozen generation settings (their message of 2026-10-29); the backend default is 768.
+FROZEN_PROMPT_VERSION = "p5-grounded-qa-v7"
+FROZEN_MAX_NEW_TOKENS = 1024
 ALLOWED_SPLITS = ("train", "validation")
 PACKAGES = (
     "torch", "vllm", "transformers", "sentence-transformers", "faiss-cpu",
@@ -262,22 +265,34 @@ def build_retriever(args: argparse.Namespace, passages: list[Any]):
     return HybridRetriever(sparse, dense, scorer=scorer, candidate_k=args.candidate_k).retrieve
 
 
+def prompt_version() -> str:
+    from src.generation import PROMPT_VERSION
+
+    return PROMPT_VERSION
+
+
 def build_generation(args: argparse.Namespace):
     """(generator, critic_client, answer_fn); all None when neither is requested."""
     if args.critic != "generator" and args.answers != "p5":
         return None, None, None
     try:
+        from src.generation import PROMPT_VERSION, GroundedQAPipeline, make_answer_fn
         from src.generation.generators import get_generator
-
-        from src.generation import GroundedQAPipeline, make_answer_fn
     except ImportError as error:
         raise SystemExit(
-            f"P5's generation package is not importable ({error}). It lives in PR #15 "
-            "(src/generation); run from a checkout that contains it."
+            f"P5's generation package is not importable ({error}); run from a checkout "
+            "that contains src/generation (on main)."
         ) from error
     from src.agent.qwen_client import GeneratorChatClient
 
+    if args.answers == "p5" and PROMPT_VERSION != args.expect_prompt_version:
+        raise SystemExit(
+            f"P5 prompt is {PROMPT_VERSION!r}, expected {args.expect_prompt_version!r}; "
+            "update the checkout or pass --expect-prompt-version deliberately"
+        )
     kwargs = {"model_id": args.model_id} if args.model_id else {}
+    if args.generator != "mock":
+        kwargs["max_new_tokens"] = args.max_new_tokens
     generator = get_generator(args.generator, **kwargs)
     critic = GeneratorChatClient(generator) if args.critic == "generator" else None
     answer = make_answer_fn(GroundedQAPipeline(generator)) if args.answers == "p5" else None
@@ -299,6 +314,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--answers", choices=["none", "p5"], default="none")
     p.add_argument("--generator", default="vllm", help="P5 backend: vllm, transformers, mock")
     p.add_argument("--model-id", help="model path or hub id for the generator")
+    p.add_argument("--max-new-tokens", type=int, default=FROZEN_MAX_NEW_TOKENS,
+                   help="answer token budget (P5's frozen v7 value; the backend default is 768)")
+    p.add_argument("--expect-prompt-version", default=FROZEN_PROMPT_VERSION,
+                   help="refuse to run answers if P5's PROMPT_VERSION differs")
     p.add_argument("--scoped", action="store_true", help="per-paper section-scoped retries")
     p.add_argument("--bge", action="store_true", help="add the BGE reranker")
     p.add_argument("--score-cache", type=Path, help="persistent reranker score cache (SQLite)")
@@ -326,9 +345,11 @@ def main(argv: Sequence[str] | None = None) -> None:
     print(f"{len(passages)} passages, {len(items)} questions, "
           f"{sum(1 for i in items if i.gold_passage_ids)} with gold passages")
 
+    # Engine first: vLLM checks free GPU memory at load, so resident retrieval models
+    # (--device cuda) would make it fail. The default retrieval device is the CPU.
+    generator, critic, answer_fn = build_generation(args)
     retriever = build_retriever(args, passages)
     retriever(items[0].question, items[0].paper_id, args.top_k)  # warm up before timing
-    generator, critic, answer_fn = build_generation(args)
     selector = None
     if args.scoped:
         from src.agent.sections import make_section_selector
@@ -352,6 +373,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         "critic_client": ({"calls": critic.calls, "escalations": critic.escalations}
                           if critic is not None else None),
         "generator": generator.info() if generator is not None and hasattr(generator, "info") else None,
+        "prompt_version": prompt_version() if answer_fn is not None else None,
         "environment": environment(),
     }
     write_outputs(args.out_dir, summary, manifest)

@@ -187,6 +187,7 @@ def rule_based_critic(state: AgentState) -> CriticOutput:
 
 CriticClient = LLMClient | ChatClient
 MAX_RAW_REPLY_CHARS = 2000
+THINKING_MARKERS = ("<think>", "</think>")
 
 
 def _ask(client: CriticClient, state: AgentState) -> str:
@@ -232,6 +233,9 @@ def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEF
             "gap_label": output.gap_label.value,
             "errors": errors,
             "raw_replies": raw_replies,
+            # Qwen3 with thinking off should never emit these; if the backend silently
+            # dropped enable_thinking=False the replies would carry a reasoning trace.
+            "thinking_drift": any(m in r for r in raw_replies for m in THINKING_MARKERS),
         }
         return {
             "sufficient": output.sufficient,

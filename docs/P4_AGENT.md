@@ -61,6 +61,22 @@ The test split is refused. Cluster, with the Qwen3-8B critic and P5's answers
 preflight lists missing packages. One engine is shared by critic and answers (one A40
 fits one 8B model). Records are written per question; add `RESUME=1` to continue.
 
+Cluster environment (from P5, who validated the pins): `python312`, `vllm==0.11.0`,
+`transformers>=4.51.0,<5`. The cap matters, because vLLM 0.11 fails at model load under
+transformers 5. Add the retrieval packages in one command with the cap restated and read the
+`--dry-run` list first (it must not touch torch or install transformers 5):
+
+```bash
+"$VLLM_PY" -m pip install --dry-run "faiss-cpu==1.15.1" "sentence-transformers==5.7.0" \
+  "rank-bm25==0.2.2" "transformers>=4.51.0,<5"
+```
+
+The runner uses P5's frozen settings: prompt `p5-grounded-qa-v7` (the run stops if the checkout
+differs, `--expect-prompt-version`) and `--max-new-tokens 1024`. It loads the vLLM engine
+before the retrieval models and keeps those on the CPU, because vLLM checks free GPU memory
+at load. The corpus and dense index are not on the cluster yet; copy them from P1's outputs.
+`prompt_version` is recorded in `run_manifest.json`.
+
 Outputs in `--out-dir`: `static.jsonl`, `adaptive.jsonl`, `metrics.json`, `metrics.md`,
 `run_manifest.json` (arguments, git commit, package versions, file hashes, critic call counts).
 
