@@ -1,6 +1,6 @@
 # Passage relevance annotation
 
-Annotator: 
+Annotator: Jingshuai Qian
 
 Enter your name or agreed identifier after `Annotator:`.
 
@@ -32,7 +32,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 741
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: The conclusion reports streaming translation, wait-k comparisons and human evaluation.
+> - Judgement: Streaming comparisons identify the evaluation setting and comparator families, useful for locating a full-input baseline.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：结论介绍流式翻译、wait-k 对比和人工评价。
+> - 判断：流式翻译对比说明评价设置和对照模型类别，有助于定位完整输入基线。
 
 #### Passage 742
 
@@ -48,7 +56,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 742
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: The passage discusses human interpreting evaluation, coherence and deployment errors.
+> - Judgement: Human and NMT comparisons clarify which translation alternatives are assessed and provide comparison context.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：介绍人工口译评价、连贯性和部署错误。
+> - 判断：人工与 NMT 对比说明评估了哪些翻译方案，提供对照背景。
 
 #### Passage 743
 
@@ -66,7 +82,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 743
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: Experiments compare baseline, sub-sentence and wait-k models and discuss the standard Transformer.
+> - Judgement: The baseline comparisons and whole-sentence versus shorter-unit analysis provide useful evidence for the full-sentence comparator.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：实验比较 baseline、子句和 wait-k 模型，并讨论标准 Transformer。
+> - 判断：基线比较及整句与短子句分析为完整句子对照系统提供有用证据。
 
 #### Passage 744
 
@@ -82,7 +106,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 744
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: The model reads ASR streams, detects information units and uses context-aware decoding.
+> - Judgement: Streaming input and information-unit processing clarify the input-access distinction asked about.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：模型读取 ASR 流、识别信息单元并进行上下文解码。
+> - 判断：流式输入和信息单元处理说明问题所问的输入范围差异。
 
 #### Passage 745
 
@@ -110,7 +142,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 745
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: The passage compares translations with simultaneous interpreters and describes acceptability ratings.
+> - Judgement: The evaluated interpreters and wait-k comparisons help reconstruct the study's comparison set.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：比较机器翻译与同声传译，并介绍可接受度评分。
+> - 判断：受评口译员与 wait-k 对比有助于梳理论文的对照对象。
 
 ### BM25
 
@@ -128,7 +168,15 @@ Retrieved by: BM25
 
 #### Relevance 740
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: The introduction contrasts sub-sentence translation with full-sentence models that wait for sentence completion.
+> - Judgement: This explicitly describes the full-input alternative, supplying partial evidence about the relevant comparator.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：引言对比子句翻译和等待整句结束的完整句子模型。
+> - 判断：明确说明完整句子输入方案，为识别相关对照系统提供部分证据。
 
 ### Dense
 
@@ -140,7 +188,15 @@ Retrieved by: Dense
 
 #### Relevance 746
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: Tokenization, lowercasing, BLEU computation and BPE vocabularies are described.
+> - Judgement: Preprocessing details do not establish whether a full-input system is compared.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：介绍分词、小写化、BLEU 计算和 BPE 词表。
+> - 判断：预处理细节不能说明是否比较完整输入系统。
 
 #### Passage 747
 
@@ -152,7 +208,15 @@ Retrieved by: Dense
 
 #### Relevance 747
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: Human simultaneous interpretation scores are compared with NMT quality.
+> - Judgement: Human-versus-NMT results supply partial clues about the comparison systems, without proving full-input access.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：比较人类同传与 NMT 的翻译质量。
+> - 判断：人工与 NMT 结果为对照系统提供局部线索，但不能据此确认完整输入方式。
 
 ### Hybrid RRF
 
@@ -180,7 +244,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 748
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: The passage describes NIST and BSTC datasets, translations and ASR transcripts.
+> - Judgement: Whole-talk context in reference creation helps distinguish full-context translation from streaming evaluation.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：介绍 NIST、BSTC 数据集、译文和 ASR 转写。
+> - 判断：制作参考译文时使用整篇上下文，有助于区分完整上下文翻译与流式评价。
 
 #### Passage 749
 
@@ -192,7 +264,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 749
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does the study compare against a system with the complete input rather than streaming text?
+> - Summary of passage: Related work includes document context, memory and coherent decoding.
+> - Judgement: Entire-text representations describe a full-context alternative relevant to the input-access contrast; actual baseline use remains unconfirmed.
+> 原因
+> - 问题概述：是否与使用完整输入而非流式文本的系统比较？
+> - Passage 概述：相关工作涉及文档上下文、记忆和连贯解码。
+> - 判断：整篇文本表示介绍了与输入范围对比有关的完整上下文方案，但未确认它是否为实验基线。
 
 ## Question 0082
 
@@ -216,7 +296,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 750
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: The conclusion says non-experts exploit model vulnerabilities and describes ANLI collection.
+> - Judgement: Non-experts exploiting vulnerabilities directly connects the annotators with the model weaknesses being investigated.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：结论称非专家能利用模型漏洞，并介绍 ANLI 收集。
+> - 判断：非专家利用模型漏洞，直接联系了标注者与所问模型弱点。
 
 #### Passage 751
 
@@ -232,7 +320,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 751
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: The introduction describes reliance on spurious statistical patterns and resulting brittleness.
+> - Judgement: This names a substantive model weakness motivating the non-expert adversarial examples.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：引言指出模型依赖虚假统计模式，导致脆弱性。
+> - 判断：明确指出促使非专家构造对抗样本的模型弱点。
 
 #### Passage 752
 
@@ -246,7 +342,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 752
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: The contributions promise inference-type analysis and progressively harder benchmark rounds.
+> - Judgement: Inference-type analysis and increasingly difficult rounds explain how annotator-discovered weaknesses are examined.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：贡献概述承诺分析推理类型，并逐轮增加难度。
+> - 判断：推理类型分析和逐轮增加的难度说明如何研究标注者发现的弱点。
 
 #### Passage 755
 
@@ -256,7 +360,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 755
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: RoBERTa struggles with later-round examples despite additional training; architectures have different weaknesses.
+> - Judgement: It directly reports persistent, model-dependent vulnerabilities found by annotators.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：RoBERTa 增加训练后仍难处理后续轮次样本，各架构弱点不同。
+> - 判断：直接报告标注者发现的持续性、依模型而异的漏洞。
 
 #### Passage 757
 
@@ -266,7 +378,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 757
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: The passage explains the goal of a dynamic benchmark that current models fail.
+> - Judgement: Designing a benchmark around current-model failures supplies context for the vulnerabilities annotators seek.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：介绍构建使当前模型失败的动态基准这一目标。
+> - 判断：围绕当前模型失败构建基准，说明标注者寻找的漏洞背景。
 
 ### BM25
 
@@ -278,7 +398,15 @@ Retrieved by: BM25
 
 #### Relevance 753
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: Round two uses RoBERTa ensembles, prior training data and Wikipedia contexts.
+> - Judgement: The adversary and later-round collection setup explain the model conditions under which annotators expose weaknesses.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：第二轮使用 RoBERTa 集成、既有训练数据和维基百科上下文。
+> - 判断：对抗模型和后续轮次收集设置说明标注者在哪些模型条件下发现弱点。
 
 #### Passage 754
 
@@ -294,7 +422,15 @@ Retrieved by: BM25
 
 #### Relevance 754
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: Successful attacks are analyzed using numerical, reference, basic, lexical, tricky and external-knowledge inference types.
+> - Judgement: These categories describe the reasoning vulnerabilities exploited by the writers.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：按数量、指代、基本、词汇、巧妙推理和外部知识等类型分析成功攻击。
+> - 判断：这些类别说明撰写者利用的推理弱点。
 
 ### Dense
 
@@ -312,7 +448,15 @@ Retrieved by: Dense
 
 #### Relevance 756
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: The dataset counters hypothesis-only shortcuts and annotator-style bias and introduces longer contexts.
+> - Judgement: It supplies partial evidence about spurious hypothesis and annotator biases rather than a complete list of attacks.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：数据集抑制仅看假设的捷径和标注风格偏差，并引入长上下文。
+> - 判断：为假设偏差和标注者偏差等问题提供部分证据，但没有完整列举攻击类型。
 
 #### Passage 758
 
@@ -328,7 +472,15 @@ Retrieved by: Dense
 
 #### Relevance 758
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: HAMLET asks writers to fool a model and explain errors, then verifies examples.
+> - Judgement: Asking writers to fool models and explain errors directly describes how weaknesses are elicited.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：HAMLET 要求撰写者欺骗模型并解释错误，再核验样本。
+> - 判断：要求撰写者欺骗模型并解释错误，直接说明如何发掘弱点。
 
 ### Hybrid RRF
 
@@ -344,7 +496,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 759
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What weaknesses of state-of-the-art NLI models did non-expert annotators find?
+> - Summary of passage: Error analysis examines successful inference attacks and reliance on spurious statistical facts.
+> - Judgement: The reliance on spurious facts provides partial evidence of the relevant model shortcoming.
+> 原因
+> - 问题概述：非专家标注者发现先进 NLI 模型有哪些弱点？
+> - Passage 概述：错误分析检查成功的推理攻击及对虚假统计规律的依赖。
+> - 判断：对虚假规律的依赖为所问模型缺陷提供部分证据。
 
 ## Question 0083
 
@@ -364,7 +524,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 760
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: The annotators are experts whose disagreements are legally informed rather than crowdworker judgments.
+> - Judgement: It partially identifies the annotators by their legal expertise.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：标注者是专家，其分歧属于具法律依据的意见，而非众包判断。
+> - 判断：从法律专长角度部分说明标注专家的身份。
 
 #### Passage 762
 
@@ -376,7 +544,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 762
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: BERT errors and expert judgments on answerability are analyzed.
+> - Judgement: Experts' answerability decisions characterize their annotation role and provide clues about the expertise needed.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：分析 BERT 错误及专家对可回答性的判断。
+> - 判断：专家对可回答性的判断说明其标注职责，也为所需专长提供线索。
 
 #### Passage 763
 
@@ -386,7 +562,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 763
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: Seven legally trained experts supply answers and meta-annotations.
+> - Judgement: It directly states the number and qualifications of the annotators.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：七名受过法律训练的专家提供答案和元标注。
+> - 判断：直接说明标注专家的人数和资质。
 
 #### Passage 765
 
@@ -416,7 +600,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 765
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: Questions receive OPP-115 categories using expert agreement rules.
+> - Judgement: Expert agreement and category assignment clarify the work performed by the annotation experts.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：依专家一致性规则给问题分配 OPP-115 类别。
+> - 判断：专家一致性和类别分配说明标注专家承担的工作。
 
 #### Passage 767
 
@@ -428,7 +620,15 @@ Retrieved by: Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 767
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: Dataset sizes, splits and the number of experts answering each question are reported.
+> - Judgement: The number of experts assigned per question supplies partial information about the annotation team.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：报告数据规模、划分和每题参与专家人数。
+> - 判断：每题参与专家的人数为标注团队提供部分信息。
 
 ### BM25
 
@@ -454,7 +654,15 @@ Retrieved by: BM25
 
 #### Relevance 761
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: Legal experts classify causes of unanswerability such as ambiguity and policy silence.
+> - Judgement: Calling the annotators legal experts supplies partial evidence of their background.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：法律专家分类不可回答原因，如歧义和政策未提及。
+> - 判断：将标注者明确称为法律专家，提供其背景的部分证据。
 
 #### Passage 764
 
@@ -464,7 +672,15 @@ Retrieved by: BM25
 
 #### Relevance 764
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: Privacy policies are collected from 35 applications with varying popularity.
+> - Judgement: Policy selection does not identify annotation experts.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：从热门程度不同的 35 个应用收集隐私政策。
+> - 判断：政策选取没有说明标注专家身份。
 
 ### Dense
 
@@ -484,7 +700,15 @@ Retrieved by: Dense
 
 #### Relevance 766
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: No-answer, lexical, BERT and human-performance baselines are defined.
+> - Judgement: Human-performance estimation describes the annotators' role as the expert reference for evaluation.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：介绍不回答、词汇、BERT 和人工表现基线。
+> - 判断：人工表现估计说明标注者作为专家评价参照的职责。
 
 ### Hybrid RRF
 
@@ -500,7 +724,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 768
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: Acknowledgments name Elias Wright, Gian Mascioli, Kiara Pillay, Harrison Kay, Eliel Talo, Alexander Fagella and N. Cameron Russell as expertise contributors.
+> - Judgement: These seven names provide plausible identity evidence for the seven experts, although annotation roles are not explicitly confirmed here.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：致谢列出 Elias Wright、Gian Mascioli、Kiara Pillay、Harrison Kay、Eliel Talo、Alexander Fagella 和 N. Cameron Russell 七位提供专长的贡献者。
+> - 判断：这七人姓名为七位专家的身份提供线索，但本段未明确确认其标注职责。
 
 #### Passage 769
 
@@ -512,7 +744,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 769
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Who were the experts used for annotation?
+> - Summary of passage: A separate natural-question dataset is analyzed for unanswerability causes.
+> - Judgement: It neither identifies PrivacyQA experts nor establishes their background.
+> 原因
+> - 问题概述：参与标注的专家是谁？
+> - Passage 概述：分析另一自然问题数据集的不可回答原因。
+> - 判断：没有说明 PrivacyQA 专家身份或背景。
 
 ## Question 0084
 
@@ -532,7 +772,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 770
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Recognition errors arise from pitch, duration, overlapping voices and music.
+> - Judgement: Recognition-error analysis characterizes the ASR systems whose baseline configuration is being sought.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：识别错误源于音高、时长、重叠人声和音乐。
+> - 判断：识别错误分析说明所问基线所属 ASR 系统的表现特点。
 
 #### Passage 771
 
@@ -546,7 +794,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 771
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Model A is a LibriSpeech-trained SAT GMM-HMM with a LibriSpeech language model and 96.21% WER.
+> - Judgement: It explicitly identifies this system as the baseline.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：Model A 是用 LibriSpeech 训练的 SAT GMM-HMM，配套 LibriSpeech 语言模型，WER 为 96.21%。
+> - 判断：明确将该系统列为基线。
 
 #### Passage 772
 
@@ -562,7 +818,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 772
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: The training pipeline identifies Model A as the LibriSpeech SAT triphone model.
+> - Judgement: This gives useful architectural and training-source details of the baseline Model A.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：训练流程说明 Model A 是 LibriSpeech SAT 三音素模型。
+> - 判断：为基线 Model A 提供有用的架构和训练来源信息。
 
 #### Passage 774
 
@@ -576,7 +840,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 774
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Results compare adapted models, vowel handling and neural architectures.
+> - Judgement: Comparisons among adapted and neural systems help distinguish the reference system from later variants.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：结果比较适配模型、元音处理和神经网络架构。
+> - 判断：适配模型与神经系统的对比有助于区分参照系统与后续变体。
 
 #### Passage 776
 
@@ -588,7 +860,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 776
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: LibriSpeech and lyrics language models are both pruned trigram models.
+> - Judgement: It supplies a concrete detail about the LibriSpeech language-model component used in the baseline.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：LibriSpeech 和歌词语言模型均为剪枝后的三元模型。
+> - 判断：补充了基线中 LibriSpeech 语言模型组件的具体信息。
 
 ### BM25
 
@@ -604,7 +884,15 @@ Retrieved by: BM25
 
 #### Relevance 773
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Vowel repetition and HMM self-loop probabilities handle prolonged singing vowels.
+> - Judgement: Vowel and HMM modifications explain how proposed systems differ from their starting recognition model.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：用元音重复和 HMM 自循环概率处理歌唱长元音。
+> - 判断：元音与 HMM 修改说明所提系统相对初始识别模型的区别。
 
 ### Dense
 
@@ -616,7 +904,15 @@ Retrieved by: Dense
 
 #### Relevance 775
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Fragment, song, singer and genre adaptation levels are compared for Model E.
+> - Judgement: Model E adaptation comparisons provide context for identifying the baseline and its extensions.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：比较 Model E 在片段、歌曲、歌手和流派层面的适配。
+> - 判断：Model E 适配对比提供识别基线及扩展版本的背景。
 
 ### Hybrid RRF
 
@@ -638,7 +934,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 777
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Prior singing-recognition work and the study's adaptation approaches are reviewed.
+> - Judgement: The reviewed recognition and adaptation approaches identify the model families underlying the baseline comparison.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：回顾歌唱识别相关研究和本文适配方法。
+> - 判断：识别与适配方法综述指出基线对比涉及的模型类别。
 
 #### Passage 778
 
@@ -656,7 +960,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 778
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: Songs are filtered using LibriSpeech ASR, and 100 hours of clean LibriSpeech speech train initial models.
+> - Judgement: This provides partial evidence of the speech-trained starting system and its training data.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：用 LibriSpeech ASR 筛选歌曲，并用 100 小时干净语音训练初始模型。
+> - 判断：为语音训练起始系统及其训练数据提供部分证据。
 
 #### Passage 779
 
@@ -672,7 +984,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 779
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: The introduction motivates singing-content processing and contrasts singing with speech.
+> - Judgement: Motivation and task difficulties do not define the baseline.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：引言说明歌唱内容处理的动机及歌唱与语音的差别。
+> - 判断：研究动机和任务难点没有定义基线。
 
 #### Passage 780
 
@@ -682,7 +1002,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 780
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What system was used as the baseline?
+> - Summary of passage: The conclusion summarizes several model families and high recognition error rates.
+> - Judgement: The model-family and error-rate summary helps connect the baseline to the evaluated recognition systems.
+> 原因
+> - 问题概述：使用什么系统作为基线？
+> - Passage 概述：结论概述多类模型及较高识别错误率。
+> - 判断：模型类别与错误率概述有助于将基线与受评识别系统联系起来。
 
 ## Question 0085
 
@@ -704,7 +1032,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 781
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: QuaRTz tests several state-of-the-art BERT-based models, below human performance.
+> - Judgement: It identifies the model family evaluated on this dataset.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：QuaRTz 测试了多个先进 BERT 模型，其表现低于人类。
+> - 判断：说明该数据集所评测的模型家族。
 
 #### Passage 782
 
@@ -714,7 +1050,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 782
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: Related work contrasts QuaRTz with fixed-ontology QuaRel and earlier qualitative reasoning.
+> - Judgement: It does not name the models evaluated on QuaRTz.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：相关工作对比 QuaRTz、固定本体的 QuaRel 和早期定性推理。
+> - 判断：没有指出 QuaRTz 上评测的模型。
 
 #### Passage 783
 
@@ -734,7 +1078,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 783
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: BERT-PFT (IR) is best at 73.7, with BERT-Sci and other variants compared.
+> - Judgement: It directly names the leading tested model and its results.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：BERT-PFT (IR) 以 73.7 最佳，并比较 BERT-Sci 等变体。
+> - 判断：直接给出领先受测模型及结果。
 
 #### Passage 784
 
@@ -758,7 +1110,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 784
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: The experimental models include BERT-Sci, BERT (IR), oracle IR and BERT-PFT variants built on BERT-large.
+> - Judgement: It directly enumerates and defines the strong models evaluated.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：实验包括基于 BERT-large 的 BERT-Sci、BERT (IR)、理想检索及 BERT-PFT 变体。
+> - 判断：直接列举并定义所评测的强模型。
 
 #### Passage 786
 
@@ -768,7 +1128,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 786
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: Rich property and comparative annotations could support semantic parsing approaches.
+> - Judgement: Semantic parsing is a relevant candidate approach for this dataset, though this passage does not establish a tested leader.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：丰富的属性和比较关系标注可支持语义解析方法。
+> - 判断：语义解析是与该数据集有关的候选方法，但本段没有确认其为受评最优模型。
 
 ### BM25
 
@@ -782,7 +1150,15 @@ Retrieved by: BM25
 
 #### Relevance 785
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: The conclusion describes QuaRTz goals, arbitrary relations and future retrieval scaling.
+> - Judgement: The stated retrieval and reasoning challenges explain the setting in which the dataset's strong models are assessed.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：结论介绍 QuaRTz 目标、任意关系及未来检索扩展。
+> - 判断：检索与推理挑战说明该数据集上强模型所面对的评价场景。
 
 ### Dense
 
@@ -828,7 +1204,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 787
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which state-of-the-art models are evaluated on QuaRTz?
+> - Summary of passage: The dataset is built and validated by crowdworkers, with a 95% human baseline.
+> - Judgement: The human baseline supplies the reference performance against which the dataset's machine models are judged.
+> 原因
+> - 问题概述：QuaRTz 上评测了哪些先进模型？
+> - Passage 概述：通过众包构建核验数据集，人工基线为 95%。
+> - 判断：人工基线提供评价该数据集上机器模型的参照表现。
 
 ## Question 0086
 
@@ -856,7 +1240,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 788
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which extractive models were used on GameWikiSum?
+> - Summary of passage: Corpus size and extractive overlap motivate coarse input selection.
+> - Judgement: Extractive overlap and coarse input selection explain data properties and preprocessing relevant to extractive model use.
+> 原因
+> - 问题概述：GameWikiSum 使用了哪些抽取式模型？
+> - Passage 概述：语料规模和抽取重叠率说明需要粗筛输入。
+> - 判断：抽取重叠率和粗筛输入说明与抽取模型使用有关的数据特点及预处理。
 
 #### Passage 789
 
@@ -872,7 +1264,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 789
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which extractive models were used on GameWikiSum?
+> - Summary of passage: Results compare TextRank, LexRank, SumBasic, C_SKIP and SemSentSum.
+> - Judgement: It directly identifies the evaluated extractive systems, without implying all require supervised training.
+> 原因
+> - 问题概述：GameWikiSum 使用了哪些抽取式模型？
+> - Passage 概述：结果比较 TextRank、LexRank、SumBasic、C_SKIP 和 SemSentSum。
+> - 判断：直接指出受评抽取系统，但不能据此认为它们都需要监督训练。
 
 #### Passage 790
 
@@ -882,7 +1282,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 790
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which extractive models were used on GameWikiSum?
+> - Summary of passage: The conclusion says the dataset enables training extractive and abstractive models.
+> - Judgement: The explicit discussion of training extractive models connects directly to the requested model category.
+> 原因
+> - 问题概述：GameWikiSum 使用了哪些抽取式模型？
+> - Passage 概述：结论称该数据集支持训练抽取式和生成式模型。
+> - 判断：明确讨论抽取模型训练，直接联系问题所问模型类别。
 
 #### Passage 791
 
@@ -896,7 +1304,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 791
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which extractive models were used on GameWikiSum?
+> - Summary of passage: The introduction explains summarization types and motivates GameWikiSum.
+> - Judgement: The extractive-versus-abstractive task distinction helps identify which evaluated systems count as extractive.
+> 原因
+> - 问题概述：GameWikiSum 使用了哪些抽取式模型？
+> - Passage 概述：引言介绍摘要类型及 GameWikiSum 的动机。
+> - 判断：抽取与生成任务的区分有助于识别哪些受评系统属于抽取式模型。
 
 #### Passage 792
 
@@ -908,7 +1324,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 792
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which extractive models were used on GameWikiSum?
+> - Summary of passage: Extractive baselines are LEAD-k, TextRank, LexRank, SumBasic, C_SKIP and SemSenSum, with TF-IDF input selection.
+> - Judgement: It explicitly lists the extractive systems used and their setup.
+> 原因
+> - 问题概述：GameWikiSum 使用了哪些抽取式模型？
+> - Passage 概述：抽取基线包括 LEAD-k、TextRank、LexRank、SumBasic、C_SKIP 和 SemSenSum，并以 TF-IDF 粗筛输入。
+> - 判断：明确列出所用抽取系统及设置。
 
 #### Passage 793
 
@@ -920,7 +1344,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 793
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which extractive models were used on GameWikiSum?
+> - Summary of passage: ROUGE evaluation and reference-length constraints for extractive summaries are described.
+> - Judgement: Reference-length constraints describe how the extractive systems operate during evaluation.
+> 原因
+> - 问题概述：GameWikiSum 使用了哪些抽取式模型？
+> - Passage 概述：介绍 ROUGE 评价及抽取摘要与参考摘要等长的约束。
+> - 判断：参考长度约束说明抽取系统在评价时如何生成摘要。
 
 ### BM25
 
@@ -956,7 +1388,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 794
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What Bayesian model is trained?
+> - Summary of passage: Two Bayesian AUD variants are a Dirichlet-prior HMM and an HMM embedded in an SVAE.
+> - Judgement: It directly specifies the trained Bayesian models and priors.
+> 原因
+> - 问题概述：训练了什么贝叶斯模型？
+> - Passage 概述：两种贝叶斯 AUD 变体是使用 Dirichlet 先验的 HMM，以及嵌入 SVAE 的 HMM。
+> - 判断：直接说明训练的贝叶斯模型及先验。
 
 #### Passage 795
 
@@ -968,7 +1408,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 795
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What Bayesian model is trained?
+> - Summary of passage: Experiments train and compare HMM and SVAE with informative or uninformative priors.
+> - Judgement: It identifies the trained model variants and their training conditions.
+> 原因
+> - 问题概述：训练了什么贝叶斯模型？
+> - Passage 概述：实验训练比较 HMM、SVAE 及信息性和无信息先验。
+> - 判断：说明受训模型变体及训练条件。
 
 #### Passage 796
 
@@ -984,7 +1432,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 796
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What Bayesian model is trained?
+> - Summary of passage: Variational Bayes estimates an informative prior and target-data posterior.
+> - Judgement: It explains how the Bayesian model is trained, giving useful partial evidence beyond its name.
+> 原因
+> - 问题概述：训练了什么贝叶斯模型？
+> - Passage 概述：变分贝叶斯估计信息先验及目标数据后验。
+> - 判断：解释贝叶斯模型的训练方式，提供名称之外的有用部分证据。
 
 #### Passage 797
 
@@ -1002,7 +1458,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 797
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What Bayesian model is trained?
+> - Summary of passage: A Bayesian acoustic-unit model transfers acoustic parameter knowledge from a resource-rich language.
+> - Judgement: It describes the trained model's latent units, parameter groups and informative-prior formulation.
+> 原因
+> - 问题概述：训练了什么贝叶斯模型？
+> - Passage 概述：贝叶斯声学单元模型从高资源语言迁移声学参数知识。
+> - 判断：说明受训模型的隐单元、参数分组和信息先验形式。
 
 #### Passage 798
 
@@ -1012,7 +1476,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 798
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What Bayesian model is trained?
+> - Summary of passage: The AUD model is Bayesian, includes a phonotactic model and can be combined with a VAE.
+> - Judgement: It supplies partial evidence of the model family and its extensions.
+> 原因
+> - 问题概述：训练了什么贝叶斯模型？
+> - Passage 概述：AUD 模型采用贝叶斯方法，包含音系序列模型，并可结合 VAE。
+> - 判断：为模型家族及其扩展提供部分证据。
 
 ### BM25
 
@@ -1036,7 +1508,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 799
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What Bayesian model is trained?
+> - Summary of passage: The conclusion identifies an SVAE combining neural networks and Bayesian models with cross-language priors.
+> - Judgement: It identifies the Bayesian-neural variant studied.
+> 原因
+> - 问题概述：训练了什么贝叶斯模型？
+> - Passage 概述：结论指出 SVAE 结合神经网络、贝叶斯模型及跨语言先验。
+> - 判断：指出研究的贝叶斯与神经网络结合变体。
 
 ## Question 0088
 
@@ -1058,7 +1538,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 800
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: Two linguists use -1/0/1 quality scores, resolve extreme disagreements and average ratings.
+> - Judgement: It directly defines poor, partial/flawed and understandable informative summaries, as well as agreement measurement.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：两位语言学家按 -1/0/1 评分，处理极端分歧并取平均分。
+> - 判断：直接定义差、部分或有错、清晰且概括信息的摘要标准，并说明一致性度量。
 
 #### Passage 801
 
@@ -1074,7 +1562,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 801
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: Human evaluation disagrees with ROUGE, and dialogue summaries pose distinct challenges.
+> - Judgement: Disagreement between human ratings and ROUGE gives evidence about how human judgments differ from automatic scoring.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：人工评价与 ROUGE 不一致，对话摘要存在特殊挑战。
+> - 判断：人工评分与 ROUGE 不一致，为理解人工判断与自动评分的差异提供证据。
 
 #### Passage 802
 
@@ -1084,7 +1580,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 802
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: The conclusion argues ROUGE is more suitable for news than dialogue summaries.
+> - Judgement: The contrast between ROUGE and human assessment motivates and contextualizes the human evaluation criteria.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：结论认为 ROUGE 更适合新闻摘要而非对话摘要。
+> - 判断：ROUGE 与人工评估的对比，为人工评价标准提供动机和背景。
 
 #### Passage 803
 
@@ -1094,7 +1598,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 803
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: A paper outline points to automatic and linguistic evaluation sections.
+> - Judgement: The outline explicitly locates linguistic evaluation, providing a pointer to the requested human assessment procedure.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：文章结构指向自动评价及语言学评价章节。
+> - 判断：提纲明确指出语言学评价章节，为所问人工评价流程提供定位线索。
 
 #### Passage 805
 
@@ -1104,7 +1616,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 805
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: Automatic evaluation uses stemmed ROUGE-1, ROUGE-2 and ROUGE-L F1.
+> - Judgement: ROUGE provides the automatic counterpart to the human assessment, helping interpret the evaluation comparison.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：自动评价使用词干化的 ROUGE-1、ROUGE-2 和 ROUGE-L F1。
+> - 判断：ROUGE 是人工评估的自动评价对照，有助于理解两者的比较。
 
 ### BM25
 
@@ -1126,7 +1646,15 @@ Retrieved by: BM25
 
 #### Relevance 804
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: The introduction motivates abstractive dialogue summarization and introduces SAMSum.
+> - Judgement: It supplies no human scoring procedure or quality rubric.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：引言介绍生成式对话摘要的动机和 SAMSum。
+> - 判断：没有提供人工评分流程或质量标准。
 
 ### Dense
 
@@ -1138,7 +1666,15 @@ Retrieved by: Dense
 
 #### Relevance 806
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How are human judgments scored and what criteria are used?
+> - Summary of passage: The fragment only announces the experimental settings section.
+> - Judgement: It contains no evaluation criteria or scoring details.
+> 原因
+> - 问题概述：人工评价如何评分，采用什么标准？
+> - Passage 概述：该片段仅引出实验设置章节。
+> - 判断：没有评价标准或评分细节。
 
 ### Hybrid RRF
 
@@ -1182,7 +1718,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 807
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: L2, cosine distance and EWC penalties regularize parameter changes during fine-tuning.
+> - Judgement: The regularization penalties explain the intervention whose target-domain effect the question asks about.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：L2、余弦距离和 EWC 惩罚约束微调中的参数变化。
+> - 判断：正则化惩罚说明问题所问的目标域影响来自什么训练干预。
 
 #### Passage 809
 
@@ -1198,7 +1742,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 809
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: The introduction describes preserving source performance while optimizing target performance and reports successful combined penalties.
+> - Judgement: It provides a high-level claim supporting the approach's intended performance balance, though no target-score comparison.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：引言说明在优化目标域表现的同时保留源域能力，并报告组合惩罚的效果。
+> - 判断：为该方法兼顾两域表现提供概括性证据，但未给出目标分数对比。
 
 #### Passage 811
 
@@ -1212,7 +1764,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 811
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: Combined penalties yield target F1 changes of 0.23, -0.42 and 0.34 for QANet, decaNLP and BERT.
+> - Judgement: It directly shows generally comparable target performance, with small losses or gains and some substantial improvements.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：组合惩罚对 QANet、decaNLP、BERT 的目标 F1 变化分别为 0.23、-0.42、0.34。
+> - 判断：直接表明目标表现总体相近，有小幅下降或提升，部分情形显著提高。
 
 #### Passage 812
 
@@ -1230,7 +1790,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 812
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: Sequential adaptation preserves earlier domains, with comparable target F1 during the first ms-bm adaptation.
+> - Judgement: The explicit comparison says improved retention does not trade off target performance in that setting.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：连续适配保留先前领域能力，首次适配 ms-bm 时目标 F1 相近。
+> - 判断：明确比较表明该设置下保留能力的改善没有牺牲目标表现。
 
 #### Passage 814
 
@@ -1246,7 +1814,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 814
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: Vanilla transfer improves target performance; auxiliary penalties are compared for source SQuAD recovery.
+> - Judgement: Source recovery under penalties and vanilla target gains supply context for assessing the source-target trade-off.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：普通迁移改善目标表现，辅助惩罚则以源域 SQuAD 恢复进行比较。
+> - 判断：惩罚下的源域恢复和普通微调的目标域收益，为评估源域与目标域权衡提供背景。
 
 #### Passage 815
 
@@ -1256,7 +1832,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 815
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: The conclusion says combining penalties best preserves source performance without harming the target.
+> - Judgement: This directly answers that regularization need not hurt target performance.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：结论称组合惩罚最能保留源域表现，同时不损害目标域。
+> - 判断：直接回答正则化不一定损害目标域表现。
 
 ### BM25
 
@@ -1278,7 +1862,15 @@ Retrieved by: BM25
 
 #### Relevance 808
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: Task-transfer experiments find comparable target performance with auxiliary penalties.
+> - Judgement: It explicitly states penalties do not harm target task or domain performance.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：任务迁移实验发现增加辅助惩罚后目标表现相近。
+> - 判断：明确指出惩罚项不损害目标任务或目标域表现。
 
 #### Passage 810
 
@@ -1296,7 +1888,15 @@ Retrieved by: BM25
 
 #### Relevance 810
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: The setup compares regularizers, GEM, scratch training and vanilla fine-tuning, then contrasts scratch with fine-tuning.
+> - Judgement: The regularized and vanilla comparison setup identifies the experimental controls needed to assess target-domain harm.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：实验设置比较正则项、GEM、从零训练和普通微调，随后比较后两者。
+> - 判断：正则化与普通微调的对比设置指出评估目标域损失所需的实验对照。
 
 ### Dense
 
@@ -1312,7 +1912,15 @@ Retrieved by: Dense
 
 #### Relevance 813
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: Dynamic penalty schedules and gradient similarities are analyzed for source-domain recovery.
+> - Judgement: Penalty schedules and gradient behavior explain mechanisms that may affect the retention-performance trade-off.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：分析动态惩罚调度和梯度相似度对源域恢复的影响。
+> - 判断：惩罚调度和梯度行为说明可能影响知识保留与性能权衡的机制。
 
 ### Hybrid RRF
 
@@ -1332,7 +1940,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 816
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Does regularizing fine-tuning harm target-domain performance?
+> - Summary of passage: The passage defines domain adaptation, regularization and three reading-comprehension architectures.
+> - Judgement: Domain adaptation and the tested regularization setup define the setting for the target-performance question.
+> 原因
+> - 问题概述：微调正则化是否损害目标域表现？
+> - Passage 概述：介绍领域适配、正则化及三种阅读理解架构。
+> - 判断：领域适配和正则化实验设置界定所问目标域表现的研究场景。
 
 ## Question 0090
 
@@ -1352,7 +1968,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 817
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: ShapeWorldICE tasks involve object existence, spatial relations and quantification, with controlled visual complexity.
+> - Judgement: These tasks provide partial evidence of the restricted object-and-relation domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：ShapeWorldICE 任务涉及物体存在、空间关系和数量，并控制视觉复杂度。
+> - 判断：这些任务为受限物体与关系领域提供部分证据。
 
 #### Passage 818
 
@@ -1368,7 +1992,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 818
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: GTD evaluation uses synthetic ShapeWorldICE datasets.
+> - Judgement: It establishes that the images are synthetic diagnostic data rather than an unspecified image collection.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：GTD 评价采用合成的 ShapeWorldICE 数据集。
+> - 判断：明确说明图像来自合成诊断数据，为数据领域提供证据。
 
 #### Passage 819
 
@@ -1384,7 +2016,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 819
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: The introduction critiques caption metrics and discusses objects and relations in example scenes.
+> - Judgement: Object and relation examples supply scene-content clues relevant to interpreting the image domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：引言批评描述评价指标，并讨论示例场景的物体和关系。
+> - 判断：物体与关系示例提供与图像领域有关的场景内容线索。
 
 #### Passage 820
 
@@ -1398,7 +2038,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 820
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: Diversity is evaluated on abstract shapes using color and shape descriptions such as red squares.
+> - Judgement: It explicitly identifies abstract colored shapes as the visual domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：在抽象形状上通过红色正方形等颜色和形状描述评价多样性。
+> - 判断：明确指出视觉领域是带颜色的抽象形状。
 
 #### Passage 822
 
@@ -1410,7 +2058,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 822
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: English Resource Grammar parseability measures grammaticality in constrained language data.
+> - Judgement: The explicitly constrained ShapeWorld language source provides a clue to the controlled synthetic evaluation domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：通过英语资源语法的可解析性衡量受限语言数据的语法性。
+> - 判断：受约束的 ShapeWorld 语言来源为受控合成评价领域提供线索。
 
 ### BM25
 
@@ -1422,7 +2078,15 @@ Retrieved by: BM25
 
 #### Relevance 821
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: GTD is introduced as a multifaceted caption-evaluation protocol.
+> - Judgement: The fragment gives no information about the image domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：将 GTD 定位为多维图像描述评价流程。
+> - 判断：没有提供图像领域信息。
 
 ### Dense
 
@@ -1434,7 +2098,15 @@ Retrieved by: Dense
 
 #### Relevance 823
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: Caption semantics are converted to logical propositions and checked against world models.
+> - Judgement: World-model truth checking indicates controlled scenes with available ground truth, relevant to image-domain characterization.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：将描述语义转成逻辑命题，并对照世界模型核验。
+> - 判断：世界模型真值检查表明场景受控且有真实标注，与图像领域特征有关。
 
 ### Hybrid RRF
 
@@ -1452,7 +2124,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 824
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: ShapeWorld generates abstract colored shapes from entities with shape, color and position attributes.
+> - Judgement: It directly defines the restricted synthetic image domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：ShapeWorld 根据具有形状、颜色和位置属性的实体生成带颜色的抽象形状。
+> - 判断：直接界定受限的合成图像领域。
 
 #### Passage 825
 
@@ -1470,7 +2150,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 825
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do the images come from a particular domain?
+> - Summary of passage: Experiments use two-shape and multi-shape spatial scenes and count crosses or blue squares.
+> - Judgement: The concrete scene and caption examples identify a geometric-shape domain.
+> 原因
+> - 问题概述：图像是否来自特定领域？
+> - Passage 概述：实验使用双形状、多形状空间场景，并统计十字形或蓝色正方形。
+> - 判断：具体场景和描述例子说明其领域为几何形状。
 
 ## Question 0091
 
@@ -1496,7 +2184,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 826
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: The introduction motivates character n-gram embeddings for neural language models.
+> - Judgement: It does not identify a headline-generation evaluation dataset.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：引言说明神经语言模型使用字符 n-gram 嵌入的动机。
+> - 判断：没有指出标题生成评价数据集。
 
 #### Passage 827
 
@@ -1512,7 +2208,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 827
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: Headline generation uses English Gigaword sentence-headline pairs and test sets from BIBREF33 and BIBREF34.
+> - Judgement: It directly identifies the corpus and chosen evaluation splits, excluding the flawed earlier test set.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：标题生成采用 English Gigaword 句子与标题对，并使用 BIBREF33 和 BIBREF34 的测试集。
+> - 判断：直接说明语料及所选评价测试集，并排除有问题的早期测试集。
 
 #### Passage 828
 
@@ -1524,7 +2228,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 828
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: Word tying uses character n-gram-derived embeddings as output weights.
+> - Judgement: The architecture gives no headline-generation dataset identity.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：词权重共享采用字符 n-gram 构造的嵌入作为输出权重。
+> - 判断：架构没有提供标题生成数据集名称。
 
 #### Passage 830
 
@@ -1536,7 +2248,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 830
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: Language modeling uses PTB and WikiText, and the method is also applied to headline generation.
+> - Judgement: The explicit headline-generation experiment links the passage to the requested dataset search; PTB and WikiText belong to language modeling.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：语言建模使用 PTB 和 WikiText，该方法还用于标题生成。
+> - 判断：明确提到标题生成实验，为查找所问数据集提供线索；PTB 和 WikiText 属于语言模型任务。
 
 #### Passage 831
 
@@ -1548,7 +2268,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 831
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: The encoder-decoder, hidden dimensions, batch sizes and BPE settings are specified.
+> - Judgement: Headline-specific model and BPE settings describe the experimental setup accompanying the requested evaluation data.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：说明编码解码器、隐藏维度、批大小和 BPE 设置。
+> - 判断：标题生成专用模型和 BPE 设置说明所问评价数据对应的实验配置。
 
 ### BM25
 
@@ -1566,7 +2294,15 @@ Retrieved by: BM25
 
 #### Relevance 829
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: Language-model perplexity, training time and character-encoder comparisons are reported.
+> - Judgement: PTB and related language-model evaluations are not headline-generation evaluation data.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：报告语言模型困惑度、训练时间及字符编码器比较。
+> - 判断：PTB 等语言模型评价并非标题生成评价数据。
 
 ### Dense
 
@@ -1578,7 +2314,15 @@ Retrieved by: Dense
 
 #### Relevance 832
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: The conclusion reports improved language modeling, translation and headline generation.
+> - Judgement: The conclusion confirms headline generation as an evaluated application, helping separate it from language-model benchmarks.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：结论报告语言建模、翻译和标题生成的改进。
+> - 判断：结论确认标题生成是受评应用，有助于将其与语言模型基准区分。
 
 ### Hybrid RRF
 
@@ -1602,7 +2346,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 833
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: Headline-generation results use the test sets constructed by BIBREF33 and BIBREF34.
+> - Judgement: It explicitly identifies the evaluation sets by source reference, even without resolving their names.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：标题生成结果使用 BIBREF33 和 BIBREF34 构建的测试集。
+> - 判断：即使没有展开名称，也通过来源引用明确指出评价集。
 
 #### Passage 834
 
@@ -1612,7 +2364,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 834
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which dataset is used to evaluate headline generation?
+> - Summary of passage: The fragment announces translation and headline-generation experiments.
+> - Judgement: The explicit headline-generation evaluation provides a task-level pointer to the relevant dataset setup.
+> 原因
+> - 问题概述：标题生成使用哪个数据集评价？
+> - Passage 概述：该片段宣布进行翻译和标题生成实验。
+> - 判断：明确的标题生成评价为定位相关数据设置提供任务线索。
 
 ## Question 0092
 
@@ -1630,7 +2390,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 835
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: Evaluation uses accuracy, defined as correctly classified test samples divided by all test samples.
+> - Judgement: It directly names and defines the evaluation metric.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：评价使用准确率，即分类正确的测试样本数除以测试样本总数。
+> - 判断：直接给出评价指标及定义。
 
 #### Passage 836
 
@@ -1640,7 +2408,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 836
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: The conclusion claims better popularity prediction and suggests multimodal extensions.
+> - Judgement: It does not name an evaluation metric.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：结论称热门程度预测更好，并建议多模态扩展。
+> - 判断：没有给出评价指标名称。
 
 #### Passage 837
 
@@ -1650,7 +2426,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 837
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: Views or comments define popularity labels by comparison with a median.
+> - Judgement: Views and comments are the study's popularity measures and explain the evaluation target, though they are not classifier accuracy.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：用浏览量或评论数相对中位数来定义热门标签。
+> - 判断：浏览量和评论数是论文的流行度度量，说明评价目标，但并非分类准确率。
 
 #### Passage 838
 
@@ -1670,7 +2454,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 838
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: BiLSTM equations and hidden-state aggregation define the predictor.
+> - Judgement: Model architecture does not specify evaluation metrics.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：BiLSTM 公式和隐藏状态聚合定义预测器。
+> - 判断：模型架构没有说明评价指标。
 
 #### Passage 840
 
@@ -1684,7 +2476,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 840
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: Views and comments label NowThisNews and BreakingNews examples as popular or unpopular.
+> - Judgement: Dataset-specific view and comment measures clarify how popularity is quantified alongside classifier evaluation.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：用浏览量和评论数给 NowThisNews、BreakingNews 样本分配热门或非热门标签。
+> - 判断：各数据集的浏览量与评论数说明除分类评价外如何量化流行度。
 
 #### Passage 841
 
@@ -1696,7 +2496,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 841
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: BiLSTM results improve over baselines in terms of accuracy.
+> - Judgement: It explicitly names accuracy as the metric used for comparison.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：BiLSTM 结果在准确率上优于基线。
+> - 判断：明确指出用于比较的指标是准确率。
 
 #### Passage 842
 
@@ -1706,7 +2514,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 842
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: GloVe sources, vector dimensions and embedding fine-tuning options are described.
+> - Judgement: Embedding settings do not identify evaluation metrics.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：介绍 GloVe 来源、向量维度及嵌入微调选项。
+> - 判断：嵌入设置没有说明评价指标。
 
 ### BM25
 
@@ -1720,7 +2536,15 @@ Retrieved by: BM25
 
 #### Relevance 839
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: The baselines are bag-of-words SVM and a convolutional neural network.
+> - Judgement: Baseline architectures do not identify evaluation metrics.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：基线为词袋 SVM 和卷积神经网络。
+> - 判断：基线架构没有指出评价指标。
 
 ### Dense
 
@@ -1740,7 +2564,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 843
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which evaluation metrics are used?
+> - Summary of passage: Training minimizes binary cross-entropy and uses validation loss for early stopping.
+> - Judgement: Validation loss is an explicit quantitative criterion used during model assessment and stopping.
+> 原因
+> - 问题概述：使用哪些评价指标？
+> - Passage 概述：训练最小化二元交叉熵，并依验证损失提前停止。
+> - 判断：验证损失是模型评估与停止训练时使用的明确量化标准。
 
 ## Question 0093
 
@@ -1758,7 +2590,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 844
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: NJM receives more Bokete stars than STAIR, attributed partly to a large self-collected database.
+> - Judgement: Calling the self-collected BoketeDB large-scale supplies qualitative size evidence and identifies the corpus to quantify.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：NJM 的 Bokete 星数高于 STAIR，部分归因于自建大型数据库。
+> - 判断：将自建 BoketeDB 称为大规模，提供定性规模线索并指出需要统计的语料。
 
 #### Passage 846
 
@@ -1770,7 +2610,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 846
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: BoketeDB contains 999,571 funny captions paired with 70,981 images.
+> - Judgement: It directly states the collected corpus size, distinct from the larger website totals.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：BoketeDB 包含 999,571 条幽默描述和 70,981 张图像。
+> - 判断：直接说明自建语料规模，并与网站总量区分。
 
 #### Passage 847
 
@@ -1780,7 +2628,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 847
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: Stars and a threshold of 100 define the Funny Score training loss.
+> - Judgement: The score threshold is not a count of corpus examples.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：星数及 100 星阈值定义 Funny Score 训练损失。
+> - 判断：评分阈值不是语料样本数量。
 
 #### Passage 848
 
@@ -1794,7 +2650,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 848
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: The introduction motivates humor generation and reports human ranking percentages.
+> - Judgement: The corpus-building context links the humor-generation study to the self-collected data whose size is requested.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：引言说明幽默生成的动机并报告人工排名比例。
+> - 判断：语料构建背景联系了幽默生成研究与问题所问的自建数据。
 
 #### Passage 849
 
@@ -1804,7 +2668,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 849
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: Sixteen questionnaires compare humor rankings of humans, NJM and STAIR.
+> - Judgement: The number of questionnaires is unrelated to the collected training corpus size.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：16 份问卷比较人类、NJM 和 STAIR 的幽默排名。
+> - 判断：问卷数量不能说明所收集训练语料的规模。
 
 ### BM25
 
@@ -1816,7 +2688,15 @@ Retrieved by: BM25
 
 #### Relevance 845
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: The generator combines ResNet-152 and LSTM with a Funny Score loss.
+> - Judgement: Model structure does not give corpus size.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：生成器结合 ResNet-152、LSTM 和 Funny Score 损失。
+> - 判断：模型结构没有提供语料规模。
 
 ### Dense
 
@@ -1828,7 +2708,15 @@ Retrieved by: Dense
 
 #### Relevance 850
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: A blind questionnaire evaluates captions on 30 selected themes.
+> - Judgement: Thirty evaluation themes do not measure the full self-collected corpus.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：盲测问卷评价 30 个选定主题的描述。
+> - 判断：30 个评价主题不能代表完整自建语料规模。
 
 ### Hybrid RRF
 
@@ -1844,7 +2732,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 851
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: The conclusion says BoketeDB consists of image and humorous-caption pairs.
+> - Judgement: BoketeDB's image-caption structure identifies the corpus and counting units relevant to its size.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：结论说明 BoketeDB 由图像与幽默描述对组成。
+> - 判断：BoketeDB 的图像与文本配对结构说明语料身份及规模统计单位。
 
 #### Passage 852
 
@@ -1854,7 +2750,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 852
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How large is the self-collected corpus?
+> - Summary of passage: Examples of generated Japanese captions are shown with English translations.
+> - Judgement: Qualitative examples do not quantify the corpus.
+> 原因
+> - 问题概述：自建语料规模有多大？
+> - Passage 概述：展示日文生成描述及英文翻译的示例。
+> - 判断：定性示例没有量化语料规模。
 
 ## Question 0094
 
@@ -1872,7 +2776,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 853
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: Feature ablations emphasize embeddings, style and morality for account classification.
+> - Judgement: Feature importance does not define a chunk of posts.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：特征消融强调嵌入、风格和道德特征对账号分类的作用。
+> - 判断：特征重要性没有定义帖子块。
 
 #### Passage 854
 
@@ -1886,7 +2798,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 854
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: Accounts are analyzed in groups of tweets to capture patterns across tweet sequences.
+> - Judgement: It partially defines chunks as groups of tweets, although ordering and size are not specified.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：将账号推文分组，以捕获推文序列模式。
+> - 判断：部分说明块是推文组，但没有给出顺序和大小。
 
 #### Passage 855
 
@@ -1904,7 +2824,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 855
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: Tweets from an account are sorted by posting date and split into chunks of s tweets carrying the account label.
+> - Judgement: It directly defines a chunk's membership, ordering, size parameter and label.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：将同一账号推文按发布时间排序，划分为各含 s 条推文的块，并继承账号标签。
+> - 判断：直接定义块的归属、顺序、大小参数及标签。
 
 #### Passage 856
 
@@ -1920,7 +2848,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 856
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: Post streams are represented as sequences of tweet chunks and compared with order-ignoring baselines.
+> - Judgement: It gives partial evidence that a chunk groups tweets within a chronological stream.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：将帖子流表示为推文块序列，并与忽略顺序的基线比较。
+> - 判断：为块是时间序列中推文分组这一含义提供部分证据。
 
 #### Passage 857
 
@@ -1946,7 +2882,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 857
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: Data collection and baselines include concatenated chunk-level tweet features.
+> - Judgement: Chunk-level concatenation describes what information is grouped within a chunk, supplying partial definition evidence.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：数据收集与基线涉及拼接块内推文特征。
+> - 判断：块级拼接说明一个块中汇集的信息，提供部分定义线索。
 
 #### Passage 858
 
@@ -1956,7 +2900,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 858
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: The conclusion praises chunked timelines and proposes future temporal analysis.
+> - Judgement: Chunked timelines connect chunks with the account's tweet stream, supplying organizational context.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：结论肯定分块时间线，并提出未来时间分析。
+> - 判断：分块时间线将块与账号推文流联系起来，提供组织方式线索。
 
 #### Passage 859
 
@@ -1972,7 +2924,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 859
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: Experiments use a chunk size of 20 tweets, chosen on held-out data.
+> - Judgement: It directly supplies the operational chunk size.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：实验使用每块 20 条推文，该大小由留出数据选定。
+> - 判断：直接给出实际采用的块大小。
 
 ### BM25
 
@@ -2008,7 +2968,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 860
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How is a chunk of posts defined?
+> - Summary of passage: The LSTM input is a sequence of tweets belonging to one chunk.
+> - Judgement: It clarifies that a chunk contains an ordered tweet sequence, providing partial definition evidence.
+> 原因
+> - 问题概述：如何定义帖子块？
+> - Passage 概述：LSTM 输入为属于同一块的推文序列。
+> - 判断：明确块包含有序推文序列，提供部分定义证据。
 
 ## Question 0095
 
@@ -2028,7 +2996,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 861
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The AFR method identifies industry-indicative words by their frequencies.
+> - Judgement: Vocabulary analysis gives no user count.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：AFR 方法按词频识别行业指示词。
+> - 判断：词汇分析没有提供用户数量。
 
 #### Passage 862
 
@@ -2046,7 +3022,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 862
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The final corpus contains 22,880 users, 41,094 blogs and 561,003 posts.
+> - Judgement: It directly states the number of users studied.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：最终语料包含 22,880 名用户、41,094 个博客和 561,003 篇帖子。
+> - 判断：直接说明研究用户人数。
 
 #### Passage 864
 
@@ -2064,7 +3048,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 864
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The introduction describes an industry-annotated dataset with over 20,000 blog users.
+> - Judgement: The approximate count is useful partial evidence of the sample size.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：引言介绍含两万多名博客用户的行业标注数据集。
+> - 判断：近似人数为样本规模提供有用部分证据。
 
 #### Passage 866
 
@@ -2078,7 +3070,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 866
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: Related work surveys profiling studies, including occupational classification on Weibo.
+> - Judgement: Other studies and their category counts do not quantify this study's users.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：相关工作回顾用户画像研究，包括微博职业分类。
+> - 判断：其他研究及类别数量不能说明本文用户人数。
 
 #### Passage 867
 
@@ -2092,7 +3092,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 867
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: After contrasting a prior study's 5,191 users, the paper describes its own corpus of over 20K American users.
+> - Judgement: It gives the approximate count for this study, while distinguishing prior-work counts.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：对比先前研究的 5,191 名用户后，本文说明自身语料有两万多名美国用户。
+> - 判断：给出本文近似人数，并与先前研究人数区分。
 
 #### Passage 868
 
@@ -2104,7 +3112,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 868
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The train, development and test sets contain 17,880, 2,500 and 2,500 users.
+> - Judgement: These disjoint user splits sum to 22,880 and specify the evaluation scope.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：训练、开发和测试集分别含 17,880、2,500 和 2,500 名用户。
+> - 判断：这些用户划分合计 22,880 人，并说明评价范围。
 
 ### BM25
 
@@ -2124,7 +3140,15 @@ Retrieved by: BM25
 
 #### Relevance 863
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The contributions cover classifiers, semantic variation and emotional vocabulary.
+> - Judgement: It contains no user sample size.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：贡献包括分类器、语义变化及情感词分析。
+> - 判断：没有用户样本规模。
 
 #### Passage 865
 
@@ -2134,7 +3158,15 @@ Retrieved by: BM25
 
 #### Relevance 865
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The passage acknowledges funding from two foundations.
+> - Judgement: Funding details do not state the number of users.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：该段致谢两家基金机构的资助。
+> - 判断：资助信息没有说明用户人数。
 
 ### Dense
 
@@ -2158,7 +3190,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 869
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many users are included in the study?
+> - Summary of passage: The conclusion describes a dataset of more than 20,000 blog users.
+> - Judgement: It directly supplies an approximate user sample size.
+> 原因
+> - 问题概述：研究包含多少名用户？
+> - Passage 概述：结论说明数据集有两万多名博客用户。
+> - 判断：直接提供近似用户样本规模。
 
 ## Question 0096
 
@@ -2182,7 +3222,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 870
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: The introduction describes DA-to-utterance generation and experiments on four NLG domains.
+> - Judgement: It identifies the evaluation as NLG within spoken dialogue systems.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：引言描述从对话行为生成语句，并在四个 NLG 领域实验。
+> - 判断：说明评价针对口语对话系统中的 NLG。
 
 #### Passage 871
 
@@ -2194,7 +3242,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 871
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: The paper reports experiments on four NLG domains using BLEU and slot error rate.
+> - Judgement: It explicitly characterizes the tested domains as NLG.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：论文报告四个 NLG 领域实验，并使用 BLEU 和槽位错误率。
+> - 判断：明确将受测领域界定为 NLG。
 
 #### Passage 872
 
@@ -2204,7 +3260,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 872
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: Evaluation uses Restaurant, Hotel, Laptop and TV NLG datasets with dialogue-act inputs.
+> - Judgement: It directly identifies the data as dialogue-act-to-text NLG benchmarks, clarifying the task level.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：评价使用餐馆、酒店、笔记本电脑和电视 NLG 数据集，输入为对话行为。
+> - 判断：直接说明数据是对话行为到文本的 NLG 基准，澄清任务层级。
 
 #### Passage 873
 
@@ -2222,7 +3286,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 873
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: Results evaluate sentences generated for input dialogue acts and adaptation across Restaurant, Hotel and Laptop.
+> - Judgement: The input-output description provides evidence of NLG evaluation rather than whole-dialogue modeling.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：结果评价按输入对话行为生成的句子，并比较餐馆、酒店与电脑领域适配。
+> - 判断：输入输出说明为 NLG 评价提供证据，而非整段对话建模。
 
 #### Passage 875
 
@@ -2232,7 +3304,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 875
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: The conclusion states that the generators were assessed on four NLG domains.
+> - Judgement: It directly identifies NLG as the evaluation task.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：结论明确称生成器在四个 NLG 领域接受评价。
+> - 判断：直接指出评价任务为 NLG。
 
 ### BM25
 
@@ -2244,7 +3324,15 @@ Retrieved by: BM25
 
 #### Relevance 874
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: The fragment generally announces experiments with metrics, datasets and architectures.
+> - Judgement: It does not identify the dataset type.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：片段笼统宣布使用多种指标、数据集和架构进行实验。
+> - 判断：没有说明数据集类型。
 
 ### Dense
 
@@ -2256,7 +3344,15 @@ Retrieved by: Dense
 
 #### Relevance 876
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: For each dialogue act, candidate sentences are generated and reranked across four domain datasets.
+> - Judgement: This provides concrete evidence that evaluation concerns DA-conditioned utterance generation.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：针对每个对话行为生成候选句并重排，在四个领域数据集实验。
+> - 判断：具体说明评价针对以对话行为为条件的语句生成。
 
 ### Hybrid RRF
 
@@ -2278,7 +3374,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 877
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: Related work covers poetry, captioning, dialogue generation and multi-domain systems.
+> - Judgement: Prior NLG and dialogue systems provide context for distinguishing utterance-generation data from whole-dialogue data; they do not identify this model's datasets.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：相关工作涵盖诗歌、图像描述、对话生成和多领域系统。
+> - 判断：既有 NLG 与对话系统为区分话语生成数据和完整对话数据提供背景，但没有确定本文数据集。
 
 #### Passage 878
 
@@ -2294,7 +3398,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 878
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Is evaluation conducted on NLG data or dialogue data?
+> - Summary of passage: The generator is assessed with the RNNLG benchmark toolkit using BLEU and slot error rate.
+> - Judgement: The named NLG benchmark and slot-based evaluation provide partial evidence of the dataset/task type.
+> 原因
+> - 问题概述：评价使用 NLG 数据还是对话数据？
+> - Passage 概述：生成器使用 RNNLG 基准工具包，以 BLEU 和槽位错误率评价。
+> - 判断：所列 NLG 基准及槽位评价为数据和任务类型提供部分证据。
 
 ## Question 0097
 
@@ -2320,7 +3432,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 879
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: The introduction reports 1,268 clips with a total of 14,769 actions.
+> - Judgement: It directly states the total action count despite the truncated final clause.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：引言报告 1,268 个视频片段，共有 14,769 个动作。
+> - 判断：即使末句截断，也已直接给出动作总数。
 
 #### Passage 880
 
@@ -2332,7 +3452,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 880
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: Routine vlogs average thirty visible actions in five minutes.
+> - Judgement: The stated average action density provides partial quantitative context for interpreting the dataset's action inventory.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：日常 vlog 平均每五分钟有三十个可见动作。
+> - 判断：给出的平均动作密度为理解数据集动作规模提供部分量化背景。
 
 #### Passage 881
 
@@ -2350,7 +3478,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 881
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: Concreteness coverage and YOLO, Inception and C3D features are described.
+> - Judgement: Feature coverage and YOLO's 9,000 labels are not the dataset's action count.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：介绍具体性词表覆盖率以及 YOLO、Inception 和 C3D 特征。
+> - 判断：特征覆盖率和 YOLO 的 9,000 个标签不是数据集动作数量。
 
 #### Passage 882
 
@@ -2362,7 +3498,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 882
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: Actions have varied natural-language labels; unique verbs bound unique action types and each verb averages seven labels.
+> - Judgement: It provides useful scope evidence distinguishing action types from total annotated occurrences, although no exact total is given.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：动作采用多样自然语言标签，唯一动词数为动作类型数下界，每个动词平均对应七种标签。
+> - 判断：有助于区分动作类型与标注实例总数，但没有给出精确总数。
 
 #### Passage 883
 
@@ -2376,7 +3520,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 883
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: The dataset contains 14,769 actions, including 4,340 visible actions, in 1,268 clips.
+> - Judgement: It directly states the total and visible-action counts.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：数据集含 1,268 个片段、14,769 个动作，其中 4,340 个可见。
+> - 判断：直接给出动作总数及可见动作数量。
 
 #### Passage 884
 
@@ -2394,7 +3546,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 884
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: Related datasets and implicit routine-video collection are discussed.
+> - Judgement: The dataset comparison and collection discussion help establish what actions and data scope are being counted.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：讨论相关数据集及隐式收集日常视频的方法。
+> - 判断：数据集比较与收集讨论有助于明确动作统计对象和数据范围。
 
 #### Passage 886
 
@@ -2408,7 +3568,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 886
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: The contributions report 14,769 actions, of which 4,340 are visible.
+> - Judgement: It explicitly gives the required dataset counts.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：贡献概述报告 14,769 个动作，其中 4,340 个可见。
+> - 判断：明确给出所问的数据集数量。
 
 #### Passage 887
 
@@ -2430,7 +3598,15 @@ Retrieved by: Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 887
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: Three workers annotate each clip; HITs contain up to seven actions per clip and agreement is measured.
+> - Judgement: Actions per annotation unit and the split-statistics pointer supply clues to how the dataset's action total is organized.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：每个片段由三人标注，HIT 中每片段最多七个动作，并衡量一致性。
+> - 判断：每个标注单元的动作数及划分统计表为动作总量的组织方式提供线索。
 
 ### BM25
 
@@ -2452,7 +3628,15 @@ Retrieved by: Dense
 
 #### Relevance 885
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many actions are in the dataset?
+> - Summary of passage: Transcript-derived action labels allow varied expressions, and multimodal features are compared.
+> - Judgement: Transcript-derived action labels clarify what constitutes an action entry in the requested count.
+> 原因
+> - 问题概述：数据集包含多少个动作？
+> - Passage 概述：从转写提取的动作标签允许多种表达，并比较多模态特征。
+> - 判断：转写文本生成的动作标签说明所问动作数量的统计单位。
 
 ### Hybrid RRF
 
@@ -2478,7 +3662,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 888
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: Feature ablations identify semantic and stylistic signals in misleading accounts.
+> - Judgement: Results do not explain how the dataset was collected.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：特征消融指出误导性账号的语义和风格信号。
+> - 判断：结果没有说明数据集如何收集。
 
 #### Passage 889
 
@@ -2494,7 +3686,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 889
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: Top-k engagement baselines, validation sampling and model hyperparameters are described.
+> - Judgement: Account-level tweet selection and validation sampling describe how the collected data are assembled for experiments.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：介绍互动量 top-k 基线、验证采样和模型超参数。
+> - 判断：账号级推文选择和验证抽样说明如何组织已收集数据以开展实验。
 
 #### Passage 890
 
@@ -2508,7 +3708,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 890
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: The study collects tweets using lists of propaganda, hoax and clickbait accounts.
+> - Judgement: It provides partial evidence of the account-list-based collection route.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：研究使用宣传、骗局和标题党账号名单收集推文。
+> - 判断：为基于账号名单的收集途径提供部分证据。
 
 #### Passage 891
 
@@ -2534,7 +3742,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 891
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: Two prior account lists supply 180 suspicious and 32 trustworthy candidates; satire, non-English and unsuitable tweets are removed, and the Twitter API retrieves tweets.
+> - Judgement: It directly explains the sources, filtering and collection mechanism without treating candidate-list sizes as final totals.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：两份既有名单提供 180 个可疑和 32 个可信候选账号；过滤讽刺、非英语及不合适推文，再通过 Twitter API 获取推文。
+> - 判断：直接说明来源、筛选和获取机制，且不把候选名单人数当作最终总量。
 
 #### Passage 892
 
@@ -2556,7 +3772,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 892
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: Lexicons, embeddings and an attention LSTM represent and classify tweets.
+> - Judgement: Feature-resource acquisition is different from collecting the tweet dataset.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：词典、嵌入及注意力 LSTM 用于推文表示和分类。
+> - 判断：获取特征资源不等于收集推文数据集。
 
 #### Passage 893
 
@@ -2574,7 +3798,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 893
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: Tweets are taken from account timelines, sorted by date and split into labeled chunks.
+> - Judgement: It gives partial evidence of data origin and subsequent dataset organization.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：从账号时间线取得推文，按日期排序并划分为带标签的块。
+> - 判断：为数据来源及后续组织方式提供部分证据。
 
 ### BM25
 
@@ -2590,7 +3822,15 @@ Retrieved by: Dense
 
 #### Relevance 894
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: The conclusion highlights chunked timelines and future temporal or multilingual work.
+> - Judgement: The explicit use of Twitter account timelines provides partial evidence of the dataset's source and organization.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：结论强调分块时间线，以及未来时间和多语言研究。
+> - 判断：明确使用 Twitter 账号时间线，为数据来源和组织方式提供部分证据。
 
 ### Hybrid RRF
 
@@ -2612,7 +3852,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 895
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How was the FacTweet dataset obtained?
+> - Summary of passage: The contributions propose chunk-based factuality classification and order-aware baselines.
+> - Judgement: The account-level and chronological focus clarifies the source unit and organization of the tweet dataset.
+> 原因
+> - 问题概述：FacTweet 数据集如何获取？
+> - Passage 概述：贡献提出分块真实性分类及考虑顺序的基线。
+> - 判断：账号级研究和时间顺序说明推文数据集的来源单位与组织方式。
 
 ## Question 0099
 
@@ -2632,7 +3880,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 896
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: Related work discusses social movements, election networks and influential leaders.
+> - Judgement: Social-movement and opinion-leader research supplies background for interpreting leader-follower profile changes.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：相关工作讨论社会运动、选举网络及意见领袖。
+> - 判断：社会运动与意见领袖研究为理解领袖和关注者的资料变化提供背景。
 
 #### Passage 897
 
@@ -2644,7 +3900,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 897
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: Opinion leaders influence followers, and the paper announces a profile-change investigation.
+> - Judgement: The stated leader-follower influence relationship directly frames the profile-change comparison.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：意见领袖影响关注者，论文宣布研究资料变化。
+> - 判断：领袖与关注者的影响关系直接界定资料变化对比的背景。
 
 #### Passage 898
 
@@ -2662,7 +3926,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 898
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: Across nine snapshots, 54.9% of political accounts versus about 3% of followers change profiles; attributes also differ.
+> - Judgement: It directly quantifies leader-follower differences in profile-changing behavior.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：九次快照中，54.9% 的政治账号与约 3% 的关注者修改资料，修改属性也不同。
+> - 判断：直接量化领袖与关注者资料变化行为的差异。
 
 #### Passage 899
 
@@ -2686,7 +3958,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 899
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: Research questions ask about profile frequency, political inclination and behavioral contagion.
+> - Judgement: The explicit questions about frequency, inclination and contagion identify the dimensions of leader-follower change being studied.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：研究问题涉及资料修改频率、政治倾向和行为传播。
+> - 判断：关于频率、倾向和传染效应的问题指出研究领袖与关注者变化的维度。
 
 #### Passage 900
 
@@ -2704,7 +3984,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 900
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: The contributions state that political accounts change profiles more and that Chowkidar support exhibits contagion.
+> - Judgement: It directly summarizes observed differences and movement-related imitation.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：贡献概述称政治账号更常改资料，Chowkidar 支持表现出行为传播。
+> - 判断：直接概述观察到的差异及运动中的模仿行为。
 
 #### Passage 901
 
@@ -2714,7 +4002,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 901
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: The section opening announces characterization of political and follower accounts.
+> - Judgement: Characterizing political and follower accounts points directly to the populations whose changes are compared.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：章节开头宣布分析政治账号和关注者账号。
+> - 判断：刻画政治账号和关注者账号，直接指出所问变化对比的两类群体。
 
 ### BM25
 
@@ -2730,7 +4026,15 @@ Retrieved by: Dense
 
 #### Relevance 902
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: The related-work overview describes profiles, event-triggered changes and opinion-leader contagion.
+> - Judgement: Event-triggered profile changes and contagion explain mechanisms relevant to movement-linked leader-follower variation.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：相关工作概述介绍资料、事件触发变化和意见领袖传播。
+> - 判断：事件触发的资料变化和传染效应说明与运动中领袖及关注者变化有关的机制。
 
 ### Hybrid RRF
 
@@ -2750,7 +4054,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 903
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: LCS analysis finds followers' new display names differ more from old values than political accounts' names.
+> - Judgement: It directly answers how the magnitude and continuity of profile changes differ.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：LCS 分析发现关注者新显示名与旧值的差异大于政治账号。
+> - 判断：直接说明资料变化幅度及连续性如何不同。
 
 #### Passage 904
 
@@ -2764,7 +4076,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 904
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do leaders' and followers' profile changes differ during the movement?
+> - Summary of passage: Political accounts mostly change images and display names, never usernames; removing Chowkidar follows Modi's change.
+> - Judgement: It supplies leader-side attribute patterns and concrete movement-linked imitation evidence.
+> 原因
+> - 问题概述：运动中领袖与关注者的资料变化有何差异？
+> - Passage 概述：政治账号主要修改头像和显示名，不改用户名，并跟随莫迪移除 Chowkidar。
+> - 判断：提供领袖端属性变化模式及与运动有关的具体模仿证据。
 
 ## Question 0100
 
@@ -2798,7 +4118,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 905
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: New applications are matched semantically to known applications, whose feature relevance determines ranked recommendations; feedback adapts them.
+> - Judgement: It directly explains the recommendation workflow and knowledge base.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：新应用按语义匹配已知应用，利用其特征相关度排序推荐，并通过反馈调整。
+> - 判断：直接解释推荐流程及知识库。
 
 #### Passage 907
 
@@ -2824,7 +4152,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 907
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: User rerankings or relevance scores update similarity estimates and train a new regression-based similarity function.
+> - Judgement: It explains the feedback stage that adapts recommendations for new applications.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：用户重排或相关度评分更新相似度估计，并训练新的回归相似度函数。
+> - 判断：解释为新应用调整推荐的反馈阶段。
 
 #### Passage 908
 
@@ -2840,7 +4176,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 908
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: The feature specification language and interpreter automate feature extraction in the ML lifecycle.
+> - Judgement: The feature language and extraction pipeline explain how recommended feature specifications can be represented and used.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：特征描述语言及解释器自动执行机器学习流程中的特征提取。
+> - 判断：特征语言与提取流程说明推荐的特征规范如何表示及使用。
 
 #### Passage 909
 
@@ -2866,7 +4210,15 @@ Retrieved by: BM25, Dense
 
 #### Relevance 909
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: Application similarities weight the feature matrix; minimum, maximum or mean aggregation yields relevance scores used for descending ranking.
+> - Judgement: It directly gives the scoring, aggregation and ranking algorithm.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：应用相似度加权特征矩阵，经最小、最大或均值聚合得到相关度，再降序推荐。
+> - 判断：直接给出评分、聚合与排序算法。
 
 #### Passage 910
 
@@ -2878,7 +4230,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 910
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: The system reuses features across semantically related applications and updates similarity using user feedback.
+> - Judgement: It supplies a useful high-level account of the recommendation mechanism.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：系统在语义相关应用间复用特征，并用用户反馈更新相似度。
+> - 判断：为推荐机制提供有用的概括说明。
 
 #### Passage 911
 
@@ -2888,7 +4248,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 911
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: Semantic similarities let features from one or two applications be suggested for others.
+> - Judgement: It identifies similarity-based transfer as the basis of new-application recommendations.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：利用语义相似度，可把一两个应用的特征推荐给其他应用。
+> - 判断：指出基于相似度迁移是新应用推荐的基础。
 
 ### BM25
 
@@ -2904,7 +4272,15 @@ Retrieved by: BM25
 
 #### Relevance 906
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: The feature language specifies context windows, POS constraints and head directionality.
+> - Judgement: Feature-specification elements describe the objects the recommendation system selects and transfers to a new application.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：特征语言规定上下文窗口、词性约束和中心词方向。
+> - 判断：特征规范元素说明推荐系统向新应用选择和迁移的对象。
 
 ### Dense
 
@@ -2924,7 +4300,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 912
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: A corpus of feature specifications enables automatic reuse across semantically related applications.
+> - Judgement: It provides partial evidence of the knowledge source and similarity-based reuse principle.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：特征描述语料支持在语义相关应用间自动复用特征。
+> - 判断：为知识来源及基于相似度的复用原则提供部分证据。
 
 #### Passage 913
 
@@ -2934,4 +4318,12 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 913
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the system recommend features for a new application?
+> - Summary of passage: Application text fields undergo stemming and normalization of abbreviations and synonyms.
+> - Judgement: It describes a concrete preprocessing step for application comparison, providing partial evidence of the recommendation pipeline.
+> 原因
+> - 问题概述：系统如何为新应用推荐特征？
+> - Passage 概述：应用文本字段经过词干化、缩写归一化和同义词归一化。
+> - 判断：描述应用比较的具体预处理步骤，为推荐流程提供部分证据。

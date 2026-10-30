@@ -1,6 +1,6 @@
 # Passage relevance annotation
 
-Annotator: 
+Annotator: Jingshuai Qian
 
 Enter your name or agreed identifier after `Annotator:`.
 
@@ -39,7 +39,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1101
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: Sentence and word extraction are contrasted with full abstractive summarization.
+> - Judgement: The task distinction helps interpret comparison with abstractive systems.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：对比句子抽取、词语抽取与完整生成式摘要。
+> - 判断：任务差异有助于理解与生成式系统的比较。
 
 #### Passage 1102
 
@@ -55,7 +63,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1102
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: The introduction contrasts feature-based extraction and neural encoder-decoder methods.
+> - Judgement: These model families provide context for the requested abstractive comparison.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：引言对比基于特征的抽取与神经编码器解码器方法。
+> - 判断：这些模型类别为所问生成式方法对比提供背景。
 
 #### Passage 1105
 
@@ -76,7 +92,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1105
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: The sentence extractor selects sentences using recurrent attention and curriculum learning.
+> - Judgement: Its extraction mechanism helps distinguish the proposed system from abstractive comparators.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：句子抽取器通过循环注意力和课程学习选择句子。
+> - 判断：其抽取机制有助于区分所提系统与生成式对照方法。
 
 #### Passage 1107
 
@@ -90,7 +114,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1107
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: DailyMail abstractive highlights are converted into extraction training labels.
+> - Judgement: Abstractive reference summaries clarify the setting for comparing summary approaches.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：将 DailyMail 的生成式要点转换为抽取训练标签。
+> - 判断：生成式参考摘要说明摘要方法比较的数据背景。
 
 #### Passage 1108
 
@@ -106,7 +138,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1108
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: Related work includes Rush's neural abstractive sentence-compression model.
+> - Judgement: It names an abstractive approach and relates it to the proposed method.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：相关工作介绍 Rush 的神经生成式句子压缩模型。
+> - 判断：它给出生成式方法名称，并说明与所提方法的联系。
 
 #### Passage 1109
 
@@ -118,7 +158,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1109
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: The paper contrasts document-word selection with abstractive open-vocabulary generation.
+> - Judgement: The explicit architectural contrast provides evidence about abstractive alternatives.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：论文对比文档词语选择与生成式开放词表生成。
+> - 判断：明确的架构对比为生成式对照方案提供线索。
 
 ### BM25
 
@@ -136,7 +184,15 @@ Retrieved by: BM25
 
 #### Relevance 1103
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: Results explicitly compare nn-se, nn-we and the nn-abs abstractive baseline.
+> - Judgement: The named abstractive baseline directly establishes that such a comparison exists.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：结果明确比较 nn-se、nn-we 与生成式基线 nn-abs。
+> - 判断：具名生成式基线直接证明存在这种比较。
 
 #### Passage 1104
 
@@ -150,7 +206,15 @@ Retrieved by: BM25
 
 #### Relevance 1104
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: Human evaluation ranks systems and tests differences involving nn-abs.
+> - Judgement: The nn-abs results supply further evidence of the abstractive comparison.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：人工评价对系统排序，并检验涉及 nn-abs 的差异。
+> - 判断：nn-abs 的结果进一步证明开展了生成式方法比较。
 
 ### Dense
 
@@ -162,7 +226,15 @@ Retrieved by: Dense
 
 #### Relevance 1106
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: The experimental overview announces comparison models and output evaluation.
+> - Judgement: It points to the experiment section where comparator identities can be found.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：实验概述说明将介绍对照模型与输出评价。
+> - 判断：它为查找对照模型身份提供实验章节线索。
 
 ### Hybrid RRF
 
@@ -194,7 +266,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1110
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: CNN sentence representations and document-level LSTM equations are described.
+> - Judgement: Encoder details alone do not connect to the choice or comparison of abstractive systems.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：介绍 CNN 句表示和文档级 LSTM 方程。
+> - 判断：编码器细节没有联系生成式对照系统的选择或比较。
 
 #### Passage 1111
 
@@ -204,7 +284,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1111
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: A hierarchical reader and content extractor form the proposed architecture.
+> - Judgement: This generic architecture overview supplies no abstractive comparison clue.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：所提架构由分层阅读器和内容抽取器组成。
+> - 判断：一般架构概述没有提供生成式方法比较线索。
 
 #### Passage 1112
 
@@ -227,7 +315,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1112
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they compare to abstractive summarization methods?
+> - Summary of passage: Word extraction is formulated as generation with attention and reranking.
+> - Judgement: The generation-versus-extraction distinction helps interpret comparison model types.
+> 原因
+> - 问题概述：他们是否与生成式摘要方法进行比较？
+> - Passage 概述：将词语抽取表述为带注意力和重排序的生成任务。
+> - 判断：生成与抽取的区别有助于理解对照模型类别。
 
 ## Question 0122
 
@@ -249,7 +345,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1113
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: BLEU and perplexity correlate weakly with humans; overlap and embedding metrics have specific weaknesses.
+> - Judgement: It directly explains response diversity, reference scarcity and compositionality limitations.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：BLEU 和困惑度与人工判断相关性弱，重叠及嵌入指标各有缺陷。
+> - 判断：直接解释回复多样性、参考答案不足和组合语义方面的局限。
 
 #### Passage 1114
 
@@ -265,7 +369,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1114
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: Hierarchical conversation models need large corpora with turn and speaker information.
+> - Judgement: These are training-data and model limitations, without a link to quantitative metric quality.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：分层对话模型需要含轮次和说话人信息的大规模语料。
+> - 判断：这些是训练数据与模型局限，未联系量化指标质量。
 
 #### Passage 1115
 
@@ -279,7 +391,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1115
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: Earlier agents are assessed using dialogue success and classification error rates.
+> - Judgement: These examples identify quantitative evaluation practices that contextualize the metric critique.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：早期代理通过对话成功率和分类错误率评价。
+> - 判断：这些例子指出量化评价实践，为指标批评提供背景。
 
 #### Passage 1116
 
@@ -293,7 +413,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1116
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: Persona embeddings improve consistency as well as BLEU and perplexity.
+> - Judgement: It links human-facing quality with commonly used metrics, useful context for their adequacy.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：角色嵌入改善一致性，同时改善 BLEU 和困惑度。
+> - 判断：它联系面向人的质量与常用指标，有助于理解指标适用性。
 
 #### Passage 1118
 
@@ -309,7 +437,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1118
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: Domain-switching systems use false-alarm and detection rates; early accuracy was sometimes unmeasured.
+> - Judgement: The narrow evaluation criteria provide background on what quantitative scores capture.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：领域切换系统使用误报率与检测率，早期准确率有时未测量。
+> - 判断：这些局部评价标准说明量化得分所覆盖的内容。
 
 #### Passage 1119
 
@@ -325,7 +461,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1119
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: No perfect quantitative comparison exists, so dialogue evaluation borrows BLEU and perplexity.
+> - Judgement: It explicitly identifies the evaluation gap and the reliance on borrowed metrics.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：对话评价缺乏完善量化比较方法，因而借用 BLEU 和困惑度。
+> - 判断：明确指出评价缺口和对借用指标的依赖。
 
 ### BM25
 
@@ -339,7 +483,15 @@ Retrieved by: BM25
 
 #### Relevance 1117
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: Knowledge graphs and DynoNet address missing context and common sense.
+> - Judgement: It discusses agent capabilities without connecting them to evaluation metric behavior.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：知识图谱与 DynoNet 处理上下文及常识缺失。
+> - 判断：它讨论代理能力，未联系评价指标的表现。
 
 ### Dense
 
@@ -355,7 +507,15 @@ Retrieved by: Dense
 
 #### Relevance 1120
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: An RL dialogue score combines solution quality and length while several interaction problems remain unmodeled.
+> - Judgement: The score and omitted dialogue phenomena illustrate the restricted scope of quantitative assessment.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：强化学习对话得分结合解答质量和长度，但未建模多种交互问题。
+> - 判断：得分与遗漏的对话现象说明量化评估的覆盖范围有限。
 
 ### Hybrid RRF
 
@@ -377,7 +537,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1121
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are the limitations of the currently used quantitative metrics? e.g. why are they not 'good'?
+> - Summary of passage: KB-InfoBot defines success by top-five retrieval and reports success rates despite practical limitations.
+> - Judgement: Its operational success criterion helps explain what a quantitative dialogue score can miss.
+> 原因
+> - 问题概述：当前量化指标有哪些局限，为什么不够好？
+> - Passage 概述：KB-InfoBot 按前五项检索定义成功，并在仍有实际局限时报告成功率。
+> - 判断：其操作性成功标准有助于理解量化对话得分可能遗漏什么。
 
 ## Question 0123
 
@@ -411,7 +579,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1122
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Word attention shifts toward an emotion-cause keyword over memory hops.
+> - Judgement: The example shows which local word sequences the learned features emphasize.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：多轮记忆计算中的词注意力转向情绪原因关键词。
+> - 判断：示例说明学习到的特征关注哪些局部词语序列。
 
 #### Passage 1123
 
@@ -443,7 +619,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1123
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Baselines use n-grams, word vectors and lexical rules; ConvMS-Memnet uses skip-gram embeddings.
+> - Judgement: It supplies word-feature types and model context for the requested sequence features.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：基线使用 n-gram、词向量及词汇规则，ConvMS-Memnet 使用 skip-gram 嵌入。
+> - 判断：提供所问序列特征涉及的词特征类型及模型背景。
 
 #### Passage 1124
 
@@ -455,7 +639,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1124
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Basic memory networks weight individual words but fail to capture sequence context.
+> - Judgement: This limitation directly motivates extracting local word-sequence features.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：基础记忆网络为单词赋权，但无法捕捉序列上下文。
+> - 判断：这一局限直接说明提取局部词序列特征的动机。
 
 #### Passage 1125
 
@@ -467,7 +659,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1125
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Clause words are represented by low-dimensional embeddings in a shared matrix.
+> - Judgement: These word vectors are the inputs from which sequence features are built.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：子句中的词由共享矩阵中的低维嵌入表示。
+> - 判断：这些词向量是构建序列特征的输入。
 
 #### Passage 1126
 
@@ -487,7 +687,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1126
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Three output vectors are concatenated into a sequence-level feature across memory hops.
+> - Judgement: It directly describes the composition of the sequence feature.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：将三个输出向量拼接为序列级特征，并用于多轮记忆计算。
+> - 判断：直接说明序列特征的构成方式。
 
 #### Passage 1127
 
@@ -499,7 +707,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1127
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Context-aware ConvMS-Memnet outperforms word-only and basic-memory methods.
+> - Judgement: The feature comparison explains the value of sequential context in the proposed representation.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：考虑上下文的 ConvMS-Memnet 优于纯词特征和基础记忆方法。
+> - 判断：特征对比说明序列上下文在所提表示中的作用。
 
 #### Passage 1128
 
@@ -521,7 +737,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1128
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Width-three convolution captures each word with its neighbors; three slot outputs are concatenated.
+> - Judgement: It directly specifies the neighboring-word sequence features and their aggregation.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：宽度为三的卷积捕捉每个词及其相邻词，再拼接三个槽的输出。
+> - 判断：直接指出相邻词序列特征及其汇总方式。
 
 ### BM25
 
@@ -547,7 +771,15 @@ Retrieved by: Dense
 
 #### Relevance 1129
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: Pretrained embeddings, hop counts and word attention are analyzed.
+> - Judgement: These experiments explain the inputs and attention behavior of the extracted word features.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：分析预训练嵌入、记忆轮数和词注意力。
+> - 判断：这些实验说明词特征的输入与注意力行为。
 
 ### Hybrid RRF
 
@@ -571,7 +803,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1130
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: what word level sequences features are extracted?
+> - Summary of passage: The introduction contrasts lexical rules with a memory-network QA approach to emotion causes.
+> - Judgement: The contrast between lexical and semantic relations frames the sequence-feature design.
+> 原因
+> - 问题概述：提取了哪些词级序列特征？
+> - Passage 概述：引言对比词汇规则与基于记忆网络的情绪原因问答方法。
+> - 判断：词汇与语义关系的对比为序列特征设计提供背景。
 
 ## Question 0124
 
@@ -593,7 +833,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1131
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Prior graphical, discourse and debiased intervention models are reviewed; BIBREF7 is chosen as comparator.
+> - Judgement: It explicitly identifies the previous state-of-the-art comparison and its background.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：回顾图模型、篇章及去偏干预预测模型，并选择 BIBREF7 为对照。
+> - 判断：明确指出此前先进对照方法及其背景。
 
 #### Passage 1132
 
@@ -607,7 +855,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1132
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Earlier intervention studies use full context or a preset context size.
+> - Judgement: This describes limitations of the previous approaches being improved.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：此前干预预测研究使用完整上下文或预设上下文长度。
+> - 判断：说明本研究试图改进的既有方法局限。
 
 #### Passage 1133
 
@@ -621,7 +877,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1133
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Baselines include hLSTM and an open-source feature-rich classifier with thread features.
+> - Judgement: It directly describes the competing prior classifier and the neural reference model.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：基线包括 hLSTM 和使用讨论串特征的开源丰富特征分类器。
+> - 判断：直接介绍此前对照分类器及神经参照模型。
 
 #### Passage 1134
 
@@ -643,7 +907,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1134
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Ultimate-post attention uses a recent post to attend to possible reply contexts.
+> - Judgement: It details a new attention variant without identifying a previous competing method.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：末帖注意力使用近期帖子关注可能的回复上下文。
+> - 判断：它详述新的注意力变体，未指出此前对照方法。
 
 #### Passage 1136
 
@@ -659,7 +931,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1136
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: A two-stage model infers reply context before predicting intervention.
+> - Judgement: The proposed model's mechanism is not linked here to a specific previous approach.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：两阶段模型先推断回复上下文，再预测是否干预。
+> - 判断：本段未将所提模型机制与具体此前方法联系。
 
 #### Passage 1137
 
@@ -673,7 +953,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1137
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Context-length experiments compare performance with BIBREF7.
+> - Judgement: The referenced comparator and its result help identify the prior strong baseline.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：上下文长度实验将表现与 BIBREF7 比较。
+> - 判断：具名引用对照及其结果有助于识别此前强基线。
 
 ### BM25
 
@@ -697,7 +985,15 @@ Retrieved by: BM25
 
 #### Relevance 1135
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Penultimate- and any-post attention define alternative context-query schemes.
+> - Judgement: These are proposed variants and provide no prior-state-of-the-art clue.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：倒数第二帖与任意帖注意力定义不同上下文查询方案。
+> - 判断：这些是所提变体，未提供此前先进方法线索。
 
 ### Dense
 
@@ -709,7 +1005,15 @@ Retrieved by: Dense
 
 #### Relevance 1138
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: The 12-Coursera-course evaluation follows the diverse setup of prior work BIBREF7.
+> - Judgement: The shared prior-work reference links the dataset setup to the competing approach.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：十二门 Coursera 课程的评价遵循此前 BIBREF7 的多样化设置。
+> - 判断：共同引用将数据设置与此前对照方法联系起来。
 
 ### Hybrid RRF
 
@@ -729,7 +1033,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1139
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: A hierarchical LSTM encodes words into posts and posts into threads.
+> - Judgement: It explains the hLSTM architecture used as a reference baseline.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：分层 LSTM 将词编码为帖子，再将帖子编码为讨论串。
+> - 判断：说明作为参照基线的 hLSTM 架构。
 
 #### Passage 1140
 
@@ -741,7 +1053,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1140
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Results compare attention models with hLSTM and the reported BIBREF7 baseline.
+> - Judgement: The baseline results supply evidence about the previous comparator's performance.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：结果将注意力模型与 hLSTM、BIBREF7 基线比较。
+> - 判断：基线结果为此前对照方法的表现提供证据。
 
 #### Passage 1141
 
@@ -753,7 +1073,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1141
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What was the previous state of the art for this task?
+> - Summary of passage: Instructor intervention and contiguous context selection are defined as prediction tasks.
+> - Judgement: Task definitions alone do not identify or characterize the previous leading method.
+> 原因
+> - 问题概述：该任务此前的先进方法是什么？
+> - Passage 概述：将教师干预与连续上下文选择定义为预测任务。
+> - 判断：任务定义没有识别或刻画此前领先方法。
 
 ## Question 0125
 
@@ -775,7 +1103,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1142
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Dialogue examples illustrate correct answers, coreference and ellipsis resolution.
+> - Judgement: Qualitative success cases help contextualize what the reported evaluation measures.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：对话示例展示正确回答、指代和省略消解。
+> - 判断：定性成功案例有助于理解所报告评价测量的内容。
 
 #### Passage 1143
 
@@ -789,7 +1125,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1143
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Bench'It and CALOR results report precision, recall and F1.
+> - Judgement: It directly names the evaluation metrics and their scores.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：Bench'It 和 CALOR 结果报告精确率、召回率与 F1。
+> - 判断：直接列出评价指标及其分数。
 
 #### Passage 1144
 
@@ -801,7 +1145,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1144
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: French coreference resolution is trained on an annotated CALOR subset.
+> - Judgement: It identifies the component and corpus associated with part of the evaluation.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：法语指代消解使用带标注 CALOR 子集训练。
+> - 判断：指出部分评价对应的组件和语料。
 
 #### Passage 1147
 
@@ -811,7 +1163,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1147
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Search QA uses PageRank and a filtered entity-correlation matrix.
+> - Judgement: These internal ranking criteria help distinguish answer-selection scores from evaluation metrics.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：检索问答使用 PageRank 和筛选后的实体相关矩阵。
+> - 判断：这些内部排序标准有助于区分答案选择分数与评价指标。
 
 #### Passage 1149
 
@@ -823,7 +1183,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1149
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Two QA components assign confidence scores using an Adaboost-based classifier.
+> - Judgement: It provides a quantitative scoring clue, while these are internal confidence scores rather than benchmark metrics.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：两个问答组件通过基于 Adaboost 的分类器给出置信分数。
+> - 判断：提供量化评分线索，但这些是内部置信分数而非基准评价指标。
 
 #### Passage 1150
 
@@ -835,7 +1203,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1150
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: The system combines speech, understanding, context, generation and synthesis components.
+> - Judgement: The component inventory contains no evaluation or scoring information.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：系统结合语音、理解、上下文、生成及合成组件。
+> - 判断：组件列表没有评价或评分信息。
 
 ### BM25
 
@@ -847,7 +1223,15 @@ Retrieved by: BM25
 
 #### Relevance 1145
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Reasoning QA parses questions with a grammar and constructs SPARQL requests.
+> - Judgement: The search mechanism has no evaluation criterion or scoring connection here.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：推理问答通过语法解析问题并构造 SPARQL 请求。
+> - 判断：本段搜索机制未涉及评价标准或评分。
 
 #### Passage 1146
 
@@ -861,7 +1245,15 @@ Retrieved by: BM25
 
 #### Relevance 1146
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Users inspect confidence scores and mark answers correct or incorrect to provide rewards.
+> - Judgement: Correctness feedback and displayed scores are assessment clues, though not the reported benchmark metrics.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：用户查看置信分数，并判断回答正确与否以提供奖励。
+> - 判断：正确性反馈和展示分数提供评估线索，但并非所报告基准指标。
 
 ### Dense
 
@@ -873,7 +1265,15 @@ Retrieved by: Dense
 
 #### Relevance 1148
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: A documentary component retrieves relevant Wikipedia excerpts using entity indexes.
+> - Judgement: Retrieval implementation supplies no evaluation measure or explicit scoring definition.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：文档组件通过实体索引检索相关维基百科片段。
+> - 判断：检索实现未提供评价度量或明确评分定义。
 
 ### Hybrid RRF
 
@@ -889,7 +1289,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1151
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Transcribed utterances and speaker information are passed to dialogue components.
+> - Judgement: This data-flow fragment provides no evaluation clue.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：将转写话语和说话人信息传给对话组件。
+> - 判断：该数据流片段没有评价线索。
 
 #### Passage 1152
 
@@ -899,7 +1307,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1152
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What metrics are used for evaluation?
+> - Summary of passage: Adding annotated French questions improves labelled attachment score to 92%.
+> - Judgement: LAS is an explicitly reported component evaluation metric.
+> 原因
+> - 问题概述：评价使用了哪些指标？
+> - Passage 概述：加入带标注法语问题后，有标记依存准确率提升至 92%。
+> - 判断：LAS 是明确报告的组件评价指标。
 
 ## Question 0126
 
@@ -928,7 +1344,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1154
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: A hierarchical sequence-to-sequence model generates questions from anchor-to-answer paths.
+> - Judgement: It directly specifies the input and role of the question-generation component.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：分层序列到序列模型从锚点至答案路径生成问题。
+> - 判断：直接指出问题生成组件的输入和作用。
 
 #### Passage 1155
 
@@ -940,7 +1364,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1155
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: Experiments evaluate both answer ranking and question generation, including BLEU.
+> - Judgement: It confirms where question generation appears in the experimental framework.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：实验评价答案排序和问题生成，并使用 BLEU。
+> - 判断：确认问题生成在实验框架中的位置。
 
 #### Passage 1156
 
@@ -960,7 +1392,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1156
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: QA scores are combined with generated-question paraphrase scores for candidate ranking.
+> - Judgement: It directly explains where generation contributes to final answer selection.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：将问答分数与生成问题的复述分数结合，用于候选答案排序。
+> - 判断：直接说明问题生成在最终答案选择中的作用。
 
 #### Passage 1157
 
@@ -972,7 +1412,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1157
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: A paraphrasing model compares original and generated questions.
+> - Judgement: This is the downstream use of generated questions in candidate assessment.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：复述模型比较原始问题和生成问题。
+> - 判断：这说明生成问题在候选评估中的后续用途。
 
 #### Passage 1158
 
@@ -982,7 +1430,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1158
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: The generation section introduces candidate-answer-based questions and paraphrase comparison.
+> - Judgement: It directly states the generation component's place in the pipeline.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：生成章节介绍基于候选答案生成问题及复述比较。
+> - 判断：直接说明生成组件在流程中的位置。
 
 ### BM25
 
@@ -1006,7 +1462,15 @@ Retrieved by: BM25
 
 #### Relevance 1153
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: KVMemNet ranks candidate answers using repeated knowledge-memory access.
+> - Judgement: The QA scoring branch provides context for locating the complementary question-generation branch.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：KVMemNet 通过多轮知识记忆访问对候选答案排序。
+> - 判断：问答评分分支为定位互补的问题生成分支提供背景。
 
 ### Dense
 
@@ -1020,7 +1484,15 @@ Retrieved by: Dense
 
 #### Relevance 1159
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: QGNet combines question generation and paraphrasing and complements PCNet or KVMemNet.
+> - Judgement: The experiments show how generation improves answer ranking alongside QA models.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：QGNet 结合问题生成与复述，并补充 PCNet 或 KVMemNet。
+> - 判断：实验说明生成方法如何与问答模型协同改善答案排序。
 
 ### Hybrid RRF
 
@@ -1051,7 +1523,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1160
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: The generator uses copying, maximum-likelihood training and external knowledge.
+> - Judgement: These are implementation details of the question-generation component being located.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：生成器使用复制机制、最大似然训练及外部知识。
+> - 判断：这些是所问问题生成组件的实现细节。
 
 #### Passage 1161
 
@@ -1067,7 +1547,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1161
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: Related-task discussion distinguishes the proposed question-generation approach from KBQA subgraph search.
+> - Judgement: The contrast identifies question generation as part of this KBMRC approach.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：相关任务讨论区分所提问题生成方法与知识库问答子图搜索。
+> - 判断：该对比指出问题生成是本文 KBMRC 方法的一部分。
 
 #### Passage 1162
 
@@ -1079,7 +1567,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1162
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Where is a question generation model used?
+> - Summary of passage: The KBMRC framework includes both QA and question-generation models with external KB evidence.
+> - Judgement: It explicitly places question generation within the proposed reading-comprehension framework.
+> 原因
+> - 问题概述：问题生成模型用在什么环节？
+> - Passage 概述：KBMRC 框架同时包含问答、问题生成模型及外部知识证据。
+> - 判断：明确将问题生成置于所提阅读理解框架中。
 
 ## Question 0127
 
@@ -1099,7 +1595,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1163
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Mentions link to the entity with highest Wikipedia-anchor commonness; person coreference adds a heuristic.
+> - Judgement: It directly explains how linking results and their confidence are obtained.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：将提及链接到维基百科锚点常见度最高的实体，并加入人名共指启发式。
+> - 判断：直接解释如何获得链接结果及其置信度。
 
 #### Passage 1164
 
@@ -1115,7 +1619,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1164
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Entity typing uses extra linked KB information while accounting for linking errors.
+> - Judgement: It explains the role and reliability of the linking results.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：实体类型预测使用链接获得的额外知识，同时考虑链接错误。
+> - 判断：说明链接结果的作用与可靠性。
 
 #### Passage 1165
 
@@ -1131,7 +1643,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1165
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Wikipedia anchor links create weak labels, while noisy KB types reduce training overfitting.
+> - Judgement: It connects anchor-derived entities and labels to the model's linked-entity information.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：维基百科锚链接生成弱标签，知识库类型加噪用于减少训练过拟合。
+> - 判断：将锚点产生的实体及标签与模型链接信息联系起来。
 
 #### Passage 1168
 
@@ -1143,7 +1663,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1168
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: The linking confidence score is concatenated with context, string and KB-type vectors.
+> - Judgement: It explains which result the linking algorithm returns for downstream prediction.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：将链接置信分数与上下文、字符串和知识库类型向量拼接。
+> - 判断：说明链接算法为后续预测提供什么结果。
 
 #### Passage 1169
 
@@ -1167,7 +1695,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1169
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: The model obtains KB types through EL and uses noise and hinge-loss changes during training.
+> - Judgement: It explicitly connects entity linking to model information and training.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：模型通过实体链接获取知识库类型，并在训练中加噪和调整合页损失。
+> - 判断：明确联系实体链接与模型信息及训练。
 
 #### Passage 1171
 
@@ -1179,7 +1715,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1171
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Full and NonDeep models use commonness linking; LocAttEL replaces it with another method.
+> - Judgement: It directly identifies which linking algorithms the model variants use.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：完整模型和 NonDeep 使用常见度链接，LocAttEL 换用另一方法。
+> - 判断：直接指出各模型变体使用的链接算法。
 
 ### BM25
 
@@ -1191,7 +1735,15 @@ Retrieved by: BM25
 
 #### Relevance 1166
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: The linker returns an entity or NIL; Freebase types are mapped and one-hot encoded.
+> - Judgement: It directly describes how linking output becomes model input.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：链接器返回实体或 NIL，再映射并独热编码 Freebase 类型。
+> - 判断：直接说明链接输出如何转为模型输入。
 
 #### Passage 1167
 
@@ -1201,7 +1753,15 @@ Retrieved by: BM25
 
 #### Relevance 1167
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Two BiLSTM layers produce a mention's context representation.
+> - Judgement: Context encoding does not describe entity-link acquisition or linked KB information.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：两层 BiLSTM 生成提及的上下文表示。
+> - 判断：上下文编码没有说明实体链接获取或链接后的知识信息。
 
 ### Dense
 
@@ -1219,7 +1779,15 @@ Retrieved by: Dense
 
 #### Relevance 1170
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Ablations compare commonness-based linking with alternatives and discuss incorrect links.
+> - Judgement: The comparison characterizes the chosen linking method and its behavior.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：消融比较基于常见度的链接与其他方法，并讨论错误链接。
+> - 判断：该比较刻画所选链接方法及其行为。
 
 ### Hybrid RRF
 
@@ -1237,7 +1805,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1172
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Context, mention string and KB types form representations; KB types come from entity linking.
+> - Judgement: It explicitly identifies entity linking as the source of KB information.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：上下文、提及字符串和知识库类型构成表示，其中类型来自实体链接。
+> - 判断：明确指出实体链接是知识库信息的获取途径。
 
 #### Passage 1173
 
@@ -1247,7 +1823,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1173
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: The method overview announces the neural model, training and entity-linking algorithm.
+> - Judgement: It provides a pointer to the linking-algorithm description.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：方法概述说明将介绍神经模型、训练及实体链接算法。
+> - 判断：为查找链接算法说明提供定位线索。
 
 #### Passage 1174
 
@@ -1263,7 +1847,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1174
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they obtain the entity linking results in their model?
+> - Summary of passage: Training uses Wikipedia anchors; pronoun-heavy OntoNotes is excluded as unsuitable for direct EL.
+> - Judgement: Anchor sources and dataset restrictions help explain the linking setup.
+> 原因
+> - 问题概述：模型如何获得实体链接结果？
+> - Passage 概述：训练使用维基百科锚点，并因不适合直接链接而排除代词较多的 OntoNotes。
+> - 判断：锚点来源与数据限制有助于理解链接设置。
 
 ## Question 0128
 
@@ -1283,7 +1875,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1175
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Missing-event results compare SEM-HMM with BMM and BMM+EM.
+> - Judgement: It explicitly names baseline variants and compares their performance.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：缺失事件预测结果将 SEM-HMM 与 BMM、BMM+EM 比较。
+> - 判断：明确列出基线变体并比较表现。
 
 #### Passage 1178
 
@@ -1299,7 +1899,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1178
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Bayesian posterior scoring selects proposed HMM structures using complexity and semantic priors.
+> - Judgement: The structure-scoring details do not identify or connect to a baseline here.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：通过复杂度和语义先验对所提 HMM 结构进行贝叶斯后验评分。
+> - 判断：本段结构评分细节未指出或联系基线。
 
 #### Passage 1179
 
@@ -1313,7 +1921,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1179
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Four baselines are Frequency, Conditional, BMM and BMM+EM.
+> - Judgement: It directly lists and defines every baseline.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：四个基线为 Frequency、Conditional、BMM 和 BMM+EM。
+> - 判断：直接列出并定义各个基线。
 
 #### Passage 1181
 
@@ -1323,7 +1939,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1181
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Acknowledgments list reviewers, collaborators and funding support.
+> - Judgement: Acknowledgments provide no experimental comparator information.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：致谢列出审阅者、合作者与资助。
+> - 判断：致谢没有实验对照方法信息。
 
 ### BM25
 
@@ -1339,7 +1963,15 @@ Retrieved by: BM25
 
 #### Relevance 1176
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: SEM-HMM is motivated by Bayesian Model Merging and structural EM.
+> - Judgement: BMM and EM provide methodological context for the baseline variants.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：SEM-HMM 受贝叶斯模型合并与结构 EM 启发。
+> - 判断：BMM 和 EM 为基线变体提供方法背景。
 
 #### Passage 1177
 
@@ -1355,7 +1987,15 @@ Retrieved by: BM25
 
 #### Relevance 1177
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Earlier script learners include explanation-based, narrative-chain and graph methods.
+> - Judgement: These prior approaches supply background for the methods used as comparison points.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：早期脚本学习器包括解释式、叙事链及图方法。
+> - 判断：这些既有方法为对照方法提供背景。
 
 ### Dense
 
@@ -1373,7 +2013,15 @@ Retrieved by: Dense
 
 #### Relevance 1180
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: EM alternates expected-count estimation with MAP parameter updates.
+> - Judgement: The EM procedure helps interpret the BMM+EM comparison variant.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：EM 交替进行期望计数估计与 MAP 参数更新。
+> - 判断：EM 流程有助于理解 BMM+EM 对照变体。
 
 ### Hybrid RRF
 
@@ -1395,7 +2043,15 @@ Retrieved by: Hybrid RRF
 
 #### Relevance 1182
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Inference equations marginalize missing observations and state transitions.
+> - Judgement: The inference derivation supplies no baseline identity or comparison clue.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：推断方程对缺失观测和状态转移进行边缘化。
+> - 判断：推断推导没有提供基线身份或比较线索。
 
 ### Hybrid RRF followed by BGE reranking
 
@@ -1407,7 +2063,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1183
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: The proposed structure learner is evaluated against several informed baselines.
+> - Judgement: It confirms the baseline-comparison setting, even without enumerating the methods.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：所提结构学习器与多个有信息基线进行评价对比。
+> - 判断：确认基线对比设置，虽未逐一列出方法。
 
 #### Passage 1184
 
@@ -1417,7 +2081,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1184
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: The conclusion contrasts SEM-HMM with BMM and highlights EM and missing observations.
+> - Judgement: It names a baseline and explains differences from the proposed method.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：结论对比 SEM-HMM 与 BMM，并强调 EM 和缺失观测。
+> - 判断：给出基线名称并说明与所提方法的区别。
 
 #### Passage 1185
 
@@ -1429,7 +2101,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1185
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which baselines do they use?
+> - Summary of passage: Missing-observation HMMs extend conventional models and are evaluated on omitted-event prediction.
+> - Judgement: The standard-versus-extended HMM distinction contextualizes the BMM baseline family.
+> 原因
+> - 问题概述：使用了哪些基线方法？
+> - Passage 概述：缺失观测 HMM 扩展传统模型，并用于遗漏事件预测评价。
+> - 判断：传统与扩展 HMM 的区别为 BMM 基线类别提供背景。
 
 ## Question 0129
 
@@ -1459,7 +2139,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1186
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Evaluation uses NIST translation sets and the Baidu Speech Translation Corpus.
+> - Judgement: It directly names the datasets and development/test partitions.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：评价使用 NIST 翻译数据集和百度语音翻译语料。
+> - 判断：直接给出数据集名称及开发、测试划分。
 
 #### Passage 1189
 
@@ -1475,7 +2163,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1189
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Human evaluation discusses BSTC difficulty and deployed Chinese-English translation.
+> - Judgement: The explicitly evaluated BSTC supplies a partial dataset answer.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：人工评价讨论 BSTC 的难度及部署的中英翻译。
+> - 判断：明确评价 BSTC，为数据集问题提供部分答案。
 
 #### Passage 1191
 
@@ -1491,7 +2187,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1191
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: The standard Transformer is evaluated on NIST and the proposed speech translation dataset.
+> - Judgement: It identifies evaluation corpora and explains their robustness-testing role.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：标准 Transformer 在 NIST 和所提语音翻译数据上评价。
+> - 判断：指出评价语料，并说明其稳健性测试作用。
 
 #### Passage 1192
 
@@ -1519,7 +2223,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1192
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Interpreters translate talks from the BSTC test set for comparison.
+> - Judgement: It directly names a dataset used for evaluation.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：口译员翻译 BSTC 测试集演讲以开展比较。
+> - 判断：直接指出一个评价所用数据集。
 
 #### Passage 1194
 
@@ -1545,7 +2257,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1194
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Model comparisons discuss fine-tuning and testing on noisy BSTC speech data.
+> - Judgement: It explicitly connects BSTC to the evaluation experiments.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：模型对比讨论在含噪 BSTC 语音数据上微调和测试。
+> - 判断：明确将 BSTC 与评价实验联系起来。
 
 ### BM25
 
@@ -1559,7 +2279,15 @@ Retrieved by: BM25
 
 #### Relevance 1187
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Acknowledgments name BSTC builders and speech-corpus contributors.
+> - Judgement: BSTC and its provenance provide dataset-identification clues.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：致谢列出 BSTC 构建者与语音语料贡献方。
+> - 判断：BSTC 及其来源为识别数据集提供线索。
 
 #### Passage 1188
 
@@ -1577,7 +2305,15 @@ Retrieved by: BM25
 
 #### Relevance 1188
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Related work surveys end-to-end, cascaded and context-aware speech translation.
+> - Judgement: The method survey does not connect to this study's evaluation corpora.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：相关工作综述端到端、级联及上下文语音翻译。
+> - 判断：方法综述未联系本文评价语料。
 
 #### Passage 1190
 
@@ -1595,7 +2331,15 @@ Retrieved by: BM25
 
 #### Relevance 1190
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Training aligns complete sentences and sub-sentence information units.
+> - Judgement: It describes bilingual-data preparation associated with the experimental corpora.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：训练对齐完整句子与子句信息单元。
+> - 判断：说明实验语料所涉及的双语数据准备方式。
 
 ### Dense
 
@@ -1607,7 +2351,15 @@ Retrieved by: Dense
 
 #### Relevance 1193
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: A short Chinese utterance introduces representative training examples.
+> - Judgement: An isolated training example gives no evaluation-corpus clue.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：一个简短中文话语引出代表性训练样本。
+> - 判断：孤立训练示例没有评价语料线索。
 
 ### Hybrid RRF
 
@@ -1623,7 +2375,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1195
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Which datasets do they evaluate on?
+> - Summary of passage: Speech-to-speech deployment measures latency and translation quality.
+> - Judgement: The deployment setting supplies partial context for the speech-data evaluation.
+> 原因
+> - 问题概述：在哪些数据集上进行评价？
+> - Passage 概述：语音到语音部署测量延迟与翻译质量。
+> - 判断：部署设置为语音数据评价提供部分背景。
 
 ## Question 0130
 
@@ -1645,7 +2405,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1196
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: The contributions introduce a large manually annotated ESL treebank and describe its evaluation.
+> - Judgement: The treebank's scale and construction context are relevant to its size.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：贡献介绍大型人工标注英语学习者树库及其评价。
+> - 判断：树库规模和构建背景与数据集大小有关。
 
 #### Passage 1198
 
@@ -1657,7 +2425,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1198
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: Agreement is measured for both original and corrected dataset versions.
+> - Judgement: The paired versions clarify the scope of what may be counted in the dataset.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：对原始和纠错两个数据版本测量标注一致性。
+> - 判断：成对版本说明数据规模统计可能涉及的范围。
 
 #### Passage 1199
 
@@ -1673,7 +2449,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1199
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: TLE has 5,124 sentences and 97,681 tokens, sampled across ten learner backgrounds.
+> - Judgement: It directly provides dataset size and sampling details.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：TLE 有 5,124 个句子和 97,681 个词元，按十种学习者背景抽样。
+> - 判断：直接提供数据规模及抽样细节。
 
 #### Passage 1200
 
@@ -1685,7 +2469,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1200
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: The treebank is described as larger and linguistically broader than earlier learner annotations.
+> - Judgement: The relative-scale comparison supplies partial evidence about dataset extent.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：该树库被描述为比早期学习者标注规模更大、语言背景更广。
+> - 判断：相对规模比较为数据范围提供部分证据。
 
 #### Passage 1201
 
@@ -1695,7 +2487,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1201
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: Treebank creation lasted over a year and required more than 2,000 annotation hours.
+> - Judgement: It answers a possible duration reading of 'how long' and contextualizes collection scale.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：树库构建超过一年，累计标注超过 2,000 小时。
+> - 判断：回应 how long 可能指构建时长的含义，并说明收集规模背景。
 
 #### Passage 1202
 
@@ -1711,7 +2511,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1202
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: Six students annotate the treebank after about eight weeks of training.
+> - Judgement: Staffing and training duration provide supporting construction-scale context.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：六名学生经过约八周培训后标注树库。
+> - 判断：人员配置与培训时长为构建规模提供辅助背景。
 
 ### BM25
 
@@ -1729,7 +2537,15 @@ Retrieved by: BM25
 
 #### Relevance 1197
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: TLE contains 5,124 manually annotated sentences from ten native-language backgrounds.
+> - Judgement: It directly states the dataset's sentence count.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：TLE 包含来自十种母语背景的 5,124 个人工标注句子。
+> - 判断：直接给出数据集句子数量。
 
 ### Dense
 
@@ -1779,7 +2595,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1203
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How long is the dataset?
+> - Summary of passage: Sentence templates support separate original and corrected annotations.
+> - Judgement: The annotation units and paired forms clarify what the dataset contains and counts.
+> 原因
+> - 问题概述：数据集有多大，或其构建持续多久？
+> - Passage 概述：句子模板支持分别标注原始和纠错文本。
+> - 判断：标注单位与成对文本形式说明数据集内容及统计对象。
 
 ## Question 0131
 
@@ -1799,7 +2623,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1204
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: The related-work discussion contrasts newswire discourse parsers with tweet-trained social features.
+> - Judgement: Tweets provide a social-media-type clue, though feature provenance is not the main dataset source.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：相关工作对比新闻篇章解析器与推文训练的社交特征。
+> - 判断：推文提供社交媒体类型线索，但特征来源并非主要数据集来源。
 
 #### Passage 1205
 
@@ -1811,7 +2643,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1205
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: Classifier results and feature ablations evaluate causality prediction.
+> - Judgement: The model-performance discussion does not identify a social-media type or platform.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：分类器结果和特征消融评价因果关系预测。
+> - 判断：模型表现讨论未指出社交媒体类型或平台。
 
 #### Passage 1206
 
@@ -1829,7 +2669,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1206
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: The introduction discusses causal explanations in informal social-media messages.
+> - Judgement: Message-style examples supply partial information about the social text being considered.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：引言讨论非正式社交媒体消息中的因果解释。
+> - 判断：消息风格示例为所研究社交文本提供部分信息。
 
 #### Passage 1209
 
@@ -1841,7 +2689,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1209
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: A causal-analysis pipeline is developed for social-media text and downstream applications.
+> - Judgement: It identifies the broad source type as social-media text, providing partial scope information.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：为社交媒体文本及下游应用构建因果分析流程。
+> - 判断：指出广义来源为社交媒体文本，提供部分范围信息。
 
 #### Passage 1210
 
@@ -1857,7 +2713,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1210
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: The contributions include release of an anonymized Facebook causality dataset.
+> - Judgement: Facebook explicitly identifies a social-media platform considered.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：贡献包括发布匿名化 Facebook 因果关系数据集。
+> - 判断：Facebook 明确指出一个研究所涉及的社交媒体平台。
 
 #### Passage 1213
 
@@ -1871,7 +2735,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1213
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: Pretrained social-media features are trained directly on tweets.
+> - Judgement: It identifies Twitter-style text as an auxiliary resource, distinct from the main Facebook dataset.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：预训练社交媒体特征直接使用推文训练。
+> - 判断：指出推文是辅助资源，与主要 Facebook 数据集有别。
 
 ### BM25
 
@@ -1883,7 +2755,15 @@ Retrieved by: BM25
 
 #### Relevance 1207
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: Downstream tasks examine demographics and sentiment, with ethics approval noted.
+> - Judgement: Task and ethics information does not identify social-media sources.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：下游任务研究人口属性与情感，并说明伦理审批。
+> - 判断：任务与伦理信息没有指出社交媒体来源。
 
 #### Passage 1208
 
@@ -1893,7 +2773,15 @@ Retrieved by: BM25
 
 #### Relevance 1208
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: SVM and LSTM results compare causal-explanation identification architectures.
+> - Judgement: Architecture comparisons provide no platform or message-source clue.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：SVM 与 LSTM 结果比较因果解释识别架构。
+> - 判断：架构对比没有平台或消息来源线索。
 
 ### Dense
 
@@ -1909,7 +2797,15 @@ Retrieved by: Dense
 
 #### Relevance 1211
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: Tweebo and social-media-specific features process messages into discourse arguments.
+> - Judgement: Tweet-oriented tools provide partial source-style clues without establishing Twitter as the main corpus.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：Tweebo 和社交媒体专用特征将消息处理为篇章论元。
+> - 判断：面向推文的工具提供部分来源风格线索，但不能确认主语料来自 Twitter。
 
 #### Passage 1212
 
@@ -1921,7 +2817,15 @@ Retrieved by: Dense
 
 #### Relevance 1212
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: The authors collect 3,268 random Facebook status updates for annotation.
+> - Judgement: It directly states the platform and message type used.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：作者收集 3,268 条随机 Facebook 状态更新并标注。
+> - 判断：直接指出所用平台与消息类型。
 
 ### Hybrid RRF
 
@@ -1937,7 +2841,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1214
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: A linear classifier can shortlist posts before applying a more complex model.
+> - Judgement: Generic post-filtering offers no information about social-media type.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：线性分类器可先筛选帖子，再应用复杂模型。
+> - 判断：一般帖子筛选未说明社交媒体类型。
 
 #### Passage 1215
 
@@ -1953,7 +2865,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1215
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: Complete-pipeline experiments compare different causality and explanation-identification routes.
+> - Judgement: Pipeline accuracy and efficiency do not characterize the social-media source.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：完整流程实验比较因果判别与解释识别的不同路线。
+> - 判断：流程准确率与效率未刻画社交媒体来源。
 
 #### Passage 1216
 
@@ -1971,7 +2891,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1216
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What types of social media did they consider?
+> - Summary of passage: Feature selection and SVM, forest and LSTM models are compared.
+> - Judgement: These algorithm details provide no specific social-media source clue.
+> 原因
+> - 问题概述：研究涉及哪些社交媒体类型？
+> - Passage 概述：比较特征选择与 SVM、森林及 LSTM 模型。
+> - 判断：这些算法细节没有具体社交媒体来源线索。
 
 ## Question 0132
 
@@ -1989,7 +2917,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1217
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: QuaRel's fixed set of 19 properties is contrasted with QuaRTz's open-domain knowledge.
+> - Judgement: The contrast clarifies the scope of the qualitative knowledge whose statements are counted.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：对比 QuaRel 固定的十九种属性与 QuaRTz 的开放领域知识。
+> - 判断：该对比说明所问定性知识语句的范围。
 
 #### Passage 1218
 
@@ -2025,7 +2961,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1218
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: The authors manually extract 400 general qualitative-relation sentences.
+> - Judgement: It directly states the number of general qualitative statements.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：作者人工提取四百条一般定性关系句子。
+> - 判断：直接给出一般定性陈述的数量。
 
 #### Passage 1219
 
@@ -2037,7 +2981,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1219
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: QuaRTz supplies qualitative questions and background knowledge covering arbitrary relations.
+> - Judgement: It identifies the knowledge collection being quantified, even without an exact count.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：QuaRTz 提供定性问题及覆盖任意关系的背景知识。
+> - 判断：指出需统计的知识集合，虽未给出准确数量。
 
 #### Passage 1220
 
@@ -2051,7 +3003,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1220
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: The dataset contains 3,864 questions and a background corpus of 400 knowledge sentences.
+> - Judgement: It directly gives the requested statement count, separate from question count.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：数据集包含 3,864 道问题及四百条知识句子的背景语料。
+> - 判断：直接给出所问陈述数量，并与问题数区分。
 
 #### Passage 1221
 
@@ -2071,7 +3031,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1221
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: BERT variants are evaluated with and without qualitative background knowledge.
+> - Judgement: The knowledge/no-knowledge contrast clarifies the role of the statement collection.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：评价使用和不使用定性背景知识的 BERT 变体。
+> - 判断：有无知识的对比说明陈述集合的作用。
 
 ### BM25
 
@@ -2095,7 +3063,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1222
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: Knowledge sentences and questions are annotated with compared properties and comparatives.
+> - Judgement: It describes the knowledge-sentence units whose total is requested.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：知识句子和问题标注了比较属性与比较表达。
+> - 判断：说明问题所问总量对应的知识句子单位。
 
 #### Passage 1223
 
@@ -2123,7 +3099,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1223
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How many general qualitative statements are in dataset?
+> - Summary of passage: Question analysis examines how comparisons relate questions to knowledge sentences.
+> - Judgement: It supplies examples of the knowledge statements and their relationship to questions.
+> 原因
+> - 问题概述：数据集包含多少条一般定性陈述？
+> - Passage 概述：问题分析研究比较表达如何联系问题与知识句子。
+> - 判断：提供知识陈述及其与问题关系的例子。
 
 ## Question 0133
 
@@ -2157,7 +3141,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1224
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Replied-to and quoted context tweets are encoded and concatenated with target-tweet representations.
+> - Judgement: It directly defines the added context and how it enters CNN or RNN models.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：编码被回复或引用的上下文推文，并与目标推文表示拼接。
+> - 判断：直接定义额外上下文及其进入 CNN 或 RNN 的方式。
 
 #### Passage 1225
 
@@ -2171,7 +3163,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1225
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Character features, LTC and model variants have different effects across abusive-language labels.
+> - Judgement: It names added features and variants while assessing their contribution.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：字符特征、LTC 与模型变体对不同辱骂标签效果不同。
+> - 判断：列出额外特征与变体，并评价其贡献。
 
 #### Passage 1226
 
@@ -2187,7 +3187,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1226
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Experiments compare character features, attention, LTC, HybridCNN and context tweets.
+> - Judgement: It directly enumerates the feature and context additions evaluated.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：实验比较字符特征、注意力、LTC、HybridCNN 与上下文推文。
+> - 判断：直接列举受评额外特征与上下文。
 
 #### Passage 1227
 
@@ -2199,7 +3207,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1227
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Preprocessing normalizes tokens, segments hashtags and creates character representations.
+> - Judgement: These are concrete additional textual feature-construction steps.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：预处理规范词元、切分话题标签并建立字符表示。
+> - 判断：这些是具体的额外文本特征构建步骤。
 
 #### Passage 1229
 
@@ -2209,7 +3225,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1229
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: The methods overview announces additional features and model variants.
+> - Judgement: It is a direct pointer to the requested additions.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：方法概述说明将研究额外特征与模型变体。
+> - 判断：直接为所问额外设计提供定位线索。
 
 #### Passage 1230
 
@@ -2229,7 +3253,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1230
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Neural variants add character features, attention and latent topic clustering.
+> - Judgement: It describes specific added representations and contextual signals.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：神经模型变体加入字符特征、注意力和潜在主题聚类。
+> - 判断：说明具体新增表示与上下文信号。
 
 #### Passage 1231
 
@@ -2249,7 +3281,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1231
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Traditional classifiers use TF-IDF word 1–3-grams and character 3–8-grams.
+> - Judgement: It specifies the feature inventory against which additions are compared.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：传统分类器使用 TF-IDF 词级一至三元和字符级三至八元特征。
+> - 判断：明确用于比较额外设计的特征配置。
 
 ### BM25
 
@@ -2265,7 +3305,15 @@ Retrieved by: BM25
 
 #### Relevance 1228
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: Earlier abusive-language methods use word, topic and distributed representations.
+> - Judgement: The reviewed feature families provide background for the added feature choices.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：既有辱骂检测方法使用词、主题及分布式表示。
+> - 判断：综述的特征类别为额外特征选择提供背景。
 
 ### Dense
 
@@ -2293,7 +3341,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1232
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: The introduction proposes comparing feature choices and variant models on abusive tweets.
+> - Judgement: It frames the study of additional features and possible ensemble improvements.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：引言提出在辱骂推文上比较特征选择与模型变体。
+> - 判断：说明额外特征及可能的集成改进的研究背景。
 
 #### Passage 1233
 
@@ -2303,7 +3359,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1233
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What additional features and context are proposed?
+> - Summary of passage: The crawled dataset contains 70,904 tweets in four labels.
+> - Judgement: Dataset size and labels do not describe added features or context.
+> 原因
+> - 问题概述：提出了哪些额外特征与上下文？
+> - Passage 概述：爬取数据集包含 70,904 条推文和四种标签。
+> - 判断：数据规模和标签没有说明额外特征或上下文。
 
 ## Question 0134
 
@@ -2321,7 +3385,15 @@ Retrieved by: BM25, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1234
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: Experiments test cross-dataset artifacts and artifact-balanced learning.
+> - Judgement: It identifies the debiasing framework's evaluation setting and purpose.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：实验研究跨数据集标注伪相关与伪相关平衡学习。
+> - 判断：指出去偏框架的评价场景与目标。
 
 #### Passage 1235
 
@@ -2331,7 +3403,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1235
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: The conclusion reports that debiasing mitigates bias and improves generalization.
+> - Judgement: The result summary supports the intended effect of the training framework.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：结论称去偏方法减轻偏见并改善泛化。
+> - 判断：结果概述说明训练框架的预期作用。
 
 #### Passage 1236
 
@@ -2349,7 +3429,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1236
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: Examples are reweighted to balance hypothesis artifacts across labels, with smoothing and class normalization.
+> - Judgement: It directly explains the bias-mitigation training mechanism.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：通过样本加权平衡各标签的假设伪相关，并进行平滑及类别归一化。
+> - 判断：直接解释训练中的偏见缓解机制。
 
 #### Passage 1237
 
@@ -2365,7 +3453,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1237
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: Hypothesis-only artifacts motivate a training framework applied to DIIN.
+> - Judgement: It connects the targeted bias pattern with the proposed intervention.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：仅看假设即可利用的伪相关促使作者设计并在 DIIN 上应用训练框架。
+> - 判断：联系所针对的偏见模式与训练干预。
 
 #### Passage 1238
 
@@ -2379,7 +3475,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1238
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: Crowdworker heuristics create artifacts; earlier work studies bias and debiasing.
+> - Judgement: The artifact origin explains what the framework aims to balance.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：众包人员的启发式产生伪相关，既有研究分析偏见及去偏。
+> - 判断：伪相关来源说明框架试图平衡什么。
 
 #### Passage 1239
 
@@ -2395,7 +3499,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1239
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: Debiasing reduces misleading artifacts and encourages learning semantic information.
+> - Judgement: It directly explains why reweighting can improve generalization and when it can hurt.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：去偏减少误导性伪相关，并促进学习语义信息。
+> - 判断：直接解释重新加权为何改善泛化及何时可能降低表现。
 
 ### BM25
 
@@ -2423,7 +3535,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1240
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How does the proposed training framework mitigate the bias pattern?
+> - Summary of passage: Hypothesis-only AUC shows artifacts can transfer, be neutral or mislead across datasets.
+> - Judgement: These bias behaviors motivate reducing reliance on the artifact pattern.
+> 原因
+> - 问题概述：所提训练框架如何缓解偏见模式？
+> - Passage 概述：仅假设模型的 AUC 表明伪相关跨数据集时可能有效、中立或误导。
+> - 判断：这些偏见行为说明减少依赖伪相关模式的动机。
 
 ## Question 0135
 
@@ -2455,7 +3575,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1242
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: Feature elimination uses frequency reduction, chi-square selection and cross-validation.
+> - Judgement: Selection procedures and scores provide no language-coverage clue.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：特征消减采用频次过滤、卡方选择及交叉验证。
+> - 判断：选择流程与分数未提供语言范围线索。
 
 #### Passage 1243
 
@@ -2465,7 +3593,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1243
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: One annotated Twitter corpus contains 9,300 tweets, illustrated with English symptom examples.
+> - Judgement: The evaluation corpus and English examples suggest English scope, without explicitly proving exclusivity.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：一个带标注 Twitter 语料含 9,300 条推文，并展示英文症状例子。
+> - 判断：评价语料与英文示例提示英语范围，但未明确证明仅有英语。
 
 #### Passage 1244
 
@@ -2493,7 +3629,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1244
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: Feature groups are illustrated with English lexical, demographic and sentiment expressions.
+> - Judgement: Language-dependent feature examples provide partial evidence about the data language.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：特征组使用英文词汇、人口属性及情感表达举例。
+> - 判断：依赖语言的特征示例为数据语言提供部分证据。
 
 #### Passage 1245
 
@@ -2507,7 +3651,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1245
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: Feature ablations report changes in F1 and feature counts.
+> - Judgement: The numerical ablation results do not identify a language or multilingual setting.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：特征消融报告 F1 变化与特征数量。
+> - 判断：数值消融结果未指出语言或多语言设置。
 
 #### Passage 1247
 
@@ -2517,7 +3669,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1247
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: The experiments reuse one 9,300-tweet corpus with five-fold cross-validation.
+> - Judgement: The stated single-corpus scope complements language evidence from its examples.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：实验复用一个含 9,300 条推文的语料，并进行五折交叉验证。
+> - 判断：所述单一语料范围补充了其示例提供的语言证据。
 
 ### BM25
 
@@ -2529,7 +3689,15 @@ Retrieved by: BM25
 
 #### Relevance 1241
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: Funding, ethics and nonverbatim example-tweet generation are acknowledged.
+> - Judgement: These administrative details do not establish the evaluation data's language.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：说明资助、伦理及示例推文非逐字复制。
+> - 判断：这些行政信息未说明评价数据的语言。
 
 ### Dense
 
@@ -2541,7 +3709,15 @@ Retrieved by: Dense
 
 #### Relevance 1246
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: English phrases illustrate demographic, sentiment and emotion features for sleep-related tweets.
+> - Judgement: These English feature examples give language clues, while not certifying English-only evaluation.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：英文短语展示睡眠相关推文的人口属性、情感及情绪特征。
+> - 判断：这些英文特征示例提供语言线索，但不能确认仅评价英语。
 
 ### Hybrid RRF
 
@@ -2557,7 +3733,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1248
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: Do they evaluate only on English datasets?
+> - Summary of passage: Feature-selection curves differ for depressed mood and other symptom classes.
+> - Judgement: Class-specific performance trends provide no clue about dataset language.
+> 原因
+> - 问题概述：是否只在英语数据集上评价？
+> - Passage 概述：特征选择曲线在情绪低落与其他症状类别间不同。
+> - 判断：各类别表现趋势未提供数据集语言线索。
 
 ## Question 0136
 
@@ -2585,7 +3769,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1249
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: The introduction identifies PMB as a multilingual meaning bank amid scarce non-English resources.
+> - Judgement: Its multilingual coverage provides scope context for the requested size.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：引言将 PMB 介绍为非英语资源稀缺背景下的多语言语义库。
+> - 判断：多语言覆盖为所问规模提供范围背景。
 
 #### Passage 1250
 
@@ -2595,7 +3787,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1250
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: Related work contrasts alignment-based and parameter-sharing cross-lingual parsers.
+> - Judgement: Parsing approaches do not describe PMB's contents or extent.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：相关工作对比基于对齐与参数共享的跨语言解析器。
+> - 判断：解析方法未说明 PMB 的内容或规模。
 
 #### Passage 1251
 
@@ -2609,7 +3809,15 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1251
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: The parser reconstructs DRS structures and is tested with features across three languages.
+> - Judgement: The experimental language scope gives partial context for the multilingual bank's use.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：解析器重建 DRS 结构，并在三种语言上测试特征。
+> - 判断：实验语言范围为多语言语义库的使用提供部分背景。
 
 #### Passage 1253
 
@@ -2623,7 +3831,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1253
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: PMB v2.1.0 experiments use 4,405 English, 1,173 German, 633 Italian and 583 Dutch sentences.
+> - Judgement: It directly reports the version and per-language sizes used in this study.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：PMB v2.1.0 实验使用 4,405 个英语、1,173 个德语、633 个意大利语和 583 个荷兰语句子。
+> - 判断：直接报告本文所用版本及各语言规模。
 
 #### Passage 1254
 
@@ -2633,7 +3849,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1254
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: PMB evaluation omits presupposition boxes and sense tags.
+> - Judgement: The representation exclusions clarify the scope of the PMB material evaluated.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：PMB 评价省略预设语义框与词义标签。
+> - 判断：表示层面的排除项说明受评 PMB 材料的范围。
 
 #### Passage 1255
 
@@ -2643,7 +3867,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1255
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: A short methods transition announces encoder-decoder modifications.
+> - Judgement: The transition contains no information about PMB or its scale.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：简短方法过渡说明将介绍编码器解码器修改。
+> - 判断：过渡语没有 PMB 或其规模信息。
 
 ### BM25
 
@@ -2661,7 +3893,15 @@ Retrieved by: BM25
 
 #### Relevance 1252
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: BiLSTM and TreeLSTM encoders differ in how they represent word order and syntax.
+> - Judgement: Encoder architectures provide no PMB size or corpus-composition information.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：BiLSTM 与 TreeLSTM 编码器在词序和句法表示方式上不同。
+> - 判断：编码器架构没有 PMB 规模或语料组成信息。
 
 ### Dense
 
@@ -2681,7 +3921,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1256
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How big is the Parallel Meaning Bank?
+> - Summary of passage: The decoder predicts boxes, predicates and referents and copies input lemmas.
+> - Judgement: Decoding mechanics provide no corpus-size or composition clue.
+> 原因
+> - 问题概述：Parallel Meaning Bank 的规模多大？
+> - Passage 概述：解码器预测语义框、谓词和指称项，并复制输入词元。
+> - 判断：解码机制没有语料规模或组成线索。
 
 ## Question 0137
 
@@ -2705,7 +3953,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1257
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: Meta elements include Analysis Unit, Syntactic Unit and morphosyntactic-variant normalization.
+> - Judgement: It directly defines the requested language meta elements and options.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：元元素包括分析单元、句法单元和形态句法变体归一化。
+> - 判断：直接定义所问语言元元素及其选项。
 
 #### Passage 1258
 
@@ -2721,7 +3977,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1258
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: The feature-specification language standardizes definitions interpreted by FExSys.
+> - Judgement: It explains the language and interpreter in which the meta elements operate.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：特征规范语言将定义标准化，并由 FExSys 解释执行。
+> - 判断：说明这些元元素所属的语言及解释器背景。
 
 #### Passage 1259
 
@@ -2731,7 +3995,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1259
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: The proposed feature language abstracts extraction and supports feature reuse.
+> - Judgement: This gives the purpose of the specification language whose elements are requested.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：所提特征语言抽象特征提取，并支持特征复用。
+> - 判断：说明问题所问元素所属规范语言的目的。
 
 #### Passage 1260
 
@@ -2747,7 +4019,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1260
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: Feature-engineering examples motivate a common language for NLP features.
+> - Judgement: The feature examples clarify what the language must express.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：特征工程示例说明设计统一 NLP 特征语言的动机。
+> - 判断：这些特征示例说明该语言需要表达的内容。
 
 #### Passage 1262
 
@@ -2759,7 +4039,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1262
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: The conclusion lists linguistic, semantic and statistical features at several analysis levels.
+> - Judgement: The listed word-to-corpus levels help explain analysis-unit meta information.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：结论列出多种分析层级上的语言学、语义及统计特征。
+> - 判断：从词到语料的层级有助于说明分析单元元信息。
 
 ### BM25
 
@@ -2787,7 +4075,15 @@ Retrieved by: BM25
 
 #### Relevance 1261
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: Application metadata includes the analysis unit and feature specifications.
+> - Judgement: Analysis unit is an explicit meta-element clue within the recommendation setup.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：应用元数据包含分析单元与特征规范。
+> - 判断：分析单元是推荐设置中明确的元元素线索。
 
 ### Dense
 
@@ -2807,7 +4103,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1263
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What are meta elements of language for specifying NLP features?
+> - Summary of passage: Application descriptions undergo stemming, abbreviation expansion and synonym normalization.
+> - Judgement: This preprocessing concerns application matching, not elements of the feature-specification language.
+> 原因
+> - 问题概述：用于指定 NLP 特征的语言有哪些元元素？
+> - Passage 概述：应用描述进行词干处理、缩略语展开及同义词归一化。
+> - 判断：该预处理面向应用匹配，未涉及特征规范语言元素。
 
 ## Question 0138
 
@@ -2833,7 +4137,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1264
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: Attention combines content scores with relative-position terms and learnable biases.
+> - Judgement: The relative offset terms directly encode distance and distinguish direction.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：注意力结合内容分数、相对位置项及可学习偏置。
+> - 判断：相对偏移项直接编码距离并区分方向。
 
 #### Passage 1265
 
@@ -2849,7 +4161,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1265
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: TENER replaces absolute positions with revised relative positional encoding.
+> - Judgement: It directly states the mechanism introduced for direction and distance awareness.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：TENER 使用修改后的相对位置编码替代绝对位置。
+> - 判断：直接说明实现方向与距离感知的机制。
 
 #### Passage 1266
 
@@ -2859,7 +4179,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1266
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: Earlier relative-position methods incorporate token distance into attention scores.
+> - Judgement: These methods provide the technical background for TENER's adaptation.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：既有相对位置方法将词元距离纳入注意力分数。
+> - 判断：这些方法为 TENER 的修改提供技术背景。
 
 #### Passage 1267
 
@@ -2869,7 +4197,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1267
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: The conclusion identifies direction-aware, distance-aware and unscaled attention as customizations.
+> - Judgement: It confirms the attention properties the proposed encoder adds.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：结论将方向感知、距离感知及不缩放注意力列为改动。
+> - 判断：确认所提编码器增加的注意力性质。
 
 #### Passage 1268
 
@@ -2911,7 +4247,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1268
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: Sinusoidal absolute embeddings are shown to lose direction and distance properties under standard attention.
+> - Judgement: The derivation motivates directly adding relative-position terms to attention.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：证明正弦绝对嵌入在标准注意力下丢失方向与距离性质。
+> - 判断：该推导说明直接向注意力加入相对位置项的动机。
 
 ### BM25
 
@@ -2929,7 +4273,15 @@ Retrieved by: Dense
 
 #### Relevance 1269
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: Sinusoidal embeddings encode position and offsets through linear transformations.
+> - Judgement: This explains the positional representation modified by the proposed attention.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：正弦嵌入通过线性变换表示位置与偏移。
+> - 判断：说明所提注意力修改的位置表示基础。
 
 ### Hybrid RRF
 
@@ -2955,7 +4307,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1270
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: The introduction argues that NER needs both left-right direction and nearby-token distance.
+> - Judgement: It states the missing properties that motivate the attention changes.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：引言指出 NER 同时需要左右方向及相邻词元距离。
+> - 判断：指出促使作者修改注意力的缺失性质。
 
 #### Passage 1271
 
@@ -2973,7 +4333,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1271
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: Standard Transformer attention uses query-key scores and multi-head projections.
+> - Judgement: It gives the baseline attention computation to which relative-position terms are added.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：标准 Transformer 注意力使用查询与键分数及多头投影。
+> - 判断：给出加入相对位置项之前的基准注意力计算。
 
 #### Passage 1272
 
@@ -2983,7 +4351,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1272
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How do they incorporate direction and relative distance in attention?
+> - Summary of passage: The proposed model uses a Transformer encoder for long-range NER interactions.
+> - Judgement: It locates the attention modifications within the sentence encoder.
+> 原因
+> - 问题概述：如何在注意力中加入方向与相对距离？
+> - Passage 概述：所提模型使用 Transformer 编码器建模 NER 长程交互。
+> - 判断：指出注意力修改位于句子编码器中。
 
 ## Question 0139
 
@@ -3003,7 +4379,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1273
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: Sentences containing or immediately followed by '(Laughter)' are labeled positive.
+> - Judgement: It directly states that audience-laughter transcript markup determines positive labels.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：包含或紧接着出现 Laughter 标记的句子被标为正例。
+> - 判断：直接说明正例由观众笑声的转写标记决定。
 
 #### Passage 1274
 
@@ -3015,7 +4399,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1274
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: The corpus uses authentic TED presentations rather than scripted TV dialogue.
+> - Judgement: The authentic-talk source helps interpret audience reactions as the labeling signal.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：语料来自真实 TED 演讲，而非按剧本表演的电视对话。
+> - 判断：真实演讲来源有助于理解以观众反应作为标注信号的背景。
 
 #### Passage 1275
 
@@ -3029,7 +4421,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1275
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: The study builds a TED corpus to recognize utterances that cause laughter.
+> - Judgement: The stated target directly links the positive class to laughter-inducing utterances.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：研究构建 TED 语料以识别引发笑声的话语。
+> - 判断：研究目标直接将正类与引发笑声的话语联系起来。
 
 #### Passage 1276
 
@@ -3045,7 +4445,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1276
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: Earlier humor corpora draw positive jokes from joke websites and study TV laughter cues.
+> - Judgement: These alternative positive-instance sources provide context for the TED labeling choice.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：早期幽默语料从笑话网站收集正例，并研究电视笑声线索。
+> - 判断：这些其他正例来源为 TED 标注选择提供背景。
 
 #### Passage 1278
 
@@ -3055,7 +4463,15 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1278
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: Existing joke and comedy corpora motivate an open presentation-humor corpus.
+> - Judgement: The corpus-domain contrast helps contextualize authentic audience-response labeling.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：既有笑话及喜剧语料促使作者构建开放演讲幽默语料。
+> - 判断：语料领域对比有助于理解真实观众反应标注的背景。
 
 ### BM25
 
@@ -3069,7 +4485,15 @@ Retrieved by: BM25
 
 #### Relevance 1277
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: The CNN uses word embeddings, convolution filters, pooling and dropout.
+> - Judgement: Classifier architecture does not explain positive-instance annotation.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：CNN 使用词嵌入、卷积滤波器、池化与 dropout。
+> - 判断：分类器架构未解释正例如何标注。
 
 ### Dense
 
@@ -3095,7 +4519,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1279
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: Experiments use TED and Pun corpora, preserving whole talks during partitioning.
+> - Judgement: It identifies the relevant corpus and instance organization, complementing label-source evidence.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：实验使用 TED 和 Pun 语料，并在划分时保留完整演讲。
+> - 判断：指出相关语料与样本组织方式，补充标签来源证据。
 
 #### Passage 1280
 
@@ -3105,7 +4537,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1280
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: How are the positive instances annotated? e.g. by annotators, or by laughter from the audience?
+> - Summary of passage: A Random Forest uses semantic, phonetic and nearest-neighbor features.
+> - Judgement: Prediction features do not describe how positive labels were assigned.
+> 原因
+> - 问题概述：正例如何标注，是人工判断还是依据观众笑声？
+> - Passage 概述：随机森林使用语义、语音及近邻特征。
+> - 判断：预测特征未说明正标签如何分配。
 
 ## Question 0140
 
@@ -3127,7 +4567,15 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1281
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: The data come from MultiWOZ 2.0 and DailyDialogue human-to-human conversations.
+> - Judgement: It directly identifies both source datasets and their conversation origin.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：数据来自 MultiWOZ 2.0 和 DailyDialogue 的人际对话。
+> - 判断：直接指出两个来源数据集及其对话来源。
 
 #### Passage 1282
 
@@ -3141,7 +4589,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1282
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: Generation and arbitrator comparisons report BLEU and accuracy across model variants.
+> - Judgement: Model scores alone do not identify where the datasets originated.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：生成与仲裁器对比报告各模型变体的 BLEU 和准确率。
+> - 判断：模型分数没有指出数据集来源。
 
 #### Passage 1283
 
@@ -3157,7 +4613,15 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1283
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: Results explicitly evaluate agent and user imaginators on MultiWOZ.
+> - Judgement: The named MultiWOZ benchmark provides one source-dataset clue.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：结果明确在 MultiWOZ 上评价代理和用户想象器。
+> - 判断：明确提到 MultiWOZ，为来源数据集提供一条线索。
 
 #### Passage 1285
 
@@ -3183,7 +4647,15 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1285
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: The arbitrator scores imagined dialogue paths using CNN features and negative log likelihood.
+> - Judgement: The model equations provide no data-source information.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：仲裁器使用 CNN 特征与负对数似然对想象对话路径评分。
+> - 判断：模型方程没有数据来源信息。
 
 #### Passage 1286
 
@@ -3201,7 +4673,15 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1286
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: Existing datasets are transformed by replacing slots, splitting utterances and adding tags.
+> - Judgement: It explains how source conversations become the study's derived datasets.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：通过替换槽值、拆分话语及添加标签改造既有数据集。
+> - 判断：解释来源对话如何转为本文派生数据集。
 
 #### Passage 1287
 
@@ -3211,7 +4691,15 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1287
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: BLEU evaluates generation and accuracy evaluates arbitrator decisions.
+> - Judgement: Evaluation metrics do not identify dataset provenance.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：BLEU 评价生成，准确率评价仲裁器决策。
+> - 判断：评价指标没有指出数据来源。
 
 ### BM25
 
@@ -3223,7 +4711,15 @@ Retrieved by: BM25
 
 #### Relevance 1284
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: Two popular dialogue datasets are modified for realistic interaction prediction.
+> - Judgement: It states that existing dialogue corpora are reused rather than newly collected.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：修改两个常用对话数据集以预测真实交互。
+> - 判断：说明复用既有对话语料，而非重新收集。
 
 ### Dense
 
@@ -3237,7 +4733,15 @@ Retrieved by: Dense
 
 #### Relevance 1288
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: Related classifiers include RNNs, CNNs, Transformers and BERT.
+> - Judgement: The architecture survey supplies no source-conversation or dataset clue.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：相关分类器包括 RNN、CNN、Transformer 与 BERT。
+> - 判断：架构综述没有来源对话或数据集线索。
 
 ### Hybrid RRF
 
@@ -3253,7 +4757,15 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1289
 
-Label: 
+Label: 0
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: Related NLG methods contrast templates with data-driven generation.
+> - Judgement: Generic generation approaches do not establish this study's data sources.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：相关 NLG 方法对比模板与数据驱动生成。
+> - 判断：一般生成方法未说明本文数据来源。
 
 #### Passage 1290
 
@@ -3275,4 +4787,12 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1290
 
-Label: 
+Label: 1
+> Reason
+> - Summary of question: What is the source of their datasets?
+> - Summary of passage: The contributions state that two popular dialogue corpora are modified to simulate interaction.
+> - Judgement: This explicitly describes reuse and modification as the dataset construction route.
+> 原因
+> - 问题概述：数据集来自哪里？
+> - Passage 概述：贡献说明修改两个常用对话语料以模拟交互。
+> - 判断：明确说明数据构建采用复用与改造路线。
