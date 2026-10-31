@@ -207,3 +207,15 @@ def test_answer_errors_are_recorded_and_counted_without_stopping_the_run():
 
 def test_without_answer_fn_records_have_no_answer_keys(static_records):
     assert all("answer" not in r and "answer_s" not in r for r in static_records)
+
+
+def test_on_record_sees_every_record_in_order_including_errors():
+    def flaky(query, paper_id, top_k):
+        if "F1" in query:
+            raise RuntimeError("index offline")
+        return [METHOD]
+
+    seen = []
+    records = run_system(ITEMS, flaky, adaptive=False, on_record=seen.append)
+    assert [r["question_id"] for r in seen] == ["q1", "q2", "q3"]
+    assert seen == records and "error" in seen[1]
