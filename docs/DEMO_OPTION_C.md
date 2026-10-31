@@ -164,7 +164,10 @@ The response is **the canonical answer record, unchanged** — the same object
 }
 ```
 
-`agent` is present only when the input was an exported `AgentState`.
+`agent` is present when the input was an exported `AgentState`, and also on a
+free-form question served by an agent hook (`--record-fn`), because the hook
+returns that same exported state. Plain `--retriever` free-form answers do not
+carry it.
 
 Status codes are about **transport, not answers**:
 
@@ -208,9 +211,10 @@ Useful overrides, all via `--export=ALL,...`:
 | variable | default | meaning |
 |---|---|---|
 | `DEMO_PORT` | `8000` | port on the compute node |
-| `DEMO_RETRIEVER` | none | `module:factory` for free-form; §7 |
-| `PAPERS_FROM` | `$P5_ROOT/data/p1_hybrid.jsonl` | source of `GET /papers` |
-| `PASSAGES_FROM` | `$P5_ROOT/data/passages.jsonl` | backing `POST /passages`; a corpus file or a retrieval dump both work (the dump's `retrieved_passages` are indexed) |
+| `DEMO_RETRIEVER` | none | `module:factory` for plain free-form retrieval; §7 |
+| `DEMO_RECORD_FN` | none | `module:factory` for the agent hook; mutually exclusive with `DEMO_RETRIEVER`; §7.1 |
+| `PAPERS_FROM` | `$P5_ROOT/data/corpus/passages.jsonl` | source of `GET /papers` |
+| `PASSAGES_FROM` | `$P5_ROOT/data/corpus/passages.jsonl` | backing `POST /passages`; a corpus file or a retrieval dump both work (the dump's `retrieved_passages` are indexed) |
 | `DEMO_WARMUP_RECORD` | built-in synthetic | JSONL whose first record warms up |
 | `MAX_NEW_TOKENS` | `1024` | frozen v7 budget |
 
@@ -348,6 +352,41 @@ Operationally:
 
 If P5's copy is used, `--papers-from` should point at the same dump the retriever
 was built from, so the UI's selector cannot offer a paper with no index.
+
+### 7.1 The agent hook (`--record-fn`)
+
+When the demo should show the agent loop and the critic, use the record hook
+instead of a plain retriever. It is mutually exclusive with `--retriever`.
+
+```bash
+sbatch --export=ALL,DEMO_RECORD_FN='src.agent.demo:make_record_fn' \
+       scripts/cluster/80_demo_server.sbatch
+```
+
+```python
+# src/agent/demo.py  (owned by P4)
+def make_record_fn(pipeline):                 # called once, after the engine loads
+    retriever = build_demo_retriever()        # loads corpus/index, from env
+    critic = GeneratorChatClient(pipeline.generator)   # same engine
+
+    def record_fn(question: str, paper_id: str) -> dict:
+        record = run_system(
+            [ExperimentItem(question_id=..., question=question, paper_id=paper_id)],
+            retriever, adaptive=True, critic_client=critic,
+            top_k=5, answer_fn=None,          # P5 answers, once, in the server
+        )[0]
+        if "error" in record:
+            raise RuntimeError(record["error"])
+        return record                         # export_record(state), no "answer"
+    return record_fn
+```
+
+The server calls `answer_record(pipeline, record)` after the hook, so the demo
+and the batch runs share the parse/validate/downgrade path and there is exactly
+one generation. A record that already contains `answer` is a 500, not a second
+generation. `/health` reports `"agent": true`. The factory reads
+`PAPERGAP_CORPUS`, `PAPERGAP_DENSE_INDEX`, `PAPERGAP_BM25_INDEX` and `HF_HOME`
+from the job environment.
 
 ---
 

@@ -23,12 +23,19 @@ of this cluster rather than a preference:
 3. **Bind to loopback.** The process runs on a shared compute node. The tunnel
    provides the network path; the server must never be reachable from the node's
    LAN.
-4. **No retrieval dependency of its own.** Free-form questions need P2's
-   retriever, but P5 neither owns nor imports it. A caller injects a
-   ``retriever(question, paper_id, top_k) -> hits`` callable (``--retriever
-   module:factory``), and its hit payloads go through the same
-   :func:`~src.generation.adapters.retrieval.build_request` as an exported record. When
-   no retriever is configured the server still answers full ``record`` payloads,
+4. **No retrieval or agent dependency of its own.** Free-form questions need
+   P2's retriever and, for the demo, P4's agent loop. P5 neither owns nor imports
+   either. A caller injects one of two hooks:
+
+   * ``retriever(question, paper_id, top_k) -> hits`` (``--retriever
+     module:factory``): the server wraps the hits into a one-round record;
+   * ``record_fn(question, paper_id) -> exported AgentState`` (``--record-fn
+     module:factory``): the hook runs retrieval and the agent loop itself and
+     returns the record *before* the answer. The server then calls
+     :func:`~src.generation.harness.answer_record`, the same function the batch path
+     uses, so the demo cannot drift from the scored runs.
+
+   When neither is configured the server still answers full ``record`` payloads,
    which is the replay shape the UI can use before retrieval is wired.
 
 The response body is the canonical answer record
@@ -67,6 +74,11 @@ LOGGER = logging.getLogger("src.generation.server")
 #: Hits may be P2's nested ``{"passage": {...}}`` objects or already flat; the
 #: adapter in :mod:`src.generation.adapters.retrieval` accepts both.
 RetrieverFn = Callable[[str, str, int], Sequence[Mapping[str, Any]]]
+
+#: An agent hook: ``(question, paper_id) -> exported AgentState record``.
+#: The record must be the terminal state *before* the answer; the server owns
+#: the answer call. P4's factory builds it with ``run_system(..., answer_fn=None)``.
+RecordFn = Callable[[str, str], Mapping[str, Any]]
 
 #: Used when no ``--warmup-record`` is supplied. One synthetic passage is enough
 #: to exercise generate -> parse -> validate; the answer is expected to be a
@@ -111,6 +123,21 @@ class ServerDependencyMissing(RuntimeError):
 # --------------------------------------------------------------------------- #
 
 
+def _load_factory(spec: str) -> Callable[..., Any]:
+    """Resolve ``"module:factory"`` without calling it."""
+    module_name, separator, attribute = spec.partition(":")
+    if not separator or not module_name or not attribute:
+        raise ValueError(
+            f"hook spec {spec!r} must look like 'package.module:factory'"
+        )
+    factory = getattr(importlib.import_module(module_name), attribute, None)
+    if factory is None:
+        raise ValueError(f"{module_name} has no attribute {attribute!r}")
+    if not callable(factory):
+        raise TypeError(f"{module_name}.{attribute} is not callable")
+    return factory
+
+
 def load_retriever(spec: str) -> RetrieverFn:
     """Resolve ``"module:factory"`` into a retriever callable.
 
@@ -119,21 +146,31 @@ def load_retriever(spec: str) -> RetrieverFn:
     ``(question, paper_id, top_k)``; the hits it returns are passed to
     ``build_request`` unchanged.
     """
-    module_name, separator, attribute = spec.partition(":")
-    if not separator or not module_name or not attribute:
-        raise ValueError(
-            f"retriever spec {spec!r} must look like 'package.module:factory'"
-        )
-    factory = getattr(importlib.import_module(module_name), attribute, None)
-    if factory is None:
-        raise ValueError(f"{module_name} has no attribute {attribute!r}")
-    retriever = factory()
+    retriever = _load_factory(spec)()
     if not callable(retriever):
         raise TypeError(
             f"{spec} returned {type(retriever).__name__}, not a callable "
             "retriever(question, paper_id, top_k)"
         )
     return retriever
+
+
+def load_record_fn(spec: str, pipeline: GroundedQAPipeline) -> RecordFn:
+    """Resolve ``"module:factory"`` into an agent ``record_fn``.
+
+    The factory is called once, at startup and after the engine is loaded, so
+    it can build the critic client from ``pipeline.generator`` and load the
+    retriever before the port opens. It must not construct a second generator:
+    one A40 fits one 8B engine. The returned callable takes ``(question,
+    paper_id)`` and returns the exported AgentState record *before* the answer.
+    """
+    record_fn = _load_factory(spec)(pipeline)
+    if not callable(record_fn):
+        raise TypeError(
+            f"{spec} returned {type(record_fn).__name__}, not a callable "
+            "record_fn(question, paper_id)"
+        )
+    return record_fn
 
 
 def paper_ids_from(path: str | Path) -> list[str]:
@@ -319,6 +356,7 @@ def create_app(
     pipeline: GroundedQAPipeline,
     *,
     retriever: Optional[RetrieverFn] = None,
+    record_fn: Optional[RecordFn] = None,
     papers: Sequence[str] = (),
     passages: Optional[Mapping[str, Mapping[str, Any]]] = None,
     top_k: int = 5,
@@ -330,7 +368,14 @@ def create_app(
     ``pipeline`` is passed in rather than constructed here so that the caller
     owns the one engine this job is allowed to load, and so tests can build the
     app with the mock backend. Loading and warm-up are :func:`main`'s job.
+
+    ``retriever`` and ``record_fn`` are alternative free-form hooks: a plain
+    retriever, or an agent hook that returns the exported state before the
+    answer. Passing both is a configuration error; pass neither to serve
+    exported records only.
     """
+    if retriever is not None and record_fn is not None:
+        raise ValueError("pass either retriever or record_fn, not both")
     fastapi = _require_fastapi()
     from fastapi import Body, Header, HTTPException
 
@@ -393,13 +438,14 @@ def create_app(
                     "retrieval is paper-scoped"
                 ),
             )
-        if retriever is None:
+        if retriever is None and record_fn is None:
             raise HTTPException(
                 status_code=503,
                 detail=(
-                    "free-form retrieval is not configured on this server; "
-                    "restart it with --retriever module:factory, or send a full "
-                    "'record' exported by the agent"
+                    "free-form input is not configured on this server; "
+                    "restart it with --retriever module:factory or "
+                    "--record-fn module:factory, or send a full 'record' "
+                    "exported by the agent"
                 ),
             )
         return {
@@ -408,13 +454,75 @@ def create_app(
             "request_id": body.get("request_id"),
         }
 
+    def _answer_from_record_fn(parsed: Mapping[str, Any]) -> dict[str, Any]:
+        """Run the agent hook, then P5's answer step, exactly once.
+
+        The hook is caller-supplied code inside the server process, so any
+        exception it raises is a server-side integration failure: a 500, never a
+        400 and never a refusal. A record that already carries ``answer`` means
+        the factory called ``run_system`` with an ``answer_fn``; rejecting that
+        is deliberate, because the alternative is generating twice per click.
+        """
+        try:
+            record = record_fn(parsed["question"], parsed["paper_id"])
+        except BackendNotAvailable:
+            raise
+        except HTTPException:
+            raise
+        except Exception as exc:  # noqa: BLE001 - the hook is external code
+            LOGGER.exception("record_fn failed for paper %s", parsed["paper_id"])
+            raise HTTPException(
+                status_code=500,
+                detail=f"record_fn failed: {type(exc).__name__}: {exc}",
+            ) from exc
+        if not isinstance(record, Mapping):
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "record_fn returned "
+                    f"{type(record).__name__}; expected the exported AgentState "
+                    "record"
+                ),
+            )
+        record = dict(record)
+        if record.get("error"):
+            raise HTTPException(
+                status_code=500,
+                detail=f"record_fn failed: {record['error']}",
+            )
+        if "answer" in record or "answer_error" in record:
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "record_fn must return the pre-answer export; call "
+                    "run_system(..., answer_fn=None) - the server owns the one "
+                    "answer call"
+                ),
+            )
+        if not record.get("question_id"):
+            record["question_id"] = parsed.get("request_id") or (
+                f"ui-{int(time.time() * 1000)}"
+            )
+        try:
+            return answer_record(pipeline, record)
+        except BackendNotAvailable:
+            raise
+        except Exception as exc:  # noqa: BLE001 - the record came from the hook
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "record_fn returned a record P5 cannot answer: "
+                    f"{type(exc).__name__}: {exc}"
+                ),
+            ) from exc
+
     def _one_at_a_time(parsed: Mapping[str, Any]) -> dict[str, Any]:
         """Run retrieval and generation under one lock.
 
-        The lock covers the retriever too, not just the model: P2's retriever may
-        hold its own GPU encoder, and "one engine per job" is a property of the
-        whole request path. Validation of the body happens before this, so a bad
-        payload is still a 400.
+        The lock covers the retriever and the agent hook too, not just the
+        model: P2's retriever may hold its own GPU encoder, and "one engine per
+        job" is a property of the whole request path. Validation of the body
+        happens before this, so a bad payload is still a 400.
         """
         if not lock.acquire(blocking=False):
             raise HTTPException(
@@ -426,25 +534,28 @@ def create_app(
             )
         try:
             if "record" in parsed:
-                record = dict(parsed["record"])
-            else:
-                hits = retriever(parsed["question"], parsed["paper_id"], top_k)
-                if not isinstance(hits, Sequence) or isinstance(hits, (str, bytes)):
-                    raise HTTPException(
-                        status_code=500,
-                        detail=(
-                            "the configured retriever returned "
-                            f"{type(hits).__name__}; expected a list of hits"
-                        ),
-                    )
-                record = {
-                    "question": parsed["question"],
-                    "question_id": parsed["request_id"]
-                    or f"ui-{int(time.time() * 1000)}",
-                    "paper_id": parsed["paper_id"],
-                    "retrieval_round": 1,
-                    "retrieved_passages": list(hits),
-                }
+                return answer_record(pipeline, dict(parsed["record"]))
+            if record_fn is not None:
+                return _answer_from_record_fn(parsed)
+
+            # record_fn is None, so _parse_body guaranteed a retriever.
+            hits = retriever(parsed["question"], parsed["paper_id"], top_k)
+            if not isinstance(hits, Sequence) or isinstance(hits, (str, bytes)):
+                raise HTTPException(
+                    status_code=500,
+                    detail=(
+                        "the configured retriever returned "
+                        f"{type(hits).__name__}; expected a list of hits"
+                    ),
+                )
+            record = {
+                "question": parsed["question"],
+                "question_id": parsed["request_id"]
+                or f"ui-{int(time.time() * 1000)}",
+                "paper_id": parsed["paper_id"],
+                "retrieval_round": 1,
+                "retrieved_passages": list(hits),
+            }
             return answer_record(pipeline, record)
         except (ValueError, TypeError) as exc:
             # A malformed record means the caller and P5 disagree about the
@@ -464,7 +575,8 @@ def create_app(
             "backend": backend_info.get("backend"),
             "model_id": backend_info.get("model_id"),
             "prompt_version": prompt_version,
-            "retrieval": retriever is not None,
+            "retrieval": retriever is not None or record_fn is not None,
+            "agent": record_fn is not None,
             "passage_text": bool(passages),
             "top_k": top_k,
             "papers": len(papers),
@@ -567,10 +679,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--top-k", type=int, default=5)
-    parser.add_argument(
+    hooks = parser.add_mutually_exclusive_group()
+    hooks.add_argument(
         "--retriever",
         default=None,
         help="'module:factory' returning retriever(question, paper_id, top_k)",
+    )
+    hooks.add_argument(
+        "--record-fn",
+        default=None,
+        help=(
+            "'module:factory' returning record_fn(question, paper_id); the "
+            "factory receives the pipeline and returns the pre-answer export"
+        ),
     )
     parser.add_argument(
         "--papers-from",
@@ -618,7 +739,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         )
 
     pipeline = GroundedQAPipeline(generator)
-    retriever = load_retriever(args.retriever) if args.retriever else None
     papers = paper_ids_from(args.papers_from) if args.papers_from else []
     passages = load_passage_index(args.passages_from) if args.passages_from else None
     warmup_record = first_record(args.warmup_record) if args.warmup_record else None
@@ -637,18 +757,28 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 args.passages_from,
             )
 
+    # Fail before paying the model load if FastAPI is missing. The app itself is
+    # built after the engine and the hooks, so a --record-fn factory can use
+    # the loaded generator.
+    _require_fastapi()
+
+    # Weights land in VRAM before retrieval models and the port. This order is
+    # load-bearing for a GPU retriever: vLLM's memory check must run first.
+    generator.load()
+
+    retriever = load_retriever(args.retriever) if args.retriever else None
+    record_fn = load_record_fn(args.record_fn, pipeline) if args.record_fn else None
+
     app = create_app(
         pipeline,
         retriever=retriever,
+        record_fn=record_fn,
         papers=papers,
         passages=passages,
         top_k=args.top_k,
         token=args.token,
     )
 
-    # Weights land in VRAM here, before uvicorn listens. A failure at this point
-    # costs the job's setup time, not a demo slot.
-    generator.load()
     if args.no_warmup:
         LOGGER.warning("warm-up skipped (--no-warmup); the first request will pay it")
     else:
@@ -660,10 +790,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     uvicorn = _require_uvicorn()
 
     LOGGER.info(
-        "listening on http://%s:%d  (retrieval=%s, papers=%d, top_k=%d)",
+        "listening on http://%s:%d  (retrieval=%s, agent=%s, papers=%d, top_k=%d)",
         args.host,
         args.port,
-        "on" if retriever is not None else "off",
+        "on" if retriever is not None or record_fn is not None else "off",
+        "on" if record_fn is not None else "off",
         len(papers),
         args.top_k,
     )

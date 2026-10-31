@@ -79,20 +79,24 @@ Response (trimmed; the full bodies are in the fixture):
 }
 ```
 
-`agent` is present only when the input was an exported `AgentState`; the
-free-form form does not produce it.
+`agent` is present when the input was an exported `AgentState`, and also on a
+free-form question served by an agent hook (`--record-fn`), because the hook
+returns that same exported state. Plain `--retriever` free-form answers do not
+carry it.
 
 ### `GET /health`
 
 ```json
 {"status": "ok", "backend": "vllm", "model_id": "...",
- "prompt_version": "p5-grounded-qa-v7", "retrieval": true,
+ "prompt_version": "p5-grounded-qa-v7", "retrieval": true, "agent": true,
  "passage_text": true, "top_k": 5, "papers": 100,
  "warmup_seconds": 41.2, "uptime_seconds": 812.4}
 ```
 
 Use it for the status badge. `retrieval: false` means free-form is disabled;
-`passage_text: false` means citations can only be shown as ids.
+`agent: true` means free-form runs the agent loop (retrieval + critic)
+rather than a plain retriever; `passage_text: false` means citations can
+only be shown as ids.
 
 ### `GET /papers`
 

@@ -36,6 +36,7 @@ from src.generation.server import (  # noqa: E402
     create_app,
     first_record,
     load_passage_index,
+    load_record_fn,
     paper_ids_from,
     warm_up,
 )
@@ -84,6 +85,13 @@ def client(**kwargs) -> TestClient:
     return TestClient(create_app(pipeline(), **kwargs))
 
 
+def agent_record_factory(pipe: GroundedQAPipeline):
+    """A module-level factory, for the ``load_record_fn`` import-path test."""
+    return lambda question, paper_id: exported_record(
+        question=question, paper_id=paper_id
+    )
+
+
 # --------------------------------------------------------------------------- #
 # The answer contract
 # --------------------------------------------------------------------------- #
@@ -98,6 +106,7 @@ def test_health_reports_what_the_ui_needs():
     assert body["backend"] == "mock"
     assert body["papers"] == 1
     assert body["retrieval"] is False
+    assert body["agent"] is False
 
 
 def test_an_exported_record_is_answered_and_returned_unchanged():
@@ -183,6 +192,120 @@ def test_a_retriever_returning_a_non_list_is_a_server_error():
 
     assert response.status_code == 500
     assert "retriever" in response.json()["detail"]
+
+
+# --------------------------------------------------------------------------- #
+# Free-form through the agent hook
+# --------------------------------------------------------------------------- #
+
+
+def test_record_fn_runs_retrieval_and_the_server_answers_once():
+    calls: list[tuple[str, str]] = []
+
+    def record_fn(question: str, paper_id: str) -> dict:
+        calls.append((question, paper_id))
+        return exported_record(question=question, paper_id=paper_id)
+
+    response = client(record_fn=record_fn).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 200
+    assert calls == [("What result is reported?", "paper-1")]
+    assert response.json()["result"]["evidence_status"] == "SUFFICIENT"
+    assert response.json()["agent"]["sufficient"] is True
+
+
+def test_health_reports_the_agent_hook():
+    body = client(record_fn=lambda q, p: exported_record()).get("/health").json()
+
+    assert body["agent"] is True
+    assert body["retrieval"] is True
+
+
+def test_record_fn_returning_an_answer_is_500_not_a_second_generation():
+    def record_fn(question: str, paper_id: str) -> dict:
+        return {**exported_record(question=question, paper_id=paper_id), "answer": {}}
+
+    response = client(record_fn=record_fn).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 500
+    assert "answer_fn=None" in response.json()["detail"]
+
+
+def test_create_app_rejects_two_free_form_hooks():
+    with pytest.raises(ValueError, match="either retriever or record_fn"):
+        create_app(
+            pipeline(),
+            retriever=lambda q, p, k: [hit()],
+            record_fn=lambda q, p: exported_record(),
+        )
+
+
+def test_a_record_fn_error_record_is_500_not_a_refusal():
+    response = client(
+        record_fn=lambda q, p: {"question_id": "ui-1", "error": "agent failed"}
+    ).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 500
+    assert "agent failed" in response.json()["detail"]
+
+
+def test_a_record_fn_exception_is_500_not_a_refusal():
+    def record_fn(question: str, paper_id: str) -> dict:
+        raise RuntimeError("the agent exploded")
+
+    response = client(record_fn=record_fn).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 500
+    assert "the agent exploded" in response.json()["detail"]
+
+
+def test_a_record_fn_returning_a_non_object_is_500():
+    response = client(record_fn=lambda q, p: ["not a record"]).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 500
+    assert "expected the exported AgentState" in response.json()["detail"]
+
+
+def test_a_malformed_record_from_the_hook_is_500_not_400():
+    response = client(record_fn=lambda q, p: {"paper_id": "paper-1"}).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 500
+    assert "cannot answer" in response.json()["detail"]
+
+
+def test_record_fn_assigns_a_request_id_when_the_export_has_none():
+    def record_fn(question: str, paper_id: str) -> dict:
+        record = exported_record(question=question, paper_id=paper_id)
+        record.pop("question_id")
+        return record
+
+    response = client(record_fn=record_fn).post(
+        "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["request_id"].startswith("ui-")
+
+
+def test_load_record_fn_binds_the_pipeline():
+    bound = load_record_fn(f"{__name__}:agent_record_factory", pipeline())
+
+    record = bound("What result is reported?", "paper-1")
+
+    assert record["question"] == "What result is reported?"
+    assert record["paper_id"] == "paper-1"
 
 
 # --------------------------------------------------------------------------- #

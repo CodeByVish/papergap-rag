@@ -28,7 +28,13 @@
 #   # optional knobs:
 #   sbatch --export=ALL,DEMO_PORT=8000 scripts/cluster/80_demo_server.sbatch
 #   sbatch --export=ALL,DEMO_RETRIEVER='src.retrieval.demo:make_retriever' ...
+#   sbatch --export=ALL,DEMO_RECORD_FN='src.agent.demo:make_record_fn' ...
 #   sbatch --export=ALL,DEMO_INSTALL_DEPS=1 ...   # pip install fastapi/uvicorn
+#
+# DEMO_RETRIEVER and DEMO_RECORD_FN are mutually exclusive. The first wraps
+# plain retrieval hits into a one-round record; the second runs P4's agent loop
+# (retrieval + critic) and returns the pre-answer export, which the server then
+# answers exactly once through answer_record.
 #
 # PRECONDITIONS this script cannot create:
 #   * step 3 has run and exited 0            (vllm==0.11.0 venv)
@@ -63,14 +69,31 @@ DEMO_HOST="${DEMO_HOST:-127.0.0.1}"
 # Required with DEMO_HOST=0.0.0.0: the port is then reachable from the cluster
 # network, and /answer must not be open to it.
 DEMO_TOKEN="${DEMO_TOKEN:-}"
+DEMO_RECORD_FN="${DEMO_RECORD_FN:-}"
 TOP_K="${TOP_K:-5}"
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-1024}"
 SERVER_MODULE="${SERVER_MODULE:-}"
-PAPERS_FROM="${PAPERS_FROM:-$P5_ROOT/data/p1_hybrid.jsonl}"
+PAPERS_FROM="${PAPERS_FROM:-$P5_ROOT/data/corpus/passages.jsonl}"
 # Two different files, deliberately separate variables:
-#   PAPERS_FROM  - a retrieval dump; only its paper_id values are used (GET /papers)
-#   PASSAGES_FROM - the corpus; passage_id -> text for POST /passages (citations)
-PASSAGES_FROM="${PASSAGES_FROM:-$P5_ROOT/data/passages.jsonl}"
+#   PAPERS_FROM  - the corpus (or a retrieval dump); its paper_id values are
+#                  used for GET /papers
+#   PASSAGES_FROM - the corpus; passage_id -> text for POST /passages
+PASSAGES_FROM="${PASSAGES_FROM:-$P5_ROOT/data/corpus/passages.jsonl}"
+
+# Corpus/index paths for P4's record_fn factory. The factory reads these; the
+# defaults are the layout proposed for P1's handoff. A missing file is a
+# factory startup error, not silently ignored.
+export PAPERGAP_CORPUS="${PAPERGAP_CORPUS:-$P5_ROOT/data/corpus/passages.jsonl}"
+export PAPERGAP_DENSE_INDEX="${PAPERGAP_DENSE_INDEX:-$P5_ROOT/data/indexes/dense-bge-small}"
+export PAPERGAP_BM25_INDEX="${PAPERGAP_BM25_INDEX:-$P5_ROOT/data/indexes/bm25}"
+
+# Keep the old single-file layout working during the transition.
+if [ ! -f "$PAPERS_FROM" ] && [ -f "$P5_ROOT/data/p1_hybrid.jsonl" ]; then
+    PAPERS_FROM="$P5_ROOT/data/p1_hybrid.jsonl"
+fi
+if [ ! -f "$PASSAGES_FROM" ] && [ -f "$P5_ROOT/data/passages.jsonl" ]; then
+    PASSAGES_FROM="$P5_ROOT/data/passages.jsonl"
+fi
 
 cd "${SLURM_SUBMIT_DIR:-$PWD}" || exit 1
 
@@ -120,7 +143,8 @@ else
     echo "bind      : $DEMO_HOST:$DEMO_PORT (NETWORK-REACHABLE; token required)"
 fi
 echo "token     : $([ -n "$DEMO_TOKEN" ] && echo 'required' || echo 'not set')"
-echo "retriever : ${DEMO_RETRIEVER:-<none: free-form disabled, records only>}"
+echo "retriever : ${DEMO_RETRIEVER:-<none>}"
+echo "agent     : ${DEMO_RECORD_FN:-<none>}"
 
 section "PRECONDITION 1/4 - GPU present"
 if command -v nvidia-smi >/dev/null 2>&1; then
@@ -185,6 +209,13 @@ if [ "$DEMO_HOST" != "127.0.0.1" ] && [ -z "$DEMO_TOKEN" ]; then
     echo "DEMO_HOST=$DEMO_HOST makes /answer reachable from the cluster network."
     echo "Set DEMO_TOKEN=<something> (the UI sends it as a bearer token),"
     echo "or leave DEMO_HOST at its loopback default."
+    exit 1
+fi
+
+if [ -n "${DEMO_RETRIEVER:-}" ] && [ -n "$DEMO_RECORD_FN" ]; then
+    section "STOPPING: two free-form hooks"
+    echo "DEMO_RETRIEVER and DEMO_RECORD_FN are mutually exclusive."
+    echo "Use DEMO_RECORD_FN for the agent loop; it runs retrieval itself."
     exit 1
 fi
 
@@ -256,6 +287,9 @@ ARGS=(
 )
 if [ -n "${DEMO_RETRIEVER:-}" ]; then
     ARGS+=(--retriever "$DEMO_RETRIEVER")
+fi
+if [ -n "$DEMO_RECORD_FN" ]; then
+    ARGS+=(--record-fn "$DEMO_RECORD_FN")
 fi
 if [ -f "$PAPERS_FROM" ]; then
     ARGS+=(--papers-from "$PAPERS_FROM")

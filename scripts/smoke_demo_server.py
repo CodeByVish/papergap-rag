@@ -1,8 +1,9 @@
 """Smoke-test the demo service over real sockets, without a GPU.
 
 The unit tests drive the app through ``TestClient``, which bypasses the network.
-This script starts two actual ``uvicorn`` servers on loopback - one without a
-retriever, one with - and checks every endpoint the P6 UI is allowed to call.
+This script starts three actual ``uvicorn`` servers on loopback - one without a
+hook, one with a plain retriever, one with an agent record hook - and checks
+every endpoint the P6 UI is allowed to call.
 It is the check to run after touching ``src.generation/server.py`` and before a demo:
 
     python scripts/smoke_demo_server.py
@@ -12,6 +13,8 @@ What it covers:
 * ``/health``, ``/papers``, ``/answer`` (record form), ``/passages``;
 * a terminal refusal and the canonical five-key result;
 * free-form input with a stub retriever, and the 503 when none is wired;
+* free-form input through an agent ``record_fn`` that returns the pre-answer
+  export, including the ``agent`` block and the health flag;
 * the concurrency guarantee - two simultaneous questions get ``{200, 429}``,
   because the offline engine is not thread-safe and the lock must say so;
 * the passage index built from a *retrieval dump*, which is the shape that
@@ -39,7 +42,7 @@ from typing import Any, Callable, Optional
 
 # Allow `python scripts/smoke_demo_server.py` from either checkout: the shared
 # repo keeps the package at src/generation (repo root importable), the standalone
-# repo at src/src.generation (src/ importable). Without this, Python puts scripts/ on
+# repo at src.generation (src/ importable). Without this, Python puts scripts/ on
 # sys.path and the project import fails.
 for _candidate in (
     Path(__file__).resolve().parents[1],
@@ -122,6 +125,18 @@ def slow_retriever(delay: float = 0.4) -> Callable[[str, str, int], list[dict[st
         return dump_records()[0]["retrieved_passages"]
 
     return retrieve
+
+
+def agent_record(question: str, paper_id: str) -> dict[str, Any]:
+    """A stub agent hook: the first fixture record, before the answer.
+
+    P4's factory returns ``run_system(..., answer_fn=None)[0]``; this is the
+    same shape with a fixed retrieval result, enough to exercise the server path.
+    """
+    record = dict(dump_records()[0])
+    record["question"] = question
+    record["question_id"] = f"ui-{int(time.time() * 1000)}"
+    return record
 
 
 # --------------------------------------------------------------------------- #
@@ -224,8 +239,11 @@ def run(dump: Path, report: Report) -> None:
             "health reports prompt version and capabilities",
             health.get("prompt_version") == "p5-grounded-qa-v7"
             and health.get("retrieval") is False
+            and health.get("agent") is False
             and health.get("passage_text") is True,
-            json.dumps({k: health.get(k) for k in ("prompt_version", "retrieval", "passage_text")}),
+            json.dumps(
+                {k: health.get(k) for k in ("prompt_version", "retrieval", "agent", "passage_text")}
+            ),
         )
 
         status, body = request("GET", base + "/papers")
@@ -314,6 +332,45 @@ def run(dump: Path, report: Report) -> None:
             "two simultaneous questions get {200, 429}",
             sorted(statuses) == [200, 429],
             f"statuses {sorted(statuses)}",
+        )
+
+    # -- server 3: with an agent record hook ------------------------------- #
+    print("\nserver with an agent record hook")
+    app = create_app(
+        GroundedQAPipeline(MockGenerator(MockScenario.GROUNDED)),
+        record_fn=agent_record,
+        papers=papers,
+        passages=passages,
+    )
+    with LocalServer(app) as base:
+        status, health = request("GET", base + "/health")
+        report.check(
+            "health reports the agent hook",
+            status == 200
+            and health.get("agent") is True
+            and health.get("retrieval") is True,
+            json.dumps({k: health.get(k) for k in ("agent", "retrieval")}),
+        )
+
+        status, answer = request(
+            "POST", base + "/answer",
+            {"question": "What result is reported?", "paper_id": "paper-A"},
+        )
+        result = answer.get("result", {}) if isinstance(answer, dict) else {}
+        report.check(
+            "free-form through the agent hook is 200", status == 200, f"status {status}"
+        )
+        report.check(
+            "the agent hook answer has the five keys and the agent block",
+            set(result)
+            == {"answer", "citations", "evidence_status", "retrieval_rounds", "provenance"}
+            and "agent" in answer,
+            str(sorted(result)),
+        )
+        report.check(
+            "the agent hook answer is SUFFICIENT with citations",
+            result.get("evidence_status") == "SUFFICIENT" and result.get("citations"),
+            f'{result.get("evidence_status")}, {len(result.get("citations") or [])} citations',
         )
 
 
