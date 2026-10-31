@@ -80,6 +80,12 @@ at load. The corpus and dense index are not on the cluster yet; copy them from P
 Outputs in `--out-dir`: `static.jsonl`, `adaptive.jsonl`, `metrics.json`, `metrics.md`,
 `run_manifest.json` (arguments, git commit, package versions, file hashes, critic call counts).
 
+## Live demo
+
+P5's Option C server needs a hook to run the agent per typed question: `src/agent/demo.py`
+(`make_record_fn`) and `scripts/demo_agent_factory.py`. The server change and the open checks are in
+`docs/handoffs/P4_AGENT_DEMO_HOOK_20261030.md`.
+
 ## Measures (`src/agent/experiments.py`)
 
 Static = one round, rule-based critic (`max_retries=0`); adaptive = up to 2 retries.
