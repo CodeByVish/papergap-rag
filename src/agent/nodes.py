@@ -26,7 +26,11 @@ MAX_RETRIES = 2  # keep in sync with configs/default.yaml: agent.max_retries
 MAX_ROUNDS = MAX_RETRIES + 1  # initial retrieval + retries
 DEFAULT_TOP_K = 5
 
-Retriever = Callable[[str, str, int], list[RetrievedPassage]]
+Retriever = Callable[..., list[RetrievedPassage]]
+"""`retrieve(query, paper_id, top_k)`, optionally also `section=` when scoped."""
+
+SectionSelector = Callable[[AgentState], str | None]
+"""Picks the exact section to search this round, or None for the whole paper."""
 
 
 def plan_question(state: AgentState) -> dict:
@@ -40,9 +44,15 @@ def plan_question(state: AgentState) -> dict:
 
 
 def make_retrieve_node(
-    retriever: Retriever, top_k: int = DEFAULT_TOP_K, section_selector=None
+    retriever: Retriever,
+    top_k: int = DEFAULT_TOP_K,
+    section_selector: SectionSelector | None = None,
 ):
-    """Build the retrieve node around an injected retrieval callable."""
+    """Build the retrieve node around an injected retrieval callable.
+
+    If a scoped search finds nothing, the same round repeats over the whole paper
+    so a bad section choice never costs a retry; the log records this.
+    """
 
     def retrieve_node(state: AgentState) -> dict:
         query = state.rewritten_query or state.question
@@ -50,6 +60,10 @@ def make_retrieve_node(
         scope = {} if section is None else {"section": section}
         started = time.perf_counter()
         hits = retriever(query, state.paper_id, top_k, **scope)
+        scoped_ms = (time.perf_counter() - started) * 1000 if scope else None
+        scope_fallback = section is not None and not hits
+        if scope_fallback:
+            hits = retriever(query, state.paper_id, top_k)
         elapsed_ms = (time.perf_counter() - started) * 1000
 
         merged = list(state.retrieved_passages)
@@ -66,6 +80,8 @@ def make_retrieve_node(
             "triggered_by": state.gap_label.value,
             "passage_ids": [hit.passage.passage_id for hit in hits],
             "section": section,
+            "scope_fallback": scope_fallback,
+            "scoped_retrieval_ms": scoped_ms,
             "retrieval_ms": elapsed_ms,
         }
         return {

@@ -17,6 +17,7 @@ from src.agent.nodes import (
     DEFAULT_TOP_K,
     MAX_RETRIES,
     Retriever,
+    SectionSelector,
     make_retrieve_node,
     map_evidence,
     plan_question,
@@ -32,7 +33,7 @@ def build_agent_graph(
     top_k: int = DEFAULT_TOP_K,
     critic_client: CriticClient | None = None,
     critic_attempts: int = DEFAULT_ATTEMPTS,
-    section_selector=None,
+    section_selector: SectionSelector | None = None,
 ) -> CompiledStateGraph:
     """Compile the agent around `retriever(query, paper_id, top_k)`.
 
