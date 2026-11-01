@@ -210,15 +210,30 @@ class DenseRetriever:
             raise ValueError("Encoder model_name or revision changed during encoding")
         return vectors
 
-    def retrieve(self, query: str, paper_id: str, top_k: int) -> list[RetrievalHit]:
-        """Return deterministic cosine top-K within the selected paper only."""
+    def retrieve(
+        self, query: str, paper_id: str, top_k: int, *, section: str | None = None
+    ) -> list[RetrievalHit]:
+        """Return cosine top-K within the paper and optional exact section.
+
+        Section filtering precedes top-k truncation, including boundary ties.
+        Callers can pass a rewritten query directly; this retriever does not
+        rewrite it or add a passage instruction.
+        """
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be a nonempty string")
         if not isinstance(paper_id, str) or not paper_id.strip():
             raise ValueError("paper_id must be a nonempty string")
         if isinstance(top_k, bool) or not isinstance(top_k, int) or top_k < 1:
             raise ValueError("top_k must be a positive integer")
+        if section is not None and (
+            not isinstance(section, str) or not section.strip()
+        ):
+            raise ValueError("section must be a nonempty string or None")
         if paper_id not in self._indexes:
+            return []
+        if section is not None and not any(
+            passage.section == section for passage in self._passages[paper_id]
+        ):
             return []
         query_vector = self._encode([QUERY_INSTRUCTION + query])
         index = self._indexes[paper_id]
@@ -231,6 +246,7 @@ class DenseRetriever:
             (
                 (passages[int(row)], float(score))
                 for row, score in zip(rows[0], scores[0])
+                if section is None or passages[int(row)].section == section
             ),
             key=lambda item: (-item[1], item[0].passage_id),
         )

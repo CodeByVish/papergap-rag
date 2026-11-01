@@ -152,7 +152,7 @@ def test_node_uses_llm_verdict_when_valid():
     assert update["critic_reason"] == "No numbers."
     assert update["critic_log"][0] == {"round": 1, "source": "llm", "sufficient": False,
                                        "gap_label": "MISSING_RESULT", "errors": [],
-                                       "raw_replies": [reply()]}
+                                       "raw_replies": [reply()], "thinking_drift": False}
 
 
 def test_node_llm_can_override_rule_based_mapper():
@@ -176,6 +176,17 @@ def test_node_falls_back_to_rules_after_repeated_bad_replies():
     entry = update["critic_log"][0]
     assert entry["source"] == "fallback" and len(entry["errors"]) == 2
     assert update["sufficient"] is False  # rule-based verdict
+
+
+def test_node_flags_a_reasoning_trace_in_the_reply():
+    client = FakeLLM("<think>hmm</think>" + GOOD_YES)
+    entry = make_critic_node(client)(state_with(hit()))["critic_log"][0]
+    assert entry["thinking_drift"] is True
+
+
+def test_node_reports_no_drift_for_a_clean_reply():
+    entry = make_critic_node(FakeLLM(GOOD_YES))(state_with(hit()))["critic_log"][0]
+    assert entry["thinking_drift"] is False
 
 
 def test_node_falls_back_when_client_raises():

@@ -47,7 +47,7 @@ _TYPE_CUES: list[tuple[QuestionType, tuple[str, ...]]] = [
     (
         QuestionType.RESULT,
         (
-            "accuracy", "f1", "f-score", "bleu", "rouge", "perplexity", "auc",
+            "accuracy", "accurate", "f1", "f-score", "bleu", "rouge", "perplexity", "auc",
             "precision", "recall", "score", "performance", "result", "results",
             "how well", "how much", "achieve", "achieved", "metric",
         ),
@@ -159,6 +159,12 @@ _LIMITATION = EvidenceRequirement(
     min_keyword_matches=2,
     gap_if_missing=GapLabel.WEAK_EVIDENCE,
 )
+
+# Section-name hints used to scope a retry; labels not listed retry unscoped.
+GAP_SECTION_HINTS: dict[GapLabel, list[str]] = {
+    requirement.gap_if_missing: requirement.section_hints
+    for requirement in (_METHOD, _EXPERIMENT_CONTEXT, _RESULT, _COMPARISON)
+}
 
 _REQUIREMENTS_BY_TYPE: dict[QuestionType, list[EvidenceRequirement]] = {
     QuestionType.METHOD: [_METHOD],
