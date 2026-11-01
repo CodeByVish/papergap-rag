@@ -28,7 +28,9 @@
 #   # optional knobs:
 #   sbatch --export=ALL,DEMO_PORT=8000 scripts/cluster/80_demo_server.sbatch
 #   sbatch --export=ALL,DEMO_RETRIEVER='src.retrieval.demo:make_retriever' ...
-#   sbatch --export=ALL,DEMO_RECORD_FN='src.agent.demo:make_record_fn' ...
+#   sbatch --export=ALL,DEMO_RECORD_FN='scripts.demo_agent_factory:factory' ...
+#   # ^ P4's ready-made agent hook; builds the retriever from P1's corpus +
+#   #   dense index and reuses the server's generator as critic.
 #   sbatch --export=ALL,DEMO_INSTALL_DEPS=1 ...   # pip install fastapi/uvicorn
 #
 # DEMO_RETRIEVER and DEMO_RECORD_FN are mutually exclusive. The first wraps
@@ -80,12 +82,23 @@ PAPERS_FROM="${PAPERS_FROM:-$P5_ROOT/data/corpus/passages.jsonl}"
 #   PASSAGES_FROM - the corpus; passage_id -> text for POST /passages
 PASSAGES_FROM="${PASSAGES_FROM:-$P5_ROOT/data/corpus/passages.jsonl}"
 
-# Corpus/index paths for P4's record_fn factory. The factory reads these; the
-# defaults are the layout proposed for P1's handoff. A missing file is a
-# factory startup error, not silently ignored.
+# Corpus/index paths for a P2-style retriever factory. The defaults are P1's
+# staged layout. A missing file is a factory startup error, not silently
+# ignored. P4's agent factory reads the DEMO_AGENT_* aliases added below.
 export PAPERGAP_CORPUS="${PAPERGAP_CORPUS:-$P5_ROOT/data/corpus/passages.jsonl}"
 export PAPERGAP_DENSE_INDEX="${PAPERGAP_DENSE_INDEX:-$P5_ROOT/data/indexes/dense-bge-small}"
 export PAPERGAP_BM25_INDEX="${PAPERGAP_BM25_INDEX:-$P5_ROOT/data/indexes/bm25}"
+
+# P4's ready-made hook (scripts.demo_agent_factory:factory) names its own
+# variables; keep both spellings so either hook loads P1's staged resources.
+# The cache folder must be HF_HOME, not the factory's default
+# ~/.cache/huggingface/hub, because P1's pinned bge-small is in $P5_ROOT/hf.
+# Retrieval models stay on CPU: the 8B engine owns the card.
+export DEMO_AGENT_PASSAGES="${DEMO_AGENT_PASSAGES:-$PAPERGAP_CORPUS}"
+export DEMO_AGENT_DENSE_INDEX="${DEMO_AGENT_DENSE_INDEX:-$PAPERGAP_DENSE_INDEX}"
+export DEMO_AGENT_CACHE_FOLDER="${DEMO_AGENT_CACHE_FOLDER:-$HF_HOME}"
+export DEMO_AGENT_OFFLINE="${DEMO_AGENT_OFFLINE:-1}"
+export DEMO_AGENT_DEVICE="${DEMO_AGENT_DEVICE:-cpu}"
 
 # Keep the old single-file layout working during the transition.
 if [ ! -f "$PAPERS_FROM" ] && [ -f "$P5_ROOT/data/p1_hybrid.jsonl" ]; then

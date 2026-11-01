@@ -359,34 +359,32 @@ When the demo should show the agent loop and the critic, use the record hook
 instead of a plain retriever. It is mutually exclusive with `--retriever`.
 
 ```bash
-sbatch --export=ALL,DEMO_RECORD_FN='src.agent.demo:make_record_fn' \
+sbatch --export=ALL,DEMO_RECORD_FN='scripts.demo_agent_factory:factory' \
        scripts/cluster/80_demo_server.sbatch
 ```
 
-```python
-# src/agent/demo.py  (owned by P4)
-def make_record_fn(pipeline):                 # called once, after the engine loads
-    retriever = build_demo_retriever()        # loads corpus/index, from env
-    critic = GeneratorChatClient(pipeline.generator)   # same engine
+`scripts/demo_agent_factory.py` (P4) is the factory. The server calls
+`factory(pipeline)` once after the engine loads; the factory loads P1's corpus
+and dense index, builds BM25 from the passages through P2's
+`run_agent_experiment.build_retriever`, reuses `pipeline.generator` as the
+critic, and returns `record_fn(question, paper_id, top_k=5, request_id=None)`.
 
-    def record_fn(question: str, paper_id: str) -> dict:
-        record = run_system(
-            [ExperimentItem(question_id=..., question=question, paper_id=paper_id)],
-            retriever, adaptive=True, critic_client=critic,
-            top_k=5, answer_fn=None,          # P5 answers, once, in the server
-        )[0]
-        if "error" in record:
-            raise RuntimeError(record["error"])
-        return record                         # export_record(state), no "answer"
-    return record_fn
-```
+The factory reads P4's `DEMO_AGENT_*` variables. `80_demo_server.sbatch` maps
+them onto P1's staged layout, so the demo needs no extra export:
+
+| variable | value from the sbatch |
+|---|---|
+| `DEMO_AGENT_PASSAGES` | `$P5_ROOT/data/corpus/passages.jsonl` |
+| `DEMO_AGENT_DENSE_INDEX` | `$P5_ROOT/data/indexes/dense-bge-small` |
+| `DEMO_AGENT_CACHE_FOLDER` | `$HF_HOME` (`$P5_ROOT/hf`) |
+| `DEMO_AGENT_OFFLINE` | `1` |
+| `DEMO_AGENT_DEVICE` | `cpu` |
+| `DEMO_AGENT_BGE` | unset, i.e. fusion-only; `1` needs the reranker in the HF cache |
 
 The server calls `answer_record(pipeline, record)` after the hook, so the demo
 and the batch runs share the parse/validate/downgrade path and there is exactly
 one generation. A record that already contains `answer` is a 500, not a second
-generation. `/health` reports `"agent": true`. The factory reads
-`PAPERGAP_CORPUS`, `PAPERGAP_DENSE_INDEX`, `PAPERGAP_BM25_INDEX` and `HF_HOME`
-from the job environment.
+generation. `/health` reports `"agent": true`.
 
 ---
 
