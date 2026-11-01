@@ -89,18 +89,40 @@ def test_graph_is_compiled_once_per_top_k(monkeypatch):
 def test_factory_names_the_missing_environment_variable(monkeypatch):
     from scripts import demo_agent_factory as f
 
-    monkeypatch.delenv("DEMO_AGENT_DENSE_INDEX", raising=False)
-    with pytest.raises(RuntimeError, match="DEMO_AGENT_DENSE_INDEX"):
+    monkeypatch.delenv("PAPERGAP_DENSE_INDEX", raising=False)
+    with pytest.raises(RuntimeError, match="PAPERGAP_DENSE_INDEX"):
         f.retrieval_args()
 
 
 def test_factory_reads_retrieval_settings_from_the_environment(monkeypatch):
     from scripts import demo_agent_factory as f
 
-    monkeypatch.setenv("DEMO_AGENT_DENSE_INDEX", "/idx")
+    monkeypatch.setenv("PAPERGAP_DENSE_INDEX", "/idx")
     monkeypatch.setenv("DEMO_AGENT_BGE", "1")
     monkeypatch.setenv("DEMO_AGENT_OFFLINE", "1")
     monkeypatch.delenv("DEMO_AGENT_SCOPED", raising=False)
     args = f.retrieval_args()
     assert str(args.dense_index_dir) == "/idx" and args.bge and args.local_files_only
     assert args.scoped and args.device == "cpu" and args.candidate_k == 20
+
+
+def test_factory_finds_models_under_hf_home(monkeypatch, tmp_path):
+    from scripts import demo_agent_factory as f
+
+    monkeypatch.setenv("PAPERGAP_DENSE_INDEX", "/idx")
+    monkeypatch.delenv("DEMO_AGENT_CACHE_FOLDER", raising=False)
+    monkeypatch.setenv("HF_HOME", str(tmp_path))
+    assert f.retrieval_args().cache_folder == tmp_path  # no hub/ subfolder: use HF_HOME itself
+    (tmp_path / "hub").mkdir()
+    assert f.retrieval_args().cache_folder == tmp_path / "hub"
+    monkeypatch.setenv("DEMO_AGENT_CACHE_FOLDER", "/elsewhere")
+    assert str(f.retrieval_args().cache_folder) == "/elsewhere"
+
+
+def test_factory_names_the_missing_corpus_variable(monkeypatch):
+    from scripts import demo_agent_factory as f
+
+    monkeypatch.setenv("PAPERGAP_DENSE_INDEX", "/idx")
+    monkeypatch.delenv("PAPERGAP_CORPUS", raising=False)
+    with pytest.raises(RuntimeError, match="PAPERGAP_CORPUS"):
+        f.factory(object())

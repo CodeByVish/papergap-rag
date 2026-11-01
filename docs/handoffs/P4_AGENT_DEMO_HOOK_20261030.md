@@ -14,7 +14,7 @@ describes. The static arm of the experiment is exactly that baseline.
 | File | What it is |
 | --- | --- |
 | `src/agent/demo.py` | `make_record_fn(retriever, critic_client, ...)`: `record_fn(question, paper_id, top_k, request_id=None)` runs the whole graph and returns the exported agent record that `answer_record` already takes. |
-| `scripts/demo_agent_factory.py` | `factory(pipeline)`: builds the retriever from `DEMO_AGENT_*` environment variables and the critic from `pipeline.generator`. No second model is loaded. |
+| `scripts/demo_agent_factory.py` | `factory(pipeline)`: builds the retriever from `PAPERGAP_*` environment variables (plus optional `DEMO_AGENT_*` tuning knobs) and the critic from `pipeline.generator`. No second model is loaded. |
 | `tests/test_demo.py` | 8 tests (record shape, critic rounds, blank question, per-`top_k` graph cache, factory configuration). |
 
 A blank question raises `ValueError`, which the server already maps to HTTP 400.
@@ -31,8 +31,15 @@ python -m src.generation.server --record-fn scripts.demo_agent_factory:factory \
 ```
 
 Environment for the factory (full list in the docstring of `scripts/demo_agent_factory.py`):
-`DEMO_AGENT_PASSAGES`, `DEMO_AGENT_DENSE_INDEX` (required); `DEMO_AGENT_SCOPED` (default 1), `DEMO_AGENT_BGE`,
-`DEMO_AGENT_SCORE_CACHE`, `DEMO_AGENT_CACHE_FOLDER`, `DEMO_AGENT_OFFLINE`, `DEMO_AGENT_DEVICE` (default `cpu`).
+`PAPERGAP_CORPUS`, `PAPERGAP_DENSE_INDEX` (required); `HF_HOME` (models are read from `$HF_HOME/hub` if that exists, else
+`$HF_HOME`); optional `DEMO_AGENT_SCOPED` (default 1), `DEMO_AGENT_BGE`, `DEMO_AGENT_SCORE_CACHE`,
+`DEMO_AGENT_CACHE_FOLDER` (overrides `HF_HOME`), `DEMO_AGENT_OFFLINE`, `DEMO_AGENT_DEVICE` (default `cpu`).
+`PAPERGAP_BM25_INDEX` is not read: the BM25 term index is rebuilt in memory from the corpus file, so only the corpus and
+the dense index need to be uploaded for this hook.
+
+Update 1 Nov 2026, after the reply of 31 Oct: the hook is called as `record_fn(question, paper_id)`; the extra
+`top_k` and `request_id` arguments are optional. The returned record has no `"answer"` key, so the server's
+"record already contains an answer" check will not fire. It carries one extra key, `elapsed_s`, which `build_request` ignores.
 
 Retrieval models stay on the CPU by default because vLLM checks free GPU memory when it loads.
 

@@ -28,7 +28,7 @@ class GapLabel(str, Enum):
 
 
 class QuestionType(str, Enum):
-    """Question categories from the Week 2 planner task."""
+    """Question categories from the Week 2 planner task"""
 
     FACTUAL = "factual"
     METHOD = "method"
