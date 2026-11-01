@@ -35,7 +35,7 @@ class QuestionType(str, Enum):
     RESULT = "result"
     COMPARISON = "comparison"
     LIMITATION = "limitation"
-    UNANSWERABLE = "unanswerable"  # assigned downstream; see src/agent/planner.py
+    UNANSWERABLE = "unanswerable"  #assigned downstream; see src/agent/planner.py
 
 
 class EvidenceRequirement(BaseModel):
