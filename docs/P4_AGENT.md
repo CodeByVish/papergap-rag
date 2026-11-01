@@ -95,7 +95,19 @@ retries (all gold already retrieved), ineffective retries (no new gold), redunda
 (nothing new at all), refusal rate (and correct/false refusals given answerability),
 critic fallback rate, answer errors, and a paired bootstrap recall gain.
 Recall needs gold evidence mapped to passage IDs (P3); without it recall is `n/a`.
-Development runs use an approximation (`approximate_gold`), not P3's mapping.
+`--from-qa` runs use an approximation (`approximate_gold`). For gold from P3's mapping
+(`gold-evidence-to-passage-v0-proposed`) build an items file and pass it with `--items`:
+
+```bash
+python -m scripts.make_dev_items --mapping gold_evidence_mapping_all_splits.jsonl \
+    --passages passages.jsonl --qa qa.jsonl --split train --answerable 32 --unanswerable 8 \
+    --out items.jsonl
+```
+
+The mapping's gold IDs exist only in the **365/40-word corpus** that P3 selected on 28 October
+(21,360 development passages). None of them occur in the 200/40-word corpus of 17 October
+(32,073 passages), so the script stops when the IDs do not match `--passages`. The index the
+agent searches must be built on the same 365/40 corpus. The test split is refused.
 
 ## Known limits
 
