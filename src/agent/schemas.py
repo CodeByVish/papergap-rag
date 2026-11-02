@@ -28,14 +28,14 @@ class GapLabel(str, Enum):
 
 
 class QuestionType(str, Enum):
-    """Question categories from the Week 2 planner task."""
+    """Question categories from the Week 2 planner task"""
 
     FACTUAL = "factual"
     METHOD = "method"
     RESULT = "result"
     COMPARISON = "comparison"
     LIMITATION = "limitation"
-    UNANSWERABLE = "unanswerable"  # assigned downstream; see src/agent/planner.py
+    UNANSWERABLE = "unanswerable"  #assigned downstream; see src/agent/planner.py
 
 
 class EvidenceRequirement(BaseModel):

@@ -9,16 +9,21 @@ so no second model is loaded. Retrieval models stay on the CPU unless
 
 Configuration (environment variables):
 
-    DEMO_AGENT_PASSAGES      passages.jsonl                        (required)
-    DEMO_AGENT_DENSE_INDEX   dense index directory                 (required)
+    PAPERGAP_CORPUS          passages.jsonl                        (required)
+    PAPERGAP_DENSE_INDEX     dense index directory                 (required)
+    HF_HOME                  Hugging Face home; models are read from $HF_HOME/hub
+                             when that exists, else from $HF_HOME  (optional)
     DEMO_AGENT_SCOPED        1 = section-scoped retries            (default 1)
     DEMO_AGENT_BGE           1 = add the BGE reranker              (default 0)
     DEMO_AGENT_SCORE_CACHE   reranker score cache (SQLite)         (optional)
-    DEMO_AGENT_CACHE_FOLDER  Hugging Face hub cache                (optional)
+    DEMO_AGENT_CACHE_FOLDER  hub cache, overrides HF_HOME          (optional)
     DEMO_AGENT_OFFLINE       1 = never touch the network           (default 0)
     DEMO_AGENT_DEVICE        device for retrieval models           (default cpu)
     DEMO_AGENT_CANDIDATE_K   candidates per retriever              (default 20)
     DEMO_AGENT_MAX_RETRIES   retry budget                          (default 2)
+
+The BM25 term index is rebuilt in memory from PAPERGAP_CORPUS, so a BM25 index
+directory (PAPERGAP_BM25_INDEX) is not read here.
 """
 
 from __future__ import annotations
@@ -42,17 +47,26 @@ def _required(name: str) -> str:
     return value
 
 
+def _hub_cache() -> Path:
+    explicit = os.environ.get("DEMO_AGENT_CACHE_FOLDER")
+    if explicit:
+        return Path(explicit)
+    home = os.environ.get("HF_HOME")
+    if home:
+        return Path(home) / "hub" if (Path(home) / "hub").is_dir() else Path(home)
+    return Path.home() / ".cache/huggingface/hub"
+
+
 def retrieval_args() -> argparse.Namespace:
     """The retrieval settings `scripts.run_agent_experiment.build_retriever` reads."""
-    cache = os.environ.get("DEMO_AGENT_CACHE_FOLDER")
     return argparse.Namespace(
-        dense_index_dir=Path(_required("DEMO_AGENT_DENSE_INDEX")),
+        dense_index_dir=Path(_required("PAPERGAP_DENSE_INDEX")),
         scoped=_flag("DEMO_AGENT_SCOPED", True),
         bge=_flag("DEMO_AGENT_BGE", False),
         score_cache=Path(os.environ["DEMO_AGENT_SCORE_CACHE"])
         if os.environ.get("DEMO_AGENT_SCORE_CACHE") else None,
         device=os.environ.get("DEMO_AGENT_DEVICE", "cpu"),
-        cache_folder=Path(cache) if cache else Path.home() / ".cache/huggingface/hub",
+        cache_folder=_hub_cache(),
         local_files_only=_flag("DEMO_AGENT_OFFLINE", False),
         candidate_k=int(os.environ.get("DEMO_AGENT_CANDIDATE_K", "20")),
     )
@@ -65,7 +79,7 @@ def factory(pipeline: Any) -> RecordFn:
     from src.agent.sections import make_section_selector
 
     args = retrieval_args()
-    passages = load_passages(Path(_required("DEMO_AGENT_PASSAGES")))
+    passages = load_passages(Path(_required("PAPERGAP_CORPUS")))
     retriever = build_retriever(args, passages)
     return make_record_fn(
         retriever,
