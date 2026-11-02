@@ -29,8 +29,8 @@
 #   sbatch --export=ALL,DEMO_PORT=8000 scripts/cluster/80_demo_server.sbatch
 #   sbatch --export=ALL,DEMO_RETRIEVER='src.retrieval.demo:make_retriever' ...
 #   sbatch --export=ALL,DEMO_RECORD_FN='scripts.demo_agent_factory:factory' ...
-#   # ^ P4's ready-made agent hook; builds the retriever from P1's corpus +
-#   #   dense index and reuses the server's generator as critic.
+#   # ^ P4's ready-made agent hook on origin/main; builds the retriever from
+#   #   P1's corpus + dense index and reuses the server's generator as critic.
 #   sbatch --export=ALL,DEMO_INSTALL_DEPS=1 ...   # pip install fastapi/uvicorn
 #
 # DEMO_RETRIEVER and DEMO_RECORD_FN are mutually exclusive. The first wraps
@@ -75,19 +75,25 @@ DEMO_RECORD_FN="${DEMO_RECORD_FN:-}"
 TOP_K="${TOP_K:-5}"
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-1024}"
 SERVER_MODULE="${SERVER_MODULE:-}"
-PAPERS_FROM="${PAPERS_FROM:-$P5_ROOT/data/corpus/passages.jsonl}"
+# If PAPERGAP_CORPUS is overridden (e.g. the 365/40 package), the server's
+# paper list and passage-text map must come from the same corpus, or citations
+# retrieved against the index will not resolve in POST /passages.
+PAPERS_FROM="${PAPERS_FROM:-${PAPERGAP_CORPUS:-$P5_ROOT/data/365-40/corpus/passages.jsonl}}"
 # Two different files, deliberately separate variables:
 #   PAPERS_FROM  - the corpus (or a retrieval dump); its paper_id values are
 #                  used for GET /papers
 #   PASSAGES_FROM - the corpus; passage_id -> text for POST /passages
-PASSAGES_FROM="${PASSAGES_FROM:-$P5_ROOT/data/corpus/passages.jsonl}"
+PASSAGES_FROM="${PASSAGES_FROM:-${PAPERGAP_CORPUS:-$P5_ROOT/data/365-40/corpus/passages.jsonl}}"
 
 # Corpus/index paths for a P2-style retriever factory. The defaults are P1's
-# staged layout. A missing file is a factory startup error, not silently
-# ignored. P4's agent factory reads the DEMO_AGENT_* aliases added below.
-export PAPERGAP_CORPUS="${PAPERGAP_CORPUS:-$P5_ROOT/data/corpus/passages.jsonl}"
-export PAPERGAP_DENSE_INDEX="${PAPERGAP_DENSE_INDEX:-$P5_ROOT/data/indexes/dense-bge-small}"
-export PAPERGAP_BM25_INDEX="${PAPERGAP_BM25_INDEX:-$P5_ROOT/data/indexes/bm25}"
+# 365/40 package (2026-11-02), which supersedes the 200/40 package for final
+# runs; the latter is still staged at data/corpus + data/indexes and can be
+# selected by overriding PAPERGAP_CORPUS/PAPERGAP_DENSE_INDEX. A missing file
+# is a factory startup error, not silently ignored. P4's agent factory reads
+# the DEMO_AGENT_* aliases added below.
+export PAPERGAP_CORPUS="${PAPERGAP_CORPUS:-$P5_ROOT/data/365-40/corpus/passages.jsonl}"
+export PAPERGAP_DENSE_INDEX="${PAPERGAP_DENSE_INDEX:-$P5_ROOT/data/365-40/indexes/dense-bge-small}"
+export PAPERGAP_BM25_INDEX="${PAPERGAP_BM25_INDEX:-$P5_ROOT/data/365-40/indexes/bm25}"
 
 # P4's ready-made hook (scripts.demo_agent_factory:factory) names its own
 # variables; keep both spellings so either hook loads P1's staged resources.
