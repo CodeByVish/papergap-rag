@@ -1,7 +1,7 @@
 # UI port: requirements and architecture
 
-Status: implemented local UI specification, reviewed against code `4584e2c` and
-P5 contract `ef5f7a3` on main `97e33b2` after rebase (2026-10-29).
+Status: updated for the approved question-first UI on 2026-11-02 (uncommitted).
+Earlier port baseline: `4584e2c`; local runtime/corpus extension: [E2E guide](P6_REAL_ENV_E2E_GUIDE.md).
 See [completion evidence](UI_PORT_COMPLETION_SUMMARY.md) for executed tests.
 
 ## Objective and ownership
@@ -54,21 +54,23 @@ See [execution semantics](UI_PORT_USER_STORIES_AND_API.md) for IDs and
 | R01 | Read `P5_API_BASE`, defaulting to `http://127.0.0.1:8000`; normalize trailing slash and validate HTTP(S). Display connection/capability status and offer explicit refresh. |
 | R02 | Query `/health`. Unknown/unreachable capabilities disable dependent actions until a successful refresh. `retrieval=false` disables free-question submission with a reason. |
 | R03 | Support selecting an exported record from a configured local file (`P5_RECORDS_PATH`). Show selected record label/question for confirmation and preserve its original identifiers and submit the original record as `{"record": ...}`. Do not fabricate AgentState fields. |
-| R04 | When retrieval is available, load `/papers`, select a paper, and submit nonblank question plus `paper_id`. Record and question request bodies are mutually exclusive. Empty paper lists disable free submission. |
+| R04 | When retrieval is available, default to All papers only if health advertises corpus_search; omit paper_id for corpus requests. One paper (required on legacy services) submits the selected stable ID. Record/question bodies remain exclusive. Missing catalogue disables paper-scoped requests. |
 | R05 | Render `request_id`, all five `result` fields, validation details, generation metadata, and optional agent trace. Do not require `agent` on free-input responses. |
 | R06 | Distinguish normal, warning, empty-context refusal, agent refusal, model refusal, and validator downgrade. Refusal is a successful HTTP 200 outcome. |
 | R07 | A downgrade prominently shows the final refusal and reason, with the original model answer clearly labeled as rejected in an expander. Never present rejected content as the accepted answer. |
 | R08 | Resolve citation IDs using `/passages` only when `passage_text=true`. Preserve IDs and show text/title/paper/section if returned; missing IDs show “Passage text unavailable”. Missing corpus/503 preserves the answer and IDs. |
 | R09 | Submit at most once per user action; show spinner, disable submission while pending, and set answer timeout to at least 120 seconds. No streaming or automatic answer retries. |
 | R10 | Distinguish 400, 401, 429, 503, timeout, connection failure, malformed JSON, and invalid success payload. Show actionable messages; 429 asks for a manual retry after about 20 seconds. Do not erase the previous successful result on failure. |
-| R11 | Keep questions and execution attempts in per-conversation session history. Display reruns, citation expansion, and health refresh must not call `/answer` again. Clear removes only the selected non-pending conversation history and its evidence/errors; it never cancels inference. Changing inputs must not relabel an earlier result. |
+| R11 | Keep questions and execution attempts in per-conversation session history. Display reruns, citation expansion, and health refresh must not call `/answer` again. New question clears the draft/view only; Clear history deletes all non-pending contexts and drafts, never server work. Changing inputs must not relabel an earlier result. |
 | R12 | Keep tokens, raw datasets, captured production results, weights, and indexes out of Git. Render external text as text/standard Markdown without unsafe HTML; never expose credentials or raw exception dumps. |
 | R13 | Isolate UI sessions, conversations, messages and execution attempts using distinct local UUIDs. Treat P5 request_id as a business/question identifier, never the unique execution key. |
-| R14 | Bind each free-query workspace to one paper; questions are independent, with no implied model memory. Demo-record mode is separate. Keep session-only history; no cross-tab/refresh persistence promise. |
+| R14 | Apply scope to each next question without workspace setup. Automatically retain internal mode/scope contexts; show one selected result in History directly below Search scope. Questions are independent; Demo record stays distinct. No cross-tab/refresh persistence promise. |
 | R15 | Route every response and citation lookup to the captured owning run. Identical queries/retries create distinct attempts; late or duplicate completions cannot overwrite another run. |
 | R16 | Track completed, rejected, failed and outcome_unknown separately from answer classification. Timeout/disconnect may leave server work running; no automatic retry/cancellation/recovery claim. |
 | R17 | Record answer HTTP elapsed time separately from citation lookup and export five selected runs with timing definitions and available reproducibility metadata, without credentials. |
-| R18 | Preserve P5 request/response schemas. Client-run and backend-run headers require P5 agreement; operate with local correlation if unsupported. |
+| R18 | Preserve the five-key result and existing request forms, with the documented v0-proposed local corpus-search extension. Correlation headers require owner agreement; use local run IDs. |
+| R19 | Put title NLP Scientific Paper RAG and How to use above Connection in the drawer. Main heading is Ask the paper collection for All papers, Ask Paper followed by the quoted title for One paper, and Generate from prepared evidence for Demo record. Place editable question/Ask question/examples above the submitted question and Answer, followed by warning details, Sources, Pipeline details and Debug information. |
+| R20 | Use Browse all examples as the sole example entry point in each mode; no standalone sample buttons. Group examples into Across all papers and About a specific paper; show title and paper ID for the latter. Selection fills an editable draft without inference or silent scope changes. |
 
 Final refusal classification uses `result.evidence_status`; `validation.downgraded`
 takes precedence for the downgrade presentation. Among insufficient cases, inspect
@@ -110,9 +112,9 @@ The following interfaces exist in the current implementation.
 | `tests/test_ui_p5_smoke.py` | Opt-in real local P5 mock-service HTTP path; must fail clearly when explicitly requested without its prerequisites. |
 
 Streamlit session keys include `workspace_state`, `health`, `papers`, and
-`connection_error`. `workspace_state` owns `ui_session_id`, `conversations`,
-`active_conversation_id`, and `pending_client_run_id`. Each conversation owns its
-mode, paper binding and run map; message_id is stored on each run, not in a
+`connection_error`, `question_draft`, and `history_run`. `workspace_state` owns `ui_session_id`, `conversations`,
+`active_conversation_id`, and `pending_client_run_id`. Each internal conversation owns its
+mode, optional paper filter and run map; message_id is stored on each run, not in a
 separate message store. Each run owns an immutable submission
 snapshot, outcome, answer record, timings, error and evidence map. See the linked
 execution contract for lifecycle and bounded history. A pending flag is local UI

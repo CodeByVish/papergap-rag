@@ -1,7 +1,8 @@
 # User journeys, conversations and execution contract
 
-Status: approved and implemented local UI behavior; aligned with code `4584e2c`
-and P5 contract `ef5f7a3` inherited from main `97e33b2`. Updated 2026-10-29.
+Status: approved question-first redesign implemented in the working tree,
+2026-11-02. The earlier port was reviewed at `4584e2c`; current local runtime
+and corpus-search details are in [the E2E guide](P6_REAL_ENV_E2E_GUIDE.md).
 Correlation-header extensions below are explicitly deferred and not implemented.
 
 ## Handout alignment
@@ -10,14 +11,14 @@ Source: the previously reviewed design mapping of `Assignment.pdf`, AI6127 2026,
 
 | Handout requirement | Product behavior / evidence |
 | --- | --- |
-| Page 2, Querying: simple friendly UI; sophisticated UI is discouraged | Paper selection, explicit question, answer and inspectable evidence; lightweight conversation sidebar |
+| Page 2, Querying: simple friendly UI; sophisticated UI is discouraged | Paper selection, explicit question, answer and inspectable evidence; scope and single-result history sidebar |
 | Page 3, Question 2: five queries, results and querying speed | Preserve five independent runs in session and export their inputs, results and measured latency |
 | Page 3, generation: answers conditioned on inspectable evidence | Citation cards with original text and source metadata when available; honest ID-only fallback |
 | Pages 3–4, Questions 3 and 5: retrieval improvements, grounding and agent innovations | Expand supplied validation, provenance, retrieval rounds and optional agent trace; do not invent missing stages or scores |
 | Page 4, Question 4: latency, throughput, cost and scalability | Collect per-run timing/metadata for reporting; offline evaluations provide aggregate metrics |
 
 Multiple conversations, persistent accounts and contextual multi-turn chat are
-not handout requirements. Conversation workspaces are an organizational feature.
+not handout requirements. Internal conversation contexts organize stored runs; they are not a user setup step.
 Version 1 treats each question independently and labels that behavior explicitly.
 The UI must not imply that “What about its limitations?” includes previous turns.
 It does not send conversation history to generation or change P4's agent state.
@@ -26,47 +27,46 @@ It does not send conversation history to generation or change P4's agent state.
 
 | ID | Story | Behavior and interface | Acceptance |
 | --- | --- | --- | --- |
-| US01 | As a reader, I select a paper and ask a complete question | Health-gated paper selector, question form and synchronous `/answer` | T02,T06,T07,T26 |
-| US02 | As a reader, I organize questions in multiple workspaces | New/select conversation sidebar; one paper per free-query workspace; creating a new paper context creates a new conversation | T28,T29 |
+| US01 | As a reader, I search the collection or one paper | Health-gated All papers default, optional title/ID filter, question input above its result and synchronous `/answer` | T02,T06,T07,T26,T41 |
+| US02 | As a reader, I reopen a prior result | History directly below Search scope opens one saved result; New question clears the view/draft while preserving history; scope applies to the next request | T28,T29,T42 |
 | US03 | As a reader, I know which question produced an answer | Render captured submission, local run ID and P5 request_id; backend run ID unavailable | T30,T31,T33 |
 | US04 | As a reader, I inspect grounding | Citations resolve via `/passages`; validation distinguishes six answer states | T08–T16,T34 |
 | US05 | As a presenter, I explain agent behavior | Expand only supplied trace, provenance and round counts; no fabricated progress stages | T14,T17,T36 |
 | US06 | As a presenter, I rehearse without free retrieval | Separate exported-record Demo mode submits original AgentState and is labeled as exported-state input, not fresh retrieval | T04,T24,T37 |
 | US07 | As an evaluator, I record five query runs and speed | Export selected session runs with timestamps, latency definition, capability/mode and outcome | T35 |
 | US08 | As a user, I recover from busy or failed calls | Preserve prior results, distinguish rejected/failed/unknown outcome; explicit manual retry | T18,T19,T32 |
+| US10 | As a reader, I choose an editable example | Browse all examples below the input; grouped library shows source title and paper ID; selection fills the draft without inference | T43 |
 | US09 | As P6 or P5, I reproduce the UI on my own laptop | Lightweight install, environment configuration, mock smoke and real deployment checklist | T24–T27,T38 |
 
 ## UI layout and behavior
 
 ```text
-+---------------------+--------------------------------------------+
-| New conversation    | Paper / workspace title                    |
-| Conversation list   | Service + retrieval + passage capabilities |
-|                     |--------------------------------------------|
-|                     | Submitted question                         |
-|                     | Final answer / refusal / warning           |
-|                     | Citation cards                             |
-|                     | Expand: validation / provenance / trace    |
-|                     | Execution ID + elapsed time                |
-|                     | ... earlier independent questions ...      |
-| Export selected runs|--------------------------------------------|
-| Demo record mode    | Complete question                  Submit  |
-+---------------------+--------------------------------------------+
+LEFT DRAWER                         MAIN AREA
+NLP Scientific Paper RAG             Ask the paper collection
+ⓘ How to use                        Your question [editable]
+Connection                          Ask question
+Search scope                        Browse all examples
+  All papers / One paper            ---------------------------------
+  Optional title + ID                Your submitted question + scope
+History                             Answer
+  Previous questions                Warning explanation (if needed)
+  + New question                    Sources (expand)
+Advanced settings (expand)           Pipeline details (expand)
+  Mode / export / Clear history      Debug information (expand)
 ```
 
-Keep the normal reading path short; diagnostics are expandable. A free-query
-conversation binds to one paper. If paper selection changes after questions
-exist, explicitly create a new conversation rather than relabel old answers.
-Demo-record workspaces remain separate from free-query workspaces and preserve
-the selected record's own paper/question identity.
+Keep the input above the result. Show one selected run rather than stacking
+previous answers. Paper-specific examples include titles and IDs; corpus-mode
+drafts anchor their source reference without silently enabling a filter.
+Changing scope affects the next request and never relabels a stored answer.
+Internal contexts are created/reused automatically by mode and paper filter;
+Demo record retains its original input identity and remains clearly labelled.
 
-Version 1 retains multiple questions and responses in session memory. It does
-not promise persistence across refresh/reconnect, browser tabs, or server restart.
-The implemented limits are 10 workspaces and 50 runs per workspace; at the limit
-prompt the user to export/clear, never silently evict pending
-or completed runs. Clear applies only to a selected non-pending workspace and
-does not cancel server work. Pending workspaces cannot be deleted or cleared;
-the current UI disables clear/remove for all workspaces while a session call is pending.
+History is session-only, not persistent across refresh/reconnect, tabs or server
+restart. Limits remain 10 internal contexts and 50 runs per context. At the limit,
+export then Clear history; no silent eviction. Clear history removes every
+non-pending context and the draft/view. New question only clears the draft/view.
+Pending inference cannot be cancelled or cleared through these controls.
 
 At most one answer call is pending per UI session across all its workspaces.
 Other sessions can still collide; P5's 429 is authoritative across sessions.
@@ -79,7 +79,7 @@ its captured owner, even after a UI rerun.
 | Identifier | Meaning / owner | Lifetime and rules |
 | --- | --- | --- |
 | `ui_session_id` | UI-generated UUID for one Streamlit session | Local isolation only; not a login, authorization token or durable browser identity |
-| `conversation_id` | UI-generated UUID for a workspace | Owns mode, paper binding and runs; no implied model memory |
+| `conversation_id` | UI-generated UUID for an internal mode/scope context | Owns mode, paper binding and runs; no implied model memory |
 | `message_id` | UI-generated UUID for a question/display message | Links a question to one or more explicit execution attempts |
 | `client_run_id` | UI-generated UUID created before dispatch | Unique per explicit attempt, including retry and rerun of identical inputs |
 | `run_id` | Proposed P5-generated unique accepted execution ID | Optional until agreed; distinct across executions; never fabricated by UI as a backend ID |
@@ -141,7 +141,7 @@ P6 calls P5, not P2 directly:
 ```text
 P6 UI -> P5 /answer
   record form   -> generation / validator on supplied state
-  question form -> configured retriever (one call) -> generation / validator
+  question form -> configured static retriever or local adaptive agent -> generation / validator
   response      -> captured owning UI run -> optional citation lookup
 ```
 

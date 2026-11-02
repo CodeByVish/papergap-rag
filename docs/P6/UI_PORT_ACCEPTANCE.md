@@ -1,7 +1,8 @@
 # Acceptance criteria and test cases
 
 Status: current acceptance specification with local evidence and remaining gates.
-Updated after rebase onto main 97e33b2 (2026-10-29). Levels below are intended
+Updated for the approved question-first redesign (2026-11-02); earlier port
+evidence below remains historical. Levels below are intended
 verification levels, not a claim that every row passed at every level. See the
 [completion summary](UI_PORT_COMPLETION_SUMMARY.md) for observed results.
 Test levels: U = pure unit; A = Streamlit AppTest; S = live local P5 mock service;
@@ -16,10 +17,10 @@ capture script. Do not commit raw QASPER records or generated corpora/results.
 | T03 / R02 | Health unreachable, then refresh succeeds | Offline status; no unsafe submission; controls recover after refresh | U,A |
 | T04 / R03 | Load valid JSON and JSONL record files; select one and submit | Exactly one POST with only `record`; original nested object unchanged | U,A,S |
 | T05 / R03 | Missing file, invalid JSON, invalid row, empty file | Actionable local-file error; no answer POST; app stays usable | U,A |
-| T06 / R04 | Retrieval=true; select paper and enter question | Exactly one POST with question and paper_id only | U,A,S |
-| T07 / R04 | Empty papers, failed catalogue, blank question, no paper selection | Free submission disabled or locally rejected; no answer POST | U,A |
+| T06 / R04 | Retrieval=true; select paper and enter question | One POST with question and selected paper_id; corpus-capable All papers omits paper_id | U,A,S |
+| T07 / R04 | Empty papers, failed catalogue, blank question, no paper selection | Blank questions disabled; missing papers disable paper-scoped calls; corpus mode follows its health capability | U,A |
 | T08 / R05,R06 | Sufficient result, downgraded=false, no violations | Normal answer, citations, retrieval rounds and provenance available | U,A,S |
-| T09 / R06 | Sufficient result with WARNING-only violations | Answer retained; warning badge and details visible | U,A,S |
+| T09 / R06 | Sufficient result with WARNING-only violations | Answer retained; Evidence needs review explains warning status; exact violations expandable | U,A,S |
 | T10 / R06 | Insufficient + EMPTY_CONTEXT | Empty-context refusal; no generic HTTP error | U,A,S |
 | T11 / R06 | Insufficient + AGENT_INSUFFICIENT | Agent evidence refusal, distinct from empty context | U,A,S |
 | T12 / R06 | Insufficient without a recognized code | Model refusal; still treated as HTTP success | U,A,S |
@@ -38,8 +39,8 @@ capture script. Do not commit raw QASPER records or generated corpora/results.
 | T25 / R01–R12 | P6 launches approved real environment; submit approved development record | Real backend metadata, final state, citations and timing inspected; no mock presented as real | E |
 | T26 / R04 | Real health retrieval=true, run approved paper-scoped query | Returned answer/trace tied to chosen paper; if false, mark blocked by retrieval capability rather than pass | E |
 | T27 / R09,R10 | Operator submits from two sessions while one is running | Busy request gives 429 without corrupting first answer; UI recovers on manual retry | E |
-| T28 / R13,R14 | Create workspaces A/B and separate UI sessions | Distinct IDs and isolated histories; no global cached answer leaks | U,A |
-| T29 / R14 | Switch paper after questions; use an ambiguous follow-up | New paper context creates new conversation; independent-question guidance; no history added to request | U,A |
+| T28 / R13,R14 | Submit in scopes A/B and open separate UI sessions | Distinct IDs and isolated histories; no global cached answer leaks | U,A |
+| T29 / R14 | Switch paper after questions; use an ambiguous follow-up | Scope applies directly to next request; internal context created/reused; independent-question guidance; no history added to request | U,A |
 | T30 / R13,R15 | Execute identical query twice and rerun same exported record | New client_run_id for each attempt; original question/request identifiers preserved | U,A,S |
 | T31 / R15 | Simulate A completion after active workspace changes to B; deliver duplicate completion | Only A's captured run updated once; B unchanged | U,A |
 | T32 / R16 | Timeout after dispatch; manually retry | First attempt outcome_unknown, second has new ID/retry link; no automatic retry or cancellation claim | U,A,E |
@@ -49,8 +50,11 @@ capture script. Do not commit raw QASPER records or generated corpora/results.
 | T36 / R09,R14 | Slow synchronous call while multiple workspaces exist | One pending call across session, truthful processing spinner; no fabricated stage progress or unverified switching promise | A,E |
 | T37 / R03,R14 | Compare record Demo mode and free-query mode | Distinct labels; original record preserved; no claim supplied-state generation performs fresh retrieval | A,S |
 | T38 / R13–R18 | P6 real environment runs identical query twice, then another browser session | Local run IDs are distinct; no ID headers are sent; no history crossing sessions; 429 handled; evidence recorded | E |
-| T39 / R11,R14 | Clear active/non-active/pending workspace and reach history limit | Only intended non-pending history removed; pending clear blocked; limit prompts export/clear without silent eviction | U,A |
+| T39 / R11,R14 | Use New question / Clear history and reach history limit | New question keeps saved runs; Clear history removes all contexts/drafts, pending clear blocked; limit prompts export/clear without silent eviction | U,A |
 | T40 / R14 | Reconnect/refresh or open new browser tab | No durable/shared history promise; no wrong association with abandoned executions | A,E |
+| T41 / R19 | Start and submit a question | Sidebar title/help above Connection; input/examples precede submitted question then Answer; warnings/sources/traces/debug follow | A,browser |
+| T42 / R14,R19 | Submit success then failure; select earlier history; New question | History below Search scope; only selected result shown; prior success retained; no additional POST; draft/view clears without deleting history | A,browser |
+| T43 / R20 | Select topic and paper-specific examples in both scopes | Topic/paper grouping; title and ID shown; selection only edits draft; corpus draft anchors source, paper-filter draft keeps original wording | A,browser |
 
 ## Recorded evidence and scope
 

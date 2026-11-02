@@ -1,5 +1,39 @@
 # P6 UI port completion summary
 
+## Current UI update — 2026-11-02
+
+The approved layout is implemented in the working tree, without a new branch,
+commit or push. **NLP Scientific Paper RAG** and **How to use** sit above Connection
+in the drawer. History follows Search scope directly. The main area now shows
+input, Ask question and Browse all examples before one submitted question and Answer;
+warning explanations, Sources, Pipeline details and Debug information follow.
+
+Removed the old workspace creation/selection/removal controls, stacked answer
+loop, duplicate sample table/selector path and opaque warning-only presentation.
+Internal state/run IDs, scope ownership, retry guards, sanitized exports and
+legacy adapters remain for compatibility. Scope applies directly to the next
+question; stored results keep their original scope. Record mode, exports and
+Clear history are under Advanced settings. New question keeps saved runs.
+
+The library groups corpus and paper-specific examples. Each paper-specific option
+shows its title and paper ID; selection only fills the editable draft. Corpus
+mode includes the paper reference without silently enabling a filter.
+
+Integrated UI/API/agent/corpus/legacy-adapter regression: **98 passed, 1 optional
+running-service test skipped**. This includes a synthetic localhost HTTP UI test;
+it is not evidence of real model inference. Updated workflow/acceptance docs are
+in the local E2E guide, handoff, requirements, user journeys, tasks and acceptance
+matrix. Local Ollama/corpus integration evidence predates this UI-only update and
+is recorded separately in the E2E guide. Browser verification at 1,200 px and 390 px confirmed the layout and paper IDs;
+the narrow document/main widths were both 390 px (no horizontal overflow). A real
+corpus-mode UI request completed in 75.16 seconds, retrieved across three papers
+in three rounds and returned a model refusal with
+`GENERATED_WITH_INSUFFICIENT_EVIDENCE`. This verifies result routing/diagnostics,
+not a successful scientific answer. The pending-state fix disables controls before
+HTTP dispatch and has a dedicated regression. School GPU rehearsal remains pending.
+
+## Earlier port evidence — 2026-10-29
+
 Updated: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
 Reviewed code commits: `0f5e78b` (UI) and `4584e2c` (P5 catalogue compatibility),
 rebased onto main `97e33b2`, which includes P5 service `ef5f7a3`.

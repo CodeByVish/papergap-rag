@@ -1,8 +1,10 @@
 # P6 UI handoff to P5
 
-Updated: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
-Reviewed UI code: `4584e2c`; base main: `97e33b2`, including P5 service `ef5f7a3`.
-Status: local UI and actual P5 mock integration verified; real-cluster E2E pending.
+Updated: 2026-11-02 (Singapore). Existing branch: `P6/UI-port-integration`;
+current work is uncommitted. Earlier reviewed UI: `4584e2c`; current prepared
+runtime and source identities: [local E2E guide](P6_REAL_ENV_E2E_GUIDE.md).
+Status: approved question-first redesign implemented; local Ollama hybrid/adaptive
+pipeline verified separately from synthetic UI tests. School GPU access unavailable.
 
 ## Ownership and delivered source
 
@@ -24,13 +26,17 @@ the P6 UI port. Sources:
 - [Completion evidence](UI_PORT_COMPLETION_SUMMARY.md) and
   [P6 real-environment execution guide](P6_REAL_ENV_E2E_GUIDE.md).
 
-No model service, real retriever, agent graph or shared schema was changed by the
-UI port. The service is inherited from main; all passage/split proposals remain
-`v0-proposed`.
+The question-first redesign changes the UI, not model/retrieval/agent interfaces.
+The earlier local integration adds an Ollama adapter and a corpus-search extension
+([owner review points](CORPUS_SEARCH_CONTRACT.md)); passage/split proposals remain
+`v0-proposed`. The frozen five-key answer payload is preserved.
 
 ## Install and run the UI
 
-First start the service and tunnel as described in the E2E guide. Use a separate
+On the prepared Mac, run `./scripts/p6-local.sh start` and open localhost:8501;
+no token/path discovery is needed. The following manual setup is for an
+independently operated school service. First start that service and its tunnel
+as described in the E2E guide. Use a separate
 lightweight laptop environment, not the pinned cluster vLLM environment.
 
 Bash (start bash first on macOS if using zsh):
@@ -89,39 +95,46 @@ earlier macOS/Python 3.14 UI environment, not a server/Windows/GPU lockfile.
 
 ## User workflow
 
-1. Refresh service and inspect capabilities. P5 health has no mode field, so the
-   UI may show unknown. Inspect/save backend/model/prompt information separately.
-2. For real generation without a fresh retriever, create a Demo record workspace,
-   select an approved exported input and Submit. The state is sent unchanged;
-   generation is fresh, retrieval/agent state is supplied rather than rerun.
-3. When a real factory is configured and retrieval=true, select a paper and create
-   a Free question workspace. Each complete question is independent; history is
-   not sent to generation. A new paper context requires a new workspace.
-4. Wait for a single non-streaming response. Blocking calls may prevent workspace
-   browsing. The UI guards one pending call per session; the backend handles
-   collisions between sessions with 429.
-5. Inspect accepted answer/refusal, citations and diagnostics. A validator block
-   prominently shows the final refusal/reason and labels the original answer as
-   rejected. Missing text keeps the citation ID visible.
-6. Repeated submits have different client_run_id values. Check Manual retry to
-   explicitly link the latest matching question to another execution. Timeout
-   means outcome unknown, not cancellation; manual retry can duplicate work.
-7. Select five runs and download JSON for the report. Answer/citation HTTP timings
-   are distinct and do not isolate inference speed. Export omits agent state and
-   sensitive-key metadata but retains answer/provenance/requested evidence text.
-8. Export before clear/remove. Limits are 10 workspaces / 50 attempts each. History
-   is session-only; refresh/reconnect/new tabs may lose it. No server-run recovery.
+1. The drawer shows **NLP Scientific Paper RAG** and **How to use** above
+   Connection. Keep Search scope **All papers** (local corpus-capable API) or
+   optionally choose **One paper** by title/ID. Legacy services require one paper.
+2. Type into **Your question**, or use the examples underneath it. **Browse all
+   examples** groups corpus topics and paper-specific questions; the latter show
+   both paper title and ID. **Use this question** fills the draft without inference
+   or a scope change. In corpus mode the draft includes the paper reference.
+3. Click **Ask question**. There is no New workspace step. The next request uses
+   the currently selected scope. Questions are independent; history is not sent.
+4. The submitted question appears above its **Answer**. **Evidence needs review**
+   explains warning-level validation; **What was flagged?** shows exact violations.
+   A validator block preserves the final refusal and separates the rejected draft.
+   **Sources**, **Pipeline details**, and **Debug information** are expandable.
+5. **History** directly below Search scope displays one saved attempt without
+   inference. **+ New question** clears only the draft/view. Scope changes never
+   relabel a stored answer; failed attempts retain prior successes in History.
+6. **Advanced settings → Input mode → Demo record** submits an original prepared
+   input unchanged. It generates an answer without fresh retrieval/agent execution.
+   Its saved trace must not be described as a fresh pipeline run.
+7. Every explicit Ask question has a distinct client_run_id. Manual retry links
+   another execution of the latest matching submission; timeout means outcome
+   unknown, not cancellation. The synchronous call guards one pending run per
+   session; P5 returns 429 for collisions across sessions.
+8. Select five runs and download JSON under Advanced settings. Answer/citation
+   HTTP timings remain distinct; exports omit agent state/sensitive-key metadata.
+   Export before **Clear history**, which removes all session contexts/drafts.
+   Limits remain 10 internal contexts / 50 attempts each, created/reused automatically
+   by mode/scope. Refresh/reconnect may lose history; there is no recovery endpoint.
 
 ## Confirmed contract and interface-change requirements
 
-**No mandatory new endpoint or JSON field is requested.** The current client is
-compatible with P5's supplied contract; it preserves the frozen result payload.
+**The redesign requests no new endpoint or result field.** The client keeps
+legacy paper-required compatibility and enables All papers only when health
+advertises the documented local `corpus_search` extension (`v0-proposed`).
 
 | Interface | Confirmed behavior |
 | --- | --- |
 | GET /health | Boolean retrieval/passage_text plus backend, model_id, prompt_version and operational metadata; mode absent |
 | GET /papers | `{"papers": ["paper-id", ...]}`; normalized to internal objects by the UI, with object-list backward compatibility |
-| POST /answer | Client sends either `{"question": "...", "paper_id": "..."}` or `{"record": <original state>}`; no history or local run IDs in JSON |
+| POST /answer | Client sends question plus optional paper_id on corpus-capable services, or an original record; legacy services still require paper_id. No history or local run IDs in JSON |
 | Answer 200 | request_id, five-key result, validation and generation; optional supplied agent trace. Refusal is still success. |
 | Result fields | answer string, citations string list, SUFFICIENT/INSUFFICIENT, nonnegative retrieval_rounds integer and provenance list |
 | Validation | Boolean downgraded, violations object list with code/severity/message/subject, optional raw_result and downgrade_reason |
@@ -139,14 +152,15 @@ validated or echoed by the UI. Agree semantics, validation, allocation/logging a
 error behavior before adding support. Correlation does not supply idempotency,
 cancellation or recovery, and is not required for local routing.
 
-**Dependencies, not API changes:** P2/P5 must supply the real retriever factory and
-matching CPU/index/cache configuration for free queries. The current server calls
-that retriever once then generates; fresh P4 critic/retry execution needs separate
-P4/P5 work. A supplied trace does not demonstrate fresh agent execution.
+**Runtime distinction:** the prepared local launcher already connects real
+BM25/dense/RRF/reranking and P4 adaptive retrieval through P5, using Ollama. The
+original standalone service may still use a static retriever. Reproduce matching
+corpus/index/cache and agent configuration on the GPU host later. A prepared-record
+trace alone never demonstrates fresh agent execution.
 
 ## Verification and remaining E2E
 
-The actual P5 mock API with Bearer auth and synthetic state passed the P6 running-
+Historical port evidence: the actual P5 mock API with Bearer auth and synthetic state passed the P6 running-
 service UI smoke separately. Post-rebase combined tests: 100 passed, 1 default
 opt-in skip. See the completion summary for exact commands and non-additive counts.
 
@@ -167,8 +181,8 @@ When not opted in it is skipped intentionally; the server code is not missing.
 | Own-account allocation/runtime/tunnel | P6, not executed | Readable complete weights/venv/input, actual job/node/end time, health backend |
 | Real exported-state generation | P6 with P5 runtime support, pending | Generation-eligible input, vLLM/Qwen metadata/logs, no hidden generation/parser failure |
 | Real citation coverage | P6/P3/P5, pending | Actual lookup text/missing IDs and configured dump/corpus hash |
-| Fresh free-query retrieval | P2/P5 factory missing | Real configured retriever, matching paper/index coverage, five live-query runs |
-| Fresh adaptive agent trace | P4/P5, outside current service path | Actual graph execution and generated critic/retry evidence |
+| Fresh free-query retrieval | Local corpus/hybrid connected; school reproduction pending | Matching corpus/index/model identity, five report-quality live queries |
+| Fresh adaptive agent trace | Local launcher connected; GPU reproduction pending | Actual graph execution and generated critic/retry evidence |
 | GPU concurrency/timeout/session/reconnect/export | P6, pending real rehearsal | T27,T32,T35,T36,T38,T40 pass/fail/blocked records |
 
 Use [the E2E guide](P6_REAL_ENV_E2E_GUIDE.md) for commands and the results form.

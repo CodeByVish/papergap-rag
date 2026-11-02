@@ -88,27 +88,54 @@ _LABEL_HELP = {
 
 def build_critic_messages(state: AgentState) -> list[dict[str, str]]:
     """Chat messages for the critic: schema and labels in system, evidence in user."""
-    requirements = "\n".join(
-        f"- {r.name}: {r.description}" for r in state.evidence_requirements
-    ) or "- (none specified)"
-    passages = "\n\n".join(
-        f"[{hit.passage.passage_id}] section: {hit.passage.section}\n"
-        f"{hit.passage.text[:MAX_PASSAGE_CHARS]}"
-        for hit in state.retrieved_passages
-    ) or "(no passages were retrieved)"
+    requirements = (
+        "\n".join(f"- {r.name}: {r.description}" for r in state.evidence_requirements)
+        or "- (none specified)"
+    )
+    passages = (
+        "\n\n".join(
+            (
+                f"[{hit.passage.passage_id}] paper: {hit.passage.paper_id}; title: {hit.passage.title}; section: {hit.passage.section}\n"
+                if state.paper_id is None
+                else f"[{hit.passage.passage_id}] section: {hit.passage.section}\n"
+            )
+            + f"{hit.passage.text[:MAX_PASSAGE_CHARS]}"
+            for hit in state.retrieved_passages
+        )
+        or "(no passages were retrieved)"
+    )
+    label_help = dict(_LABEL_HELP)
+    if state.paper_id is None:
+        label_help[GapLabel.INSUFFICIENT_INFORMATION] = (
+            "the retrieved evidence does not appear to answer this"
+        )
+    system = _SYSTEM
+    if state.paper_id is None:
+        system = system.replace(
+            "over one research paper.",
+            "over a collection of research papers. Evidence may span papers; keep each source distinct.",
+        )
+        system = system.replace(
+            "the paper does not appear to answer this",
+            "the retrieved corpus evidence does not appear to answer this",
+        )
     return [
         {
             "role": "system",
-            "content": _SYSTEM.format(
+            "content": system.format(
                 labels=", ".join(f'"{label.value}"' for label in GapLabel),
-                label_help="\n".join(f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()),
+                label_help="\n".join(
+                    f"  {k.value}: {v}" for k, v in label_help.items()
+                ),
             ),
         },
         {
             "role": "user",
             "content": _USER.format(
                 question=state.question,
-                question_type=state.question_type.value if state.question_type else "unknown",
+                question_type=state.question_type.value
+                if state.question_type
+                else "unknown",
                 requirements=requirements,
                 passages=passages,
             ),
@@ -169,7 +196,9 @@ def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
 
 def rule_based_critic(state: AgentState) -> CriticOutput:
     """Sufficient iff every evidence requirement has at least one mapped passage."""
-    unmet = [r for r in state.evidence_requirements if not state.evidence_map.get(r.name)]
+    unmet = [
+        r for r in state.evidence_requirements if not state.evidence_map.get(r.name)
+    ]
     if not unmet:
         return CriticOutput(
             sufficient=True,
@@ -181,7 +210,9 @@ def rule_based_critic(state: AgentState) -> CriticOutput:
         sufficient=False,
         gap_label=gap_classifier(state)["gap_label"],
         missing_components=[r.description for r in unmet],
-        reason="No retrieved passage matches: " + ", ".join(r.name for r in unmet) + ".",
+        reason="No retrieved passage matches: "
+        + ", ".join(r.name for r in unmet)
+        + ".",
     )
 
 
@@ -196,7 +227,9 @@ def _ask(client: CriticClient, state: AgentState) -> str:
     return client.complete(build_critic_prompt(state))
 
 
-def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEFAULT_ATTEMPTS):
+def make_critic_node(
+    client: CriticClient | None = None, max_attempts: int = DEFAULT_ATTEMPTS
+):
     """Build the critic node. Each round's outcome is appended to `critic_log`.
 
     The log keeps every raw model reply (cut to MAX_RAW_REPLY_CHARS) so the first
@@ -235,7 +268,9 @@ def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEF
             "raw_replies": raw_replies,
             # Qwen3 with thinking off should never emit these; if the backend silently
             # dropped enable_thinking=False the replies would carry a reasoning trace.
-            "thinking_drift": any(m in r for r in raw_replies for m in THINKING_MARKERS),
+            "thinking_drift": any(
+                m in r for r in raw_replies for m in THINKING_MARKERS
+            ),
         }
         return {
             "sufficient": output.sufficient,

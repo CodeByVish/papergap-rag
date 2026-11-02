@@ -1,405 +1,585 @@
-# P6 real-environment end-to-end test guide
+# P6 local end-to-end UI guide
 
-Updated after rebase on 2026-10-29 (Singapore). Reviewed UI code: `4584e2c`;
-base main: `97e33b2`, including P5 service/contract `ef5f7a3`. The current P6 branch
-contains both implementations. No P6 cluster job was submitted during this work;
-account, quota, files and forwarding remain to be verified remotely.
+Updated 2026-11-02 (Singapore). Target: Apple M5, 24 GB unified memory, no school
+GPU access yet. Use the existing `P6/UI-port-integration` checkout. No branch
+creation, commit or push is needed. Reviewed source baseline: P6 `e772384`,
+which includes main `c232edb`; the local integration described here is uncommitted.
+All shared code/documentation is English;
+passage schemas and split mappings remain `v0-proposed`.
 
-## Decision: can P6 run it?
+## 1. Start the prepared UI
 
-**Yes, the supported architecture includes P6 submitting the job under P6's own
-account, opening a tunnel on P6's laptop, and running Streamlit there.** P5's latest
-message selects configuration 2 in `docs/DEMO_OPTION_C.md` section 2.1. Older
-statements that P5 must operate the demo are superseded for this deployment.
-
-However, the complete operational information chain is not yet closed:
-
-| Test scope | Can proceed when | Remaining dependency |
-| --- | --- | --- |
-| Laptop UI + actual P5 mock API | Current rebased P6 checkout; CPU Python deps installed | Verified locally during this review |
-| Laptop -> tunnel -> GPU -> real Qwen generation/validation -> citations | Own cluster access/allocation, readable weights, working vLLM environment and approved input dump | Account-specific availability and paths not supplied/verified |
-| Fresh user question -> retrieval -> real Qwen -> citations | Above plus a real retriever factory, its dependencies/indexes and matching paper list | P5 explicitly reports free-form retrieval is not connected; real factory absent in the current checkout |
-| Fresh query -> P4 adaptive agent/critic/retries -> generation | An explicit service integration that runs P4's agent | Current free-form endpoint only calls the retriever once and then answer_record; no P4 graph execution |
-
-The first real-GPU path uses an **exported retrieval/agent state as input** and
-performs fresh model inference. It is not replay of a precomputed answer, but it
-also does not run new retrieval or rerun the agent. Do not describe that as a
-fully verified fresh-query RAG/agent chain.
-
-## What must be obtained or confirmed
-
-1. P6's cluster username, login/VPN procedure and Slurm GPU quota. Confirm whether
-   a partition/account flag is required; P5's script leaves those unspecified.
-   The demo requests one GPU, 8 CPUs, 48 GiB RAM and up to six hours. It does not
-   pin the GPU model: confirm an A40 (~45 GiB) or a P5-approved equivalent, rather
-   than assuming every available GPU can hold this configuration.
-2. A P6-readable persistent root, free storage/quota, complete Qwen3-8B checkpoint
-   and exact revision. P5's `~/p5` is P5's home, not automatically P6's resources.
-3. P6's own working vLLM Python environment, or an explicitly approved compatible
-   shared environment. P5 records Python 3.12, vLLM 0.11.0, Transformers 4.x and
-   a CUDA-12-compatible Torch stack. Do not upgrade an established environment.
-4. An approved development exported-state/retrieval dump on the cluster and a
-   local copy for UI record selection. Ask P5 which file is appropriate and how
-   P6 may read/copy it. No held-out tuning and no dataset/result commits.
-5. For arbitrary questions: P2/P5 must supply the actual `module:factory`, required
-   environment variables, matching corpus/index/cache paths and CPU retrieval
-   installation instructions. `src.retrieval.demo:make_retriever` in the P5 manual
-   is an **example**, not an existing implementation.
-6. For original text: `PASSAGES_FROM` may point to the same retrieval dump; this
-   resolves its embedded passages. Full-corpus coverage needs P3's corpus. A dump
-   is sufficient for an initial record-mode test; a full corpus is not mandatory.
-
-No need for P5's password/account, external LLM API subscription or OpenAI key.
-P6 chooses a demo bearer token and configures the same value on server and UI.
-
-## What was actually checked locally
-
-Post-rebase combined tests returned **100 passed, 1 skipped**. The default skip
-is the opt-in running-service check. That check separately passed against the
-actual P5 mock API with Bearer authentication, synthetic input and the Streamlit
-record/citation workflow. P5's socket smoke also passed **15/15**, including busy
-handling and test-retriever on/off behavior. These are distinct evidence types,
-not real GPU or P2 retrieval measurements; see the
-[completion summary](UI_PORT_COMPLETION_SUMMARY.md) for exact commands/counts.
-
-Confirmed interface correction: `/papers` is `{"papers": ["paper-id", ...]}`,
-not a list of paper objects. P6 now normalizes string IDs internally; existing
-object fixtures remain supported. Authentication is confirmed as
-`Authorization: Bearer <token>`. Set both the header and scheme variables below;
-setting only P5_API_TOKEN is insufficient for this UI version.
-
-P5 `/health` reports `backend`/`model_id`/`prompt_version`, not `mode`. The UI may
-therefore display mode unknown. Use saved health and answer backend metadata to
-establish real-vs-mock evidence; do not infer live status from an open port.
-
-## 1. Use the same current source on laptop and cluster
-
-The current `P6/UI-port-integration` branch has already been rebased onto main
-`97e33b2`; P5's service is included. **Do not repeat the old separate-branch merge.**
-In the existing local P6 checkout, inspect source identity without changing it:
+From the repository root:
 
 ```bash
-git branch --show-current
-git rev-parse HEAD
-git merge-base --is-ancestor 97e33b2 HEAD
-git merge-base --is-ancestor 4584e2c HEAD
+./scripts/p6-local.sh start
 ```
 
-For a new laptop or cluster checkout, the branch owner must first publish the
-reviewed rebased branch. This guide does not push or rewrite the remote branch.
-Do not assume an older remote P6 branch contains the current code. Once published,
-clone into a new directory rather than resetting another workspace:
+Open [the local UI](http://127.0.0.1:8501). This command starts the P5-compatible
+API and Streamlit with saved configuration. It uses the **existing Ollama
+`qwen3:14b` model**, real P3 text, full-development BGE dense index, BM25, RRF,
+BGE reranking, P4's adaptive agent and P5's answer/citation validation.
+There are no credentials or file paths to fill in for this machine.
 
-```bash
-git clone --branch P6/UI-port-integration https://github.com/CodeByVish/papergap-rag.git papergap-p6-e2e
-cd papergap-p6-e2e
-git merge-base --is-ancestor 97e33b2 HEAD
-git merge-base --is-ancestor 4584e2c HEAD
-git rev-parse HEAD
+Keep this terminal running. Ctrl+C stops only the API/UI processes created by
+this launcher; it leaves the existing Ollama service running. Ollama's model
+can remain cached in memory for ten minutes after the last call.
+
+If Ollama has been stopped, start its macOS application first, or use a separate
+terminal for `ollama serve`. Do not run another server if Ollama is already
+listening on port 11434. No paid API key is needed.
+
+### Layout and controls
+
+The left drawer starts with **NLP Scientific Paper RAG** and **ⓘ How to use**,
+then **Connection**, **Search scope**, **History**, and **Advanced settings**.
+No workspace creation is required.
+
+The heading is **Ask the paper collection** for All papers,
+**Ask Paper 'Selected paper title'** for One paper (ID fallback if no title is supplied),
+and **Generate from prepared evidence** in Demo record mode. **Browse all
+examples** is the only example entry point; no standalone example buttons remain.
+Scope changes apply to the **next** question;
+stored results retain their original question and scope.
+
+```text
+LEFT DRAWER                         MAIN AREA
+NLP Scientific Paper RAG             Ask the paper collection
+ⓘ How to use                        Your question [editable input]
+Connection                          Ask question
+Search scope                        Browse all examples
+  All papers / One paper            -----------------------------------
+  Optional paper title + ID          Your submitted question + scope
+History                             Answer
+  Previous questions                Evidence needs review (when flagged)
+  + New question                    Sources (expand)
+Advanced settings (expand)           Pipeline details (expand)
+  Input mode / export / clear        Debug information (expand)
 ```
 
-Both ancestor checks must exit 0. Record the same exact source commit on laptop
-and cluster; no merge into main is needed to rehearse. If a reviewed source archive
-is used instead, record its originating commit and archive hash. Do not transfer
-laptop virtualenvs/secrets or put data/models in Git. Confirm both trees contain:
+**All papers** searches the complete prepared development pool, currently 1,168
+papers. **One paper** optionally filters retrieval by its stable ID; the selector
+shows both title and ID. Each question stands alone: history is not chat context.
+Hover over sidebar controls for explanations.
 
-```bash
-test -f src/generation/server.py
-test -f src/ui/api_client.py
-test -f scripts/cluster/80_demo_server.sbatch
-test -f docs/P6_UI_CONTRACT.md
+The question library sits **below the input**. **Browse all examples** groups **Across all papers** and **About a specific
+paper**. Every paper-specific option includes the paper title and **Paper ID**.
+Click **Use this question**, edit the draft if needed, then **Ask question**.
+In All papers mode, paper-specific examples add the title/ID to the question to
+clarify references such as “they”; they do not silently enable a paper filter.
+In One paper mode, the library shows only matching examples and uses the original
+question wording. Download examples there, or read
+`results/p6-local/SAMPLE_QUESTIONS.md`.
+
+### Submit a ready-made question
+
+1. Open the UI. Under **Connection**, expect backend `ollama` and model
+   `qwen3:14b`. **Refresh service** reloads health/papers, without reloading config.
+   Capabilities (retrieval, corpus search, passage text and adaptive agent) can be
+   checked through `/health`; retrieval, passage text and agent also appear under
+   **Advanced settings**.
+2. Keep **Search scope → All papers**. Expand
+   **Browse all examples**, select a category/question and **Use this question**.
+   For an explicitly filtered QASPER run, select **One paper** and its title/ID.
+3. Review **Your question** and click **Ask question**. This runs fresh hybrid
+   retrieval and the agent; it is not replay. Wait for the non-streaming response.
+4. Read **Your submitted question**, then **Answer** immediately below it.
+   Only one selected result is shown. **Evidence needs review** means validation
+   returned warning-level issues while retaining the answer. Open **What was
+   flagged?** for the exact code/message/severity/subject. A warning may indicate
+   unsupported claims or incomplete evidence, or a derived provenance map; it is
+   not always a critic failure and is not a correctness score.
+5. Expand **Sources** to verify titles, paper IDs, sections and passage text.
+   A validator block displays the final refusal as the Answer, with rejected text
+   in a separately labelled expander. Missing source text retains its passage ID.
+6. Expand **Pipeline details** for backend-supplied round queries, passage IDs,
+   timing, critic decisions and the last rewritten query. Two retries permits at
+   most three retrieval rounds. Separate BM25/dense rankings and RRF/reranker scores
+   are **not supplied** by this API and are not fabricated. **Debug information**
+   contains request/client IDs, HTTP timing and raw validation/generation/agent/
+   search/provenance metadata.
+7. Use **History** directly below Search scope to open a prior result without
+   inference. **+ New question** clears only the draft and selected result;
+   existing runs remain. A repeated **Ask question** creates a distinct attempt.
+   The explicit manual-retry checkbox links another execution of the latest
+   matching submission; it does not recover or cancel an earlier request.
+8. Under **Advanced settings**, select five useful runs and **Download selected
+   runs** for the report. Exports omit the full agent block; save the direct API
+   response from section 6 for durable critic/retrieval traces. **Clear history**
+   deletes all session runs/drafts; export first. It does not delete the corpus.
+
+History is session-only and may be lost on refresh/reconnect/new tabs. Storage is
+bounded to 10 internal mode/scope contexts and 50 attempts per context. At the
+limit export, then Clear history; no silent eviction occurs. Calls are synchronous,
+with one pending request per session. Timeout means outcome unknown, not cancelled.
+
+For an isolated generation/UI check, open **Advanced settings → Input mode →
+Demo record** and select an **Exported record** in the main area, then **Ask
+question**. Prepared inputs already contain real passages for the five samples.
+Record mode generates a new answer but does **not** rerun retrieval/the adaptive
+agent; any trace belongs to the saved input. Switch Input mode back to **Free
+question** for the full pipeline. `P5_RECORDS_PATH` is only needed for record mode.
+A legitimate refusal is valid; a `GENERATION_ERROR` or transport error needs
+investigation. No API token is required for the prepared local configuration.
+
+## 2. What is connected
+
+```mermaid
+flowchart LR
+    B[Browser :8501] --> U[Streamlit UI]
+    U --> A[P5 API :8000]
+    A --> G[P4 planner / critic / retries]
+    G --> R[BM25 + BGE dense + RRF + BGE reranker]
+    R --> D[P3 development text + FAISS index]
+    G --> O[Local Ollama :11434 / Qwen3 14B]
+    A --> P[P5 grounded prompt + citation validator]
+    P --> O
+    P --> U
 ```
 
-## 2. Laptop CPU preflight before spending GPU quota
+Note: Swagger UI - http://127.0.0.1:8000/docs
 
-Commands below use **Bash**. Start `bash` first if using macOS zsh and follow the
-same shell syntax throughout. From the current P6 repository root:
+The critic and answer generator share the same Ollama model. Runtime retrieval models
+run on CPU; the one-time index build uses Apple MPS. Ollama manages Apple GPU acceleration. This local
+quantized 14B setup is a development configuration, not a reproduction of P5's
+school Qwen3-8B/vLLM performance. Record model identity and settings separately.
+The native Ollama API supports `stream=false` and `think=false`; the adapter
+uses both. [Ollama chat API](https://docs.ollama.com/api/chat)
+
+Corpus search uses one corpus-wide BM25 ranking and one global cosine ranking,
+then RRF and reranking. The global dense view reuses the saved vectors; no
+corpus re-encoding is needed when switching scope. A result may cite one or
+several papers depending on relevance.
+
+The P6 UI talks to the P5 API, **not directly to Ollama**. `P5_API_BASE` must
+remain port 8000 locally. Port 11434 is only the model endpoint behind that API.
+
+## 3. Files and completed implementation
+
+All paths below are relative to the repository root. The launcher resolves them
+to absolute paths automatically, including when called from another directory.
+
+| Location | Purpose |
+| --- | --- |
+| `scripts/p6-local.sh` | One-command entry point; chooses dedicated environment and limits CPU threads |
+| `scripts/p6_local.py` | Data setup, configuration loader, API/agent construction and process lifecycle |
+| `configs/p6-local.env` | Complete safe local defaults; read automatically |
+| `configs/p6-school.env.example` | Future GPU API override template; account paths/token must be supplied later |
+| `configs/p6-school-ui.env.example` | Future Mac tunnel/UI override template |
+| `.env.p6.local` | Optional private overrides; ignored by Git; not needed for the prepared defaults |
+| `.venv-p6/` | Dedicated Python 3.12 runtime; ignored by Git |
+| `requirements-p6-local.txt` | Dependencies for recreating the local runtime |
+| `src/generation/generators/ollama_backend.py` | Ollama model availability check, grounded generation, critic chat and model digest/timing metadata |
+| `src/generation/server.py` | Optional `record_fn` hook under the existing authentication/concurrency lock; health reports agent capability |
+| `src/ui/app.py` | Question-first layout, sidebar title/help/scope/history, grouped sample library, one selected answer, sources and diagnostics |
+| `data/processed/passages.jsonl` | Complete P3 development corpus: 21,360 passages, 1,168 indexed papers |
+| `data/processed/passages.manifest.json` | P3's source/chunking/count/hash manifest |
+| `data/processed/p6-paper-catalog.json` | Titles for all 1,168 indexed papers, generated from the verified corpus |
+| `indexes/p6-development-bge/` | Full development dense/FAISS index and its passage metadata |
+| `.cache/huggingface/hub/` | Pinned BGE encoder and reranker downloads |
+| `results/p6-local/sample-questions.jsonl` | Five previously used P3 development-pilot questions; no held-out annotation pool |
+| `results/p6-local/SAMPLE_QUESTIONS.md` | Human-readable sample questions, paper IDs and titles |
+| `results/p6-local/demo-records.jsonl` | Prepared real-retrieval input states for Demo record mode |
+| `results/p6-local/data-source.json` | P3 source commit, corpus hash/count and sample source |
+| `results/p6-local/packages.txt` | Resolved runtime dependency snapshot |
+| `results/p6-local/runtime.json` | Last API launch: code hashes, model digest, paths and retrieval settings |
+| `results/p6-local/api.log` | API startup and request/error logs from `start` |
+| `results/p6-local/fresh-question-smoke.json` | Verified fresh local adaptive HTTP answer and critic trace |
+| `results/p6-local/citation-smoke.json` | Source text lookup for that answer's cited passage |
+| `tests/test_p6_local.py` | Ollama payload/metadata, saved config and agent HTTP boundary checks |
+| `tests/test_ui_p5_smoke.py` | Optional real-service test; AppTest timeout follows the configured LLM timeout |
+
+Models, corpus, indexes, runtime outputs, secrets and virtual environments stay
+out of Git. Ollama already manages `qwen3:14b` in its own local model store;
+the verified model store on this Mac is `/Users/changyanxu/.ollama/models/`.
+Do not edit its blobs manually. There is no Hugging Face Qwen checkpoint path
+to discover. Use `ollama list`
+for installed model IDs/digests and `ollama ps` for currently loaded models.
+
+### P3 data identity
+
+The setup fetches/reads `origin/p3-qasper-foundation` without switching branches
+or merging its data/code into the current branch. It copies only the published
+development corpus, companion manifest and five pilot questions into ignored
+local directories. Existing differing local artifacts are refused, not overwritten.
+
+Reviewed P3 commit: `ee9a2df22d1e2b76ab400a37cf6e0df00bc7c44a`.
+Corpus SHA-256:
+`ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403`.
+Chunking: **365 words / 40-word overlap**, full-text only. QA answers/gold labels
+are not indexed. The selected pilot questions include official train/validation
+provenance and were already used for development; they are not held-out results.
+
+For raw-data reproduction, read P3's own guide without changing this checkout:
 
 ```bash
-python3 -m venv .venv-ui
-source .venv-ui/bin/activate
-python -m pip install -r requirements-ui.txt 'fastapi>=0.110,<1' 'uvicorn>=0.29,<1' pytest
-python scripts/smoke_demo_server.py
+git show origin/p3-qasper-foundation:data/README.md > /tmp/p3-data-README.md
 ```
 
-This installs only the UI plus CPU mock-server/test dependencies. It does not
-install the complete research requirements or download Qwen. `pydantic` is already
-in requirements-ui. Do not install the laptop dependency snapshot into vLLM.
+Do not rebuild with legacy 200/40 defaults or combine another corpus with this
+index. P1's index format differs from the older provider UI's MiniLM/Pyserini
+format; the local runtime uses the maintained P1/P2 BGE pipeline.
 
-For a record-mode mock UI rehearsal, create a synthetic input (no real dataset):
+## 4. Every configuration variable
+
+`configs/p6-local.env` supplies every required value. Do **not** source it
+manually: the Python loader resolves its relative paths. It loads that file,
+then optional `.env.p6.local` overrides. Saved configuration deliberately wins
+over stale terminal exports. `P6_CONFIG_FILE` selects another override file.
 
 ```bash
-mkdir -p results/p6-ui
-python - <<'PYMOCK'
+./scripts/p6-local.sh config
+```
+
+This prints effective paths/settings and hides a configured token.
+
+| Variable | Meaning / prepared value |
+| --- | --- |
+| `P6_BACKEND` | Generator: `ollama`; `mock` for CPU pipeline checks; `vllm` for future GPU host |
+| `P6_MODEL` | Installed Ollama ID `qwen3:14b`; for vLLM this becomes the GPU host's checkpoint path |
+| `P6_OLLAMA_BASE` | Model service URL `http://127.0.0.1:11434` |
+| `P6_OLLAMA_CONTEXT` | Ollama context allocation, 8192 tokens; input plus output must fit |
+| `P6_MAX_NEW_TOKENS` | Answer completion budget, 1024; critic uses P4's own shorter budget |
+| `P6_API_HOST` | Local API bind address `127.0.0.1`; nonloopback requires a token |
+| `P6_API_PORT` | Local API listen port, 8000 |
+| `P6_UI_PORT` | Streamlit browser port, 8501 |
+| `P6_PIPELINE` | `adaptive` runs P4; `static` performs one hybrid retrieval followed by P5 generation |
+| `P6_TOP_K` | Final passages per retrieval call, 5 |
+| `P6_INDEX_DEVICE` | `mps` uses the Apple GPU for the one-time dense index build; set `cpu` on machines without MPS |
+| `P6_P3_REF` | P3 Git reference used only by `setup` |
+| `PAPERGAP_CORPUS` | P3 passage JSONL backing retrieval and citation lookup |
+| `PAPERGAP_DENSE_INDEX` | Dense index directory matching that exact corpus |
+| `HF_HOME` | Local Hugging Face cache root |
+| `DEMO_AGENT_CACHE_FOLDER` | Actual pinned retrieval-model cache directory |
+| `DEMO_AGENT_DEVICE` | `cpu` for BGE encoder/reranker |
+| `DEMO_AGENT_OFFLINE` | `1` loads prepared pinned BGE snapshots without network access at runtime; setup may download missing snapshots |
+| `DEMO_AGENT_BGE` | `1` enables BGE reranking; `0` changes the tested pipeline |
+| `DEMO_AGENT_SCOPED` | `1` enables P4's section-scoped retry selection |
+| `DEMO_AGENT_MAX_RETRIES` | Maximum additional retrieval attempts, 2 |
+| `DEMO_AGENT_CANDIDATE_K` | Candidate depth per BM25/dense source, 20; hybrid RRF uses implementation default 60 |
+| `P5_API_BASE` | URL used by the UI; local `http://127.0.0.1:8000` or a future tunnel endpoint |
+| `P5_RECORDS_PATH` | Prepared agent/retrieval input records for Demo record mode; not the corpus |
+| `P6_SAMPLES_PATH` | Paper-matched development question list displayed in Free question mode |
+| `P6_PAPER_CATALOG_PATH` | Local paper-ID-to-title catalog; titles appear beside IDs throughout the UI |
+| `P5_ANSWER_TIMEOUT` | UI and local Ollama request read timeout, 900 seconds; timeout does not cancel inference |
+| `P5_API_TOKEN` | Blank locally; shared API bearer token when remote/authenticated |
+| `P5_AUTH_HEADER` | Blank locally; `Authorization` when using that bearer token |
+| `P5_AUTH_SCHEME` | Blank locally; `Bearer` when using that bearer token |
+
+No `OPENAI_API_KEY` is needed. Ollama has no local model API token here.
+The default loopback-only P5 API has no bearer token requirement.
+
+Optional example: to isolate static retrieval, create this ignored file, restart
+and remove the override when finished:
+
+```bash
+cat > .env.p6.local <<'ENV'
+P6_PIPELINE=static
+ENV
+./scripts/p6-local.sh start
+```
+
+Do not replace an existing private override file without checking its contents.
+Changing config requires restarting the API/UI; Refresh service does not reload
+process environment or models. Review runtime metadata to confirm actual settings.
+
+## 5. Setup/rebuild commands for a new machine
+
+The prepared machine should only need section 1. These commands document how to
+recreate its environment and artifacts; initial model downloads and encoding
+can take time. Dense setup exposed a native OpenMP conflict in both tested Python runtimes.
+The launcher uses a dedicated Python 3.12 environment and forces
+`OMP_NUM_THREADS=1` plus `TOKENIZERS_PARALLELISM=false` before importing
+Torch/FAISS. Keep these settings for this tested macOS wheel combination. The one-time
+`p6_fix_openmp.py` repair also makes FAISS share Torch’s OpenMP library inside
+this virtualenv and preserves the original FAISS library; evidence is in
+`results/p6-local/native-runtime.json`. No system libraries are changed.
+
+```bash
+python3.12 -m venv .venv-p6
+.venv-p6/bin/python -m pip install -r requirements-p6-local.txt
+.venv-p6/bin/python scripts/p6_fix_openmp.py
+git fetch origin p3-qasper-foundation
+./scripts/p6-local.sh setup
+ollama list
+./scripts/p6-local.sh start
+```
+
+`setup` verifies corpus SHA-256 and Passage schema/count, builds the **full**
+development index when absent, checks corpus equality when it already exists,
+loads the pinned BGE reranker and prepares five input records using real hybrid
+retrieval. It saves package versions and data provenance locally. It does not
+silently replace a different corpus or nonempty incompatible index.
+
+On a new machine without the model, install native macOS Ollama and run
+`ollama pull qwen3:14b`. For a smaller machine choose another installed model
+and set `P6_MODEL` in the private override file; this changes the experiment.
+The prepared Mac already has 14B, so no extra Qwen download is required.
+See [Ollama models](https://ollama.com/library/qwen3).
+
+For retrieval-only debugging without local Qwen inference, set
+`P6_BACKEND=mock` in the private override. This still performs real hybrid
+retrieval/agent wiring but must be labelled mock generation.
+
+## 6. Verify and debug
+
+### Automated checks
+
+```bash
+OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false .venv-p6/bin/python -m pytest -q tests/test_corpus_search.py tests/test_p6_local.py tests/test_demo.py tests/test_server.py tests/test_ui_api_client.py tests/test_ui_view_models.py tests/test_ui_record_loader.py tests/test_ui_conversation_state.py tests/test_ui.py tests/test_ui_p5_smoke.py tests/test_legacy_ui_adapters.py
+.venv-p6/bin/python scripts/smoke_demo_server.py
+```
+
+Most tests are synthetic/CPU contract checks. The running-service test is opt-in
+and skipped by default. Against the prepared running API, set configuration
+inside Python before invoking it:
+
+```bash
+.venv-p6/bin/python - <<'PY'
+from scripts.p6_local import configure
+import pytest
+import os
+configure()
+os.environ['P5_RUN_SMOKE'] = '1'
+raise SystemExit(pytest.main(['-q', 'tests/test_ui_p5_smoke.py::test_actual_p5_service']))
+PY
+```
+
+That smoke submits two records and consumes real inference time. Run it while
+the service is idle. Record mode does not establish fresh agent execution.
+
+### Direct API test with the first saved question
+
+Keep `start` running, then use another terminal:
+
+```bash
+.venv-p6/bin/python - <<'PY'
 import json
 from pathlib import Path
-from src.generation.server import WARMUP_RECORD
-Path('results/p6-ui/mock-inputs.jsonl').write_text(json.dumps(WARMUP_RECORD) + '\n')
-PYMOCK
-export P5_RECORDS_PATH="$PWD/results/p6-ui/mock-inputs.jsonl"
-python -m src.generation.server --backend mock --port 8000 --papers-from "$P5_RECORDS_PATH" --passages-from "$P5_RECORDS_PATH"
+import os
+import requests
+from scripts.p6_local import configure, RUNTIME, write_json
+configure()
+base = os.environ['P5_API_BASE']
+print(requests.get(base + '/health', timeout=10).json())
+q = {'question': 'What methods are used for low-resource language identification?'}
+headers = {}
+if os.environ['P5_API_TOKEN']:
+    headers['Authorization'] = 'Bearer ' + os.environ['P5_API_TOKEN']
+r = requests.post(base + '/answer', json={'question': q['question']},
+                  headers=headers, timeout=(5, float(os.environ['P5_ANSWER_TIMEOUT'])))
+r.raise_for_status()
+write_json(RUNTIME / 'fresh-question-smoke.json', r.json())
+print(json.dumps(r.json(), indent=2))
+PY
 ```
 
-In a second terminal, activate the same UI environment, set P5_API_BASE to localhost
-port 8000 and P5_RECORDS_PATH to that file's absolute path, and launch Streamlit as
-in the handoff. Leave token settings unset for this token-free loopback mock.
-Choose Demo record. retrieval=false is expected; the synthetic passage lookup is
-available. This is a CPU mock check, not real generation/retrieval evidence. Shut
-down the local mock API before reserving local port 8000 for the cluster tunnel.
+Check real backend/model/digest, validation violations, returned citation IDs
+and fresh `agent` critic/retrieval traces. HTTP 200 alone does not prove model
+inference: `EMPTY_CONTEXT` and `AGENT_INSUFFICIENT` can skip final generation.
+A valid refusal is different from `GENERATION_ERROR`, invalid JSON or timeout.
 
-## 3. Prepare P6's cluster account once
-
-On the laptop, replace the username; the IP is the login host documented by P5.
-Confirm VPN/routing and that P6 uses this same cluster:
-
-```bash
-export P6_CLUSTER_USER='REPLACE_WITH_YOUR_USERNAME'
-export P6_LOGIN_HOST='10.96.189.12'
-ssh "$P6_CLUSTER_USER@$P6_LOGIN_HOST"
-```
-
-On the cluster login node, enter the same reviewed P6 source checkout. Check allocation
-options and create persistent directories **before** submitting Slurm jobs:
-
-```bash
-sinfo
-squeue --me
-mkdir -p logs
-export P5_ROOT="$HOME/p6-demo-runtime"
-mkdir -p "$P5_ROOT/models" "$P5_ROOT/data"
-df -h "$P5_ROOT"
-```
-
-P5_ROOT is the script's existing configurable variable; its name does not require
-P5's account. Check your storage quota separately using the site's supported tool.
-Weights are roughly 16–17 GiB, and environments/caches need substantial additional
-space (allow tens of GiB beyond weights). Exact available storage is account-specific.
-
-Preferred: reuse/copy a **permitted complete model snapshot** supplied by P5 into
-`$P5_ROOT/models/Qwen3-8B`, recording its revision. Alternatively P5's documented
-bootstrap scripts are:
-
-```bash
-sbatch --export=ALL scripts/cluster/20_load_qwen3.sbatch
-# Wait for completion and inspect logs/p5-load-qwen3-<jobid>.out first.
-sbatch --export=ALL,PYTHON_MODULE=python312 scripts/cluster/30_vllm.sbatch
-# Wait for completion and inspect logs/p5-vllm-<jobid>.out first.
-```
-
-These are separate sequential jobs, not commands to launch together blindly.
-Add your site's required partition/account flags if needed. Step 20 is an older
-Transformers/download/bootstrap job; its dependencies and interpreter are not the
-pinned vLLM environment. If it fails, inspect the cause with P5 rather than upgrade
-the pinned vLLM stack. A `config.json` alone does not prove all weight shards were
-downloaded; the vLLM load/smoke in step 30 is the practical gate. Downloads use
-network/storage and may need site-approved access. Never run model inference on
-the login node.
-
-The documented vLLM default is `vllm==0.11.0` with Transformers <5, not the newest
-vLLM. Verify the available Python module spelling using `module avail python`;
-`python312` is P5's measured value, not guaranteed for every account/site.
-
-The service defaults are max_new_tokens=1024, max_model_len=32768 and
-vLLM gpu_memory_utilization=0.85. Step 80 exposes token/top-k environment knobs,
-not arbitrary constructor overrides. Confirm with P5 before changing the pinned
-stack, context budget or GPU settings; record actual configuration with results.
-
-Set an explicit working venv after setup (replace the path with the one printed
-in step 30's log; do not use a literal placeholder):
-
-```bash
-export VLLM_VENV='/absolute/path/from/the/successful/vllm-job-log'
-test -x "$VLLM_VENV/bin/python"
-test -f "$P5_ROOT/models/Qwen3-8B/config.json"
-```
-
-Copy the approved input dump into `$P5_ROOT/data/demo-inputs.jsonl` through an
-approved transfer/shared path, retaining hashes. The same file on the laptop
-will be selected by P5_RECORDS_PATH. Do not assume P5's home files are readable.
-
-## 4. Submit the real demo service under P6's account
-
-On the cluster login node, from the P6 repository root in Bash:
-
-```bash
-export P5_ROOT="$HOME/p6-demo-runtime"
-# Re-export your actual VLLM_VENV here if this is a new SSH session.
-export PAPERS_FROM="$P5_ROOT/data/demo-inputs.jsonl"
-export PASSAGES_FROM="$P5_ROOT/data/demo-inputs.jsonl"
-export DEMO_WARMUP_RECORD="$P5_ROOT/data/demo-inputs.jsonl"
-export DEMO_HOST=0.0.0.0
-export DEMO_PORT=18080
-read -r -s -p 'Choose the demo bearer token: ' DEMO_TOKEN
-printf '\n'
-export DEMO_TOKEN
-unset DEMO_RETRIEVER
-mkdir -p logs
-sbatch --export=ALL scripts/cluster/80_demo_server.sbatch
-squeue --me
-```
-
-Record the returned job ID. `unset DEMO_RETRIEVER` deliberately starts the known
-record-generation path first. If FastAPI/uvicorn are missing, the job prints its
-install instruction; after checking compatibility with P5, resubmit with
-`DEMO_INSTALL_DEPS=1` exported. Do not reinstall all research requirements into
-a working pinned vLLM environment. The script may request a whole GPU for up to
-six hours; cancel rehearsal jobs when finished.
-
-```bash
-tail -f logs/p5-demo-REPLACE_JOB_ID.out
-```
-
-Wait for `READY TO TUNNEL - job ... on <ACTUAL_NODE>, port 18080`, then inspect
-that the server remains running with no bind/load traceback. Note the allocated
-node and job end time. Readiness is a socket probe, not proof of a generated
-answer. If the port is occupied, cancel your failed job and resubmit on an agreed
-free port, updating the tunnel destination to match.
-
-## 5. Open the verified tunnel form on the laptop
-
-P5 measured that compute-node SSH is unavailable. Use the single-hop login-node
-TCP forwarding path, not the old ProxyJump/compute-SSH recipe. In a dedicated
-laptop Bash terminal (replace node and username with actual values):
-
-```bash
-export P6_CLUSTER_USER='REPLACE_WITH_YOUR_USERNAME'
-export P6_LOGIN_HOST='10.96.189.12'
-export P6_COMPUTE_NODE='REPLACE_FROM_READY_LOG'
-ssh -N \
-  -o ExitOnForwardFailure=yes \
-  -o ServerAliveInterval=30 \
-  -o ServerAliveCountMax=3 \
-  -L "127.0.0.1:8000:${P6_COMPUTE_NODE}:18080" \
-  "$P6_CLUSTER_USER@$P6_LOGIN_HOST"
-```
-
-Leave it running and keep the laptop awake during the rehearsal. The compute
-service binds its network interface, so the token is required. The laptop tunnel
-and UI stay loopback-only. P5's successful forwarding is evidence for that account;
-confirm this path also works for P6. Do not assume network access to the login
-host establishes compute-port forwarding permission.
-
-In another laptop terminal:
-
-```bash
-curl --fail --show-error http://127.0.0.1:8000/health
-curl --fail --show-error http://127.0.0.1:8000/papers
-```
-
-Expected: status=ok, backend=vllm, correct local Qwen model path,
-prompt_version=p5-grounded-qa-v7, nonempty paper IDs. For the initial record path,
-retrieval=false is expected; passage_text=true requires usable embedded passages.
-A mock backend or empty passage index is not a real-generation/text-display pass.
-
-## 6. Start Streamlit and prove actual model generation
-
-In a separate laptop Bash terminal, from the P6 checkout:
-
-```bash
-source .venv-ui/bin/activate
-export P5_API_BASE=http://127.0.0.1:8000
-export P5_RECORDS_PATH='/absolute/local/path/to/the/approved/demo-inputs.jsonl'
-export P5_ANSWER_TIMEOUT=180
-export P5_AUTH_HEADER=Authorization
-export P5_AUTH_SCHEME=Bearer
-read -r -s -p 'Enter the SAME demo bearer token: ' P5_API_TOKEN
-printf '\n'
-export P5_API_TOKEN
-python -m streamlit run src/ui/app.py --server.address 127.0.0.1
-```
-
-Open `http://127.0.0.1:8501`. Refresh service, choose Demo record, create a workspace,
-select a **nonempty-context, generation-eligible development input**, and Submit.
-
-Check all of the following, not just HTTP 200:
-
-- The question/record identity is correct and a client run ID is displayed.
-- The returned generation backend identifies vLLM/Qwen, with the expected prompt.
-- Server logs show this submitted request; validation has no GENERATION_ERROR or
-  unexpected parser failure. EMPTY_CONTEXT/AGENT_INSUFFICIENT can intentionally
-  skip model inference, so those inputs alone cannot prove the real model ran.
-- A valid model refusal is a legitimate generated result; it need not be SUFFICIENT.
-- Citation IDs match the returned result and lookup text is shown when present.
-- Submit the same record twice: two different client run IDs, original P5 request_id
-  preserved. Refresh/expand diagnostics does not make a third answer call.
-- Run the actual-service UI smoke in the same configured environment:
-
-```bash
-P5_RUN_SMOKE=1 python -m pytest -q tests/test_ui_p5_smoke.py::test_actual_p5_service
-```
-
-This smoke makes two sequential answer calls; account for the extra inference time.
-It proves UI/HTTP shape, not semantic correctness or the absence of generation
-errors, so also perform the metadata/log checks above. Do not run it concurrently
-with another answer unless explicitly testing 429.
-
-## 7. Enable fresh-query retrieval only after P2/P5 supplies it
-
-Obtain the real factory and dependencies, matching indexes/corpus/paper coverage,
-cache locations, and CPU encoder/reranker settings. First prove factory imports
-and its returned callable inside an allocated job/environment. Do not replace
-it with a static dump lookup and label that fresh retrieval.
-
-On the login node, stop your old server, re-export the settings from section 4,
-and set the **actual** approved factory:
-
-```bash
-export DEMO_RETRIEVER='REPLACE_WITH_REAL_MODULE:FACTORY'
-sbatch --export=ALL scripts/cluster/80_demo_server.sbatch
-```
-
-A factory may require its own environment variables; export the exact settings
-provided by P2/P5. Startup loads it once. Re-read the new node from the log,
-rebuild the tunnel, and confirm retrieval=true and the catalogue covers the
-same indexed papers. In Streamlit create a Free question workspace, choose a
-paper, ask five independent complete development questions, inspect citations
-and download the five runs.
-
-Until this factory/data path is supplied, this section is **blocked**. No missing
-P6 API key or GPU flag can enable it. The current endpoint still does not execute
-P4's adaptive graph; a full agent demonstration needs a separately reviewed
-P4/P5 integration and evidence of critic/retry traces generated for these queries.
-
-## 8. Failure, concurrency and evidence checks
-
-| Scenario | Expected outcome |
+| Symptom | First check |
 | --- | --- |
-| Wrong token | 401 shown as authentication issue, not refusal |
-| Two browser sessions submit while one is running | One accepted, overlapping call 429; no history mixing |
-| Retrieval unavailable | Free input disabled; exported records remain usable |
-| Passage lookup missing/503 | Final answer retained; citation IDs remain visible |
-| Validator downgrade | Final refusal and reason; original answer clearly rejected |
-| Timeout/disconnect | Outcome unknown; no automatic retry/cancellation claim |
-| Job/node changes | Read new node, rebuild tunnel, refresh health before another query |
-| New tab/reconnect | No durable session-history or abandoned-run recovery promise |
+| UI/API does not start | `results/p6-local/api.log`; port 8000/8501 may already belong to another process |
+| Model unavailable | `ollama list`; `ollama ps`; confirm Ollama app is running and configured ID exists |
+| Slow requests / memory pressure | Activity Monitor; one request at a time; inspect agent rounds and `ollama ps` |
+| Corpus/index mismatch | Run `setup`; do not mix 365/40 corpus with another chunking/index |
+| Curl/Python works but UI fails | Streamlit terminal traceback, selected paper, API URL and auth settings |
+| Refusal / validator rejection | Expand validation/raw diagnostics; inspect the evidence before changing prompts |
+| 401 | API and UI must use the same token/header/scheme |
+| 429 | Another answer is running; wait and retry manually |
+| Timeout | Outcome unknown; the request may continue on the server; no automatic POST retry |
+| Citation text missing | Verify passage-text health flag and returned IDs against the configured corpus |
 
-Do not cancel a successful shared GPU job to simulate failure. Perform failure
-experiments only on your own rehearsal job and preserve its prior results.
-Long-call timing and 429 are best tested during rehearsal, not presentation.
+The browser talks to Streamlit; Python makes the API calls. Browser Network
+normally will not show `/answer`. For breakpoints use the UI API client,
+server `_one_at_a_time`, `src/agent/demo.py`, hybrid `retrieve`, or the Ollama
+adapter. Keep tokens and real dataset dumps out of shared logs/screenshots.
 
-Save health JSON, sanitized screenshots, UI exports and relevant log excerpts
-outside Git. Record source commits, model revision, package versions, GPU/job/node,
-input/corpus/index hashes, capability flags and timing definitions. P5's supplied
-17-second latency is not a new P6 measurement. Mode unknown in an export must be
-accompanied by actual health/backend evidence, not relabeled silently.
+Manual browser checks remain necessary: sample insertion, citation expansion,
+session/history isolation, scope changes, duplicate submissions, rejected-answer display and exports.
+Refresh/reconnect can lose session history; download useful runs before closing.
 
-| Scope | Date / job / revisions | Pass / fail / blocked | Evidence / remaining owner |
-| --- | --- | --- | --- |
-| P6 account and GPU runtime | Fill after execution | Not run | P6 |
-| Real exported-state generation + citations | Fill after execution | Not run | P6/P5 runtime paths |
-| Fresh-query retrieval + generation | Fill after execution | Blocked pending factory | P2/P5 |
-| Adaptive P4 agent chain | Fill after execution | Not implemented by this service path | P4/P5 |
-| Repeated runs / 429 / timeout / export | Fill after execution | Not run on cluster | P6 |
+## 7. Later: connect a school GPU model
 
-When finished, stop Streamlit and the tunnel with Ctrl+C, then cancel only your
-own recorded job from the login node:
+Keep the **same P6 UI and HTTP contract**. Move the API, hybrid indexes and agent
+to the GPU host, substitute P5's vLLM generator, then tunnel its API to the Mac.
+Do not point the UI at a raw vLLM/OpenAI model endpoint.
 
-```bash
-scancel REPLACE_WITH_YOUR_JOB_ID
-squeue --me
-unset DEMO_TOKEN
+```mermaid
+flowchart LR
+    U[Mac browser / Streamlit] --> T[Mac :8000 SSH tunnel]
+    T --> A[Allocated school GPU node :18080 / P5 API]
+    A --> R[Same corpus + BGE retrieval + P4 agent]
+    A --> V[P5 vLLM / local Qwen3-8B checkpoint]
 ```
 
-Unset P5_API_TOKEN in the laptop shell as well. No model inference on the login
-node, no credentials/model/index/corpus artifacts in Git, and no merging to main
-without the required member review. Passage/split schemas remain `v0-proposed`.
+This is a **future deployment recipe, not a tested school run**. Obtain your own
+cluster access/allocation, approved model path/revision, pinned vLLM environment
+and storage first. Use P5's existing environment; do not install the laptop
+Torch/dependency snapshot into it. The GPU environment also needs the compatible
+retrieval/agent/API dependencies used by this runtime. Review changes with P4/P5.
+Never run model inference on a login node.
+
+On the allocated GPU runtime, use the same reviewed code and verified corpus,
+index and BGE cache. Copy these ignored artifacts through an approved path; they
+are not supplied by a Git push. Copy the prepared template, then replace its
+account-specific paths and shared token:
+
+```bash
+cp configs/p6-school.env.example .env.p6.school
+```
+
+The private `.env.p6.school` should contain:
+
+```dotenv
+P6_BACKEND=vllm
+P6_MODEL=/approved/absolute/path/to/Qwen3-8B
+P6_API_HOST=0.0.0.0
+P6_API_PORT=18080
+P5_API_TOKEN=replace-with-your-private-shared-token
+P5_AUTH_HEADER=Authorization
+P5_AUTH_SCHEME=Bearer
+PAPERGAP_CORPUS=/approved/runtime/data/passages.jsonl
+PAPERGAP_DENSE_INDEX=/approved/runtime/indexes/p6-development-bge
+HF_HOME=/approved/runtime/cache/huggingface
+DEMO_AGENT_CACHE_FOLDER=/approved/runtime/cache/huggingface/hub
+```
+
+Replace those account-specific future paths/token when access is available.
+Inside the GPU allocation, activate the P5-compatible environment and run:
+
+```bash
+P6_CONFIG_FILE=.env.p6.school python -u -m scripts.p6_local serve
+```
+
+Use this command in a site-approved Slurm job with P5's GPU/account/partition
+settings and sufficient resources, not an interactive login-node shell. The
+original `80_demo_server.sbatch` still invokes the original P5 CLI; merely setting
+`P6_BACKEND` there does not select this local-runtime entry point or its agent hook.
+P5's existing script remains a valid static/record service alternative if explicitly
+configured, but has a different launch path. Verify backend/model/agent health.
+
+On the laptop, forward through the login node to the actual allocated node,
+using P5's measured TCP-forwarding form (confirm your account permits it):
+
+```bash
+ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 \
+  -L 127.0.0.1:8000:ACTUAL_COMPUTE_NODE:18080 YOUR_USER@YOUR_LOGIN_HOST
+```
+
+Keep that terminal running. Stop the local API before using port 8000 for the
+tunnel. On the Mac copy the UI template and fill the same token:
+
+```bash
+cp configs/p6-school-ui.env.example .env.p6.school-ui
+```
+
+The private `.env.p6.school-ui` should contain:
+
+```dotenv
+P5_API_BASE=http://127.0.0.1:8000
+P5_API_TOKEN=the-same-private-shared-token
+P5_AUTH_HEADER=Authorization
+P5_AUTH_SCHEME=Bearer
+```
+
+Then launch only Streamlit, with health verification and no local API process:
+
+```bash
+P6_CONFIG_FILE=.env.p6.school-ui ./scripts/p6-local.sh remote
+```
+
+The Mac retains the prepared sample question and Demo record paths. Ensure the
+remote corpus uses identical passage IDs. Re-read node/logs and rebuild the
+tunnel after a job changes. When finished, stop UI/tunnel and cancel only your
+own recorded Slurm job. Keep local Ollama and school vLLM results separate.
+
+## 8. Execution evidence
+
+Corpus-wide scope details and compatibility/review points are in
+[CORPUS_SEARCH_CONTRACT.md](CORPUS_SEARCH_CONTRACT.md). Earlier measurements
+below used an explicit paper filter; corpus-wide evidence is recorded separately.
+
+Preparation and verification results for this working tree are recorded below
+when completed. Source has uncommitted changes: runtime metadata includes code
+hashes as well as Git HEAD. No commit or push is required to test it.
+
+- P3 corpus copied locally and SHA-256/count verified: complete.
+- Local Ollama model availability: `qwen3:14b`, digest
+  `bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8`.
+- Full dense index: complete; metadata confirms 21,360 passages / 1,168 papers.
+  Built with pinned BGE-small revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`
+  on Apple MPS; runtime encoding/reranking uses CPU.
+- BGE reranker (revision `2cfc18c9415c912f9d8155881c133215df768a70`)
+  and five real-retrieval Demo record inputs: complete. Runtime
+  loads the prepared encoder/reranker snapshots offline.
+- Real Qwen/P5 generation: passed on a synthetic warm-up input with no validator
+  violations; saved in `results/p6-local/ollama-generation-smoke.json`.
+- Actual browser: sample insertion, fresh submission, displayed answer, expanded
+  citation/source text and diagnostics passed. One observed browser request took
+  77,779 ms across three retrieval rounds; this is one HTTP measurement, not a
+  benchmark. Screenshot: `output/playwright/p6-local-answer.png`.
+- Fresh adaptive HTTP: saved in `results/p6-local/fresh-question-smoke.json`;
+  all three critic entries have `source=llm`, empty errors and no thinking drift.
+  The answer generated real text and its cited passage resolved successfully;
+  lookup evidence is `results/p6-local/citation-smoke.json`.
+- This sample retained warnings `GENERATED_WITH_INSUFFICIENT_EVIDENCE` and
+  `UNCOVERED_REQUIRED_COMPONENT`: the critic requested more method evidence,
+  while P5 answered from the available cited passage. The UI correctly showed
+  the then-current **Answer with warnings** banner (now **Evidence needs review**). This is a calibration/quality observation, not a
+  transport, parse or model availability failure; it is not a clean semantic pass.
+- Relevant synthetic regression suite: 83 passed, 1 opt-in service test skipped.
+  The separate opt-in real-service UI smoke also passed (1 test, two actual
+  Ollama calls, 65.14 seconds). Its AppTest harness now uses the configured
+  LLM timeout instead of the default three seconds.
+  P5 mock-service socket smoke: all checks passed. Bash/Python command syntax,
+  new-module lint and `git diff --check` also passed.
+- School GPU execution: not run; no current access.
+- Corpus-wide real hybrid retrieval: passed; one topic query returned five
+  passages across four distinct papers. Evidence:
+  `results/p6-local/corpus-retrieval-smoke.json`.
+- Corpus scope, paper-filter compatibility, global BM25 statistics, saved-vector
+  dense search and source identities are covered in `tests/test_corpus_search.py`.
+
+### Corpus-wide execution update
+
+- Integrated corpus/P1/P2/P4/P5/UI regression suite: **285 passed, 1 optional
+  running-service check skipped** after the native OpenMP repair.
+- A real Streamlit AppTest submitted a new topic question with no `paper_id`,
+  through the live P5 API and local Qwen model. It completed in 79.42 seconds,
+  retrieved from four papers, and cited passages from two papers. Scope/filter
+  metadata, LLM critic execution, real generation and citation lookup passed.
+- That answer retained `UNSUPPORTED_CLAIM`; the model mixed related task context.
+  This establishes the cross-paper wiring, not semantic correctness. Inspect
+  warnings and sources before using an answer in a report.
+- Evidence: `results/p6-local/corpus-ui-run.json`,
+  `results/p6-local/corpus-fresh-question-smoke.json`, and
+  `results/p6-local/corpus-retrieval-smoke.json`.
+- Browser verified **Search scope → All papers** by default, with **One paper**
+  available as an optional filter. The approved redesign now applies scope directly
+  to the next submission; each saved result keeps its original scope.
+
+### Approved UI redesign verification — 2026-11-02
+
+- Implemented the approved drawer/input/answer order, History below Search scope,
+  and paper IDs alongside titles in paper-specific examples. Removed obsolete
+  workspace setup/removal controls, the stacked-result loop and duplicate sample
+  selection UI. Preserved shared state interfaces and reusable legacy adapters.
+- Integrated UI/API/agent/corpus/legacy-adapter checks: **98 passed, 1 optional
+  running-service test skipped**. Synthetic HTTP checks do not establish model quality.
+- Browser checked the real UI at desktop 1,200 px and narrow 390 px. At narrow
+  width, both document and main scroll widths were 390 px, without horizontal
+  overflow. Screenshots are local under `output/playwright/p6-redesign-*.png`.
+- A real All papers request used the Gating Mechanisms development example with
+  its title/ID in the question. It completed in **75.16 seconds**, with three
+  retrieval rounds and three source papers before final prompt selection. The
+  result was a **model refusal**, with `GENERATED_WITH_INSUFFICIENT_EVIDENCE`
+  and zero cited passages. No generation/parser/transport error appeared in the
+  rendered diagnostics. This verifies execution and presentation, not scientific
+  correctness. Inspect the critic/evidence diagnostics before changing prompts.
+- Fixed loading-state rendering so submit, draft, scope/history and example
+  selection are disabled before answer HTTP begins; a regression checks this
+  during dispatch. No automatic retries or cancellation endpoint were added.
+- No new branch, commit or push. School GPU execution remains unverified.

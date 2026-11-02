@@ -6,16 +6,15 @@ from src.ui.api_client import ApiConfig, P5ApiClient
 from src.ui.record_loader import load_records
 from src.ui.view_models import parse_answer_record
 from tests.ui_http_fixture import serve
-from tests.test_ui import APP, button
+from tests.test_ui import APP, button, widget
 
 
 def test_synthetic_http_ui_smoke(monkeypatch):
     with serve() as base:
         monkeypatch.setenv('P5_API_BASE', base)
         app = AppTest.from_file(str(APP)).run()
-        button(app, 'New workspace').click().run()
         app.text_area[0].set_value('Synthetic independent question').run()
-        button(app, 'Submit').click().run()
+        button(app, 'Ask question').click().run()
         assert not app.exception
         assert any('synthetic test answer' in x.value for x in app.markdown)
         assert any('Synthetic evidence' in x.value for x in app.text)
@@ -31,10 +30,11 @@ def test_actual_p5_service():
     result = parse_answer_record(client.answer_record(records[0]))
     if health['passage_text'] and result['result']['citations']:
         client.passages(result['result']['citations'])
-    app = AppTest.from_file(str(APP)).run()
-    app.radio[0].set_value('Demo record').run()
-    button(app, 'New workspace').click().run()
-    button(app, 'Submit').click().run()
+    app = AppTest.from_file(
+        str(APP), default_timeout=ApiConfig.from_env().answer_timeout + 15
+    ).run()
+    widget(app.radio, 'Input mode').set_value('Demo record').run()
+    button(app, 'Ask question').click().run()
     assert not app.exception
     state = app.session_state['workspace_state']
     runs = [r for c in state['conversations'].values() for r in c['runs'].values()]

@@ -95,10 +95,13 @@ class P5ApiClient:
             raise ValueError('Select a valid exported AgentState.')
         return self._request('POST', '/answer', {'record': record})
 
-    def answer_question(self, question, paper_id):
-        if not question.strip() or not paper_id:
-            raise ValueError('A complete question and paper are required.')
-        return self._request('POST', '/answer', {'question': question.strip(), 'paper_id': paper_id})
+    def answer_question(self, question, paper_id=None):
+        if not question.strip() or (paper_id is not None and (not isinstance(paper_id, str) or not paper_id.strip())):
+            raise ValueError('A complete question and an optional nonempty paper ID are required.')
+        body = {'question': question.strip()}
+        if paper_id is not None:
+            body['paper_id'] = paper_id
+        return self._request('POST', '/answer', body)
 
     def passages(self, ids):
         data = self._request('POST', '/passages', {'ids': list(dict.fromkeys(ids))})

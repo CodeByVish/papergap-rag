@@ -38,8 +38,8 @@ def begin_run(state, cid, submission, capabilities, retry_of=None):
     rid = uid()
     run = {'client_run_id': rid, 'conversation_id': cid,
            'message_id': prior['message_id'] if prior else uid(), 'retry_of_client_run_id': retry_of,
-           'submission': deepcopy(submission), 'capabilities': {k: deepcopy(capabilities[k]) for k in ('retrieval', 'passage_text', 'mode') if k in capabilities},
-           'service_mode': capabilities.get('mode', 'unknown'), 'submitted_at': now(), 'outcome': 'pending', 'answer_record': None,
+           'submission': deepcopy(submission), 'capabilities': {k: deepcopy(capabilities[k]) for k in ('retrieval', 'passage_text', 'mode', 'backend', 'model_id', 'prompt_version', 'agent') if k in capabilities},
+           'service_mode': capabilities.get('mode') or capabilities.get('backend', 'unknown'), 'submitted_at': now(), 'outcome': 'pending', 'answer_record': None,
            'error': None, 'evidence': {}, 'answer_http_elapsed_ms': None, 'citation_http_elapsed_ms': None}
     conversation['runs'][rid] = run
     state['pending_client_run_id'] = rid

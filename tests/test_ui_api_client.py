@@ -24,6 +24,10 @@ def test_config_and_requests():
     assert session.request.call_args.kwargs['timeout'][1] >= 120
     api.answer_record({'question': 'q'})
     assert session.request.call_args.kwargs['json'] == {'record': {'question': 'q'}}
+    api.answer_question('global query')
+    assert session.request.call_args.kwargs['json'] == {'question': 'global query'}
+    with pytest.raises(ValueError):
+        api.answer_question('q', '')
     with pytest.raises(ValueError):
         api.answer_question(' ', 'paper')
 
