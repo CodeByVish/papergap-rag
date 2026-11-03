@@ -39,11 +39,15 @@ from src.agent.experiments import (
     ExperimentItem,
     compute_metrics,
     format_table,
+    matched_recall_gain,
     paired_recall_gain,
     run_system,
 )
 
 ARMS = ("static", "adaptive")
+# Optional control: a one-round static run with a larger top_k, so the adaptive arm's extra
+# passages can be matched against the same number of static ones (matched_recall_gain).
+WIDE_ARM = "static-wide"
 # P5's frozen generation settings (their message of 2026-10-29); the backend default is 768.
 FROZEN_PROMPT_VERSION = "p5-grounded-qa-v7"
 FROZEN_MAX_NEW_TOKENS = 1024
@@ -221,9 +225,12 @@ def summarise(arm_records: dict[str, list[dict[str, Any]]], items: Sequence[Expe
               ) -> dict[str, Any]:
     results = {arm: compute_metrics(records, items) for arm, records in arm_records.items()}
     summary: dict[str, Any] = {"metrics": results}
-    if set(arm_records) == set(ARMS):
+    if set(ARMS) <= set(arm_records):
         summary["paired_recall_gain"] = paired_recall_gain(
             arm_records["static"], arm_records["adaptive"], items)
+    if {"adaptive", WIDE_ARM} <= set(arm_records):
+        summary["matched_recall_gain"] = matched_recall_gain(
+            arm_records[WIDE_ARM], arm_records["adaptive"], items)
     return summary
 
 
@@ -309,7 +316,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--split", default="validation", help="with --from-qa: train or validation")
     p.add_argument("--limit", type=int, help="with --from-qa: number of questions")
     p.add_argument("--out-dir", type=Path, required=True)
-    p.add_argument("--arms", nargs="+", choices=ARMS, default=list(ARMS))
+    p.add_argument("--arms", nargs="+", choices=[*ARMS, WIDE_ARM], default=list(ARMS),
+                   help=f"{WIDE_ARM}: static with --wide-k passages, the budget-matched control")
     p.add_argument("--critic", choices=["rules", "generator"], default="rules")
     p.add_argument("--answers", choices=["none", "p5"], default="none")
     p.add_argument("--generator", default="vllm", help="P5 backend: vllm, transformers, mock")
@@ -323,6 +331,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--score-cache", type=Path, help="persistent reranker score cache (SQLite)")
     p.add_argument("--candidate-k", type=int, default=20)
     p.add_argument("--top-k", type=int, default=5)
+    p.add_argument("--wide-k", type=int,
+                   help="top_k of the static-wide arm (default: top-k x (max-retries + 1), "
+                        "the most passages the adaptive arm can collect)")
     p.add_argument("--max-retries", type=int, default=2)
     p.add_argument("--device", default="cpu", help="device for the retrieval models")
     p.add_argument("--cache-folder", type=Path, default=ROOT / ".cache/huggingface/hub")
@@ -334,6 +345,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> None:
     args = parse_args(argv)
     from scripts.build_indexes import load_passages
+
+    wide_k = args.wide_k or args.top_k * (args.max_retries + 1)
+    if WIDE_ARM in args.arms and wide_k > args.candidate_k:
+        raise SystemExit(f"--wide-k {wide_k} exceeds --candidate-k {args.candidate_k}")
 
     if args.out_dir.exists() and any(args.out_dir.iterdir()) and not args.resume:
         raise SystemExit(f"{args.out_dir} is not empty; choose a new --out-dir or pass --resume")
@@ -361,7 +376,8 @@ def main(argv: Sequence[str] | None = None) -> None:
         arm_records[arm] = run_arm(
             arm, items, retriever, args.out_dir, adaptive=arm == "adaptive",
             critic_client=critic, answer_fn=answer_fn, max_retries=args.max_retries,
-            top_k=args.top_k, section_selector=selector, resume=args.resume)
+            top_k=wide_k if arm == WIDE_ARM else args.top_k, section_selector=selector,
+            resume=args.resume)
 
     summary = summarise(arm_records, items)
     manifest = {

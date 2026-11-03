@@ -181,6 +181,17 @@ def test_summary_and_outputs(tmp_path):
     assert json.loads((tmp_path / "run_manifest.json").read_text()) == {"note": "x"}
 
 
+def test_wide_arm_adds_the_matched_gain_only_beside_adaptive(tmp_path):
+    arms = {arm: runner.run_arm(arm, ITEMS, retriever, tmp_path, adaptive=arm == "adaptive",
+                                top_k=10 if arm == runner.WIDE_ARM else 5, log=lambda _: None)
+            for arm in (*runner.ARMS, runner.WIDE_ARM)}
+    summary = runner.summarise(arms, ITEMS)
+    assert set(summary["metrics"]) == {"static", "adaptive", "static-wide"}
+    assert summary["matched_recall_gain"]["n"] == 1 and "paired_recall_gain" in summary
+    both = runner.summarise({k: arms[k] for k in ("static", "static-wide")}, ITEMS)
+    assert "matched_recall_gain" not in both and "paired_recall_gain" not in both
+
+
 def test_single_arm_summary_has_no_paired_gain():
     records = [{"question_id": "q1", "retrieval_round": 1, "critic_log": [], "sufficient": False,
                 "retrieved_passages": [], "gap_label": "NONE", "retrieval_log": []}]

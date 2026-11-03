@@ -9,6 +9,7 @@ from src.agent.experiments import (
     compute_metrics,
     default_refuses,
     format_table,
+    matched_recall_gain,
     paired_recall_gain,
     run_system,
 )
@@ -157,6 +158,31 @@ def test_paired_gain_with_no_gold_is_empty():
     items = [ExperimentItem("q1", "x", "p")]
     records = run_system(items, retriever, adaptive=False)
     assert paired_recall_gain(records, records, items) == {"n": 0, "mean_gain": None, "ci95": None}
+
+
+def wide_retriever(query, paper_id, top_k):
+    """Ranks the gold passage last of three, so only a wide static run reaches it."""
+    return [METHOD, EXTRA, GOLD][:top_k]
+
+
+def test_matched_gain_credits_only_what_extra_passages_cannot_explain(adaptive_records):
+    # Adaptive ends with [method, gold] for q1: two passages. Static top-2 of the wide
+    # ranking is [method, extra], which misses gold, so the retry still earns its gain.
+    wide = run_system(ITEMS, wide_retriever, adaptive=False, top_k=3)
+    result = matched_recall_gain(wide, adaptive_records, ITEMS)
+    assert result["n"] == 2 and result["mean_budget"] == pytest.approx(2.0)
+    assert result["mean_gain"] == pytest.approx(0.5)  # q1 +1, q2 0
+
+    # Once the static run ranks gold within the same budget, there is nothing left to credit.
+    wide_all = run_system(ITEMS, lambda q, p, k: [METHOD, GOLD], adaptive=False)
+    assert matched_recall_gain(wide_all, adaptive_records, ITEMS)["mean_gain"] == pytest.approx(0.0)
+
+
+def test_matched_gain_with_no_gold_is_empty():
+    items = [ExperimentItem("q1", "x", "p")]
+    records = run_system(items, retriever, adaptive=False)
+    result = matched_recall_gain(records, records, items)
+    assert result["n"] == 0 and result["mean_gain"] is None and result["mean_budget"] is None
 
 
 def test_metrics_can_be_recomputed_from_saved_jsonl(adaptive_records):

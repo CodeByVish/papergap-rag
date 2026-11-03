@@ -237,6 +237,10 @@ def paired_recall_gain(
             return _recall(gold, {p["passage"]["passage_id"] for p in rec["retrieved_passages"]})
 
         diffs.append(final_recall(record) - final_recall(final_static[qid]))
+    return _bootstrap_gain(diffs, resamples, seed)
+
+
+def _bootstrap_gain(diffs: list[float], resamples: int, seed: int) -> dict[str, Any]:
     if not diffs:
         return {"n": 0, "mean_gain": None, "ci95": None}
     rng = random.Random(seed)
@@ -245,6 +249,39 @@ def paired_recall_gain(
     )
     low, high = means[int(0.025 * resamples)], means[int(0.975 * resamples) - 1]
     return {"n": len(diffs), "mean_gain": sum(diffs) / len(diffs), "ci95": (low, high)}
+
+
+def matched_recall_gain(
+    wide: Sequence[dict[str, Any]],
+    adaptive: Sequence[dict[str, Any]],
+    items: Iterable[ExperimentItem],
+    *,
+    resamples: int = 2000,
+    seed: int = 0,
+) -> dict[str, Any]:
+    """Adaptive final recall minus static recall at the same number of passages.
+
+    `wide` is a one-round static run with a larger top_k. Per question it keeps its
+    first n ranked passages, n being how many distinct passages the adaptive run ended
+    with, so reading more text cannot by itself explain a gain. `mean_budget` is the
+    average n.
+    """
+    by_id = {item.question_id: item for item in items}
+    wide_by_id = {r["question_id"]: r for r in wide if "error" not in r}
+    diffs, budgets = [], []
+    for record in adaptive:
+        qid = record["question_id"]
+        gold = by_id[qid].gold_passage_ids
+        if "error" in record or not gold or qid not in wide_by_id:
+            continue
+        final = [p["passage"]["passage_id"] for p in record["retrieved_passages"]]
+        budget = len(set(final))
+        kept = [p["passage"]["passage_id"] for p in wide_by_id[qid]["retrieved_passages"]][:budget]
+        diffs.append(_recall(gold, set(final)) - _recall(gold, set(kept)))
+        budgets.append(budget)
+    result = _bootstrap_gain(diffs, resamples, seed)
+    result["mean_budget"] = _mean(budgets)
+    return result
 
 
 def format_table(results: dict[str, dict[str, Any]]) -> str:

@@ -20,7 +20,7 @@ paper cannot answer (`INSUFFICIENT_INFORMATION`). Every round is logged.
 | Retrieve | `nodes.py` | Calls the injected `retrieve(query, paper_id, top_k)`; merges and dedupes passages by opaque `passage_id`. With a `section_selector` it scopes the search and, if that finds nothing, repeats the round over the whole paper. |
 | Evidence mapper | `nodes.py` | Maps each requirement to passages by section hint or keywords. **Weak and advisory**, see below. |
 | Critic | `critic.py` | LLM verdict `{sufficient, gap_label, missing_components, reason}`, parsed and validated deterministically, with a rule-based fallback. |
-| Rewriter | `rewriter.py` | One action per gap label; adds the paper's own recurring terms and the LLM critic's missing components; never repeats an earlier query. |
+| Rewriter | `rewriter.py` | One action per gap label; adds the paper's own recurring terms and content words from the LLM critic's missing components (its commentary on the passages is dropped); never repeats an earlier query. |
 | Section selector | `sections.py` | Optional. Picks this paper's own section whose name matches the gap's hints; never repeats a section. |
 
 Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
@@ -94,6 +94,12 @@ recovery (first verdict insufficient, final sufficient), full-recall recovery, u
 retries (all gold already retrieved), ineffective retries (no new gold), redundant retries
 (nothing new at all), refusal rate (and correct/false refusals given answerability),
 critic fallback rate, answer errors, and a paired bootstrap recall gain.
+
+The adaptive arm can collect more passages than the static one (up to top-k x 3). To check that
+a recall gain is not just extra text, add the control arm `--arms static adaptive static-wide`:
+a one-round static run with `--wide-k` passages (default top-k x (max-retries + 1)). The summary
+then also holds `matched_recall_gain`: per question, adaptive final recall minus static recall
+over the same number of passages, with a bootstrap CI.
 Recall needs gold evidence mapped to passage IDs (P3); without it recall is `n/a`.
 `--from-qa` runs use an approximation (`approximate_gold`). For gold from P3's mapping
 (`gold-evidence-to-passage-v0-proposed`) build an items file and pass it with `--items`:
