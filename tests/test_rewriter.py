@@ -69,8 +69,24 @@ def test_llm_missing_components_are_used_but_rule_based_ones_are_not():
                 critic_log=[{"round": 1, "source": "llm"}])
     rules = state(GapLabel.MISSING_RESULT, missing_components=["Passage reporting a measured result"],
                   critic_log=[{"round": 1, "source": "rules"}])
-    assert "reported test F1" in rewrite_query(llm)["rewritten_query"]
-    assert "Passage reporting" not in rewrite_query(rules)["rewritten_query"]
+    assert "f1" in rewrite_query(llm)["rewritten_query"].lower().split()
+    assert "measured" not in rewrite_query(rules)["rewritten_query"]
+
+
+def test_critic_commentary_is_kept_out_of_the_query():
+    # A real Qwen3-8B reply (cluster job 50550): sentences about the passages, not terms.
+    reply = ("The method of inducing the CFG is not clearly described in the retrieved passages. "
+             "The passages mention grammar induction and seed rules but do not provide a "
+             "detailed explanation of the specific method used to induce the CFG.")
+    question = "How did they induce the CFG?"
+    llm = AgentState(question=question, paper_id="p", gap_label=GapLabel.MISSING_METHOD,
+                     missing_components=[reply], critic_log=[{"round": 1, "source": "llm"}])
+    query = rewrite_query(llm)["rewritten_query"]
+    assert query.startswith(question)
+    for commentary in ("retrieved", "passages", "clearly", "described", "provide", "explanation"):
+        assert commentary not in query.lower().split()
+    assert "grammar" in query and "seed" in query
+    assert len(query.split()) <= len(question.split()) + 4 + 4 + 4  # terms + gap words, no prose
 
 
 def test_retry_never_repeats_an_earlier_query():
