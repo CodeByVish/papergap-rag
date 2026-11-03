@@ -403,6 +403,12 @@ Refresh/reconnect can lose session history; download useful runs before closing.
 
 ## 7. Later: connect a school GPU model
 
+P5's supplied `启动集群.md` describes an existing **record-only** deployment
+(`retrieval=false`), not the full pipeline below. The UI can connect to that
+service through config/tunnel and Demo record, but cannot enable missing retrieval
+through configuration. See [handoff section 2.0](P6_UI_handoff.md#20-compatibility-with-p5s-supplied-cluster-guide)
+for that minimal route and the capability comparison. The following is route B.
+
 Keep the **same P6 UI and HTTP contract**. Move the API, hybrid indexes and agent
 to the GPU host, substitute P5's vLLM generator, then tunnel its API to the Mac.
 Do not point the UI at a raw vLLM/OpenAI model endpoint.
