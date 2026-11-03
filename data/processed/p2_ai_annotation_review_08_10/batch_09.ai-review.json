@@ -1,0 +1,1253 @@
+{
+  "annotation_origin": "AI (Codex)",
+  "purpose": "Comparison with separately completed human judgments; not ground truth or independent human annotation",
+  "date": "2026-11-03",
+  "scope": "batch_09.md",
+  "input_sha256": "b82de5daf388e46802c59c27ad80d1f1d8f54d5407f467ff0c67681eadf51894",
+  "output_sha256": "0e1f009b5c52c339976556eb60941d952b18f531911c5d60afdedab321359616",
+  "human_annotation": false,
+  "other_annotator_labels_consulted": false,
+  "gold_answers_consulted": false,
+  "rule": "Useful answer evidence including partial evidence = 1; topic overlap alone = 0. Judge visible text; do not reconstruct missing tables/formulas.",
+  "records": [
+    {
+      "question_number": "0161",
+      "record_number": 1482,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1483,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1484,
+      "label": 1,
+      "reason": "Names WordNet/Wordnik antonym-synonym pairs and the held-out split.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1485,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1486,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1487,
+      "label": 1,
+      "reason": "Identifies the June 2016 English Wikipedia corpus used to derive features; partial dataset information.",
+      "review_note": "Wikipedia is the corpus used for extracting patterns/embeddings; the labeled evaluation pairs come from WordNet/Wordnik (1484)."
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1488,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1489,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1490,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0161",
+      "record_number": 1491,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1492,
+      "label": 1,
+      "reason": "Represents word-vector sets and optionally term frequencies.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1494,
+      "label": 1,
+      "reason": "Explicitly states word subspaces represent the context of corresponding text.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1495,
+      "label": 1,
+      "reason": "Shows lower-dimensional representation of class word vectors and retained variance.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1496,
+      "label": 1,
+      "reason": "Defines a compact representation of all word vectors in a context.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1497,
+      "label": 1,
+      "reason": "Describes semantics and term frequencies encoded, plus the limitation of ignoring word order.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1493,
+      "label": 1,
+      "reason": "Represents within-class variability and text content.",
+      "review_note": null
+    },
+    {
+      "question_number": "0162",
+      "record_number": 1498,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1499,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1501,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Describes approaches in prior literature, not explicit comparisons conducted in this study; 0."
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1502,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Prior-work methods are not automatically procedures explored in this experiment; 0."
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1504,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1505,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "A background taxonomy of meta-learning is not evidence they experimentally tried all its methods; 0."
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1500,
+      "label": 1,
+      "reason": "Identifies MTL-NLG as the evaluated alternative.",
+      "review_note": "Names an evaluated alternative, MTL-NLG, but does not explain its training procedure."
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1503,
+      "label": 1,
+      "reason": "Describes source-only, target-only, multi-task and supervised comparisons.",
+      "review_note": null
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1506,
+      "label": 1,
+      "reason": "Explicitly defines Scratch-NLG, MTL-NLG, Zero-NLG and Supervised-NLG.",
+      "review_note": null
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1507,
+      "label": 1,
+      "reason": "Describes the standard multi-task learning objective used for comparison.",
+      "review_note": null
+    },
+    {
+      "question_number": "0163",
+      "record_number": 1508,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1509,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1510,
+      "label": 1,
+      "reason": "Names Twitter and Amazon as feature domains.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1511,
+      "label": 1,
+      "reason": "Reports experiments on Twitter and Amazon reviews.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1512,
+      "label": 1,
+      "reason": "Identifies the new Twitter data as a studied domain.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1514,
+      "label": 1,
+      "reason": "Explicitly identifies processing and evaluation on Amazon and Twitter.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1515,
+      "label": 1,
+      "reason": "Identifies their Twitter corpus; literature is future work.",
+      "review_note": "Literature is proposed future work, not an evaluated domain."
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1517,
+      "label": 1,
+      "reason": "Mentions their own Twitter training and Amazon review data.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1513,
+      "label": 1,
+      "reason": "Discusses the authors' review and tweet examples and Twitter dataset.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1516,
+      "label": 1,
+      "reason": "Explicitly sets Twitter as source and Amazon as target.",
+      "review_note": null
+    },
+    {
+      "question_number": "0164",
+      "record_number": 1518,
+      "label": 1,
+      "reason": "Directly states both domains: Twitter and Amazon product reviews.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1519,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1520,
+      "label": 1,
+      "reason": "Directly describes evaluating extracted pairs via MT experiments.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1521,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1523,
+      "label": 1,
+      "reason": "States BLEU comparisons with and without extracted pairs.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1524,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1525,
+      "label": 1,
+      "reason": "Reports evaluation and BLEU improvements on both language pairs.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1526,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1522,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1527,
+      "label": 1,
+      "reason": "Describes manual qualitative evaluation and downstream BLEU evaluation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1528,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0165",
+      "record_number": 1529,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1530,
+      "label": 1,
+      "reason": "Lists the languages chosen to span varying morphological typologies.",
+      "review_note": "Lists the selected languages rather than giving all typology names; useful partial evidence."
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1531,
+      "label": 1,
+      "reason": "Explicitly identifies fusional and agglutinative languages.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1535,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1536,
+      "label": 1,
+      "reason": "States results are analyzed separately for agglutinative and fusional languages.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1537,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1532,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1533,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1534,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1538,
+      "label": 1,
+      "reason": "Identifies an agglutinative-language group in the experiments.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1539,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0166",
+      "record_number": 1540,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Lists dataset languages but does not specify their morphological typologies; 0 under the literal question."
+    },
+    {
+      "question_number": "0167",
+      "record_number": 1541,
+      "label": 1,
+      "reason": "Describes the proposed recurrent multi-task architecture and coupling/fusion interactions.",
+      "review_note": null
+    },
+    {
+      "question_number": "0167",
+      "record_number": 1542,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0167",
+      "record_number": 1543,
+      "label": 1,
+      "reason": "Identifies MT-RNN as an evaluated recurrent model; GRNN is recursive, not recurrent.",
+      "review_note": "MT-RNN is recurrent; the separately listed GRNN is recursive. Do not conflate them."
+    },
+    {
+      "question_number": "0167",
+      "record_number": 1544,
+      "label": 1,
+      "reason": "Describes four recurrent layer types and their interactions.",
+      "review_note": null
+    },
+    {
+      "question_number": "0167",
+      "record_number": 1545,
+      "label": 1,
+      "reason": "Explicitly identifies the LSTM implementation used.",
+      "review_note": null
+    },
+    {
+      "question_number": "0167",
+      "record_number": 1546,
+      "label": 1,
+      "reason": "Identifies the proposed architecture with four recurrent neural layer types.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1547,
+      "label": 1,
+      "reason": "Directly states nearest map patch within 1 km of inferred home location.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1548,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1550,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1551,
+      "label": 1,
+      "reason": "Describes linking users' geotagged timelines, location and SES indicators.",
+      "review_note": "Summarizes linked information but does not give the nearest-patch matching rule; partial evidence."
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1552,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1549,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1553,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0168",
+      "record_number": 1554,
+      "label": 1,
+      "reason": "Explains the necessary home-location inference step from most frequent tweet coordinates.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1555,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Plans to expand to other languages do not identify the current language; 0."
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1556,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1557,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1558,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1559,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1561,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1560,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1562,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1563,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "English describes another study's tweets, not necessarily this study's dataset; 0."
+    },
+    {
+      "question_number": "0169",
+      "record_number": 1564,
+      "label": 1,
+      "reason": "Identifies the analyzed Dabiq corpus as English; partial evidence, not proof of all tweet languages.",
+      "review_note": "English explicitly describes the Dabiq corpus. It does not establish the language inventory of all Twitter datasets."
+    },
+    {
+      "question_number": "0170",
+      "record_number": 1565,
+      "label": 1,
+      "reason": "States the discriminator feedback cost encourages creative token sampling.",
+      "review_note": null
+    },
+    {
+      "question_number": "0170",
+      "record_number": 1566,
+      "label": 1,
+      "reason": "Describes discriminator quality scoring and generator reward training.",
+      "review_note": null
+    },
+    {
+      "question_number": "0170",
+      "record_number": 1567,
+      "label": 1,
+      "reason": "Explicitly distinguishes MLE pretraining from creativity-reward GAN optimization with policy gradients.",
+      "review_note": null
+    },
+    {
+      "question_number": "0170",
+      "record_number": 1568,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0170",
+      "record_number": 1569,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0170",
+      "record_number": 1570,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1571,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1572,
+      "label": 1,
+      "reason": "Distinguishes manually written UIT-ViIC from Google-translated Vietnamese captions.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1574,
+      "label": 1,
+      "reason": "Directly describes translated and human-annotated Vietnamese datasets.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1575,
+      "label": 1,
+      "reason": "Names UIT-ViIC as the newly constructed Vietnamese dataset.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1576,
+      "label": 1,
+      "reason": "Describes the manually captioned Vietnamese MS-COCO subset; partial identification.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1577,
+      "label": 1,
+      "reason": "Names and describes UIT-ViIC.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1573,
+      "label": 1,
+      "reason": "Names GT-sportball and UIT-ViIC.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1578,
+      "label": 1,
+      "reason": "Distinguishes Google translation from the newly manually written captions.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1579,
+      "label": 1,
+      "reason": "Explicitly lists GT-sportball and UIT-ViIC with definitions.",
+      "review_note": "Interpreted 'the other two' as the two Vietnamese datasets compared with English-sportball. The text does not establish two additional datasets besides UIT-ViIC."
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1580,
+      "label": 1,
+      "reason": "Names UIT-ViIC as a Vietnamese dataset with manually written captions.",
+      "review_note": null
+    },
+    {
+      "question_number": "0171",
+      "record_number": 1581,
+      "label": 1,
+      "reason": "Names UIT-ViIC and its manual construction.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1582,
+      "label": 1,
+      "reason": "Explicitly describes prior evaluations and reuse of their tasks.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1583,
+      "label": 1,
+      "reason": "Compares results to previously reported evaluations.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1584,
+      "label": 1,
+      "reason": "Identifies prior stimuli and published results, with comparability caveats.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1585,
+      "label": 1,
+      "reason": "Describes adaptation of prior evaluation protocols and stimuli.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1587,
+      "label": 1,
+      "reason": "Explicitly details all three prior evaluations.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1588,
+      "label": 1,
+      "reason": "States reuse of prior stimuli and previously reported numbers.",
+      "review_note": null
+    },
+    {
+      "question_number": "0172",
+      "record_number": 1586,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1589,
+      "label": 1,
+      "reason": "Defines M:F prediction ratio and explains bias-gap interpretation; BLEU is separately translation quality.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1590,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1591,
+      "label": 1,
+      "reason": "Defines WinoMT accuracy, delta G and delta S.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1592,
+      "label": 1,
+      "reason": "Reports bias evaluation using WinoMT accuracy.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1594,
+      "label": 1,
+      "reason": "Identifies WinoMT accuracy for debiasing and separately BLEU for quality.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1595,
+      "label": 1,
+      "reason": "Lists accuracy, delta G, delta S and M:F ratio.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1593,
+      "label": 1,
+      "reason": "Reports WinoMT accuracy and gender/stereotyping gap scores.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1596,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1597,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1598,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0173",
+      "record_number": 1599,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1600,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Examples of tasks from prior work do not establish the five tasks evaluated here; 0."
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1601,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1602,
+      "label": 1,
+      "reason": "Identifies entailment and sequence-tagging/classification task categories used in fine-tuning.",
+      "review_note": "Gives broad task categories/entailment, not the complete five-task list."
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1603,
+      "label": 1,
+      "reason": "Explicitly identifies POS tagging as a downstream experiment.",
+      "review_note": null
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1604,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1605,
+      "label": 1,
+      "reason": "Lists all five: NLI, document classification, intent classification, POS and NER.",
+      "review_note": null
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1607,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0174",
+      "record_number": 1606,
+      "label": 1,
+      "reason": "Describes their intent-classification experiment.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1608,
+      "label": 1,
+      "reason": "Explicitly lists BLEU, FKGL, SARI and human-rated Simplicity.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1609,
+      "label": 1,
+      "reason": "Reports FKGL, SARI and human Simplicity evaluation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1610,
+      "label": 1,
+      "reason": "Reports BLEU, FKGL, SARI and Simplicity.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1612,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1613,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1614,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1611,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1615,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0175",
+      "record_number": 1616,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1617,
+      "label": 1,
+      "reason": "States 130 songs collected and 110 retained after dropping 20.",
+      "review_note": "130 initially collected; 110 retained. The answer depends on whether the question asks original collection or final corpus."
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1618,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "574K is a count of lyric texts, not the collected audio songs asked about; 0."
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1619,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1621,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1622,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1623,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1620,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1624,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0176",
+      "record_number": 1625,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1626,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1627,
+      "label": 1,
+      "reason": "Specifies over 40M hotel-click sessions, 1.1M hotels and an 8:1:1 split.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1628,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1631,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1632,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1629,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1630,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0177",
+      "record_number": 1633,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1634,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1635,
+      "label": 1,
+      "reason": "Identifies CNN-RNN image-to-poem and seq2seq style-transfer models.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1636,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Background describes related image-to-poem/style-transfer work; it does not explicitly establish the models selected in this study; 0."
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1637,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1638,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1639,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1640,
+      "label": 1,
+      "reason": "Specifies the LSTM encoder-decoder and attention used for style transfer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0178",
+      "record_number": 1641,
+      "label": 1,
+      "reason": "Describes seq2seq style-transfer models with retrofitted shared word embeddings.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1642,
+      "label": 1,
+      "reason": "Explicitly lists CNN, LSTM and BERT neural baselines.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1643,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1644,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1645,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1646,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1647,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1648,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1649,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1650,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1651,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0179",
+      "record_number": 1652,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0180",
+      "record_number": 1653,
+      "label": 1,
+      "reason": "Ablations identify word embeddings, style and morality as strongest feature groups.",
+      "review_note": null
+    },
+    {
+      "question_number": "0180",
+      "record_number": 1654,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0180",
+      "record_number": 1655,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0180",
+      "record_number": 1656,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0180",
+      "record_number": 1657,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0180",
+      "record_number": 1658,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    }
+  ]
+}

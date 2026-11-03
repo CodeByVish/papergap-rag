@@ -1385,3 +1385,41 @@ python -m scripts.build_annotation_pool freeze
 | `source_split_counts` | `object<string,integer>` | Draw counts by official split. |
 | `source_split_counts.<split>` | `integer` | Number of selected queries from this split. |
 | `usage_boundary` | `string` | No tuning or development based on held-out supervision/results. |
+
+
+## P2 AI annotation review: batches 08–10
+
+`data/processed/p2_ai_annotation_review_08_10/` contains 563 Codex (AI) judgments for reviewing separately completed human work. It does not occupy either human A/B slot and is excluded from manual-label counts, human agreement, gold and final evaluation labels. Do not tune on these held-out judgments. No other annotator labels or gold answers were consulted; retrieval-source names were visible. Judgments came from an interactive Codex session, so there is no deterministic regeneration command. Fetch the exact committed artifact with the commands below; it can also be obtained from P3 after merge.
+
+```bash
+git fetch origin p2/ai-annotation-review-08-10
+git restore --source=origin/p2/ai-annotation-review-08-10 -- data/processed/p2_ai_annotation_review_08_10
+```
+
+Run in a clean working copy. Each batch includes Markdown labels, `ai-review.md` ambiguity notes and `ai-review.json` record-level reasons. `manifest.json` records source commit and hashes. Retrieve original blank templates using its `source_commit` and `template_path`. The table covers manifest, review JSON and Markdown fields; review JSON shares the meanings of `annotation_origin`, `purpose` and `human_annotation` with the manifest.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | Proposed artifact schema version. |
+| `annotation_origin` | `string` | Codex (AI), the label producer. |
+| `human_annotation` | `boolean` | Always false; not an independent human annotation. |
+| `purpose` | `string` | Review-only usage and exclusion from gold/human agreement. |
+| `source_commit` | `string` | Git commit identifying the exact source templates. |
+| `labeling_date` | `string` | Date of AI judgments, YYYY-MM-DD. |
+| `label_count` | `integer` | Total judgments (563). |
+| `files` | `array<object>` | Per-batch inventory. |
+| `files[].batch / files[].file` | `string` | Batch number / Markdown filename. |
+| `files[].label_count` | `integer` | 191, 177 or 195 judgments. |
+| `files[].sha256` | `string` | SHA-256 of the labeled Markdown bytes. |
+| `files[].template_path / files[].template_sha256` | `string` | Original template path / byte hash at source_commit. |
+| `date / scope` | `string` | Review JSON: judgment date / batch filename. |
+| `input_sha256 / output_sha256` | `string` | Review JSON: original local input / AI-labeled output hashes. Input includes original working-copy owner name. |
+| `other_annotator_labels_consulted / gold_answers_consulted` | `boolean` | False: neither was consulted during labeling. |
+| `rule` | `string` | Visible-text relevance policy; partial evidence counts. |
+| `records` | `array<object>` | Review JSON: one judgment per displayed relevance record. |
+| `records[].question_number` | `string` | Export display number, not stable question ID. |
+| `records[].record_number` | `integer` | Export relevance number, not stable passage ID. |
+| `records[].label` | `integer` | 0 or 1: no useful evidence / useful answer evidence. |
+| `records[].reason` | `string` | AI rationale; not an adjudicated explanation. |
+| `records[].review_note` | `string or null` | Specific ambiguity requiring review, if flagged. |
+| `Annotator / Question / Passage / Relevance / Label` | `Markdown fields` | Codex attribution; original numbered question/passages; 0/1 label. All source text and numbering are retained. |
