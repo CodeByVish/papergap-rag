@@ -130,3 +130,56 @@ def test_factory_names_the_missing_corpus_variable(monkeypatch):
     monkeypatch.delenv("PAPERGAP_CORPUS", raising=False)
     with pytest.raises(RuntimeError, match="PAPERGAP_CORPUS"):
         f.factory(object())
+
+
+# --- the critic reads the server's view ----------------------------------
+
+class RecordingChat:
+    def __init__(self):
+        self.prompts = []
+
+    def chat(self, messages):
+        self.prompts.append(messages[-1]["content"])
+        return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
+                           "missing_components": ["reported result"], "reason": "No result."})
+
+
+def test_record_fn_gives_the_critic_the_view_it_was_built_with():
+    from src.agent.critic import ViewedPassage
+
+    chat = RecordingChat()
+    only_first = lambda state: [ViewedPassage(state.retrieved_passages[0].passage.passage_id,
+                                              "section: Method\nonly this one")]
+    make_record_fn(retriever, chat, max_retries=0, critic_view=only_first)("What F1?", "p", 5)
+    assert "[p1] section: Method" in chat.prompts[0] and "[p2]" not in chat.prompts[0]
+
+
+def test_record_fn_defaults_to_the_pool_view():
+    chat = RecordingChat()
+    make_record_fn(retriever, chat, max_retries=0)("What F1?", "p", 5)
+    assert "[p1]" in chat.prompts[0]
+
+
+def test_factory_critic_view_follows_the_servers_prompt_budget(monkeypatch):
+    from scripts import demo_agent_factory as f
+    from src.agent.critic import pool_view
+    from src.agent.nodes import map_evidence, plan_question
+    from src.agent.schemas import AgentState
+    from src.generation.prompts.grounded_qa import PromptConfig
+
+    state = AgentState(question="What accuracy did the model achieve?", paper_id="p",
+                       retrieved_passages=[METHOD, GOLD], retrieval_round=1)
+    state = state.model_copy(update=plan_question(state))
+    state = state.model_copy(update=map_evidence(state))
+
+    class Pipeline:  # P5's GroundedQAPipeline carries its prompt budget on .config.prompt
+        config = type("Config", (), {"prompt": PromptConfig(max_passages=1)})()
+
+    monkeypatch.delenv("DEMO_AGENT_CRITIC_VIEW", raising=False)
+    assert len(f.critic_view_for(Pipeline())(state)) == 1
+    assert len(f.critic_view_for(object())(state)) == 2  # no config: P5's default budget of 8
+    monkeypatch.setenv("DEMO_AGENT_CRITIC_VIEW", "pool")
+    assert f.critic_view_for(Pipeline()) is pool_view
+    monkeypatch.setenv("DEMO_AGENT_CRITIC_VIEW", "bogus")
+    with pytest.raises(RuntimeError, match="DEMO_AGENT_CRITIC_VIEW"):
+        f.critic_view_for(Pipeline())

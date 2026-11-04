@@ -14,7 +14,7 @@ from __future__ import annotations
 import time
 from typing import Any, Callable
 
-from src.agent.critic import CriticClient
+from src.agent.critic import CriticClient, PassageView, pool_view
 from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
 from src.agent.nodes import Retriever, SectionSelector
@@ -30,8 +30,12 @@ def make_record_fn(
     *,
     max_retries: int = 2,
     section_selector: SectionSelector | None = None,
+    critic_view: PassageView = pool_view,
 ) -> RecordFn:
     """Build the server hook around `retriever(query, paper_id, top_k)`.
+
+    `critic_view` is what the critic reads; the factory passes the server's own prompt
+    view so the demo judges evidence the way the scored runs do.
 
     One compiled graph per `top_k`, so a request that asks for a different depth
     does not recompile on every call. A blank question or paper raises
@@ -47,6 +51,7 @@ def make_record_fn(
                 top_k=top_k,
                 critic_client=critic_client,
                 section_selector=section_selector,
+                critic_view=critic_view,
             )
         return graphs[top_k]
 
