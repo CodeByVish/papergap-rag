@@ -31,7 +31,7 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1482
 
-Label: 
+Label: 0
 
 #### Passage 1483
 
@@ -43,7 +43,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1483
 
-Label: 
+Label: 0
 
 #### Passage 1484
 
@@ -55,7 +55,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1484
 
-Label: 
+Label: 1
 
 #### Passage 1485
 
@@ -67,7 +67,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1485
 
-Label: 
+Label: 0
 
 #### Passage 1486
 
