@@ -11,14 +11,17 @@ hold, so nothing here loads a model.
 
 from __future__ import annotations
 
+import logging
 import time
 from typing import Any, Callable
 
-from src.agent.critic import CriticClient
+from src.agent.critic import CriticClient, PassageView, pool_view
 from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
 from src.agent.nodes import Retriever, SectionSelector
 from src.agent.schemas import AgentState
+
+LOGGER = logging.getLogger(__name__)
 
 #: `record_fn(question, paper_id, top_k, request_id=None) -> exported agent record`.
 RecordFn = Callable[..., dict[str, Any]]
@@ -30,8 +33,12 @@ def make_record_fn(
     *,
     max_retries: int = 2,
     section_selector: SectionSelector | None = None,
+    critic_view: PassageView = pool_view,
 ) -> RecordFn:
     """Build the server hook around `retriever(query, paper_id, top_k)`.
+
+    `critic_view` is what the critic reads; the factory passes the server's own prompt
+    view so the demo judges evidence the way the scored runs do.
 
     One compiled graph per `top_k`, so a request that asks for a different depth
     does not recompile on every call. A blank question or paper raises
@@ -47,6 +54,7 @@ def make_record_fn(
                 top_k=top_k,
                 critic_client=critic_client,
                 section_selector=section_selector,
+                critic_view=critic_view,
             )
         return graphs[top_k]
 
@@ -61,6 +69,14 @@ def make_record_fn(
         )
         record = export_record(graph_for(top_k).invoke(state))
         record["elapsed_s"] = time.perf_counter() - started
+        # The HTTP answer record carries no critic_log, so this line is how a live run shows
+        # what the critic read: per round (round, verdict source, passages shown).
+        LOGGER.info(
+            "agent %s: rounds=%d retrieved=%d critic=%s elapsed=%.1fs",
+            record["question_id"], record["retrieval_round"], len(record["retrieved_passages"]),
+            [(e["round"], e["source"], len(e.get("passage_ids", []))) for e in record["critic_log"]],
+            record["elapsed_s"],
+        )
         return record
 
     return record_fn
