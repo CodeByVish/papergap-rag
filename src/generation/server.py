@@ -382,7 +382,7 @@ def create_app(
     callbacks receive None. The default preserves the paper-required contract.
     """
     if retriever is not None and record_fn is not None:
-        raise ValueError("pass either retriever or record_fn, not both")
+        raise ValueError("retriever and record_fn are alternatives")
     fastapi = _require_fastapi()
     from fastapi import Body, Header, HTTPException
 

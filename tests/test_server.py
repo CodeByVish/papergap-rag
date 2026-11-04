@@ -257,7 +257,7 @@ def test_record_fn_returning_an_answer_is_500_not_a_second_generation():
 
 
 def test_create_app_rejects_two_free_form_hooks():
-    with pytest.raises(ValueError, match="either retriever or record_fn"):
+    with pytest.raises(ValueError, match="retriever and record_fn"):
         create_app(
             pipeline(),
             retriever=lambda q, p, k: [hit()],
