@@ -183,3 +183,22 @@ def test_factory_critic_view_follows_the_servers_prompt_budget(monkeypatch):
     monkeypatch.setenv("DEMO_AGENT_CRITIC_VIEW", "bogus")
     with pytest.raises(RuntimeError, match="DEMO_AGENT_CRITIC_VIEW"):
         f.critic_view_for(Pipeline())
+
+
+def test_each_answer_logs_what_the_critic_read(caplog):
+    caplog.set_level("INFO", logger="src.agent.demo")
+    make_record_fn(retriever, OracleChat())("What accuracy did the model achieve?", "p", 5, "req-9")
+    line = next(r.getMessage() for r in caplog.records if r.name == "src.agent.demo")
+    assert line.startswith("agent req-9: rounds=2 retrieved=2")
+    assert "(1, 'llm', 1)" in line and "(2, 'llm', 2)" in line  # passages shown per round
+
+
+def test_the_log_line_shows_the_generators_cut_on_a_wide_first_round(caplog):
+    from src.agent.generator_view import make_generator_view
+
+    many = lambda query, paper_id, top_k: [hit(f"w{i}", text=f"wide passage number {i}") for i in range(12)]
+    caplog.set_level("INFO", logger="src.agent.demo")
+    chat = RecordingChat()
+    make_record_fn(many, chat, max_retries=0, critic_view=make_generator_view())("What F1?", "p", 12, "r")
+    line = next(r.getMessage() for r in caplog.records if r.name == "src.agent.demo")
+    assert "retrieved=12" in line and "(1, 'llm', 8)" in line  # 12 retrieved, 8 shown

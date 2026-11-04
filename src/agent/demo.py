@@ -11,6 +11,7 @@ hold, so nothing here loads a model.
 
 from __future__ import annotations
 
+import logging
 import time
 from typing import Any, Callable
 
@@ -19,6 +20,8 @@ from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
 from src.agent.nodes import Retriever, SectionSelector
 from src.agent.schemas import AgentState
+
+LOGGER = logging.getLogger(__name__)
 
 #: `record_fn(question, paper_id, top_k, request_id=None) -> exported agent record`.
 RecordFn = Callable[..., dict[str, Any]]
@@ -66,6 +69,14 @@ def make_record_fn(
         )
         record = export_record(graph_for(top_k).invoke(state))
         record["elapsed_s"] = time.perf_counter() - started
+        # The HTTP answer record carries no critic_log, so this line is how a live run shows
+        # what the critic read: per round (round, verdict source, passages shown).
+        LOGGER.info(
+            "agent %s: rounds=%d retrieved=%d critic=%s elapsed=%.1fs",
+            record["question_id"], record["retrieval_round"], len(record["retrieved_passages"]),
+            [(e["round"], e["source"], len(e.get("passage_ids", []))) for e in record["critic_log"]],
+            record["elapsed_s"],
+        )
         return record
 
     return record_fn
