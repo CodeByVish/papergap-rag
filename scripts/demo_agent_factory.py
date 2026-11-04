@@ -21,6 +21,9 @@ Configuration (environment variables):
     DEMO_AGENT_DEVICE        device for retrieval models           (default cpu)
     DEMO_AGENT_CANDIDATE_K   candidates per retriever              (default 20)
     DEMO_AGENT_MAX_RETRIES   retry budget                          (default 2)
+    DEMO_AGENT_TOP_K         passages retrieved per round          (default 5; the server's
+                             --top-k does not reach the hook, which is called
+                             as record_fn(question, paper_id))
     DEMO_AGENT_CRITIC_VIEW   generator = the critic reads exactly what the server's
                              prompt renders (default); pool = every retrieved passage
 
@@ -100,6 +103,7 @@ def factory(pipeline: Any) -> RecordFn:
         retriever,
         GeneratorChatClient(pipeline.generator),
         max_retries=int(os.environ.get("DEMO_AGENT_MAX_RETRIES", "2")),
+        default_top_k=int(os.environ.get("DEMO_AGENT_TOP_K", "5")),
         section_selector=make_section_selector(passages) if args.scoped else None,
         critic_view=critic_view_for(pipeline),
     )
