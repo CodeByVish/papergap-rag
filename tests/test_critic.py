@@ -326,7 +326,7 @@ def test_graph_retries_on_llm_gap_then_stops_when_sufficient():
     assert result["sufficient"] is True and result["retrieval_round"] == 2
     assert [e["source"] for e in result["critic_log"]] == ["llm", "llm"]
     assert result["retrieval_log"][1]["triggered_by"] == "MISSING_RESULT"
-    assert "results" in calls[1].lower()
+    assert "reported" in calls[1].lower()  # the critic's own term, not the fixed gap words
 
 
 def test_graph_stops_immediately_on_insufficient_information():

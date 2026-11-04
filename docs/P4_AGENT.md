@@ -20,7 +20,7 @@ paper cannot answer (`INSUFFICIENT_INFORMATION`). Every round is logged.
 | Retrieve | `nodes.py` | Calls the injected `retrieve(query, paper_id, top_k)`; merges and dedupes passages by opaque `passage_id`. With a `section_selector` it scopes the search and, if that finds nothing, repeats the round over the whole paper. |
 | Evidence mapper | `nodes.py` | Maps each requirement to passages by section hint or keywords. **Weak and advisory**, see below. |
 | Critic | `critic.py` | LLM verdict `{sufficient, gap_label, supporting_passage_ids, missing_components, reason}`, parsed and validated deterministically (a "sufficient" verdict must cite retrieved passages), with a rule-based fallback. It sees each passage in full (up to 3,000 characters) and judges sufficiency as "states a concrete fact the answer needs; partial counts". A retry that brings no new passage reuses the previous verdict (`source` "reused") instead of asking the model again. |
-| Rewriter | `rewriter.py` | One action per gap label; adds the paper's own recurring terms and content words from the LLM critic's missing components (its commentary on the passages is dropped); never repeats an earlier query. |
+| Rewriter | `rewriter.py` | One action per gap label. Adds the critic's own content terms for the missing fact (its commentary on the passages is dropped) or, if it gave none, the gap's fixed words, never both; the paper's own recurring terms are added only to avoid repeating an earlier query. Capped at 40 words. |
 | Section selector | `sections.py` | Optional. Picks this paper's own section whose name matches the gap's hints; never repeats a section. |
 
 Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
@@ -116,6 +116,12 @@ The mapping's gold IDs exist only in the **365/40-word corpus** that P3 selected
 agent searches must be built on the same 365/40 corpus. The test split is refused.
 
 ## Known limits
+
+- **The rewrite is not what limits recall.** Job 50701 was replayed offline (the 365/40 corpus rebuilt,
+  the cluster's round-1 and round-2 retrievals reproduced exactly, the critic's recorded verdicts
+  injected). Five rewrite strategies, including re-asking the plain question, land between 0.77 and
+  0.82 recall at about 6 passages; the original query with top-10 and no retry reaches 0.974. The gold
+  passages sit at ranks 6-10 of the plain query.
 
 - The rule-based mapper cannot tell evidence from lookalikes: on QASPER train a plan is
   satisfied by gold evidence 55.6% of the time and by the five closest non-evidence

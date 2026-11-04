@@ -25,7 +25,7 @@ ITEMS = [
 
 
 def retriever(query, paper_id, top_k):
-    return [METHOD, GOLD] if "results" in query.lower() else [METHOD]
+    return [METHOD, GOLD] if "result" in query.lower() else [METHOD]
 
 
 def answer_fn(record):

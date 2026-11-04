@@ -32,8 +32,8 @@ EXTRA = passage("extra", "Setup", "A held-out dataset.")
 
 
 def retriever(query, paper_id, top_k):
-    """Finds the gold passage only after the query is rewritten towards results."""
-    return [METHOD, GOLD] if "results" in query.lower() else [METHOD]
+    """Finds the gold passage only after the query is rewritten towards results (the critic's "reported result")."""
+    return [METHOD, GOLD] if "result" in query.lower() else [METHOD]
 
 
 class OracleCritic:
