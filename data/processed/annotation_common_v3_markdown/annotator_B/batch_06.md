@@ -34,7 +34,7 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 914
 
-Label: 0
+Label: 1
 
 #### Passage 915
 
@@ -58,7 +58,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 916
 
-Label: 0
+Label: 1
 
 #### Passage 917
 
@@ -86,7 +86,7 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 919
 
-Label: 0
+Label: 1
 
 #### Passage 920
 
@@ -96,7 +96,7 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 920
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -114,7 +114,7 @@ Retrieved by: BM25
 
 #### Relevance 918
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -144,7 +144,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 921
 
-Label: 0
+Label: 1
 
 ## Question 0102
 
@@ -192,7 +192,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 924
 
-Label: 0
+Label: 1
 
 #### Passage 925
 
@@ -202,7 +202,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 925
 
-Label: 0
+Label: 1
 
 #### Passage 926
 
@@ -224,7 +224,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 927
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -240,7 +240,7 @@ Retrieved by: BM25
 
 #### Relevance 923
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -276,7 +276,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 929
 
-Label: 0
+Label: 1
 
 ## Question 0103
 
@@ -330,7 +330,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 933
 
-Label: 0
+Label: 1
 
 #### Passage 934
 
@@ -346,7 +346,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 934
 
-Label: 0
+Label: 1
 
 #### Passage 935
 
@@ -362,7 +362,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 935
 
-Label: 0
+Label: 1
 
 #### Passage 936
 
@@ -372,7 +372,7 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 936
 
-Label: 0
+Label: 1
 
 #### Passage 937
 
@@ -500,7 +500,7 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 944
 
-Label: 0
+Label: 1
 
 #### Passage 945
 
@@ -516,7 +516,7 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 945
 
-Label: 0
+Label: 1
 
 #### Passage 947
 
@@ -704,7 +704,7 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 954
 
-Label: 0
+Label: 1
 
 #### Passage 955
 
@@ -720,7 +720,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 955
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -824,7 +824,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 959
 
-Label: 0
+Label: 1
 
 ## Question 0106
 
@@ -854,7 +854,7 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 963
 
-Label: 0
+Label: 1
 
 #### Passage 964
 
@@ -868,7 +868,7 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 964
 
-Label: 0
+Label: 1
 
 #### Passage 965
 
@@ -924,7 +924,7 @@ Retrieved by: BM25
 
 #### Relevance 961
 
-Label: 0
+Label: 1
 
 #### Passage 962
 
@@ -964,7 +964,7 @@ Retrieved by: Dense
 
 #### Relevance 968
 
-Label: 0
+Label: 1
 
 #### Passage 969
 
@@ -978,7 +978,7 @@ Retrieved by: Dense
 
 #### Relevance 969
 
-Label: 0
+Label: 1
 
 ### Hybrid RRF
 
@@ -1014,7 +1014,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 971
 
-Label: 0
+Label: 1
 
 #### Passage 972
 
@@ -1026,7 +1026,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 972
 
-Label: 0
+Label: 1
 
 ## Question 0107
 
@@ -1140,7 +1140,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 978
 
-Label: 0
+Label: 1
 
 #### Passage 979
 
@@ -1152,7 +1152,7 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 979
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -1204,7 +1204,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 981
 
-Label: 0
+Label: 1
 
 #### Passage 983
 
@@ -1216,7 +1216,7 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 983
 
-Label: 0
+Label: 1
 
 #### Passage 985
 
@@ -1232,7 +1232,7 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 985
 
-Label: 0
+Label: 1
 
 #### Passage 986
 
@@ -1278,7 +1278,7 @@ Retrieved by: BM25
 
 #### Relevance 982
 
-Label: 0
+Label: 1
 
 #### Passage 984
 
@@ -1288,7 +1288,7 @@ Retrieved by: BM25
 
 #### Relevance 984
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -1308,7 +1308,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 988
 
-Label: 0
+Label: 1
 
 ## Question 0109
 
@@ -1370,7 +1370,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 992
 
-Label: 0
+Label: 1
 
 #### Passage 993
 
@@ -1380,7 +1380,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 993
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -1412,7 +1412,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 994
 
-Label: 0
+Label: 1
 
 #### Passage 995
 
@@ -1442,7 +1442,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 995
 
-Label: 0
+Label: 1
 
 ## Question 0110
 
@@ -1500,7 +1500,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 997
 
-Label: 0
+Label: 1
 
 #### Passage 999
 
@@ -1520,7 +1520,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 999
 
-Label: 0
+Label: 1
 
 #### Passage 1000
 
@@ -1584,7 +1584,7 @@ Retrieved by: BM25
 
 #### Relevance 998
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -1604,7 +1604,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1003
 
-Label: 0
+Label: 1
 
 #### Passage 1004
 
@@ -1614,7 +1614,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1004
 
-Label: 0
+Label: 1
 
 ## Question 0111
 
@@ -1726,7 +1726,7 @@ Retrieved by: Dense
 
 #### Relevance 1010
 
-Label: 0
+Label: 1
 
 ### Hybrid RRF
 
@@ -1788,7 +1788,7 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1015
 
-Label: 0
+Label: 1
 
 #### Passage 1016
 
@@ -1822,7 +1822,7 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1019
 
-Label: 0
+Label: 1
 
 #### Passage 1020
 
@@ -1834,7 +1834,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1020
 
-Label: 0
+Label: 1
 
 #### Passage 1022
 
@@ -1844,7 +1844,7 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1022
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -1894,7 +1894,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1023
 
-Label: 0
+Label: 1
 
 #### Passage 1024
 
@@ -1904,7 +1904,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1024
 
-Label: 0
+Label: 1
 
 ## Question 0113
 
@@ -2068,7 +2068,7 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1033
 
-Label: 0
+Label: 1
 
 #### Passage 1035
 
@@ -2146,7 +2146,7 @@ Retrieved by: BM25
 
 #### Relevance 1034
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -2188,7 +2188,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1042
 
-Label: 0
+Label: 1
 
 ## Question 0115
 
@@ -2210,7 +2210,7 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1046
 
-Label: 0
+Label: 1
 
 #### Passage 1047
 
@@ -2224,7 +2224,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1047
 
-Label: 0
+Label: 1
 
 #### Passage 1048
 
@@ -2254,7 +2254,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1049
 
-Label: 0
+Label: 1
 
 #### Passage 1050
 
@@ -2270,7 +2270,7 @@ Retrieved by: Dense, Hybrid RRF
 
 #### Relevance 1050
 
-Label: 0
+Label: 1
 
 #### Passage 1051
 
@@ -2280,7 +2280,7 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1051
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -2334,7 +2334,7 @@ Retrieved by: BM25
 
 #### Relevance 1045
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -2356,7 +2356,7 @@ Retrieved by: Hybrid RRF
 
 #### Relevance 1052
 
-Label: 0
+Label: 1
 
 ### Hybrid RRF followed by BGE reranking
 
@@ -2368,7 +2368,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1053
 
-Label: 0
+Label: 1
 
 #### Passage 1054
 
@@ -2386,7 +2386,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1054
 
-Label: 0
+Label: 1
 
 ## Question 0116
 
@@ -2410,7 +2410,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1056
 
-Label: 0
+Label: 1
 
 #### Passage 1058
 
@@ -2434,7 +2434,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1060
 
-Label: 0
+Label: 1
 
 #### Passage 1061
 
@@ -2446,7 +2446,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1061
 
-Label: 0
+Label: 1
 
 #### Passage 1062
 
@@ -2460,7 +2460,7 @@ Retrieved by: Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1062
 
-Label: 0
+Label: 1
 
 ### BM25
 
@@ -2514,7 +2514,7 @@ Retrieved by: BM25
 
 #### Relevance 1059
 
-Label: 0
+Label: 1
 
 ### Dense
 
@@ -2598,7 +2598,7 @@ Retrieved by: BM25, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1066
 
-Label: 0
+Label: 1
 
 #### Passage 1068
 
@@ -2664,7 +2664,7 @@ Retrieved by: Dense
 
 #### Relevance 1069
 
-Label: 0
+Label: 1
 
 ### Hybrid RRF
 
@@ -2790,7 +2790,7 @@ Retrieved by: Dense
 
 #### Relevance 1077
 
-Label: 0
+Label: 1
 
 ### Hybrid RRF
 
@@ -2806,7 +2806,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1078
 
-Label: 0
+Label: 1
 
 #### Passage 1079
 
@@ -2828,7 +2828,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1080
 
-Label: 0
+Label: 1
 
 ## Question 0119
 
@@ -2868,7 +2868,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1082
 
-Label: 0
+Label: 1
 
 #### Passage 1083
 
@@ -2888,7 +2888,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1083
 
-Label: 0
+Label: 1
 
 #### Passage 1084
 
@@ -2904,7 +2904,7 @@ Retrieved by: BM25, Dense, Hybrid RRF
 
 #### Relevance 1084
 
-Label: 0
+Label: 1
 
 #### Passage 1085
 
@@ -2922,7 +2922,7 @@ Retrieved by: BM25, Hybrid RRF
 
 #### Relevance 1085
 
-Label: 0
+Label: 1
 
 #### Passage 1086
 
@@ -2952,7 +2952,7 @@ Retrieved by: Dense
 
 #### Relevance 1087
 
-Label: 0
+Label: 1
 
 ### Hybrid RRF
 
@@ -3002,7 +3002,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1090
 
-Label: 0
+Label: 1
 
 #### Passage 1091
 
@@ -3016,7 +3016,7 @@ Retrieved by: Hybrid RRF followed by BGE reranking
 
 #### Relevance 1091
 
-Label: 0
+Label: 1
 
 ## Question 0120
 
@@ -3056,7 +3056,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1093
 
-Label: 0
+Label: 1
 
 #### Passage 1094
 
@@ -3086,7 +3086,7 @@ Retrieved by: BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1096
 
-Label: 0
+Label: 1
 
 #### Passage 1097
 
@@ -3116,7 +3116,7 @@ Retrieved by: Dense, Hybrid RRF followed by BGE reranking
 
 #### Relevance 1099
 
-Label: 0
+Label: 1
 
 ### BM25
 
