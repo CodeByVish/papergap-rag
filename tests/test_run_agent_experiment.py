@@ -270,3 +270,15 @@ def test_parse_args_defaults_and_choices():
         ["static", "adaptive"], "rules", "none", 2)
     with pytest.raises(SystemExit):
         runner.parse_args(["--passages", "p", "--dense-index-dir", "d", "--out-dir", "o"])  # no items
+
+
+def test_critic_view_defaults_to_the_generators_and_pool_is_opt_in():
+    assert args().critic_view == "generator"
+    assert runner.build_critic_view(args()) is None  # rule-based critic: no view needed
+    assert runner.build_critic_view(args(critic="generator", critic_view="pool")) is None
+    view = runner.build_critic_view(args(critic="generator"))
+    assert callable(view)  # P5's own view, built from its frozen PromptConfig
+
+
+def test_manifest_budget_records_the_generators_rendering_limits():
+    assert runner.prompt_budget() == {"max_passages": 8, "max_chars_per_passage": 1200}

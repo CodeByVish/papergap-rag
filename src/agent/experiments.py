@@ -23,7 +23,7 @@ from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from src.agent.critic import CriticClient
+from src.agent.critic import CriticClient, PassageView, pool_view
 from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
 from src.agent.nodes import DEFAULT_TOP_K, MAX_RETRIES, Retriever, SectionSelector
@@ -57,6 +57,7 @@ def run_system(
     answer_fn: AnswerFn | None = None,
     on_record: Callable[[dict[str, Any]], None] | None = None,
     section_selector: SectionSelector | None = None,
+    critic_view: PassageView = pool_view,
 ) -> list[dict[str, Any]]:
     """Run every item and return one exported record each.
 
@@ -67,6 +68,7 @@ def run_system(
     `on_record` is called with each finished record (including error records) so a
     long job can write results as it goes and survive being killed.
     `section_selector` scopes the adaptive arm's retries (src/agent/sections.py).
+    `critic_view` is what the critic is shown (src/agent/generator_view.py).
     """
     graph = build_agent_graph(
         retriever,
@@ -74,6 +76,7 @@ def run_system(
         top_k=top_k,
         critic_client=critic_client if adaptive else None,
         section_selector=section_selector if adaptive else None,
+        critic_view=critic_view,
     )
     records = []
     for item in items:

@@ -15,6 +15,8 @@ safety net, not a sufficiency judge.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from src.agent.nodes import gap_classifier
@@ -39,6 +41,29 @@ class ChatClient(Protocol):
     """
 
     def chat(self, messages: list[dict[str, str]]) -> str: ...
+
+
+@dataclass(frozen=True)
+class ViewedPassage:
+    """One passage as the critic reads it: its id and exactly the text shown for it."""
+
+    passage_id: str
+    body: str
+
+
+PassageView = Callable[[AgentState], list[ViewedPassage]]
+"""Which passages, and how much of each, the critic is shown for a state."""
+
+
+def pool_view(state: AgentState) -> list[ViewedPassage]:
+    """Every retrieved passage in retrieval order, each cut at MAX_PASSAGE_CHARS."""
+    return [
+        ViewedPassage(
+            hit.passage.passage_id,
+            f"section: {hit.passage.section}\n{hit.passage.text[:MAX_PASSAGE_CHARS]}",
+        )
+        for hit in state.retrieved_passages
+    ]
 
 
 class CriticOutputError(ValueError):
@@ -93,15 +118,19 @@ _LABEL_HELP = {
 }
 
 
-def build_critic_messages(state: AgentState) -> list[dict[str, str]]:
-    """Chat messages for the critic: schema and labels in system, evidence in user."""
+def build_critic_messages(
+    state: AgentState, view: PassageView = pool_view
+) -> list[dict[str, str]]:
+    """Chat messages for the critic: schema and labels in system, evidence in user.
+
+    `view` decides which passages are shown and how much of each; the default shows
+    the whole pool, a runner that answers with P5 passes the generator's own view.
+    """
     requirements = "\n".join(
         f"- {r.name}: {r.description}" for r in state.evidence_requirements
     ) or "- (none specified)"
     passages = "\n\n".join(
-        f"[{hit.passage.passage_id}] section: {hit.passage.section}\n"
-        f"{hit.passage.text[:MAX_PASSAGE_CHARS]}"
-        for hit in state.retrieved_passages
+        f"[{shown.passage_id}] {shown.body}" for shown in view(state)
     ) or "(no passages were retrieved)"
     return [
         {
@@ -123,9 +152,11 @@ def build_critic_messages(state: AgentState) -> list[dict[str, str]]:
     ]
 
 
-def build_critic_prompt(state: AgentState) -> str:
+def build_critic_prompt(state: AgentState, view: PassageView = pool_view) -> str:
     """The same messages as one string, for clients that only take a prompt."""
-    return "\n\n".join(message["content"] for message in build_critic_messages(state))
+    return "\n\n".join(
+        message["content"] for message in build_critic_messages(state, view)
+    )
 
 
 def parse_critic_output(raw: str) -> CriticOutput:
@@ -154,10 +185,20 @@ def parse_critic_output(raw: str) -> CriticOutput:
     raise CriticOutputError(last_error)
 
 
-def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
-    """Reject replies that are contradictory or ignore what was retrieved."""
+def validate_critic_output(
+    output: CriticOutput, state: AgentState, passage_ids: Sequence[str] | None = None
+) -> None:
+    """Reject replies that are contradictory or ignore what was shown.
+
+    `passage_ids` are the passages the critic was shown (default: everything retrieved).
+    """
     problems = []
-    known = {hit.passage.passage_id for hit in state.retrieved_passages}
+    shown = (
+        [hit.passage.passage_id for hit in state.retrieved_passages]
+        if passage_ids is None
+        else list(passage_ids)
+    )
+    known = set(shown)
     unknown = [i for i in output.supporting_passage_ids if i not in known]
     if unknown:
         problems.append(f"supporting_passage_ids not among the retrieved passages: {unknown}")
@@ -170,7 +211,7 @@ def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
             problems.append("sufficient=true requires gap_label NONE")
         if output.missing_components:
             problems.append("sufficient=true requires empty missing_components")
-        if not state.retrieved_passages:
+        if not shown:
             problems.append("sufficient=true but no passages were retrieved")
         elif not output.supporting_passage_ids:
             problems.append("sufficient=true requires supporting_passage_ids")
@@ -206,24 +247,30 @@ MAX_RAW_REPLY_CHARS = 2000
 THINKING_MARKERS = ("<think>", "</think>")
 
 
-def _ask(client: CriticClient, state: AgentState) -> str:
+def _ask(client: CriticClient, state: AgentState, view: PassageView) -> str:
     if isinstance(client, ChatClient):
-        return client.chat(build_critic_messages(state))
-    return client.complete(build_critic_prompt(state))
+        return client.chat(build_critic_messages(state, view))
+    return client.complete(build_critic_prompt(state, view))
 
 
-def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEFAULT_ATTEMPTS):
+def make_critic_node(
+    client: CriticClient | None = None,
+    max_attempts: int = DEFAULT_ATTEMPTS,
+    view: PassageView = pool_view,
+):
     """Build the critic node. Each round's outcome is appended to `critic_log`.
 
     The log keeps every raw model reply (cut to MAX_RAW_REPLY_CHARS) so the first
-    real traces can be inspected to validate the prompt. A round that sees exactly the
-    passages of the previous model verdict reuses that verdict (`source` "reused").
+    real traces can be inspected to validate the prompt. A round that shows the model
+    exactly the passages of its previous verdict reuses that verdict (`source`
+    "reused"). `view` is what the model is shown; cited ids must come from it.
     """
     if max_attempts < 1:
         raise ValueError("max_attempts must be at least 1")
 
     def critic_node(state: AgentState) -> dict:
-        passage_ids = [hit.passage.passage_id for hit in state.retrieved_passages]
+        viewed = view(state)
+        passage_ids = [shown.passage_id for shown in viewed]
         previous = state.critic_log[-1] if state.critic_log else None
         if (
             previous is not None
@@ -246,14 +293,14 @@ def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEF
         raw_replies: list[str] = []
         output: CriticOutput | None = None
         source = "rules"
-        if client is not None and state.retrieved_passages:
+        if client is not None and viewed:
             source = "fallback"
             for _ in range(max_attempts):
                 try:
-                    raw = _ask(client, state)
+                    raw = _ask(client, state, view)
                     raw_replies.append(raw[:MAX_RAW_REPLY_CHARS])
                     output = parse_critic_output(raw)
-                    validate_critic_output(output, state)
+                    validate_critic_output(output, state, passage_ids)
                     source = "llm"
                     break
                 except Exception as error:  # noqa: BLE001 - any client/reply failure retries

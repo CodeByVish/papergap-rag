@@ -12,7 +12,13 @@ from __future__ import annotations
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from src.agent.critic import DEFAULT_ATTEMPTS, CriticClient, make_critic_node
+from src.agent.critic import (
+    DEFAULT_ATTEMPTS,
+    CriticClient,
+    PassageView,
+    make_critic_node,
+    pool_view,
+)
 from src.agent.nodes import (
     DEFAULT_TOP_K,
     MAX_RETRIES,
@@ -34,11 +40,15 @@ def build_agent_graph(
     critic_client: CriticClient | None = None,
     critic_attempts: int = DEFAULT_ATTEMPTS,
     section_selector: SectionSelector | None = None,
+    critic_view: PassageView = pool_view,
 ) -> CompiledStateGraph:
     """Compile the agent around `retriever(query, paper_id, top_k)`.
 
     With `critic_client` the critic asks the LLM and falls back to rules on a bad
     reply; without one it uses the rule-based check only.
+
+    `critic_view` chooses which passages the critic is shown; pass the generator's own
+    view so a "sufficient" verdict is about what the answer step will read.
 
     `max_retries` counts retries after the initial retrieval, so at most
     `max_retries + 1` retrieval rounds run.
@@ -54,7 +64,7 @@ def build_agent_graph(
     graph.add_node("plan_question", plan_question)
     graph.add_node("retrieve", make_retrieve_node(retriever, top_k, section_selector))
     graph.add_node("map_evidence", map_evidence)
-    graph.add_node("critic", make_critic_node(critic_client, critic_attempts))
+    graph.add_node("critic", make_critic_node(critic_client, critic_attempts, critic_view))
     graph.add_node("rewrite_query", rewrite_query)
 
     graph.add_edge(START, "plan_question")

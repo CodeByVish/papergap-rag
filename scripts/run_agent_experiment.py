@@ -159,6 +159,7 @@ def run_arm(
     max_retries: int = 2,
     top_k: int = 5,
     section_selector: Callable[..., Any] | None = None,
+    critic_view: Callable[..., Any] | None = None,
     resume: bool = False,
     log: Callable[[str], None] = print,
 ) -> list[dict[str, Any]]:
@@ -190,6 +191,7 @@ def run_arm(
             todo, retriever, adaptive=adaptive, critic_client=critic_client,
             max_retries=max_retries, top_k=top_k, answer_fn=answer_fn, on_record=write,
             section_selector=section_selector,
+            **({} if critic_view is None else {"critic_view": critic_view}),
         ) if todo else []
     by_id = {r["question_id"]: r for r in [*kept, *fresh]}
     return [by_id[item.question_id] for item in items if item.question_id in by_id]
@@ -272,6 +274,26 @@ def build_retriever(args: argparse.Namespace, passages: list[Any]):
     return HybridRetriever(sparse, dense, scorer=scorer, candidate_k=args.candidate_k).retrieve
 
 
+def build_critic_view(args: argparse.Namespace):
+    """The critic's passage view; None keeps the default pool view."""
+    if args.critic != "generator" or args.critic_view == "pool":
+        return None
+    from src.agent.generator_view import make_generator_view
+
+    return make_generator_view()
+
+
+def prompt_budget() -> dict[str, Any] | None:
+    """The generator's rendering limits, which the manifest must record with every run."""
+    try:
+        from src.generation.pipeline import PipelineConfig
+    except ImportError:
+        return None
+    prompt = PipelineConfig().prompt
+    return {"max_passages": prompt.max_passages,
+            "max_chars_per_passage": prompt.max_chars_per_passage}
+
+
 def prompt_version() -> str:
     from src.generation import PROMPT_VERSION
 
@@ -320,6 +342,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
                    help=f"{WIDE_ARM}: static with --wide-k passages, the budget-matched control")
     p.add_argument("--critic", choices=["rules", "generator"], default="rules")
     p.add_argument("--answers", choices=["none", "p5"], default="none")
+    p.add_argument("--critic-view", choices=["generator", "pool"], default="generator",
+                   help="what the LLM critic reads: generator = exactly the passages and text\n"
+                        "P5's prompt renders (default); pool = every retrieved passage, 3,000 chars")
     p.add_argument("--generator", default="vllm", help="P5 backend: vllm, transformers, mock")
     p.add_argument("--model-id", help="model path or hub id for the generator")
     p.add_argument("--max-new-tokens", type=int, default=FROZEN_MAX_NEW_TOKENS,
@@ -364,6 +389,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     # (--device cuda) would make it fail. The default retrieval device is the CPU.
     generator, critic, answer_fn = build_generation(args)
     retriever = build_retriever(args, passages)
+    critic_view = build_critic_view(args)
     retriever(items[0].question, items[0].paper_id, args.top_k)  # warm up before timing
     selector = None
     if args.scoped:
@@ -377,7 +403,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             arm, items, retriever, args.out_dir, adaptive=arm == "adaptive",
             critic_client=critic, answer_fn=answer_fn, max_retries=args.max_retries,
             top_k=wide_k if arm == WIDE_ARM else args.top_k, section_selector=selector,
-            resume=args.resume)
+            critic_view=critic_view, resume=args.resume)
 
     summary = summarise(arm_records, items)
     manifest = {
@@ -390,6 +416,8 @@ def main(argv: Sequence[str] | None = None) -> None:
                           if critic is not None else None),
         "generator": generator.info() if generator is not None and hasattr(generator, "info") else None,
         "prompt_version": prompt_version() if answer_fn is not None else None,
+        "prompt_budget": prompt_budget() if generator is not None else None,
+        "critic_view": args.critic_view if critic is not None else None,
         "environment": environment(),
     }
     write_outputs(args.out_dir, summary, manifest)
