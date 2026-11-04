@@ -37,9 +37,9 @@ Environment for the factory (full list in the docstring of `scripts/demo_agent_f
 `PAPERGAP_BM25_INDEX` is not read: the BM25 term index is rebuilt in memory from the corpus file, so only the corpus and
 the dense index need to be uploaded for this hook.
 
-Update 1 Nov 2026, after the reply of 31 Oct: the hook is called as `record_fn(question, paper_id)`; the extra
-`top_k` and `request_id` arguments are optional. The returned record has no `"answer"` key, so the server's
-"record already contains an answer" check will not fire. It carries one extra key, `elapsed_s`, which `build_request` ignores.
+Update 4 Nov 2026: the server now passes `record_fn(question, paper_id, top_k, request_id)`, so the agent retrieves at
+the same depth `/health` advertises. The returned record has no `"answer"` key, so the server's "record already
+contains an answer" check will not fire. It carries one extra key, `elapsed_s`, which `build_request` ignores.
 
 Retrieval models stay on the CPU by default because vLLM checks free GPU memory when it loads.
 

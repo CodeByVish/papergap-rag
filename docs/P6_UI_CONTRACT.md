@@ -95,21 +95,25 @@ Response (trimmed; the full bodies are in the fixture):
 }
 ```
 
-The original service attaches `agent` for exported `AgentState` inputs. The
-prepared local adaptive runtime also supplies fresh retrieval/critic logs on free
-questions. The UI accepts either case and does not require agent metadata.
+`agent` is present when the input was an exported `AgentState`, and also on a
+free-form question served by an agent hook — either the CLI's `--record-fn` or
+the prepared local adaptive runtime — because both return that same exported
+state. Plain `--retriever` free-form answers do not carry it. The UI accepts
+either case and does not require agent metadata.
 
 ### `GET /health`
 
 ```json
 {"status": "ok", "backend": "vllm", "model_id": "...",
- "prompt_version": "p5-grounded-qa-v7", "retrieval": true,
+ "prompt_version": "p5-grounded-qa-v7", "retrieval": true, "agent": true,
  "passage_text": true, "top_k": 5, "papers": 100,
  "warmup_seconds": 41.2, "uptime_seconds": 812.4}
 ```
 
 Use it for the status badge. `retrieval: false` means free-form is disabled;
-`passage_text: false` means citations can only be shown as ids.
+`agent: true` means free-form runs the agent loop (retrieval + critic)
+rather than a plain retriever; `passage_text: false` means citations can
+only be shown as ids.
 
 ### `GET /papers`
 
