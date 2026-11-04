@@ -326,9 +326,12 @@ def format_baseline_section(summary: dict[str, Any]) -> str:
                          f"{adaptive['recall_after_retries']:.3f} | |")
     check = summary.get("refuse_if_unsatisfied")
     if check:
+        def share(value: float | None) -> str:
+            return "n/a" if value is None else f"{value:.3f}"
+
         lines += ["", "Refuse if the critic is still unsatisfied after the last round (not enabled): "
-                  f"refuses {check['correct_refusal_rate']:.3f} of unanswerable and "
-                  f"{check['false_refusal_rate']:.3f} of answerable questions; "
+                  f"refuses {share(check['correct_refusal_rate'])} of unanswerable and "
+                  f"{share(check['false_refusal_rate'])} of answerable questions; "
                   f"meets the proposed gate (>= {PROPOSED_REFUSAL_MIN_CORRECT}, <= "
                   f"{PROPOSED_REFUSAL_MAX_FALSE}): {check['meets_proposed_gate']}."]
     return "\n".join(lines)

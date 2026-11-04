@@ -340,3 +340,11 @@ def test_baseline_section_lists_depths_adaptive_and_the_refusal_check():
     assert "adaptive, 5.50 passages on average | 0.800" in text
     assert "not enabled" in text and "meets the proposed gate" in text and "False" in text
     assert format_baseline_section({"metrics": {}}) == ""
+
+
+def test_baseline_section_survives_a_run_without_unanswerable_questions():
+    # the first items of a file can all be answerable; the rate is then None, not a number
+    summary = {"metrics": {}, "refuse_if_unsatisfied": refusal_rule_check(
+        {"unsatisfied_rate_unanswerable": None, "unsatisfied_rate_answerable": 0.0})}
+    text = format_baseline_section(summary)
+    assert "refuses n/a of unanswerable and 0.000 of answerable" in text and "False" in text
