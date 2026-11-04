@@ -93,6 +93,7 @@ def run(args, output):
                 args.adjudication,
                 review,
                 args.corpus,
+                args.disagreements,
             )
             write_json(output / "agreement.json", report)
         return {
@@ -140,7 +141,7 @@ def run(args, output):
         if (
             manifest.get("labels_sha256") != sha256(args.labels)
             or manifest.get("corpus_sha256") != sha256(args.corpus)
-            or manifest.get("annotation_coverage") != "complete"
+            or manifest.get("annotation_coverage") not in {"complete", "agreed_only"}
             or manifest.get("question_scope", {}).get("project_role") != args.role
             or set(manifest.get("question_scope", {}).get("question_ids", []))
             != {q["question_id"] for q in questions}
@@ -162,7 +163,9 @@ def run(args, output):
             c = catalog.get(p["passage_id"])
             if not c or c["paper_id"] != p["paper_id"] or c["text"] != p["passage"]:
                 raise ValueError("Corpus differs from frozen pool")
-        rows, summary = score_p3(questions, pairs, rankings, labels, args.ks)
+        rows, summary = score_p3(
+            questions, pairs, rankings, labels, args.ks, manifest["annotation_coverage"]
+        )
         write_jsonl(output / "scores.jsonl", rows)
         write_csv(output / "retrieval.csv", summary)
         write_json(output / "summary.json", summary)
@@ -307,8 +310,19 @@ def parser():
                 help="Local Git ref; no fetch performed",
             )
         if name == "finalize-labels":
-            for field in ("adjudication", "review", "corpus"):
+            for field in ("review", "corpus"):
                 sub.add_argument("--" + field, type=Path, required=True)
+            sub.add_argument(
+                "--disagreements",
+                choices=["adjudicate", "drop"],
+                default="adjudicate",
+                help="drop: keep only agreed pairs; disagreements become unjudged",
+            )
+            sub.add_argument(
+                "--adjudication",
+                type=Path,
+                help="Completed third-person CSV; required with --disagreements adjudicate",
+            )
         if name in {"retrieval", "evidence", "qa", "ragas"}:
             sub.add_argument("--questions", type=Path, required=True)
             sub.add_argument(

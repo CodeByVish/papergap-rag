@@ -8,7 +8,7 @@ Updated: 5 November 2026. Branch: `P6/evaluation`. Shared schemas/split mappings
 
 | P6 deliverable | Input | Output | Used for |
 | --- | --- | --- | --- |
-| Annotation audit and gold export | Pinned P3 sheets/pool; third-person adjudication; real human review; exact corpus | `agreement.json`, `adjudication.csv`, `final_labels.jsonl`, label manifest, preserved original judgments | Q4.3 agreement; gold input to retrieval scoring |
+| Annotation audit and gold export | Pinned P3 sheets/pool; agreed-only policy (disagreements dropped) or third-person adjudication; real human review; exact corpus | `agreement.json`, `adjudication.csv`, `final_labels.jsonl`, label manifest, preserved original judgments | Q4.3 agreement; gold input to retrieval scoring |
 | Retrieval scoring | P3 saved rankings/questions/pairs; finalized gold; exact corpus | `scores.jsonl`, `retrieval.csv`, summary and provenance | Q3 four-method comparison; no historical model rerun |
 | Evidence-mapping recall | Original static/adaptive retrieval records; P3 mapping/manifest; matching corpus | `evidence_recall.csv`, per-question recall and denominators | Static@5/@8/@10 vs adaptive, separate from pool scores |
 | QA scoring | Selected questions; saved P4/P5 answers; QASPER references | Per-question EM/F1, answerable/unanswerable results, failures and coverage; `qa.csv` | Q4.4 answer quality |
@@ -25,7 +25,7 @@ One entry point: `python -m scripts.run_p6_evaluation --help`.
 | --- | --- |
 | `export-p3` | Export the pinned frozen pool/rankings from the local P3 Git ref, after validating sheets/manifests |
 | `audit-labels` | Check pool hashes, original sheet bodies, identities and completed labels; report independent-label agreement and prepare adjudication CSV |
-| `finalize-labels` | Validate reviewed human provenance, third-person decisions and exact corpus; export gold and a scorer-compatible manifest |
+| `finalize-labels` | Validate reviewed human provenance and exact corpus; keep agreed pairs only (`--disagreements drop`) or validate third-person decisions; export gold and a scorer-compatible manifest |
 | `retrieval` | Validate frozen P3 ranking bytes/IDs/ranks, label scope and corpus; reuse existing metric arithmetic at K=1,3,5 |
 | `evidence` | Score static ranked cutoffs and adaptive cumulative rounds against verified P3 mapping; report failure-inclusive and P4-compatible successful-only means |
 | `qa` | Read original QASPER or normalized references, adapt P4/P5 or normalized predictions, score and export |
@@ -39,7 +39,7 @@ Core reusable files are under `src/evaluation/`. Existing producer interfaces ar
 ## Run order and completion criteria
 
 1. **Audit P3 submissions.** Review changes and true human identities/independence. Latest audited commit `1a1dc15b824590a39c80ea11a568fbe5814a926e`: 1,853 pairs, 3,706 labels, 1,665 matches (89.854%), 188 disagreements. Method names were visible; do not claim system-blind labeling. Earlier notebook snapshots are historical.
-2. **Humans finish adjudication.** A third person outside each original pair supplies final label/reason. P3/P6 confirm use history and role; export validated gold. Initial agreement is never recomputed from adjudicated labels.
+2. **Resolve disagreements.** Selected policy: drop the 188 disagreements (`--disagreements drop`), keeping 1,665 agreed pairs as gold; dropped pairs become unjudged. Retrieval then scores condensed rankings that skip unjudged passages. The adjudication alternative remains supported: a third person outside each original pair supplies final label/reason. P3/P6 confirm use history and role; export validated gold. Initial agreement is never recomputed from adjudicated labels.
 3. **Score saved retrieval.** Export pinned rankings, check exact corpus and score K=1,3,5. Report pool-relative recall/nDCG and judged coverage, not exhaustive paper recall.
 4. **Run a development QA pilot.** Owners use their existing runners; P6 scores outputs and verifies answer/reference/context adapters. No reference or gold evidence enters generation.
 5. **Configure and smoke-test the judge.** Supply approved endpoint/models/budget, install optional packages separately, validate inputs, then explicitly run live RAGAS on development examples.
@@ -50,7 +50,7 @@ Core reusable files are under `src/evaluation/`. Existing producer interfaces ar
 
 | Needed | Provider | Blocks |
 | --- | --- | --- |
-| Submission independence/history review and 188 third-person decisions | Actual annotators/adjudicators, P3/P6 | Final gold and final retrieval table |
+| Submission independence/history review (188 disagreements dropped by policy, no third-person decisions needed) | Actual annotators/adjudicators, P3/P6 | Final gold and final retrieval table |
 | Full corpus matching the pool | P3 | Verified gold/corpus identity |
 | Final set and freeze/use review, named inference operator | P3/P4/P5/P6 | Final evaluation claims and final inference |
 | Saved real predictions, pinned rendering configuration or exact context export | P4/P5 | Real QA/RAGAS results |
@@ -68,5 +68,3 @@ The code is implemented; these items are not automatically completed by installi
 - The existing R1–R4/G0–G5 ladder in `docs/EVALUATION.md` remains the shared plan. All final held-out decisions/schemas remain subject to affected-owner confirmation.
 
 Start with the [team usage handoff](EVALUATION_TEAM_HANDOFF.md). Learn the calculations in the [walkthrough notebook](../../notebooks/p6_evaluation_walkthrough.ipynb) and [metric reference](EVALUATION_METRICS_REFERENCE.md). The older annotation notebook is a reference; use the new CLI for the completed manifest contract.
-
-Final-question eligibility and concrete freeze packaging: [held-out coordination](HELD_OUT_COORDINATION.md).

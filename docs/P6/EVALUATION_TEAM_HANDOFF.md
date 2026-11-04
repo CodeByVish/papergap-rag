@@ -68,9 +68,21 @@ At this commit expect 1,853 pairs, 200 questions, 89.854% raw agreement and 188 
 
 The export command creates `questions.jsonl`, `pairs.jsonl`, `rankings.jsonl`, `manifest.json`, `frozen_config.json` and its own run manifest. It exports existing records; it runs no retrieval model. The paired pool includes official validation and test origins; directory names do not establish final held-out eligibility.
 
-## 4. Human adjudication and final gold
+## 4. Disagreement policy and final gold
 
-A third person who is neither original annotator fills the existing `adjudication.csv` columns:
+**Selected policy: drop disagreements.** Gold keeps only the pairs both annotators labelled the same (1,665 of 1,853 at the audited commit). The 188 disagreements become unjudged: they are not relabelled, and initial agreement (89.854%) is unchanged. The label manifest records `annotation_coverage: "agreed_only"`, `dropped_disagreement_pairs` and `questions_without_relevant`; provenance marks each dropped pair with `dropped_disagreement: true`. Removing borderline pairs likely inflates absolute scores; method comparisons share the same gold. State this in the report.
+
+Run without an adjudication file (review JSON as described below):
+
+```bash
+"$P6_PY" -m scripts.run_p6_evaluation finalize-labels \
+  --ref "$P3_COMMIT" --disagreements drop \
+  --review results/p6/annotation-review.json \
+  --corpus "$P6_CORPUS" \
+  --output results/p6/final-gold
+```
+
+**Alternative: adjudication** (default `--disagreements adjudicate`). A third person who is neither original annotator fills the existing `adjudication.csv` columns:
 
 - `adjudicator`: real name/agreed identity.
 - `final_label`: exactly 0 or 1.
@@ -155,7 +167,7 @@ For a genuinely approved held-out pool:
 
 For a genuinely development-only pool use `--role development` and omit `--review`. The role must match the label manifest. This command expects the full pinned P3 pool/ranking files, not manually filtered subsets. Report subset studies separately under an owner-reviewed adapter.
 
-Expect four-method `retrieval.csv`, per-question `scores.jsonl`, summary and manifest. Saved ranks/scores are verified against the original pool's byte hashes. No model rerun is required. Requesting K above saved depth fails. Recall and nDCG are pool-relative; unknown passages are not negatives. This adapter requires full judgment coverage of the frozen pool rather than guessing missing labels.
+Expect four-method `retrieval.csv`, per-question `scores.jsonl`, summary and manifest. Saved ranks/scores are verified against the original pool's byte hashes. No model rerun is required. Requesting K above saved depth fails. Recall and nDCG are pool-relative; unknown passages are not negatives. With adjudicated (`complete`) gold this adapter requires full judgment coverage of the frozen pool rather than guessing missing labels. With `agreed_only` gold it scores a condensed ranking: unjudged passages are removed before cutting at K, P@K is over the judged passages in that condensed top K, and `judged_coverage` reports the judged fraction of the original top K. Label these as condensed (judged-only) scores in the report.
 
 ## 6. Score real QA answers
 
@@ -398,5 +410,3 @@ Repeat comparison with `--left-k 8` or `10` and a new output directory. For deve
 Outputs: `evidence_recall.csv`, per-question `scores.jsonl`, `summary.json`, run manifest. Missing/empty mappings are excluded, not inferred unanswerable. Missing retrieval records and retrieval errors earn zero in the primary failure-inclusive mean when gold exists. A second `successful_only_mapped_recall` and sample count matches P4's successful-run denominator. Generation-only errors do not erase successful retrieval. For exact P4 comparison select the successful-only metric and same question population; report failure counts too. `answerable` is read from an explicit boolean or derived from P3's source annotations (any answerable annotation means answerable); it is otherwise null, never inferred from mapping size.
 
 A saved top-ten ranking can supply retrieval recall@5/@8/@10 if it is the same one-round retrieval policy with a different output truncation. It cannot supply QA/RAGAS answers for all three context depths. Those require three generation runs or correctly captured per-depth answers/contexts. For adaptive comparisons also report actual context/token/call budgets and a larger static-depth control. This scorer is paper-scoped; corpus-wide recall needs its own reviewed relevance universe.
-
-For final-set choice and exact freeze-manifest steps, use [held-out coordination](HELD_OUT_COORDINATION.md).

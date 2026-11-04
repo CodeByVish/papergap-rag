@@ -202,8 +202,26 @@ def save_audit(output, report, disputes):
 
 
 def finalize_gold(
-    output, report, pairs, judgments, disputes, adjudication_path, review, corpus
+    output,
+    report,
+    pairs,
+    judgments,
+    disputes,
+    adjudication_path,
+    review,
+    corpus,
+    disagreements="adjudicate",
 ):
+    """Export gold labels. `disagreements="drop"` keeps only agreed pairs.
+
+    Dropped pairs are left unjudged, not relabelled; initial agreement is unchanged.
+    """
+    if disagreements not in {"adjudicate", "drop"}:
+        raise ValueError("Disagreement policy must be adjudicate or drop")
+    if (disagreements == "drop") != (adjudication_path is None):
+        raise ValueError(
+            "Supply an adjudication file only when disagreements are adjudicated"
+        )
     required = ("independence_confirmed", "usage_and_freeze_reviewed")
     if (
         not all(review.get(k) is True for k in required)
@@ -221,11 +239,15 @@ def finalize_gold(
         raise ValueError(
             "Raw agreement below 80%; preserve this round and review the protocol"
         )
-    with Path(adjudication_path).open(newline="") as f:
-        rows = list(csv.DictReader(f))
     expected = {int(r["record_number"]): r for r in disputes}
-    if len(rows) != len(expected) or {int(r["record_number"]) for r in rows} != set(
-        expected
+    if disagreements == "drop":
+        rows = []
+    else:
+        with Path(adjudication_path).open(newline="") as f:
+            rows = list(csv.DictReader(f))
+    if disagreements == "adjudicate" and (
+        len(rows) != len(expected)
+        or {int(r["record_number"]) for r in rows} != set(expected)
     ):
         raise ValueError("Adjudication must cover each disagreement exactly once")
     final = {}
@@ -256,7 +278,8 @@ def finalize_gold(
         c = catalog.get(p["passage_id"])
         if not c or c["paper_id"] != p["paper_id"] or c["text"] != p["passage"]:
             raise ValueError("Corpus identity/text differs from the frozen pool")
-        label = final.get(n, judgments["A", n]["label"])
+        dropped = disagreements == "drop" and n in expected
+        label = None if dropped else final.get(n, judgments["A", n]["label"])
         grouped[p["question_id"]].append((p, label))
         provenance.append(
             {
@@ -266,6 +289,7 @@ def finalize_gold(
                 "A": judgments["A", n],
                 "B": judgments["B", n],
                 "final_label": label,
+                "dropped_disagreement": dropped,
                 "adjudication": next(
                     (r for r in rows if int(r["record_number"]) == n), None
                 ),
@@ -280,7 +304,9 @@ def finalize_gold(
                 "status": "mapped",
                 "relevance_complete": False,
                 "relevant_passage_ids": [p["passage_id"] for p, l in records if l],
-                "judged_passage_ids": [p["passage_id"] for p, l in records],
+                "judged_passage_ids": [
+                    p["passage_id"] for p, l in records if l is not None
+                ],
             }
         )
     write_jsonl(output / "final_labels.jsonl", labels)
@@ -291,7 +317,16 @@ def finalize_gold(
             "schema_version": "v0-proposed",
             "labels_sha256": sha256(output / "final_labels.jsonl"),
             "corpus_sha256": sha256(corpus),
-            "annotation_coverage": "complete",
+            "annotation_coverage": "complete"
+            if disagreements == "adjudicate"
+            else "agreed_only",
+            "disagreement_policy": disagreements,
+            "dropped_disagreement_pairs": len(expected)
+            if disagreements == "drop"
+            else 0,
+            "questions_without_relevant": sum(
+                not row["relevant_passage_ids"] for row in labels
+            ),
             "relevance_complete": False,
             "source": {"commit": report["commit"], "review": review},
             "mapping": "record_number -> frozen pool -> question_id/passage_id",

@@ -698,3 +698,76 @@ def test_evidence_cli_hash_guards_and_static_adaptive_comparison(tmp_path):
                 str(tmp_path / "tampered"),
             ]
         )
+
+
+def test_dropped_disagreements_are_unjudged_and_scored_condensed(tmp_path):
+    pairs = [
+        {
+            "record_number": i,
+            "question_id": "q1",
+            "paper_id": "p1",
+            "question": "Which model?",
+            "passage_id": f"p{i}",
+            "passage": f"Text {i}",
+        }
+        for i in range(1, 6)
+    ]
+    judgments = {
+        (s, i): {"annotator": s, "label": int(i < 3)} for s in "AB" for i in range(1, 6)
+    }
+    judgments["B", 2] = {"annotator": "B", "label": 0}
+    corpus = dump(
+        tmp_path / "corpus.jsonl",
+        [
+            {"passage_id": p["passage_id"], "paper_id": "p1", "text": p["passage"]}
+            for p in pairs
+        ],
+    )
+    review = {
+        "source_commit": "synthetic",
+        "independence_confirmed": True,
+        "usage_and_freeze_reviewed": True,
+        "review_note": "synthetic fixture only",
+        "project_role": "development",
+    }
+    report = {"commit": "synthetic", "threshold_pass": True, "pool_output_sha256": {}}
+    disputes = [{"record_number": 2}]
+    adj = tmp_path / "adj.csv"
+    adj.write_text("record_number,adjudicator,final_label,reason\n")
+    with pytest.raises(ValueError):
+        finalize_gold(
+            tmp_path, report, pairs, judgments, disputes, adj, review, corpus, "drop"
+        )
+    gold_dir = tmp_path / "gold"
+    gold_dir.mkdir()
+    finalize_gold(
+        gold_dir, report, pairs, judgments, disputes, None, review, corpus, "drop"
+    )
+    labels = read_jsonl(gold_dir / "final_labels.jsonl")
+    assert labels[0]["relevant_passage_ids"] == ["p1"]
+    assert labels[0]["judged_passage_ids"] == ["p1", "p3", "p4", "p5"]
+    manifest = json.loads((gold_dir / "final_labels_manifest.json").read_text())
+    assert manifest["annotation_coverage"] == "agreed_only"
+    assert manifest["dropped_disagreement_pairs"] == 1
+    provenance = read_jsonl(gold_dir / "original_and_final_judgments.jsonl")
+    assert (
+        provenance[1]["dropped_disagreement"] and provenance[1]["final_label"] is None
+    )
+    ranking = [
+        {
+            "question_id": "q1",
+            "method": "bm25",
+            "hits": [
+                {"passage_id": p["passage_id"], "rank": i, "record_number": i}
+                for i, p in enumerate(pairs, 1)
+            ],
+        }
+    ]
+    with pytest.raises(ValueError):
+        score_p3(Q, pairs, ranking, labels, [3])
+    rows, summary = score_p3(Q, pairs, ranking, labels, [3], "agreed_only")
+    # Condensed top 3 is p1, p3, p4: the unjudged p2 is skipped, not counted wrong.
+    assert rows[0]["precision_at_k"] == pytest.approx(1 / 3)
+    assert rows[0]["pool_recall_at_k"] == 1 and rows[0]["mrr_at_k"] == 1
+    assert rows[0]["judged_coverage"] == pytest.approx(2 / 3)
+    assert summary[0]["judged_coverage"] == pytest.approx(2 / 3)

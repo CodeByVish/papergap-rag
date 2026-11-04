@@ -670,4 +670,11 @@ adaptive cumulative mapped-passage recall, with validated gold/corpus hashes,
 separate failure-inclusive/successful-only denominators, and side-specific K
 selection in comparisons. Updated verification: 89 tests passed. Final-set use
 history, isolation policy, runner compatibility and actual approvals remain team
-decisions; see [held-out coordination](P6/HELD_OUT_COORDINATION.md).
+decisions.
+
+P6 decision on 5 November: the 188 annotator disagreements are dropped from
+gold instead of adjudicated. `finalize-labels --disagreements drop` keeps the
+1,665 agreed pairs (`annotation_coverage: "agreed_only"`), and `retrieval`
+scores condensed rankings that skip unjudged passages and reports judged
+coverage. Initial agreement (89.854%) is unchanged. Adjudication remains
+available as the default option. 60 tests pass in the P6/P1/P2 evaluation suites.

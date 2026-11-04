@@ -8,7 +8,15 @@ from src.evaluation.common import index_rows, mean
 from src.evaluation.retrieval import binary_metrics
 
 
-def score_p3(questions, pairs, rankings, labels, ks):
+def score_p3(questions, pairs, rankings, labels, ks, coverage="complete"):
+    """Score saved rankings against pool labels.
+
+    With `coverage="agreed_only"` (dropped disagreements), unjudged passages are
+    removed from each ranking before cutting at K (condensed list), and P@K is
+    over the judged passages in that condensed top K.
+    """
+    if coverage not in {"complete", "agreed_only"}:
+        raise ValueError("Coverage must be complete or agreed_only")
     qmap, gold = index_rows(questions), index_rows(labels)
     if not ks or any(type(k) is not int or k < 1 for k in ks):
         raise ValueError("K must be positive integers")
@@ -36,7 +44,8 @@ def score_p3(questions, pairs, rankings, labels, ks):
             or len(judged) != len(set(judged))
             or len(relevant) != len(set(relevant))
             or not set(relevant) <= set(judged)
-            or set(judged) != set(pool[qid])
+            or not set(judged) <= set(pool[qid])
+            or (coverage == "complete" and set(judged) != set(pool[qid]))
         ):
             raise ValueError(
                 "Gold must cover exactly the frozen common pool, without claiming exhaustive relevance"
@@ -69,8 +78,16 @@ def score_p3(questions, pairs, rankings, labels, ks):
             raise ValueError("Every method must contain every frozen question")
         for qid, ids in rows:
             relevant = set(gold[qid]["relevant_passage_ids"])
+            judged = set(gold[qid]["judged_passage_ids"])
+            condensed = [pid for pid in ids if pid in judged]
             for k in ks:
-                values = binary_metrics(ids, relevant, k)
+                values = binary_metrics(condensed, relevant, k)
+                shown = len(condensed[:k])
+                if coverage == "agreed_only":
+                    values["precision_at_k"] = (
+                        values["precision_at_k"] * k / shown if shown else None
+                    )
+                coverage_at_k = sum(pid in judged for pid in ids[:k]) / k
                 values["pool_recall_at_k"] = values.pop("recall_at_k")
                 values["pool_ndcg_at_k"] = values.pop("ndcg_at_k")
                 per_question.append(
@@ -79,7 +96,7 @@ def score_p3(questions, pairs, rankings, labels, ks):
                         "paper_id": qmap[qid]["paper_id"],
                         "arm": method,
                         "k": k,
-                        "judged_coverage": 1.0,
+                        "judged_coverage": coverage_at_k,
                         **values,
                     }
                 )
@@ -89,7 +106,7 @@ def score_p3(questions, pairs, rankings, labels, ks):
                 "arm": method,
                 "k": k,
                 "questions": len(selected),
-                "judged_coverage": 1.0,
+                "judged_coverage": mean(r["judged_coverage"] for r in selected),
             }
             for metric in (
                 "precision_at_k",
