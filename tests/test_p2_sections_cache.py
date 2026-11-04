@@ -160,7 +160,8 @@ def test_critic_gap_reaches_section_retry_without_classifier_override():
                 )
             import re
 
-            cited = re.search(r"\[([^\]\s]+)\] section:", prompt).group(1)
+            found = re.search(r"\[(p\d+)\] section: [^\n]*\n((?:\S+\s+){6})", prompt)
+            cited, quote = found.group(1), found.group(2).strip()
             return json.dumps(
                 {
                     "sufficient": True,
@@ -168,6 +169,7 @@ def test_critic_gap_reaches_section_retry_without_classifier_override():
                     "missing_components": [],
                     "reason": "Setup evidence is now present.",
                     "supporting_passage_ids": [cited],
+                    "evidence_quote": quote,
                 }
             )
 

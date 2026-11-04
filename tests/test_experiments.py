@@ -1,6 +1,7 @@
 """Tests for the static-vs-adaptive experiment harness."""
 
 import json
+import re
 
 import pytest
 
@@ -8,9 +9,12 @@ from src.agent.experiments import (
     ExperimentItem,
     compute_metrics,
     default_refuses,
+    depth_recall,
+    format_baseline_section,
     format_table,
     matched_recall_gain,
     paired_recall_gain,
+    refusal_rule_check,
     run_system,
 )
 from src.retrieval.schemas import Passage, RetrievedPassage, SourceScore
@@ -40,10 +44,12 @@ class OracleCritic:
     """Says sufficient exactly when the gold passage is in the prompt."""
 
     def complete(self, prompt: str) -> str:
-        if "[gold]" in prompt:
+        found = re.search(r"\[(p\d+)\] section: Results\n[^\n]*91% accuracy", prompt)
+        if found:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
                                "missing_components": [], "reason": "Result found.",
-                               "supporting_passage_ids": ["gold"]})
+                               "supporting_passage_ids": [found.group(1)],
+                               "evidence_quote": "Our model achieves 82.4 F1 and 91% accuracy"})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 
@@ -280,3 +286,65 @@ def test_on_record_sees_every_record_in_order_including_errors():
     records = run_system(ITEMS, flaky, adaptive=False, on_record=seen.append)
     assert [r["question_id"] for r in seen] == ["q1", "q2", "q3"]
     assert seen == records and "error" in seen[1]
+
+
+# --- the static baseline at every depth, and the refusal rule's price -------
+
+def ranked_record(qid, *ids):
+    return {"question_id": qid, "retrieved_passages": [{"passage": {"passage_id": i}} for i in ids]}
+
+
+def test_depth_recall_cuts_one_ranking_at_every_depth():
+    items = [ExperimentItem("a", "?", "p", frozenset({"g1"}), True),
+             ExperimentItem("b", "?", "p", frozenset({"g2", "g3"}), True),
+             ExperimentItem("c", "?", "p", None, False)]
+    records = [ranked_record("a", "x", "g1", "y", "z", "w", "v"),
+               ranked_record("b", "g2", "x", "y", "g3", "z", "w"),
+               ranked_record("c", "x", "y")]
+    out = depth_recall(records, items, ks=[1, 2, 4, 6, 10])
+    assert out["questions_with_gold"] == 2
+    assert out["recall_at_k"] == {"1": 0.25, "2": 0.75, "4": 1.0, "6": 1.0}  # no ranking reaches 10
+    assert out["full_recall_at_k"] == {"1": 0, "2": 1, "4": 2, "6": 2}
+
+
+def test_depth_recall_lets_a_short_paper_contribute_all_it_has():
+    items = [ExperimentItem("a", "?", "p", frozenset({"g"}), True),
+             ExperimentItem("b", "?", "p", frozenset({"h"}), True)]
+    records = [ranked_record("a", "g", "x"), ranked_record("b", "x", "y", "z", "w", "h")]
+    assert depth_recall(records, items, ks=[2, 5])["recall_at_k"] == {"2": 0.5, "5": 1.0}
+
+
+def test_refusal_rule_check_applies_the_proposed_gate():
+    ok = refusal_rule_check({"unsatisfied_rate_unanswerable": 0.6, "unsatisfied_rate_answerable": 0.03})
+    assert ok["meets_proposed_gate"] is True
+    too_many_false = refusal_rule_check({"unsatisfied_rate_unanswerable": 1.0,
+                                         "unsatisfied_rate_answerable": 0.375})
+    assert too_many_false["meets_proposed_gate"] is False
+    too_few_caught = refusal_rule_check({"unsatisfied_rate_unanswerable": 0.25,
+                                         "unsatisfied_rate_answerable": 0.0})
+    assert too_few_caught["meets_proposed_gate"] is False
+    assert refusal_rule_check({"unsatisfied_rate_unanswerable": None,
+                               "unsatisfied_rate_answerable": 0.0})["meets_proposed_gate"] is False
+
+
+def test_baseline_section_lists_depths_adaptive_and_the_refusal_check():
+    summary = {
+        "metrics": {"adaptive": {"mean_passages": 5.5, "recall_after_retries": 0.8}},
+        "static_depth_recall": {"questions_with_gold": 10, "recall_at_k": {"5": 0.7, "10": 0.9},
+                                "full_recall_at_k": {"5": 6, "10": 9}},
+        "refuse_if_unsatisfied": {"correct_refusal_rate": 0.5, "false_refusal_rate": 0.1,
+                                  "meets_proposed_gate": False},
+    }
+    text = format_baseline_section(summary)
+    assert "| 5 | 0.700 | 6/10 |" in text and "| 10 | 0.900 | 9/10 |" in text
+    assert "adaptive, 5.50 passages on average | 0.800" in text
+    assert "not enabled" in text and "meets the proposed gate" in text and "False" in text
+    assert format_baseline_section({"metrics": {}}) == ""
+
+
+def test_baseline_section_survives_a_run_without_unanswerable_questions():
+    # the first items of a file can all be answerable; the rate is then None, not a number
+    summary = {"metrics": {}, "refuse_if_unsatisfied": refusal_rule_check(
+        {"unsatisfied_rate_unanswerable": None, "unsatisfied_rate_answerable": 0.0})}
+    text = format_baseline_section(summary)
+    assert "refuses n/a of unanswerable and 0.000 of answerable" in text and "False" in text

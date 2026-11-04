@@ -1,6 +1,7 @@
 """Tests for the live-demo record hook."""
 
 import json
+import re
 
 import pytest
 
@@ -32,10 +33,12 @@ class OracleChat:
 
     def chat(self, messages):
         self.calls += 1
-        if "[gold]" in messages[-1]["content"]:
+        found = re.search(r"\[(p\d+)\] section: Results\n[^\n]*91% accuracy", messages[-1]["content"])
+        if found:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
                                "missing_components": [], "reason": "Result found.",
-                               "supporting_passage_ids": ["gold"]})
+                               "supporting_passage_ids": [found.group(1)],
+                               "evidence_quote": "Our model achieves 82.4 F1 and 91% accuracy"})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 
