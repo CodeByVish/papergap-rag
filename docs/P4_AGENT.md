@@ -200,16 +200,22 @@ not at 5 alone. Dev results of 32 questions have wide intervals; the held-out se
   0.82 recall at about 6 passages; the original query with top-10 and no retry reaches 0.974. The gold
   passages sit at ranks 6-10 of the plain query.
 
-- The rule-based mapper cannot tell evidence from lookalikes: on QASPER train a plan is
-  satisfied by gold evidence 55.6% of the time and by the five closest non-evidence
-  paragraphs 79.2% (`scripts/evaluate_planner.py`). `evidence_map` is advisory, and the
-  rule-based critic accepts most questions in round 1.
-- The first two real critic runs (jobs 50550 and 50701, 40 development questions) gave valid JSON every
-  time, but the critic was over-strict: in 23 of its 39 "insufficient" verdicts all gold passages were
-  already retrieved, and it saw only the first 1,200 characters of each passage, cutting 28% of the
-  text of the gold passages. The calibrated prompt, the 3,000-character view and the cited-passage
-  check were written for that and have **not yet been run on the real model**; compare them with
-  `runs/p4/critic-second-40` on the same items before relying on them.
+- The rule-based mapper carries no usable signal. `scripts/evaluate_planner.py` checks whether a plan is
+  satisfied by gold evidence more often than by lexical lookalikes of the same paper. Compared with as many
+  lookalikes as there are gold units (the fair comparison; "any of five" overstates the gap), on the 365/40
+  chunks the agent actually maps: train 67.4% for gold against 69.6% for lookalikes, validation 70.7% against
+  71.6%. On raw paragraphs gold is 54.9% against 60.9% (train, n=2,095). Per type there is some signal for
+  result (81.0% against 70.7%) and comparison (72.8% against 63.6%) questions, none for factual ones (65.2%
+  against 73.9%), the largest class. `evidence_map` is advisory, and the rule-based critic accepts most
+  questions in round 1. Chunk level uses `--passages`; a chunk is gold if it contains a whole evidence
+  paragraph or its first or last 12 words, which reproduces P3's mapping ids exactly on the 32 development
+  items (45 of 45).
+- Real-model status. Jobs 50550 and 50701 (40 development questions, Qwen3-8B critic) gave valid JSON
+  every time but an over-strict critic: in 23 of 39 "insufficient" verdicts all gold was already retrieved,
+  and it saw only 1,200 characters of each passage. Job 50977 ran the calibrated critic (whole passages,
+  a defined bar for "sufficient", cited ids): that count fell to 9 and retries from 41 to 27, but leniency
+  rose (see above). The generator-view alignment, short handles and the quote requirement (#34) have **not
+  yet been run on the real model**; compare the next run with `runs/p4/critic-third-40`.
 - Exact section names such as "Results" exist in about 20% of papers. The selector matches
   hints against each paper's own names (about 86% of papers have a result-like section).
 - Reranker caches make repeat latency unrepresentative; use a fresh cache path for timings.
