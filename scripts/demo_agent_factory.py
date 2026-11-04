@@ -21,6 +21,8 @@ Configuration (environment variables):
     DEMO_AGENT_DEVICE        device for retrieval models           (default cpu)
     DEMO_AGENT_CANDIDATE_K   candidates per retriever              (default 20)
     DEMO_AGENT_MAX_RETRIES   retry budget                          (default 2)
+    DEMO_AGENT_CRITIC_VIEW   generator = the critic reads exactly what the server's
+                             prompt renders (default); pool = every retrieved passage
 
 The BM25 term index is rebuilt in memory from PAPERGAP_CORPUS, so a BM25 index
 directory (PAPERGAP_BM25_INDEX) is not read here.
@@ -33,6 +35,7 @@ import os
 from pathlib import Path
 from typing import Any
 
+from src.agent.critic import pool_view
 from src.agent.demo import RecordFn, make_record_fn
 
 
@@ -72,6 +75,18 @@ def retrieval_args() -> argparse.Namespace:
     )
 
 
+def critic_view_for(pipeline: Any):
+    """The passages and text the critic reads, from the server's own prompt budget."""
+    mode = os.environ.get("DEMO_AGENT_CRITIC_VIEW", "generator")
+    if mode == "pool":
+        return pool_view
+    if mode != "generator":
+        raise RuntimeError(f"DEMO_AGENT_CRITIC_VIEW must be 'generator' or 'pool', got {mode!r}")
+    from src.agent.generator_view import make_generator_view
+
+    return make_generator_view(getattr(getattr(pipeline, "config", None), "prompt", None))
+
+
 def factory(pipeline: Any) -> RecordFn:
     from scripts.build_indexes import load_passages
     from scripts.run_agent_experiment import build_retriever
@@ -86,4 +101,5 @@ def factory(pipeline: Any) -> RecordFn:
         GeneratorChatClient(pipeline.generator),
         max_retries=int(os.environ.get("DEMO_AGENT_MAX_RETRIES", "2")),
         section_selector=make_section_selector(passages) if args.scoped else None,
+        critic_view=critic_view_for(pipeline),
     )
