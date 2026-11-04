@@ -62,6 +62,8 @@ class CriticOutput(BaseModel):
     gap_label: GapLabel
     missing_components: list[str] = Field(default_factory=list)
     reason: str
+    supporting_passage_ids: list[str] = Field(default_factory=list)
+    evidence_quote: str = ""
 
 
 class AgentState(BaseModel):

@@ -69,8 +69,50 @@ def test_llm_missing_components_are_used_but_rule_based_ones_are_not():
                 critic_log=[{"round": 1, "source": "llm"}])
     rules = state(GapLabel.MISSING_RESULT, missing_components=["Passage reporting a measured result"],
                   critic_log=[{"round": 1, "source": "rules"}])
-    assert "reported test F1" in rewrite_query(llm)["rewritten_query"]
-    assert "Passage reporting" not in rewrite_query(rules)["rewritten_query"]
+    assert "f1" in rewrite_query(llm)["rewritten_query"].lower().split()
+    assert "measured" not in rewrite_query(rules)["rewritten_query"]
+
+
+def test_critic_commentary_is_kept_out_of_the_query():
+    # A real Qwen3-8B reply (cluster job 50550): sentences about the passages, not terms.
+    reply = ("The method of inducing the CFG is not clearly described in the retrieved passages. "
+             "The passages mention grammar induction and seed rules but do not provide a "
+             "detailed explanation of the specific method used to induce the CFG.")
+    question = "How did they induce the CFG?"
+    llm = AgentState(question=question, paper_id="p", gap_label=GapLabel.MISSING_METHOD,
+                     missing_components=[reply], critic_log=[{"round": 1, "source": "llm"}])
+    query = rewrite_query(llm)["rewritten_query"]
+    assert query.startswith(question)
+    for commentary in ("retrieved", "passages", "clearly", "described", "provide", "explanation"):
+        assert commentary not in query.lower().split()
+    assert "grammar" in query and "seed" in query
+    assert len(query.split()) <= len(question.split()) + 4  # four critic terms, no prose, no gap words
+
+
+def test_critic_terms_replace_the_fixed_gap_words_instead_of_adding_to_them():
+    llm = state(GapLabel.MISSING_COMPARISON, missing_components=["names of the competing systems"],
+                critic_log=[{"round": 1, "source": "llm"}])
+    query = rewrite_query(llm)["rewritten_query"].lower().split()
+    assert "competing" in query and "systems" in query
+    for fixed in ("baseline", "comparison", "state-of-the-art", "outperform"):
+        assert fixed not in query
+
+
+def test_fixed_gap_words_are_the_fallback_when_the_critic_gave_no_usable_terms():
+    for critic_log, missing in (([{"source": "llm"}], ["not clearly described in the passages"]),
+                                ([{"source": "rules"}], ["Passage reporting a measured result"])):
+        query = rewrite_query(state(GapLabel.MISSING_COMPARISON, missing_components=missing,
+                                    critic_log=critic_log))["rewritten_query"].lower()
+        assert "state-of-the-art" in query and "outperform" in query
+
+
+def test_filler_verbs_from_the_critic_are_not_search_terms():
+    # From job 50701: "... stating that the proposed model outperforms ..."
+    llm = state(GapLabel.MISSING_COMPARISON, critic_log=[{"source": "llm"}],
+                missing_components=["a passage stating that the proposed model outperforms baselines"])
+    query = rewrite_query(llm)["rewritten_query"].lower().split()
+    assert "stating" not in query and "proposed" not in query
+    assert "outperforms" in query and "baselines" in query
 
 
 def test_retry_never_repeats_an_earlier_query():

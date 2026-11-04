@@ -21,7 +21,8 @@ VERDICT = {"sufficient": False, "gap_label": "MISSING_RESULT",
            "missing_components": ["reported accuracy"], "reason": "No numbers."}
 GOOD = json.dumps(VERDICT)
 GOOD_YES = json.dumps({"sufficient": True, "gap_label": "NONE", "missing_components": [],
-                       "reason": "Result found."})
+                       "reason": "Result found.", "supporting_passage_ids": ["p2"],
+                       "evidence_quote": "We encode passages with a bi-LSTM encoder"})
 
 
 class FakeGenerator:
@@ -39,7 +40,7 @@ class FakeGenerator:
         return self.replies.pop(0)
 
 
-def hit(pid="p1", section="Method", text="We encode passages.") -> RetrievedPassage:
+def hit(pid="p1", section="Method", text="We encode passages with a bi-LSTM encoder.") -> RetrievedPassage:
     return RetrievedPassage(
         passage=Passage(passage_id=pid, paper_id="paper", title="t", section=section,
                         chunk_number=0, text=text),
@@ -58,9 +59,9 @@ def test_messages_put_schema_and_labels_in_system_and_evidence_in_user():
     assert (system["role"], user["role"]) == ("system", "user")
     assert '"sufficient"' in system["content"] and "gap_label" in system["content"]
     assert all(label.value in system["content"] for label in GapLabel)
-    assert "[abc] section: Results" in user["content"]
+    assert "[p1] section: Results" in user["content"]
     assert user["content"].endswith("Reply with one JSON object and nothing else.")
-    assert "[abc]" not in system["content"]
+    assert "[p1]" not in system["content"] and "abc" not in user["content"]
 
 
 def test_prompt_string_is_the_two_messages_joined():

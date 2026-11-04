@@ -25,7 +25,7 @@ ITEMS = [
 
 
 def retriever(query, paper_id, top_k):
-    return [METHOD, GOLD] if "results" in query.lower() else [METHOD]
+    return [METHOD, GOLD] if "result" in query.lower() else [METHOD]
 
 
 def answer_fn(record):
@@ -181,6 +181,17 @@ def test_summary_and_outputs(tmp_path):
     assert json.loads((tmp_path / "run_manifest.json").read_text()) == {"note": "x"}
 
 
+def test_wide_arm_adds_the_matched_gain_only_beside_adaptive(tmp_path):
+    arms = {arm: runner.run_arm(arm, ITEMS, retriever, tmp_path, adaptive=arm == "adaptive",
+                                top_k=10 if arm == runner.WIDE_ARM else 5, log=lambda _: None)
+            for arm in (*runner.ARMS, runner.WIDE_ARM)}
+    summary = runner.summarise(arms, ITEMS)
+    assert set(summary["metrics"]) == {"static", "adaptive", "static-wide"}
+    assert summary["matched_recall_gain"]["n"] == 1 and "paired_recall_gain" in summary
+    both = runner.summarise({k: arms[k] for k in ("static", "static-wide")}, ITEMS)
+    assert "matched_recall_gain" not in both and "paired_recall_gain" not in both
+
+
 def test_single_arm_summary_has_no_paired_gain():
     records = [{"question_id": "q1", "retrieval_round": 1, "critic_log": [], "sufficient": False,
                 "retrieved_passages": [], "gap_label": "NONE", "retrieval_log": []}]
@@ -259,3 +270,32 @@ def test_parse_args_defaults_and_choices():
         ["static", "adaptive"], "rules", "none", 2)
     with pytest.raises(SystemExit):
         runner.parse_args(["--passages", "p", "--dense-index-dir", "d", "--out-dir", "o"])  # no items
+
+
+def test_critic_view_defaults_to_the_generators_and_pool_is_opt_in():
+    assert args().critic_view == "generator"
+    assert runner.build_critic_view(args()) is None  # rule-based critic: no view needed
+    assert runner.build_critic_view(args(critic="generator", critic_view="pool")) is None
+    view = runner.build_critic_view(args(critic="generator"))
+    assert callable(view)  # P5's own view, built from its frozen PromptConfig
+
+
+def test_manifest_budget_records_the_generators_rendering_limits():
+    assert runner.prompt_budget() == {"max_passages": 8, "max_chars_per_passage": 1200}
+
+
+def test_summary_and_files_carry_the_depth_baseline_and_refusal_check(tmp_path):
+    arm_records = {name: runner.run_arm(name, ITEMS, retriever, tmp_path, adaptive=name == "adaptive",
+                                        top_k=wide) for name, wide in
+                   (("static", 5), ("adaptive", 5), (runner.WIDE_ARM, 15))}
+    summary = runner.summarise(arm_records, ITEMS)
+    # these toy rankings hold 2 passages, below the smallest reported depth, so no row is written
+    assert summary["static_depth_recall"]["questions_with_gold"] == 1
+    assert set(summary["refuse_if_unsatisfied"]) == {
+        "correct_refusal_rate", "false_refusal_rate", "meets_proposed_gate"}
+    runner.write_outputs(tmp_path, summary, {"args": {}})
+    text = (tmp_path / "metrics.md").read_text()
+    assert text.startswith("| metric |") and "mean_passages" in text
+    assert "Refuse if the critic is still unsatisfied" in text and "Plain retrieval" not in text
+    only_static = runner.summarise({"static": arm_records["static"]}, ITEMS)
+    assert "static_depth_recall" not in only_static and "refuse_if_unsatisfied" not in only_static
