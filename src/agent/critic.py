@@ -192,16 +192,20 @@ def build_critic_messages(
     return [
         {
             "role": "system",
-            "content": _SYSTEM.format(
+            "content": system.format(
                 labels=", ".join(f'"{label.value}"' for label in GapLabel),
-                label_help="\n".join(f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()),
+                label_help="\n".join(
+                    f"  {k.value}: {v}" for k, v in label_help.items()
+                ),
             ),
         },
         {
             "role": "user",
             "content": _USER.format(
                 question=state.question,
-                question_type=state.question_type.value if state.question_type else "unknown",
+                question_type=state.question_type.value
+                if state.question_type
+                else "unknown",
                 requirements=requirements,
                 passages=passages,
             ),
@@ -289,7 +293,9 @@ def validate_critic_output(
 
 def rule_based_critic(state: AgentState) -> CriticOutput:
     """Sufficient iff every evidence requirement has at least one mapped passage."""
-    unmet = [r for r in state.evidence_requirements if not state.evidence_map.get(r.name)]
+    unmet = [
+        r for r in state.evidence_requirements if not state.evidence_map.get(r.name)
+    ]
     if not unmet:
         return CriticOutput(
             sufficient=True,
@@ -304,7 +310,9 @@ def rule_based_critic(state: AgentState) -> CriticOutput:
         sufficient=False,
         gap_label=gap_classifier(state)["gap_label"],
         missing_components=[r.description for r in unmet],
-        reason="No retrieved passage matches: " + ", ".join(r.name for r in unmet) + ".",
+        reason="No retrieved passage matches: "
+        + ", ".join(r.name for r in unmet)
+        + ".",
     )
 
 
@@ -406,7 +414,9 @@ def make_critic_node(
             "raw_replies": raw_replies,
             # Qwen3 with thinking off should never emit these; if the backend silently
             # dropped enable_thinking=False the replies would carry a reasoning trace.
-            "thinking_drift": any(m in r for r in raw_replies for m in THINKING_MARKERS),
+            "thinking_drift": any(
+                m in r for r in raw_replies for m in THINKING_MARKERS
+            ),
         }
         return {
             "sufficient": output.sufficient,

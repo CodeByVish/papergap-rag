@@ -66,7 +66,7 @@ LOGGER = logging.getLogger("src.generation.server")
 #: A retriever adapter: ``(question, paper_id, top_k) -> list of hits``.
 #: Hits may be P2's nested ``{"passage": {...}}`` objects or already flat; the
 #: adapter in :mod:`src.generation.adapters.retrieval` accepts both.
-RetrieverFn = Callable[[str, str, int], Sequence[Mapping[str, Any]]]
+RetrieverFn = Callable[[str, str | None, int], Sequence[Mapping[str, Any]]]
 
 #: Used when no ``--warmup-record`` is supplied. One synthetic passage is enough
 #: to exercise generate -> parse -> validate; the answer is expected to be a
@@ -319,6 +319,8 @@ def create_app(
     pipeline: GroundedQAPipeline,
     *,
     retriever: Optional[RetrieverFn] = None,
+    record_fn: Optional[Callable[..., dict[str, Any]]] = None,
+    allow_corpus: bool = False,
     papers: Sequence[str] = (),
     passages: Optional[Mapping[str, Mapping[str, Any]]] = None,
     top_k: int = 5,
@@ -330,7 +332,16 @@ def create_app(
     ``pipeline`` is passed in rather than constructed here so that the caller
     owns the one engine this job is allowed to load, and so tests can build the
     app with the mock backend. Loading and warm-up are :func:`main`'s job.
+
+    ``record_fn(question, paper_id, top_k, request_id)`` optionally runs P4's
+    agent and returns an exported record. It is an alternative to ``retriever``
+    and executes inside the same authentication and single-request lock. The
+    local runtime supplies it directly; the original CLI remains unchanged.
+    With ``allow_corpus=True``, omitted/null paper_id selects the corpus and
+    callbacks receive None. The default preserves the paper-required contract.
     """
+    if retriever is not None and record_fn is not None:
+        raise ValueError("retriever and record_fn are alternatives")
     fastapi = _require_fastapi()
     from fastapi import Body, Header, HTTPException
 
@@ -385,15 +396,12 @@ def create_app(
                 detail="'question' must be a non-empty string (or send 'record')",
             )
         paper_id = body.get("paper_id")
-        if not isinstance(paper_id, str) or not paper_id.strip():
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    "'paper_id' is required for a free-form question: QASPER "
-                    "retrieval is paper-scoped"
-                ),
-            )
-        if retriever is None:
+        if paper_id is None:
+            if not allow_corpus:
+                raise HTTPException(status_code=400, detail="paper_id is required: this service does not support corpus search")
+        elif not isinstance(paper_id, str) or not paper_id.strip():
+            raise HTTPException(status_code=400, detail="paper_id must be a nonempty string or null")
+        if retriever is None and record_fn is None:
             raise HTTPException(
                 status_code=503,
                 detail=(
@@ -404,7 +412,7 @@ def create_app(
             )
         return {
             "question": question.strip(),
-            "paper_id": paper_id.strip(),
+            "paper_id": paper_id.strip() if paper_id is not None else None,
             "request_id": body.get("request_id"),
         }
 
@@ -427,6 +435,10 @@ def create_app(
         try:
             if "record" in parsed:
                 record = dict(parsed["record"])
+            elif record_fn is not None:
+                record = record_fn(
+                    parsed["question"], parsed["paper_id"], top_k, parsed["request_id"]
+                )
             else:
                 hits = retriever(parsed["question"], parsed["paper_id"], top_k)
                 if not isinstance(hits, Sequence) or isinstance(hits, (str, bytes)):
@@ -445,7 +457,21 @@ def create_app(
                     "retrieval_round": 1,
                     "retrieved_passages": list(hits),
                 }
-            return answer_record(pipeline, record)
+            answer = answer_record(pipeline, record)
+            if record_fn is not None and isinstance(record.get("critic_log"), list):
+                # Preserve fresh critic diagnostics for P6 without changing result's
+                # canonical five keys or sending the full retrieved corpus back.
+                answer.setdefault("agent", {})["critic_log"] = record["critic_log"]
+            answer["search"] = {
+                "scope": "corpus" if record.get("paper_id") is None else "paper",
+                "paper_id": record.get("paper_id"),
+                "source_papers": sorted({
+                    (hit.get("passage") or hit).get("paper_id")
+                    for hit in record.get("retrieved_passages", [])
+                    if isinstance(hit, Mapping) and (hit.get("passage") or hit).get("paper_id")
+                }),
+            }
+            return answer
         except (ValueError, TypeError) as exc:
             # A malformed record means the caller and P5 disagree about the
             # contract. That is a client error, and it must not look like a
@@ -464,7 +490,9 @@ def create_app(
             "backend": backend_info.get("backend"),
             "model_id": backend_info.get("model_id"),
             "prompt_version": prompt_version,
-            "retrieval": retriever is not None,
+            "retrieval": retriever is not None or record_fn is not None,
+            "agent": record_fn is not None,
+            "corpus_search": allow_corpus,
             "passage_text": bool(passages),
             "top_k": top_k,
             "papers": len(papers),

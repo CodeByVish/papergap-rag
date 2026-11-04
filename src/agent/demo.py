@@ -41,7 +41,7 @@ def make_record_fn(
     view so the demo judges evidence the way the scored runs do.
 
     One compiled graph per `top_k`, so a request that asks for a different depth
-    does not recompile on every call. A blank question or paper raises
+    does not recompile on every call. A null paper ID selects corpus scope; a blank question raises
     `ValueError`, which the server reports as a client error rather than a refusal.
     """
     graphs: dict[int, Any] = {}
@@ -59,7 +59,7 @@ def make_record_fn(
         return graphs[top_k]
 
     def record_fn(
-        question: str, paper_id: str, top_k: int = 5, request_id: str | None = None
+        question: str, paper_id: str | None, top_k: int = 5, request_id: str | None = None
     ) -> dict[str, Any]:
         started = time.perf_counter()
         state = AgentState(
