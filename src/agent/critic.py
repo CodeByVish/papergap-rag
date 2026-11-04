@@ -192,10 +192,10 @@ def build_critic_messages(
     return [
         {
             "role": "system",
-            "content": system.format(
+            "content": _SYSTEM.format(
                 labels=", ".join(f'"{label.value}"' for label in GapLabel),
                 label_help="\n".join(
-                    f"  {k.value}: {v}" for k, v in label_help.items()
+                    f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()
                 ),
             ),
         },
