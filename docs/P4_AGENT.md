@@ -115,6 +115,43 @@ The mapping's gold IDs exist only in the **365/40-word corpus** that P3 selected
 (32,073 passages), so the script stops when the IDs do not match `--passages`. The index the
 agent searches must be built on the same 365/40 corpus. The test split is refused.
 
+## Retrieval depth: the static baseline to beat
+
+Recall of plain retrieval (the question as the query, hybrid RRF with the shipped defaults, no
+reranker, no critic, no retry) on the 32 development items with P3 gold, measured offline on the
+rebuilt 365/40 corpus and reproducible with `scripts/evaluate_retrieval_depth.py`:
+
+| top-k | 3 | 5 (shipped default) | 8 | 10 | 15 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| mean gold recall | 0.599 | 0.740 | 0.885 | **0.974** | 0.974 |
+| questions with full recall | 17/32 | 22/32 | 26/32 | 30/32 | 30/32 |
+
+- The adaptive loop of job 50701 reached 0.802 reading about 6 passages. Plain top-10 reaches 0.974, so
+  the loop has to be compared with a static baseline at depth 8-10, not 5. Add the control arm with
+  `--arms static adaptive static-wide --wide-k 10`.
+- `candidate_k` 10/20/40 and `rrf_k` 30/60/90 move recall@5 between 0.74 and 0.80 (one or two
+  questions), so they were not tuned. Depth is what matters: 6 of 32 questions have their best gold
+  passage at rank 6-10.
+- An ideal stopping rule (stop at the smallest of 3/5/8/10/15 that holds all gold) reads 5.56
+  passages for the same 0.974. That is the most an adaptive loop can save over static top-10; the
+  Qwen critic is far from it.
+- The reranker is not covered here (its weights were not available offline). On the cluster, rerun
+  with `--bge` to see whether reranking moves gold into the top 5.
+- **Generation budget (P5, frozen v7).** `PromptConfig` uses `max_passages=8` and
+  `max_chars_per_passage=1200`, sized for the old 200/40 chunks. With 365/40 chunks a top-10 run
+  would lose its last two passages, and every passage is cut at 1200 characters (71% of the gold
+  passages are longer, 28% of their text on average). Raise both with P5 before an answer-quality run.
+
+## Abstention
+
+The critic returned INSUFFICIENT_INFORMATION for 2 of 81 verdicts, so only 1 of 8 unanswerable
+questions was refused (and 1 of 32 answerable ones). On job 50701 the alternative rule "refuse if the
+critic is still unsatisfied after the last round" would refuse all 8 unanswerable questions but also
+12 of 32 answerable ones (37.5%), because the critic was over-strict. It is not enabled.
+Every question the critic called sufficient was answerable, so the rule becomes usable once
+`unsatisfied_rate_answerable` (reported per run beside `unsatisfied_rate_unanswerable`) falls
+well below that; decide after the next run of the calibrated critic.
+
 ## Known limits
 
 - **The rewrite is not what limits recall.** Job 50701 was replayed offline (the 365/40 corpus rebuilt,

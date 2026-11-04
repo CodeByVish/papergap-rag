@@ -97,6 +97,26 @@ def test_metrics_adaptive_shows_recovery_and_retry_quality(adaptive_records):
     assert m["critic_reused_rate"] == 0.0
 
 
+def test_unsatisfied_rates_price_the_refuse_if_unsatisfied_rule(adaptive_records):
+    m = compute_metrics(adaptive_records, ITEMS)
+    # every adaptive question ends sufficient here, so that rule would refuse nothing
+    assert m["unsatisfied_rate_answerable"] == 0.0
+    assert m["unsatisfied_rate_unanswerable"] == 0.0
+
+
+def test_unsatisfied_rates_split_by_answerability():
+    def record(qid, sufficient):
+        return {"question_id": qid, "paper_id": "p", "question": "?", "retrieval_round": 3,
+                "sufficient": sufficient, "gap_label": "MISSING_RESULT", "elapsed_s": 1.0,
+                "retrieval_log": [], "retrieved_passages": [{}], "critic_log": []}
+
+    items = [ExperimentItem("a", "?", "p", frozenset({"g"}), True),
+             ExperimentItem("b", "?", "p", frozenset({"g"}), True),
+             ExperimentItem("c", "?", "p", None, False)]
+    m = compute_metrics([record("a", True), record("b", False), record("c", False)], items)
+    assert m["unsatisfied_rate_answerable"] == 0.5 and m["unsatisfied_rate_unanswerable"] == 1.0
+
+
 def test_reused_verdicts_are_counted_apart_from_model_calls():
     entry = lambda source: {"round": 1, "source": source, "sufficient": False,
                             "gap_label": "MISSING_RESULT", "errors": [], "raw_replies": []}
