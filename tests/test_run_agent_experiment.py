@@ -299,3 +299,25 @@ def test_summary_and_files_carry_the_depth_baseline_and_refusal_check(tmp_path):
     assert "Refuse if the critic is still unsatisfied" in text and "Plain retrieval" not in text
     only_static = runner.summarise({"static": arm_records["static"]}, ITEMS)
     assert "static_depth_recall" not in only_static and "refuse_if_unsatisfied" not in only_static
+
+
+# --- items and corpus must belong together --------------------------------
+
+def plain(pid):
+    return Passage(passage_id=pid, paper_id="paper", title="t", section="Results",
+                   chunk_number=0, text="text")
+
+
+def test_gold_ids_missing_from_the_corpus_stop_the_run():
+    corpus = [plain("method"), plain("gold")]
+    runner.check_gold_in_corpus(ITEMS, corpus)  # all gold present: fine
+    runner.check_gold_in_corpus([ExperimentItem("q", "?", "paper", None, False)], [])  # no gold: fine
+    stale = [plain("some-other-id")]  # e.g. the 200/40 corpus, whose ids differ
+    with pytest.raises(SystemExit, match=r"1 of 1 gold passage ids .* not in the corpus .*365/40"):
+        runner.check_gold_in_corpus(ITEMS, stale)
+
+
+def test_a_partly_matching_corpus_is_also_refused():
+    items = [ExperimentItem("q", "?", "paper", frozenset({"a", "b"}), True)]
+    with pytest.raises(SystemExit, match="1 of 2"):
+        runner.check_gold_in_corpus(items, [plain("a")])

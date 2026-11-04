@@ -9,7 +9,8 @@ so no second model is loaded. Retrieval models stay on the CPU unless
 
 Configuration (environment variables):
 
-    PAPERGAP_CORPUS          passages.jsonl                        (required)
+    PAPERGAP_CORPUS          the 365/40-word passages.jsonl         (required; the dense
+                             index and the server's --passages-from must be this same file)
     PAPERGAP_DENSE_INDEX     dense index directory                 (required)
     HF_HOME                  Hugging Face home; models are read from $HF_HOME/hub
                              when that exists, else from $HF_HOME  (optional)

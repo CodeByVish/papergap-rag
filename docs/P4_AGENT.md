@@ -44,7 +44,9 @@ Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
 
 ## Running
 
-Local, rule-based critic, no generation (needs the P2 corpus and index, see `P2_WEEK2.md`):
+Local smoke test, rule-based critic, no generation. The pilot sample below is small and comes from the
+old 200/40 build, which is fine for checking wiring but not for any result; a real run needs the 365/40
+corpus and a dense index built on it (see "Corpus" below):
 
 ```bash
 OMP_NUM_THREADS=1 python -m scripts.run_agent_experiment \
@@ -80,11 +82,28 @@ at load. The corpus and dense index are not on the cluster yet; copy them from P
 Outputs in `--out-dir`: `static.jsonl`, `adaptive.jsonl`, `metrics.json`, `metrics.md`,
 `run_manifest.json` (arguments, git commit, package versions, file hashes, critic call counts).
 
+## Corpus
+
+Every result in this repository's P4 work uses the **365/40-word development corpus**: 21,360 passages from
+1,168 papers, SHA-256 `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403`. It is built with
+
+```bash
+python -m scripts.build_corpus --papers data/processed/papers.jsonl \
+  --export-manifest data/processed/qasper_export.manifest.json --scope development \
+  --chunk-size-words 365 --chunk-overlap-words 40 --output ... --manifest-output ...
+```
+
+The builder's own defaults are still the old 200/40 (32,073 passages), so the two flags are not optional.
+Passage ids are content hashes, so ids from one corpus do not exist in the other. The runner stops when
+an items file names gold passages the corpus lacks, and the dense index must be built on the same file.
+
 ## Live demo
 
 P5's Option C server needs a hook to run the agent per typed question: `src/agent/demo.py`
 (`make_record_fn`) and `scripts/demo_agent_factory.py`. The server change and the open checks are in
-`docs/handoffs/P4_AGENT_DEMO_HOOK_20261030.md`.
+`docs/handoffs/P4_AGENT_DEMO_HOOK_20261030.md`. `PAPERGAP_CORPUS`, the dense index and the server's
+`--passages-from` must all be the 365/40 corpus: the agent returns 365/40 passage ids, which a `/passages`
+index built on the old 32,073-passage file (still named in P5's 29 Oct handoff) cannot resolve.
 
 ## Measures (`src/agent/experiments.py`)
 

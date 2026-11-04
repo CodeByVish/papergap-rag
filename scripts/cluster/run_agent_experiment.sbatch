@@ -20,7 +20,10 @@
 # your decision, ideally in a copy of the environment.
 #
 # PRECONDITIONS this script cannot create:
-#   * PASSAGES and DENSE_INDEX exist (python -m scripts.build_corpus / build_indexes)
+#   * PASSAGES and DENSE_INDEX exist and belong together: the 365/40-word development corpus
+#     (python -m scripts.build_corpus --scope development --chunk-size-words 365
+#     --chunk-overlap-words 40; the builder's own defaults are the old 200/40) and a dense
+#     index built on that file (scripts.build_indexes)
 #   * the repo checkout contains P5's src/generation (on main)
 #   * Qwen3-8B weights are at MODEL_DIR
 #
