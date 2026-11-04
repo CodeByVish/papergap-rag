@@ -15,12 +15,16 @@ safety net, not a sufficiency judge.
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from src.agent.nodes import gap_classifier
 from src.agent.schemas import AgentState, CriticOutput, GapLabel
 
-MAX_PASSAGE_CHARS = 1200
+MAX_PASSAGE_CHARS = 3000  # 99.9% of the 365/40-word dev chunks (median 1,272 chars) fit whole
 DEFAULT_ATTEMPTS = 2
 
 
@@ -41,6 +45,82 @@ class ChatClient(Protocol):
     def chat(self, messages: list[dict[str, str]]) -> str: ...
 
 
+@dataclass(frozen=True)
+class ViewedPassage:
+    """One passage as the critic reads it: its id and exactly the text shown for it."""
+
+    passage_id: str
+    body: str
+
+
+def handle_for(position: int) -> str:
+    """The short name the critic is shown for the passage at `position` (0-based): p1, p2, ..."""
+    return f"p{position + 1}"
+
+
+def normalise_handle(raw: str) -> str:
+    """Accept "p1", "P1", "[p1]", " 1 " and "p 1" for the handle "p1"."""
+    cleaned = "".join(ch for ch in str(raw).lower() if ch.isalnum())
+    return f"p{cleaned}" if cleaned.isdigit() else cleaned
+
+
+PassageView = Callable[[AgentState], list[ViewedPassage]]
+"""Which passages, and how much of each, the critic is shown for a state."""
+
+
+def pool_view(state: AgentState) -> list[ViewedPassage]:
+    """Every retrieved passage in retrieval order, each cut at MAX_PASSAGE_CHARS."""
+    return [
+        ViewedPassage(
+            hit.passage.passage_id,
+            f"section: {hit.passage.section}\n{hit.passage.text[:MAX_PASSAGE_CHARS]}",
+        )
+        for hit in state.retrieved_passages
+    ]
+
+
+_WORD = re.compile(r"[a-z0-9]+(?:[.,%'-][a-z0-9]+)*")
+MIN_QUOTE_WORDS = 4
+QUOTE_OVERLAP = 0.8
+
+
+def _words(text: str) -> list[str]:
+    return _WORD.findall(unicodedata.normalize("NFKC", text).lower())
+
+
+def _segment_supported(words: list[str], text_words: list[str]) -> bool:
+    """`words` occur contiguously in the text, or share most of their trigrams with it."""
+    if not words:
+        return True
+    n = len(words)
+    if any(text_words[i : i + n] == words for i in range(len(text_words) - n + 1)):
+        return True
+    if n < 3:
+        return False
+    wanted = {tuple(words[i : i + 3]) for i in range(n - 2)}
+    have = {tuple(text_words[i : i + 3]) for i in range(len(text_words) - 2)}
+    return len(wanted & have) / len(wanted) >= QUOTE_OVERLAP
+
+
+def quote_supported(quote: str, texts: Sequence[str]) -> bool:
+    """True if `quote` was copied from one of `texts`, allowing small edits.
+
+    The quote must hold at least MIN_QUOTE_WORDS words. Each part of it (a "..." or "…"
+    elision splits it into parts) must appear in one text as a run of words, or share
+    QUOTE_OVERLAP of its word trigrams with that text, which tolerates dropped
+    punctuation or one changed word.
+    """
+    parts = [_words(part) for part in re.split(r"\.\.\.|\u2026", quote)]
+    parts = [part for part in parts if part]
+    if sum(len(part) for part in parts) < MIN_QUOTE_WORDS:
+        return False
+    for text in texts:
+        text_words = _words(text)
+        if all(_segment_supported(part, text_words) for part in parts):
+            return True
+    return False
+
+
 class CriticOutputError(ValueError):
     """The model reply could not be parsed or failed deterministic validation."""
 
@@ -54,20 +134,29 @@ Reply with one JSON object and nothing else, in exactly this shape:
 {{
   "sufficient": true or false,
   "gap_label": one of {labels},
-  "missing_components": [short descriptions of what is missing, empty if sufficient],
+  "supporting_passage_ids": [handles of the passages that state the facts the answer needs, for example "p1", "p3"; empty if none do],
+  "evidence_quote": "one sentence copied word for word from a cited passage that states the key fact of the answer; empty if not sufficient",
+  "missing_components": [the specific facts that appear in none of the passages, empty if sufficient],
   "reason": "one or two sentences"
 }}
 
+What "sufficient" means:
+- The passages together state the concrete facts needed to answer the question (a name, a number, a dataset, a baseline, a step of the method, a stated limitation).
+- A partial but concrete answer counts. Do not mark the evidence insufficient because a passage is short, is not exhaustive, or words things differently from the question.
+- You must be able to quote it: copy the sentence that states the key fact, word for word, into evidence_quote. If the question asks for a specific value, name or list, the quote must contain it.
+- A passage that is only about the same topic does not count, and neither does one about a different dataset, model or quantity than the one asked about. If you cannot quote a sentence that states the fact, the evidence is insufficient.
+
 Rules:
-- If sufficient is true, gap_label must be "NONE" and missing_components must be [].
+- If sufficient is true, gap_label must be "NONE", missing_components must be [], supporting_passage_ids must list at least one passage and evidence_quote must be a sentence copied from one of them.
 - If sufficient is false, gap_label must be one of the other labels:
-{label_help}"""
+{label_help}
+- Write each missing component as a short noun phrase for the missing fact (for example "names of the baseline systems"), never as a remark about the passages such as "not clearly described"."""
 
 _USER = """\
 Question: {question}
 Question type: {question_type}
 
-Evidence the answer needs:
+Hints about the kind of evidence the answer probably needs (a heuristic from the question wording; judge the question itself):
 {requirements}
 
 Retrieved passages:
@@ -86,29 +175,37 @@ _LABEL_HELP = {
 }
 
 
-def build_critic_messages(state: AgentState) -> list[dict[str, str]]:
-    """Chat messages for the critic: schema and labels in system, evidence in user."""
+def build_critic_messages(
+    state: AgentState, view: PassageView = pool_view
+) -> list[dict[str, str]]:
+    """Chat messages for the critic: schema and labels in system, evidence in user.
+
+    `view` decides which passages are shown and how much of each; the default shows
+    the whole pool, a runner that answers with P5 passes the generator's own view.
+    """
     requirements = "\n".join(
         f"- {r.name}: {r.description}" for r in state.evidence_requirements
     ) or "- (none specified)"
     passages = "\n\n".join(
-        f"[{hit.passage.passage_id}] section: {hit.passage.section}\n"
-        f"{hit.passage.text[:MAX_PASSAGE_CHARS]}"
-        for hit in state.retrieved_passages
+        f"[{handle_for(position)}] {shown.body}" for position, shown in enumerate(view(state))
     ) or "(no passages were retrieved)"
     return [
         {
             "role": "system",
-            "content": _SYSTEM.format(
+            "content": system.format(
                 labels=", ".join(f'"{label.value}"' for label in GapLabel),
-                label_help="\n".join(f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()),
+                label_help="\n".join(
+                    f"  {k.value}: {v}" for k, v in label_help.items()
+                ),
             ),
         },
         {
             "role": "user",
             "content": _USER.format(
                 question=state.question,
-                question_type=state.question_type.value if state.question_type else "unknown",
+                question_type=state.question_type.value
+                if state.question_type
+                else "unknown",
                 requirements=requirements,
                 passages=passages,
             ),
@@ -116,9 +213,11 @@ def build_critic_messages(state: AgentState) -> list[dict[str, str]]:
     ]
 
 
-def build_critic_prompt(state: AgentState) -> str:
+def build_critic_prompt(state: AgentState, view: PassageView = pool_view) -> str:
     """The same messages as one string, for clients that only take a prompt."""
-    return "\n\n".join(message["content"] for message in build_critic_messages(state))
+    return "\n\n".join(
+        message["content"] for message in build_critic_messages(state, view)
+    )
 
 
 def parse_critic_output(raw: str) -> CriticOutput:
@@ -147,9 +246,26 @@ def parse_critic_output(raw: str) -> CriticOutput:
     raise CriticOutputError(last_error)
 
 
-def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
-    """Reject replies that are contradictory or ignore what was retrieved."""
+def validate_critic_output(
+    output: CriticOutput,
+    state: AgentState,
+    shown: Sequence[str] | None = None,
+    bodies: dict[str, str] | None = None,
+) -> None:
+    """Reject replies that are contradictory or ignore what was shown.
+
+    `shown` are the names the reply may cite. The node passes the handles of the
+    passages in the critic's view; the default is every retrieved passage id.
+    `bodies` maps each of those names to the text shown under it: with it, a sufficient
+    verdict must quote a sentence that really occurs in one of the passages it cites.
+    """
     problems = []
+    if shown is None:
+        shown = [hit.passage.passage_id for hit in state.retrieved_passages]
+    known = set(shown)
+    unknown = [i for i in output.supporting_passage_ids if i not in known]
+    if unknown:
+        problems.append(f"supporting_passage_ids not among the retrieved passages: {unknown}")
     if not output.reason.strip():
         problems.append("reason is empty")
     if any(not item.strip() for item in output.missing_components):
@@ -159,8 +275,16 @@ def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
             problems.append("sufficient=true requires gap_label NONE")
         if output.missing_components:
             problems.append("sufficient=true requires empty missing_components")
-        if not state.retrieved_passages:
+        if not shown:
             problems.append("sufficient=true but no passages were retrieved")
+        elif not output.supporting_passage_ids:
+            problems.append("sufficient=true requires supporting_passage_ids")
+        elif bodies is not None:
+            cited = [bodies[i] for i in output.supporting_passage_ids if i in bodies]
+            if not output.evidence_quote.strip():
+                problems.append("sufficient=true requires evidence_quote")
+            elif not quote_supported(output.evidence_quote, cited):
+                problems.append("evidence_quote does not occur in the cited passages")
     elif output.gap_label is GapLabel.NONE:
         problems.append("sufficient=false requires a gap_label other than NONE")
     if problems:
@@ -169,19 +293,26 @@ def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
 
 def rule_based_critic(state: AgentState) -> CriticOutput:
     """Sufficient iff every evidence requirement has at least one mapped passage."""
-    unmet = [r for r in state.evidence_requirements if not state.evidence_map.get(r.name)]
+    unmet = [
+        r for r in state.evidence_requirements if not state.evidence_map.get(r.name)
+    ]
     if not unmet:
         return CriticOutput(
             sufficient=True,
             gap_label=GapLabel.NONE,
             missing_components=[],
             reason="Every required evidence component has a matching passage.",
+            supporting_passage_ids=list(
+                dict.fromkeys(i for ids in state.evidence_map.values() for i in ids)
+            ),
         )
     return CriticOutput(
         sufficient=False,
         gap_label=gap_classifier(state)["gap_label"],
         missing_components=[r.description for r in unmet],
-        reason="No retrieved passage matches: " + ", ".join(r.name for r in unmet) + ".",
+        reason="No retrieved passage matches: "
+        + ", ".join(r.name for r in unmet)
+        + ".",
     )
 
 
@@ -190,34 +321,77 @@ MAX_RAW_REPLY_CHARS = 2000
 THINKING_MARKERS = ("<think>", "</think>")
 
 
-def _ask(client: CriticClient, state: AgentState) -> str:
+def _ask(client: CriticClient, state: AgentState, view: PassageView) -> str:
     if isinstance(client, ChatClient):
-        return client.chat(build_critic_messages(state))
-    return client.complete(build_critic_prompt(state))
+        return client.chat(build_critic_messages(state, view))
+    return client.complete(build_critic_prompt(state, view))
 
 
-def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEFAULT_ATTEMPTS):
+def _with_handles_normalised(output: CriticOutput) -> CriticOutput:
+    cited = [normalise_handle(h) for h in output.supporting_passage_ids]
+    return output.model_copy(update={"supporting_passage_ids": list(dict.fromkeys(cited))})
+
+
+def _with_ids_resolved(output: CriticOutput, by_handle: dict[str, str]) -> CriticOutput:
+    """Replace the handles the model cited by the real passage ids they stand for."""
+    ids = [by_handle[handle] for handle in output.supporting_passage_ids]
+    return output.model_copy(update={"supporting_passage_ids": ids})
+
+
+def make_critic_node(
+    client: CriticClient | None = None,
+    max_attempts: int = DEFAULT_ATTEMPTS,
+    view: PassageView = pool_view,
+):
     """Build the critic node. Each round's outcome is appended to `critic_log`.
 
     The log keeps every raw model reply (cut to MAX_RAW_REPLY_CHARS) so the first
-    real traces can be inspected to validate the prompt.
+    real traces can be inspected to validate the prompt. A round that shows the model
+    exactly the passages of its previous verdict reuses that verdict (`source`
+    "reused"). `view` is what the model is shown; cited ids must come from it.
     """
     if max_attempts < 1:
         raise ValueError("max_attempts must be at least 1")
 
     def critic_node(state: AgentState) -> dict:
+        viewed = view(state)
+        passage_ids = [shown.passage_id for shown in viewed]
+        handles = [handle_for(position) for position in range(len(viewed))]
+        bodies = [shown.body for shown in viewed]
+        previous = state.critic_log[-1] if state.critic_log else None
+        if (
+            previous is not None
+            and previous["source"] in ("llm", "reused")
+            and previous["passage_ids"] == passage_ids
+        ):
+            # A retry that found nothing new hands the model the same input, so it
+            # would repeat its verdict; skip the call and say so in the log.
+            entry = {**previous, "round": state.retrieval_round, "source": "reused",
+                     "errors": [], "raw_replies": [], "thinking_drift": False}
+            return {
+                "sufficient": previous["sufficient"],
+                "gap_label": GapLabel(previous["gap_label"]),
+                "missing_components": previous["missing_components"],
+                "critic_reason": previous["reason"],
+                "critic_log": [*state.critic_log, entry],
+            }
+
         errors: list[str] = []
         raw_replies: list[str] = []
         output: CriticOutput | None = None
         source = "rules"
-        if client is not None and state.retrieved_passages:
+        if client is not None and viewed:
             source = "fallback"
             for _ in range(max_attempts):
                 try:
-                    raw = _ask(client, state)
+                    raw = _ask(client, state, view)
                     raw_replies.append(raw[:MAX_RAW_REPLY_CHARS])
                     output = parse_critic_output(raw)
-                    validate_critic_output(output, state)
+                    output = _with_handles_normalised(output)
+                    validate_critic_output(
+                        output, state, handles, dict(zip(handles, bodies, strict=True))
+                    )
+                    output = _with_ids_resolved(output, dict(zip(handles, passage_ids)))
                     source = "llm"
                     break
                 except Exception as error:  # noqa: BLE001 - any client/reply failure retries
@@ -231,11 +405,18 @@ def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEF
             "source": source,
             "sufficient": output.sufficient,
             "gap_label": output.gap_label.value,
+            "passage_ids": passage_ids,
+            "supporting_passage_ids": output.supporting_passage_ids,
+            "evidence_quote": output.evidence_quote,
+            "missing_components": output.missing_components,
+            "reason": output.reason,
             "errors": errors,
             "raw_replies": raw_replies,
             # Qwen3 with thinking off should never emit these; if the backend silently
             # dropped enable_thinking=False the replies would carry a reasoning trace.
-            "thinking_drift": any(m in r for r in raw_replies for m in THINKING_MARKERS),
+            "thinking_drift": any(
+                m in r for r in raw_replies for m in THINKING_MARKERS
+            ),
         }
         return {
             "sufficient": output.sufficient,

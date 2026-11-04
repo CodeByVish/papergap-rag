@@ -472,7 +472,7 @@ Owner: Ananya. Merged: [#6](https://github.com/CodeByVish/papergap-rag/pull/6) L
 | --- | --- | --- |
 | Loop and stopping | Implemented | Plan, retrieve, map, critic, rewrite; at most 2 retries (3 rounds); stops early on `INSUFFICIENT_INFORMATION`; every round logged. |
 | Planner | Rule-based | Five question types and structured evidence requirements. `unanswerable` is never predicted from the question text. |
-| Evidence mapper | Rule-based, weak | `scripts/evaluate_planner.py` on QASPER train (2,593 questions): the plan is satisfied by gold evidence 55.6% of the time but by the five closest non-evidence paragraphs 79.2% (validation: 58.8% vs 79.5%). It cannot separate real evidence from lookalikes, so `evidence_map` is advisory. |
+| Evidence mapper | Rule-based, no usable signal | `scripts/evaluate_planner.py --passages` on the 365/40 chunks the agent maps (QASPER train, n=2,095 answerable questions with gold chunks): the plan is satisfied by gold evidence 67.4% of the time and by as many lexical lookalikes as there are gold chunks 69.6% (validation: 70.7% vs 71.6%); the old paragraph-level figures (55.6% vs 79.2%) compared against five lookalikes, which overstates the gap. It cannot separate real evidence from lookalikes, so `evidence_map` is advisory. |
 | Critic | Implemented; Qwen prompt unvalidated | System/user prompt, tolerant JSON scan, deterministic validation, rule-based fallback, and `GeneratorChatClient` for P5's shared generator (greedy, thinking off, one larger-budget retry on truncation). `critic_log` records `llm`/`rules`/`fallback` and the raw replies per round. |
 | Query rewriter | Implemented | One action per gap label; reuses the paper's own terms and the LLM critic's missing components; never repeats an earlier query. `src/agent/sections.py` picks this paper's own section whose name matches the gap (a result-like section exists in about 86% of papers, against 19.5% for the exact name "Results"), and a retry that finds nothing repeats the round over the whole paper. |
 | Experiment harness | Implemented | `src/agent/experiments.py`: static (no retries) vs adaptive arms; evidence recall before/after retries, rounds, gap recovery, unnecessary/ineffective/redundant retries, refusals, paired bootstrap gain. Optional `answer_fn(record) -> dict` runs P5's generation identically on both arms. Needs P3's gold-evidence-to-passage mapping for recall. |
@@ -634,3 +634,14 @@ and anchors, and the PR delta's whitespace check passed.
 PR mergeability, CI status and another member's review must be checked
 separately after pushing. This branch synchronization does not record a
 review approval or a merge of PR #8 into main.
+
+## P6 Option C UI port — 29 October 2026
+
+On `P6/UI-port-integration`, the Streamlit entry point now calls P5's HTTP API,
+with local run/workspace isolation, validation/citation displays and timing export.
+Clean UI verification: 42 passed, 1 explicitly skipped actual-P5-service check;
+adapter/generation/Qwen regression: 34 passed. See
+[completion evidence](P6/UI_PORT_COMPLETION_SUMMARY.md) and
+[P5 UI handoff](P6/P6_UI_handoff.md). Actual P5 mock/live integration is pending
+its formal contract, service and input artifacts; no team freeze or real E2E
+completion is implied.

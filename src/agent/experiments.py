@@ -23,7 +23,7 @@ from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from src.agent.critic import CriticClient
+from src.agent.critic import CriticClient, PassageView, pool_view
 from src.agent.export import export_record
 from src.agent.graph import build_agent_graph
 from src.agent.nodes import DEFAULT_TOP_K, MAX_RETRIES, Retriever, SectionSelector
@@ -57,6 +57,7 @@ def run_system(
     answer_fn: AnswerFn | None = None,
     on_record: Callable[[dict[str, Any]], None] | None = None,
     section_selector: SectionSelector | None = None,
+    critic_view: PassageView = pool_view,
 ) -> list[dict[str, Any]]:
     """Run every item and return one exported record each.
 
@@ -67,6 +68,7 @@ def run_system(
     `on_record` is called with each finished record (including error records) so a
     long job can write results as it goes and survive being killed.
     `section_selector` scopes the adaptive arm's retries (src/agent/sections.py).
+    `critic_view` is what the critic is shown (src/agent/generator_view.py).
     """
     graph = build_agent_graph(
         retriever,
@@ -74,6 +76,7 @@ def run_system(
         top_k=top_k,
         critic_client=critic_client if adaptive else None,
         section_selector=section_selector if adaptive else None,
+        critic_view=critic_view,
     )
     records = []
     for item in items:
@@ -181,13 +184,15 @@ def compute_metrics(
 
     answerable = [r for r in ok if by_id[r["question_id"]].answerable is True]
     unanswerable = [r for r in ok if by_id[r["question_id"]].answerable is False]
-    critic_entries = [e for r in ok for e in r["critic_log"]]
+    all_entries = [e for r in ok for e in r["critic_log"]]
+    critic_entries = [e for e in all_entries if e["source"] != "reused"]  # asked the model
 
     return {
         "questions": len(records),
         "errors": len(records) - len(ok),
         "answer_errors": sum("answer_error" in r for r in ok),
         "mean_rounds": _mean(rounds),
+        "mean_passages": _mean([len(r["retrieved_passages"]) for r in ok]),
         "questions_with_gold": with_gold,
         "recall_before_retries": _mean(recall_before),
         "recall_after_retries": _mean(recall_after),
@@ -201,6 +206,15 @@ def compute_metrics(
         "refusal_rate": _rate(sum(refuses(r) for r in ok), len(ok)),
         "correct_refusal_rate": _rate(sum(refuses(r) for r in unanswerable), len(unanswerable)),
         "false_refusal_rate": _rate(sum(refuses(r) for r in answerable), len(answerable)),
+        # A candidate abstention rule, "refuse if the critic is still unsatisfied after the
+        # last round", reported for both kinds of question so its price is visible.
+        "unsatisfied_rate_unanswerable": _rate(
+            sum(not r["sufficient"] for r in unanswerable), len(unanswerable)
+        ),
+        "unsatisfied_rate_answerable": _rate(
+            sum(not r["sufficient"] for r in answerable), len(answerable)
+        ),
+        "critic_reused_rate": _rate(len(all_entries) - len(critic_entries), len(all_entries)),
         "critic_llm_rate": _rate(sum(e["source"] == "llm" for e in critic_entries), len(critic_entries)),
         "critic_fallback_rate": _rate(
             sum(e["source"] == "fallback" for e in critic_entries), len(critic_entries)
@@ -210,6 +224,117 @@ def compute_metrics(
         ),
         "mean_elapsed_s": _mean([r["elapsed_s"] for r in ok if "elapsed_s" in r]),
     }
+
+
+def depth_curve(
+    items: Iterable[ExperimentItem], retriever: Retriever, ks: Sequence[int]
+) -> dict[str, Any]:
+    """Gold recall of one plain retrieval (the question as the query) at several depths.
+
+    This is the static baseline at each `top_k`, with no critic and no retry. It also
+    gives the least any stopping rule could read: `oracle` stops at the smallest depth
+    in `ks` that retrieves every gold passage (or the deepest if none does), as a
+    critic that always knew the gold would. Questions without gold are skipped.
+    """
+    depths = sorted(set(ks))
+    if not depths or depths[0] < 1:
+        raise ValueError("ks must be positive integers")
+    per_k: dict[int, list[float]] = {k: [] for k in depths}
+    oracle_depth: list[int] = []
+    oracle_recall: list[float] = []
+    for item in items:
+        if not item.gold_passage_ids:
+            continue
+        found = [h.passage.passage_id for h in retriever(item.question, item.paper_id, depths[-1])]
+        recalls = {k: _recall(item.gold_passage_ids, set(found[:k])) for k in depths}
+        for k in depths:
+            per_k[k].append(recalls[k])
+        stop = next((k for k in depths if recalls[k] == 1.0), depths[-1])
+        oracle_depth.append(stop)
+        oracle_recall.append(recalls[stop])
+    return {
+        "questions_with_gold": len(oracle_depth),
+        "recall_at_k": {str(k): _mean(v) for k, v in per_k.items()},
+        "full_recall_at_k": {str(k): sum(r == 1.0 for r in v) for k, v in per_k.items()},
+        "oracle": {"mean_passages": _mean(oracle_depth), "mean_recall": _mean(oracle_recall)},
+    }
+
+
+DEPTHS = (3, 5, 8, 10, 15)
+
+# Proposed, to be fixed by the team before any held-out run: "refuse if the critic is still
+# unsatisfied after the last round" is only worth enabling if it refuses at least this share
+# of the unanswerable questions and at most this share of the answerable ones.
+PROPOSED_REFUSAL_MIN_CORRECT = 0.5
+PROPOSED_REFUSAL_MAX_FALSE = 0.05
+
+
+def depth_recall(
+    records: Sequence[dict[str, Any]], items: Iterable[ExperimentItem], ks: Sequence[int] = DEPTHS
+) -> dict[str, Any]:
+    """Recall of a one-round arm's ranked passages cut at each depth in `ks`.
+
+    Run on the static-wide arm, whose passages are the plain question's ranking, this is
+    the static baseline at every depth up to `wide_k` from a single run. Depths beyond
+    the longest ranking in the records are left out.
+    """
+    by_id = {item.question_id: item for item in items}
+    ranked = [
+        (by_id[r["question_id"]].gold_passage_ids,
+         [h["passage"]["passage_id"] for h in r["retrieved_passages"]])
+        for r in records
+        if "error" not in r and by_id[r["question_id"]].gold_passage_ids
+    ]
+    # A paper with fewer than k chunks simply contributes all it has at depth k.
+    deepest = max((len(found) for _, found in ranked), default=0)
+    depths = [k for k in sorted(set(ks)) if k <= deepest]
+    per_k = {k: [_recall(gold, set(found[:k])) for gold, found in ranked] for k in depths}
+    return {
+        "questions_with_gold": len(ranked),
+        "recall_at_k": {str(k): _mean(v) for k, v in per_k.items()},
+        "full_recall_at_k": {str(k): sum(r == 1.0 for r in v) for k, v in per_k.items()},
+    }
+
+
+def refusal_rule_check(adaptive_metrics: dict[str, Any]) -> dict[str, Any]:
+    """Price "refuse if the critic is still unsatisfied after the last round" for one run."""
+    correct = adaptive_metrics["unsatisfied_rate_unanswerable"]
+    false = adaptive_metrics["unsatisfied_rate_answerable"]
+    return {
+        "correct_refusal_rate": correct,
+        "false_refusal_rate": false,
+        "meets_proposed_gate": (
+            correct is not None and false is not None
+            and correct >= PROPOSED_REFUSAL_MIN_CORRECT and false <= PROPOSED_REFUSAL_MAX_FALSE
+        ),
+    }
+
+
+def format_baseline_section(summary: dict[str, Any]) -> str:
+    """Markdown: the adaptive arm against plain retrieval at each depth, and the refusal check."""
+    lines: list[str] = []
+    depth = summary.get("static_depth_recall")
+    adaptive = summary["metrics"].get("adaptive")
+    if depth and depth["recall_at_k"]:
+        lines += ["", "Plain retrieval (the question as the query) at each depth, from the static-wide arm:",
+                  "", "| depth | mean recall | questions with full recall |", "| ---: | ---: | ---: |"]
+        n = depth["questions_with_gold"]
+        for k, recall in depth["recall_at_k"].items():
+            lines.append(f"| {k} | {recall:.3f} | {depth['full_recall_at_k'][k]}/{n} |")
+        if adaptive and adaptive.get("recall_after_retries") is not None:
+            lines.append(f"| adaptive, {adaptive['mean_passages']:.2f} passages on average | "
+                         f"{adaptive['recall_after_retries']:.3f} | |")
+    check = summary.get("refuse_if_unsatisfied")
+    if check:
+        def share(value: float | None) -> str:
+            return "n/a" if value is None else f"{value:.3f}"
+
+        lines += ["", "Refuse if the critic is still unsatisfied after the last round (not enabled): "
+                  f"refuses {share(check['correct_refusal_rate'])} of unanswerable and "
+                  f"{share(check['false_refusal_rate'])} of answerable questions; "
+                  f"meets the proposed gate (>= {PROPOSED_REFUSAL_MIN_CORRECT}, <= "
+                  f"{PROPOSED_REFUSAL_MAX_FALSE}): {check['meets_proposed_gate']}."]
+    return "\n".join(lines)
 
 
 def paired_recall_gain(
@@ -237,6 +362,10 @@ def paired_recall_gain(
             return _recall(gold, {p["passage"]["passage_id"] for p in rec["retrieved_passages"]})
 
         diffs.append(final_recall(record) - final_recall(final_static[qid]))
+    return _bootstrap_gain(diffs, resamples, seed)
+
+
+def _bootstrap_gain(diffs: list[float], resamples: int, seed: int) -> dict[str, Any]:
     if not diffs:
         return {"n": 0, "mean_gain": None, "ci95": None}
     rng = random.Random(seed)
@@ -245,6 +374,39 @@ def paired_recall_gain(
     )
     low, high = means[int(0.025 * resamples)], means[int(0.975 * resamples) - 1]
     return {"n": len(diffs), "mean_gain": sum(diffs) / len(diffs), "ci95": (low, high)}
+
+
+def matched_recall_gain(
+    wide: Sequence[dict[str, Any]],
+    adaptive: Sequence[dict[str, Any]],
+    items: Iterable[ExperimentItem],
+    *,
+    resamples: int = 2000,
+    seed: int = 0,
+) -> dict[str, Any]:
+    """Adaptive final recall minus static recall at the same number of passages.
+
+    `wide` is a one-round static run with a larger top_k. Per question it keeps its
+    first n ranked passages, n being how many distinct passages the adaptive run ended
+    with, so reading more text cannot by itself explain a gain. `mean_budget` is the
+    average n.
+    """
+    by_id = {item.question_id: item for item in items}
+    wide_by_id = {r["question_id"]: r for r in wide if "error" not in r}
+    diffs, budgets = [], []
+    for record in adaptive:
+        qid = record["question_id"]
+        gold = by_id[qid].gold_passage_ids
+        if "error" in record or not gold or qid not in wide_by_id:
+            continue
+        final = [p["passage"]["passage_id"] for p in record["retrieved_passages"]]
+        budget = len(set(final))
+        kept = [p["passage"]["passage_id"] for p in wide_by_id[qid]["retrieved_passages"]][:budget]
+        diffs.append(_recall(gold, set(final)) - _recall(gold, set(kept)))
+        budgets.append(budget)
+    result = _bootstrap_gain(diffs, resamples, seed)
+    result["mean_budget"] = _mean(budgets)
+    return result
 
 
 def format_table(results: dict[str, dict[str, Any]]) -> str:

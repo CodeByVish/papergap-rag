@@ -87,7 +87,7 @@ def client(**kwargs) -> TestClient:
 
 def agent_record_factory(pipe: GroundedQAPipeline):
     """A module-level factory, for the ``load_record_fn`` import-path test."""
-    return lambda question, paper_id: exported_record(
+    return lambda question, paper_id, top_k=5, request_id=None: exported_record(
         question=question, paper_id=paper_id
     )
 
@@ -202,7 +202,7 @@ def test_a_retriever_returning_a_non_list_is_a_server_error():
 def test_record_fn_runs_retrieval_and_the_server_answers_once():
     calls: list[tuple[str, str]] = []
 
-    def record_fn(question: str, paper_id: str) -> dict:
+    def record_fn(question: str, paper_id: str, top_k: int, request_id: str | None) -> dict:
         calls.append((question, paper_id))
         return exported_record(question=question, paper_id=paper_id)
 
@@ -216,15 +216,36 @@ def test_record_fn_runs_retrieval_and_the_server_answers_once():
     assert response.json()["agent"]["sufficient"] is True
 
 
+def test_record_fn_receives_the_server_top_k_and_request_id():
+    """The hook must run at the depth /health advertises, not a silent default."""
+    calls: list[tuple[str, str, int, str | None]] = []
+
+    def record_fn(question, paper_id, top_k, request_id):
+        calls.append((question, paper_id, top_k, request_id))
+        return exported_record(question=question, paper_id=paper_id)
+
+    response = client(record_fn=record_fn, top_k=10).post(
+        "/answer",
+        json={
+            "question": "What result is reported?",
+            "paper_id": "paper-1",
+            "request_id": "req-42",
+        },
+    )
+
+    assert response.status_code == 200
+    assert calls == [("What result is reported?", "paper-1", 10, "req-42")]
+
+
 def test_health_reports_the_agent_hook():
-    body = client(record_fn=lambda q, p: exported_record()).get("/health").json()
+    body = client(record_fn=lambda q, p, k, r: exported_record()).get("/health").json()
 
     assert body["agent"] is True
     assert body["retrieval"] is True
 
 
 def test_record_fn_returning_an_answer_is_500_not_a_second_generation():
-    def record_fn(question: str, paper_id: str) -> dict:
+    def record_fn(question: str, paper_id: str, top_k: int, request_id: str | None) -> dict:
         return {**exported_record(question=question, paper_id=paper_id), "answer": {}}
 
     response = client(record_fn=record_fn).post(
@@ -240,13 +261,13 @@ def test_create_app_rejects_two_free_form_hooks():
         create_app(
             pipeline(),
             retriever=lambda q, p, k: [hit()],
-            record_fn=lambda q, p: exported_record(),
+            record_fn=lambda q, p, k, r: exported_record(),
         )
 
 
 def test_a_record_fn_error_record_is_500_not_a_refusal():
     response = client(
-        record_fn=lambda q, p: {"question_id": "ui-1", "error": "agent failed"}
+        record_fn=lambda q, p, k, r: {"question_id": "ui-1", "error": "agent failed"}
     ).post(
         "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
     )
@@ -256,7 +277,7 @@ def test_a_record_fn_error_record_is_500_not_a_refusal():
 
 
 def test_a_record_fn_exception_is_500_not_a_refusal():
-    def record_fn(question: str, paper_id: str) -> dict:
+    def record_fn(question: str, paper_id: str, top_k: int, request_id: str | None) -> dict:
         raise RuntimeError("the agent exploded")
 
     response = client(record_fn=record_fn).post(
@@ -268,7 +289,7 @@ def test_a_record_fn_exception_is_500_not_a_refusal():
 
 
 def test_a_record_fn_returning_a_non_object_is_500():
-    response = client(record_fn=lambda q, p: ["not a record"]).post(
+    response = client(record_fn=lambda q, p, k, r: ["not a record"]).post(
         "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
     )
 
@@ -277,7 +298,7 @@ def test_a_record_fn_returning_a_non_object_is_500():
 
 
 def test_a_malformed_record_from_the_hook_is_500_not_400():
-    response = client(record_fn=lambda q, p: {"paper_id": "paper-1"}).post(
+    response = client(record_fn=lambda q, p, k, r: {"paper_id": "paper-1"}).post(
         "/answer", json={"question": "What result is reported?", "paper_id": "paper-1"}
     )
 
@@ -286,7 +307,7 @@ def test_a_malformed_record_from_the_hook_is_500_not_400():
 
 
 def test_record_fn_assigns_a_request_id_when_the_export_has_none():
-    def record_fn(question: str, paper_id: str) -> dict:
+    def record_fn(question: str, paper_id: str, top_k: int, request_id: str | None) -> dict:
         record = exported_record(question=question, paper_id=paper_id)
         record.pop("question_id")
         return record

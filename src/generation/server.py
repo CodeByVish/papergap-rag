@@ -29,9 +29,9 @@ of this cluster rather than a preference:
 
    * ``retriever(question, paper_id, top_k) -> hits`` (``--retriever
      module:factory``): the server wraps the hits into a one-round record;
-   * ``record_fn(question, paper_id) -> exported AgentState`` (``--record-fn
-     module:factory``): the hook runs retrieval and the agent loop itself and
-     returns the record *before* the answer. The server then calls
+   * ``record_fn(question, paper_id, top_k, request_id) -> exported AgentState``
+     (``--record-fn module:factory``): the hook runs retrieval and the agent
+     loop itself and returns the record *before* the answer. The server then calls
      :func:`~src.generation.harness.answer_record`, the same function the batch path
      uses, so the demo cannot drift from the scored runs.
 
@@ -73,12 +73,14 @@ LOGGER = logging.getLogger("src.generation.server")
 #: A retriever adapter: ``(question, paper_id, top_k) -> list of hits``.
 #: Hits may be P2's nested ``{"passage": {...}}`` objects or already flat; the
 #: adapter in :mod:`src.generation.adapters.retrieval` accepts both.
-RetrieverFn = Callable[[str, str, int], Sequence[Mapping[str, Any]]]
+RetrieverFn = Callable[[str, Optional[str], int], Sequence[Mapping[str, Any]]]
 
-#: An agent hook: ``(question, paper_id) -> exported AgentState record``.
+#: An agent hook: ``(question, paper_id, top_k, request_id) -> exported AgentState``.
 #: The record must be the terminal state *before* the answer; the server owns
 #: the answer call. P4's factory builds it with ``run_system(..., answer_fn=None)``.
-RecordFn = Callable[[str, str], Mapping[str, Any]]
+#: ``top_k`` is the depth the server would have handed the retriever, so the
+#: agent and a plain retrieval request run at the same depth.
+RecordFn = Callable[..., Mapping[str, Any]]
 
 #: Used when no ``--warmup-record`` is supplied. One synthetic passage is enough
 #: to exercise generate -> parse -> validate; the answer is expected to be a
@@ -162,13 +164,14 @@ def load_record_fn(spec: str, pipeline: GroundedQAPipeline) -> RecordFn:
     it can build the critic client from ``pipeline.generator`` and load the
     retriever before the port opens. It must not construct a second generator:
     one A40 fits one 8B engine. The returned callable takes ``(question,
-    paper_id)`` and returns the exported AgentState record *before* the answer.
+    paper_id, top_k, request_id)`` and returns the exported AgentState record
+    *before* the answer.
     """
     record_fn = _load_factory(spec)(pipeline)
     if not callable(record_fn):
         raise TypeError(
             f"{spec} returned {type(record_fn).__name__}, not a callable "
-            "record_fn(question, paper_id)"
+            "record_fn(question, paper_id, top_k, request_id)"
         )
     return record_fn
 
@@ -357,6 +360,7 @@ def create_app(
     *,
     retriever: Optional[RetrieverFn] = None,
     record_fn: Optional[RecordFn] = None,
+    allow_corpus: bool = False,
     papers: Sequence[str] = (),
     passages: Optional[Mapping[str, Mapping[str, Any]]] = None,
     top_k: int = 5,
@@ -369,10 +373,13 @@ def create_app(
     owns the one engine this job is allowed to load, and so tests can build the
     app with the mock backend. Loading and warm-up are :func:`main`'s job.
 
-    ``retriever`` and ``record_fn`` are alternative free-form hooks: a plain
-    retriever, or an agent hook that returns the exported state before the
-    answer. Passing both is a configuration error; pass neither to serve
-    exported records only.
+    ``record_fn(question, paper_id, top_k, request_id)`` optionally runs P4's
+    agent and returns an exported record. It is an alternative to ``retriever``
+    and executes inside the same authentication and single-request lock. The
+    local runtime supplies it directly, and the CLI can inject it with
+    ``--record-fn module:factory``.
+    With ``allow_corpus=True``, omitted/null paper_id selects the corpus and
+    callbacks receive None. The default preserves the paper-required contract.
     """
     if retriever is not None and record_fn is not None:
         raise ValueError("pass either retriever or record_fn, not both")
@@ -430,14 +437,11 @@ def create_app(
                 detail="'question' must be a non-empty string (or send 'record')",
             )
         paper_id = body.get("paper_id")
-        if not isinstance(paper_id, str) or not paper_id.strip():
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    "'paper_id' is required for a free-form question: QASPER "
-                    "retrieval is paper-scoped"
-                ),
-            )
+        if paper_id is None:
+            if not allow_corpus:
+                raise HTTPException(status_code=400, detail="paper_id is required: this service does not support corpus search")
+        elif not isinstance(paper_id, str) or not paper_id.strip():
+            raise HTTPException(status_code=400, detail="paper_id must be a nonempty string or null")
         if retriever is None and record_fn is None:
             raise HTTPException(
                 status_code=503,
@@ -450,8 +454,20 @@ def create_app(
             )
         return {
             "question": question.strip(),
-            "paper_id": paper_id.strip(),
+            "paper_id": paper_id.strip() if paper_id is not None else None,
             "request_id": body.get("request_id"),
+        }
+
+    def _search_block(record: Mapping[str, Any]) -> dict[str, Any]:
+        """The UI's scope line: which paper (or corpus) and which papers sourced."""
+        return {
+            "scope": "corpus" if record.get("paper_id") is None else "paper",
+            "paper_id": record.get("paper_id"),
+            "source_papers": sorted({
+                (hit.get("passage") or hit).get("paper_id")
+                for hit in record.get("retrieved_passages", [])
+                if isinstance(hit, Mapping) and (hit.get("passage") or hit).get("paper_id")
+            }),
         }
 
     def _answer_from_record_fn(parsed: Mapping[str, Any]) -> dict[str, Any]:
@@ -464,7 +480,9 @@ def create_app(
         is deliberate, because the alternative is generating twice per click.
         """
         try:
-            record = record_fn(parsed["question"], parsed["paper_id"])
+            record = record_fn(
+                parsed["question"], parsed["paper_id"], top_k, parsed["request_id"]
+            )
         except BackendNotAvailable:
             raise
         except HTTPException:
@@ -504,7 +522,7 @@ def create_app(
                 f"ui-{int(time.time() * 1000)}"
             )
         try:
-            return answer_record(pipeline, record)
+            answer = answer_record(pipeline, record)
         except BackendNotAvailable:
             raise
         except Exception as exc:  # noqa: BLE001 - the record came from the hook
@@ -515,6 +533,12 @@ def create_app(
                     f"{type(exc).__name__}: {exc}"
                 ),
             ) from exc
+        if isinstance(record.get("critic_log"), list):
+            # Preserve fresh critic diagnostics for P6 without changing result's
+            # canonical five keys or sending the full retrieved corpus back.
+            answer.setdefault("agent", {})["critic_log"] = record["critic_log"]
+        answer["search"] = _search_block(record)
+        return answer
 
     def _one_at_a_time(parsed: Mapping[str, Any]) -> dict[str, Any]:
         """Run retrieval and generation under one lock.
@@ -534,29 +558,30 @@ def create_app(
             )
         try:
             if "record" in parsed:
-                return answer_record(pipeline, dict(parsed["record"]))
-            if record_fn is not None:
+                record = dict(parsed["record"])
+            elif record_fn is not None:
                 return _answer_from_record_fn(parsed)
-
-            # record_fn is None, so _parse_body guaranteed a retriever.
-            hits = retriever(parsed["question"], parsed["paper_id"], top_k)
-            if not isinstance(hits, Sequence) or isinstance(hits, (str, bytes)):
-                raise HTTPException(
-                    status_code=500,
-                    detail=(
-                        "the configured retriever returned "
-                        f"{type(hits).__name__}; expected a list of hits"
-                    ),
-                )
-            record = {
-                "question": parsed["question"],
-                "question_id": parsed["request_id"]
-                or f"ui-{int(time.time() * 1000)}",
-                "paper_id": parsed["paper_id"],
-                "retrieval_round": 1,
-                "retrieved_passages": list(hits),
-            }
-            return answer_record(pipeline, record)
+            else:
+                hits = retriever(parsed["question"], parsed["paper_id"], top_k)
+                if not isinstance(hits, Sequence) or isinstance(hits, (str, bytes)):
+                    raise HTTPException(
+                        status_code=500,
+                        detail=(
+                            "the configured retriever returned "
+                            f"{type(hits).__name__}; expected a list of hits"
+                        ),
+                    )
+                record = {
+                    "question": parsed["question"],
+                    "question_id": parsed["request_id"]
+                    or f"ui-{int(time.time() * 1000)}",
+                    "paper_id": parsed["paper_id"],
+                    "retrieval_round": 1,
+                    "retrieved_passages": list(hits),
+                }
+            answer = answer_record(pipeline, record)
+            answer["search"] = _search_block(record)
+            return answer
         except (ValueError, TypeError) as exc:
             # A malformed record means the caller and P5 disagree about the
             # contract. That is a client error, and it must not look like a
@@ -577,6 +602,7 @@ def create_app(
             "prompt_version": prompt_version,
             "retrieval": retriever is not None or record_fn is not None,
             "agent": record_fn is not None,
+            "corpus_search": allow_corpus,
             "passage_text": bool(passages),
             "top_k": top_k,
             "papers": len(papers),
@@ -689,8 +715,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--record-fn",
         default=None,
         help=(
-            "'module:factory' returning record_fn(question, paper_id); the "
-            "factory receives the pipeline and returns the pre-answer export"
+            "'module:factory' returning record_fn(question, paper_id, top_k, "
+            "request_id); the factory receives the pipeline and returns the "
+            "pre-answer export"
         ),
     )
     parser.add_argument(

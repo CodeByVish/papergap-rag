@@ -62,6 +62,8 @@ class CriticOutput(BaseModel):
     gap_label: GapLabel
     missing_components: list[str] = Field(default_factory=list)
     reason: str
+    supporting_passage_ids: list[str] = Field(default_factory=list)
+    evidence_quote: str = ""
 
 
 class AgentState(BaseModel):
@@ -77,7 +79,7 @@ class AgentState(BaseModel):
     """
 
     question: str
-    paper_id: str
+    paper_id: str | None  # v0-proposed: None searches the corpus; str filters one paper.
     question_id: str | None = None  # join key for P5/P6; the agent never reads it
     question_type: QuestionType | None = None
     required_components: list[str] = Field(default_factory=list)

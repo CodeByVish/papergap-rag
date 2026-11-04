@@ -1,0 +1,6 @@
+-r requirements-ui.txt
+-r requirements-p2.txt
+fastapi>=0.110,<1
+uvicorn>=0.29,<1
+langgraph>=1,<2
+python-dotenv>=1,<2
