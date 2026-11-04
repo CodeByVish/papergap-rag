@@ -19,7 +19,7 @@ paper cannot answer (`INSUFFICIENT_INFORMATION`). Every round is logged.
 | Planner | `planner.py` | Rule-based: question type (factual, method, result, comparison, limitation) and structured evidence requirements. Never predicts `unanswerable`; the question text cannot show it. |
 | Retrieve | `nodes.py` | Calls the injected `retrieve(query, paper_id, top_k)`; merges and dedupes passages by opaque `passage_id`. With a `section_selector` it scopes the search and, if that finds nothing, repeats the round over the whole paper. |
 | Evidence mapper | `nodes.py` | Maps each requirement to passages by section hint or keywords. **Weak and advisory**, see below. |
-| Critic | `critic.py` | LLM verdict `{sufficient, gap_label, missing_components, reason}`, parsed and validated deterministically, with a rule-based fallback. |
+| Critic | `critic.py` | LLM verdict `{sufficient, gap_label, supporting_passage_ids, missing_components, reason}`, parsed and validated deterministically (a "sufficient" verdict must cite retrieved passages), with a rule-based fallback. It sees each passage in full (up to 3,000 characters) and judges sufficiency as "states a concrete fact the answer needs; partial counts". A retry that brings no new passage reuses the previous verdict (`source` "reused") instead of asking the model again. |
 | Rewriter | `rewriter.py` | One action per gap label; adds the paper's own recurring terms and content words from the LLM critic's missing components (its commentary on the passages is dropped); never repeats an earlier query. |
 | Section selector | `sections.py` | Optional. Picks this paper's own section whose name matches the gap's hints; never repeats a section. |
 
@@ -93,7 +93,7 @@ Reported per arm: evidence recall before and after retries, average rounds, crit
 recovery (first verdict insufficient, final sufficient), full-recall recovery, unnecessary
 retries (all gold already retrieved), ineffective retries (no new gold), redundant retries
 (nothing new at all), refusal rate (and correct/false refusals given answerability),
-critic fallback rate, answer errors, and a paired bootstrap recall gain.
+critic fallback rate and the share of verdicts reused, answer errors, and a paired bootstrap recall gain.
 
 The adaptive arm can collect more passages than the static one (up to top-k x 3). To check that
 a recall gain is not just extra text, add the control arm `--arms static adaptive static-wide`:
@@ -121,7 +121,12 @@ agent searches must be built on the same 365/40 corpus. The test split is refuse
   satisfied by gold evidence 55.6% of the time and by the five closest non-evidence
   paragraphs 79.2% (`scripts/evaluate_planner.py`). `evidence_map` is advisory, and the
   rule-based critic accepts most questions in round 1.
-- The Qwen critic prompt has not yet been validated on the real model.
+- The first two real critic runs (jobs 50550 and 50701, 40 development questions) gave valid JSON every
+  time, but the critic was over-strict: in 23 of its 39 "insufficient" verdicts all gold passages were
+  already retrieved, and it saw only the first 1,200 characters of each passage, cutting 28% of the
+  text of the gold passages. The calibrated prompt, the 3,000-character view and the cited-passage
+  check were written for that and have **not yet been run on the real model**; compare them with
+  `runs/p4/critic-second-40` on the same items before relying on them.
 - Exact section names such as "Results" exist in about 20% of papers. The selector matches
   hints against each paper's own names (about 86% of papers have a result-like section).
 - Reranker caches make repeat latency unrepresentative; use a fresh cache path for timings.

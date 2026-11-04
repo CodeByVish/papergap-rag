@@ -181,7 +181,8 @@ def compute_metrics(
 
     answerable = [r for r in ok if by_id[r["question_id"]].answerable is True]
     unanswerable = [r for r in ok if by_id[r["question_id"]].answerable is False]
-    critic_entries = [e for r in ok for e in r["critic_log"]]
+    all_entries = [e for r in ok for e in r["critic_log"]]
+    critic_entries = [e for e in all_entries if e["source"] != "reused"]  # asked the model
 
     return {
         "questions": len(records),
@@ -201,6 +202,7 @@ def compute_metrics(
         "refusal_rate": _rate(sum(refuses(r) for r in ok), len(ok)),
         "correct_refusal_rate": _rate(sum(refuses(r) for r in unanswerable), len(unanswerable)),
         "false_refusal_rate": _rate(sum(refuses(r) for r in answerable), len(answerable)),
+        "critic_reused_rate": _rate(len(all_entries) - len(critic_entries), len(all_entries)),
         "critic_llm_rate": _rate(sum(e["source"] == "llm" for e in critic_entries), len(critic_entries)),
         "critic_fallback_rate": _rate(
             sum(e["source"] == "fallback" for e in critic_entries), len(critic_entries)

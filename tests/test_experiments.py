@@ -42,7 +42,8 @@ class OracleCritic:
     def complete(self, prompt: str) -> str:
         if "[gold]" in prompt:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
-                               "missing_components": [], "reason": "Result found."})
+                               "missing_components": [], "reason": "Result found.",
+                               "supporting_passage_ids": ["gold"]})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 
@@ -93,6 +94,20 @@ def test_metrics_adaptive_shows_recovery_and_retry_quality(adaptive_records):
     assert m["gap_detected"] == 3 and m["critic_gap_recovery_rate"] == 1.0
     assert m["retries"] == 3 and m["mean_rounds"] == 2
     assert m["critic_llm_rate"] == 1.0 and m["critic_fallback_rate"] == 0.0
+    assert m["critic_reused_rate"] == 0.0
+
+
+def test_reused_verdicts_are_counted_apart_from_model_calls():
+    entry = lambda source: {"round": 1, "source": source, "sufficient": False,
+                            "gap_label": "MISSING_RESULT", "errors": [], "raw_replies": []}
+    record = {"question_id": "q1", "paper_id": "p", "question": "?", "retrieval_round": 3,
+              "sufficient": False, "gap_label": "MISSING_RESULT", "elapsed_s": 1.0,
+              "retrieval_log": [], "retrieved_passages": [],
+              "critic_log": [entry("llm"), entry("reused"), entry("reused")]}
+    items = [ExperimentItem(question_id="q1", question="?", paper_id="p")]
+    m = compute_metrics([record], items)
+    assert m["critic_reused_rate"] == pytest.approx(2 / 3)
+    assert m["critic_llm_rate"] == 1.0  # of the calls that asked the model
 
 
 def test_unnecessary_and_ineffective_retries_counted_against_gold(adaptive_records):

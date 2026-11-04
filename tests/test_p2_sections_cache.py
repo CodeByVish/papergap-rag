@@ -158,12 +158,16 @@ def test_critic_gap_reaches_section_retry_without_classifier_override():
                         "reason": "Need setup details.",
                     }
                 )
+            import re
+
+            cited = re.search(r"\[([^\]\s]+)\] section:", prompt).group(1)
             return json.dumps(
                 {
                     "sufficient": True,
                     "gap_label": "NONE",
                     "missing_components": [],
                     "reason": "Setup evidence is now present.",
+                    "supporting_passage_ids": [cited],
                 }
             )
 
@@ -176,8 +180,10 @@ def test_critic_gap_reaches_section_retry_without_classifier_override():
         )
 
     critic = Critic()
+    # top_k=1 so the scoped retry brings in a passage the first round did not: the
+    # critic is only asked again when its input changed.
     graph = build_agent_graph(
-        hybrid.retrieve, critic_client=critic, section_selector=selector
+        hybrid.retrieve, top_k=1, critic_client=critic, section_selector=selector
     )
     assert "gap_classifier" not in graph.get_graph().nodes
     result = graph.invoke(

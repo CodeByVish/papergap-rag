@@ -34,7 +34,8 @@ class OracleChat:
         self.calls += 1
         if "[gold]" in messages[-1]["content"]:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
-                               "missing_components": [], "reason": "Result found."})
+                               "missing_components": [], "reason": "Result found.",
+                               "supporting_passage_ids": ["gold"]})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 
