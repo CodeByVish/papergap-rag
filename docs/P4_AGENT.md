@@ -222,8 +222,8 @@ not at 5 alone. Dev results of 32 questions have wide intervals; the held-out se
 - The rule-based mapper carries no usable signal. `scripts/evaluate_planner.py` checks whether a plan is
   satisfied by gold evidence more often than by lexical lookalikes of the same paper. Compared with as many
   lookalikes as there are gold units (the fair comparison; "any of five" overstates the gap), on the 365/40
-  chunks the agent actually maps: train 67.4% for gold against 69.6% for lookalikes, validation 70.7% against
-  71.6%. On raw paragraphs gold is 54.9% against 60.9% (train, n=2,095). Per type there is some signal for
+  chunks the agent actually maps: train 67.4% for gold against 69.6% for lookalikes, validation (P3's 200 held-out questions left
+  out with `--exclude-ids`, n=810) 70.5% against 72.0%. On raw paragraphs gold is 54.9% against 60.9% (train, n=2,095). Per type there is some signal for
   result (81.0% against 70.7%) and comparison (72.8% against 63.6%) questions, none for factual ones (65.2%
   against 73.9%), the largest class. `evidence_map` is advisory, and the rule-based critic accepts most
   questions in round 1. Chunk level uses `--passages`; a chunk is gold if it contains a whole evidence

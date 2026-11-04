@@ -73,8 +73,15 @@ def load_chunks(path: Path) -> dict[str, list[tuple[str, str]]]:
     return {paper: [(s, t) for _, s, t in sorted(chunks)] for paper, chunks in by_paper.items()}
 
 
-def evaluate(papers: list[dict], chunks_by_paper: dict[str, list[tuple[str, str]]] | None = None):
-    """(questions, type counts, per-type [questions, gold-accepted, hard-negative-accepted])."""
+def evaluate(
+    papers: list[dict],
+    chunks_by_paper: dict[str, list[tuple[str, str]]] | None = None,
+    exclude: frozenset[str] = frozenset(),
+):
+    """(questions, type counts, per-type [questions, gold, 5 lookalikes, size-matched lookalikes]).
+
+    Questions whose id is in `exclude` (e.g. a frozen held-out list) are skipped entirely.
+    """
     types: collections.Counter = collections.Counter()
     by_type = collections.defaultdict(lambda: [0, 0, 0, 0])
     total = 0
@@ -92,6 +99,8 @@ def evaluate(papers: list[dict], chunks_by_paper: dict[str, list[tuple[str, str]
         else:
             units = []
         for qa in paper["qas"]:
+            if qa.get("question_id") in exclude:
+                continue
             total += 1
             question = qa["question"]
             plan = build_plan(question)
@@ -137,6 +146,8 @@ def main() -> None:
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data/raw/qasper")
     parser.add_argument("--passages", type=Path,
                         help="corpus JSONL (365/40 chunks): evaluate on chunks, not paragraphs")
+    parser.add_argument("--exclude-ids", type=Path,
+                        help="JSONL with a question_id per line (e.g. the frozen held-out list) to leave out")
     args = parser.parse_args()
 
     papers = [
@@ -144,10 +155,16 @@ def main() -> None:
         for line in (args.data_dir / f"{args.split}.jsonl").read_text().splitlines()
     ]
     chunks = load_chunks(args.passages) if args.passages else None
-    total, types, by_type = evaluate(papers, chunks)
+    exclude = frozenset(
+        json.loads(line)["question_id"]
+        for line in args.exclude_ids.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ) if args.exclude_ids else frozenset()
+    total, types, by_type = evaluate(papers, chunks, exclude)
 
     unit = "chunks" if chunks is not None else "paragraphs"
-    print(f"[{args.split}] questions={total}  units={unit}")
+    print(f"[{args.split}] questions={total}  units={unit}"
+          + (f"  excluded={len(exclude)} ids" if exclude else ""))
     print("type distribution:", {k: f"{v / total:.1%}" for k, v in types.most_common()})
     print("plan accepted by gold evidence | by top-5 lexical hard negatives | by as many "
           "hard negatives as gold units")
