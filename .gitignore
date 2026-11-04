@@ -51,3 +51,6 @@ ProjectPlan.pdf
 # Local browser verification artifacts
 /output/playwright/
 /.playwright-cli/
+
+# Separate optional P6 evaluation judge environment
+/.venv-p6-judge/

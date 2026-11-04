@@ -1,0 +1,9 @@
+{
+  "synthetic-model": {
+    "input_per_million": 2,
+    "output_per_million": 5,
+    "currency": "USD",
+    "date": "2026-11-05",
+    "source": "Synthetic teaching prices, not provider prices"
+  }
+}

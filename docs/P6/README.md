@@ -1,5 +1,9 @@
 # P6 UI integration documentation
 
+Evaluation: start with the [concrete deliverables](EVALUATION_EXECUTION_PLAN.md),
+[team usage handoff](EVALUATION_TEAM_HANDOFF.md), and
+[guided notebook](../../notebooks/p6_evaluation_walkthrough.ipynb).
+
 Updated: 2026-10-29 (Singapore). Branch: `P6/UI-port-integration`.
 Reviewed runtime code: `4584e2c`, rebased onto `origin/main` at `97e33b2`.
 P5 service/contract implementation: `ef5f7a3`, included in that main revision.

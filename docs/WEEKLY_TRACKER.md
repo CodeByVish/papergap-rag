@@ -645,3 +645,29 @@ adapter/generation/Qwen regression: 34 passed. See
 [P5 UI handoff](P6/P6_UI_handoff.md). Actual P5 mock/live integration is pending
 its formal contract, service and input artifacts; no team freeze or real E2E
 completion is implied.
+
+## P6 offline evaluation package — 5 November 2026
+
+Local implementation on `P6/evaluation` provides pinned P3 annotation auditing and
+frozen-input export, guarded gold finalization, saved-ranking scoring, QA scoring,
+reviewed P5 context reconstruction, optional RAGAS, performance/cost summaries and
+paper-clustered matched comparisons. Producer interfaces are unchanged. Shared
+schemas and split mappings remain `v0-proposed`; this is not a team freeze.
+
+Usage and input/output contracts: [P6 evaluation handoff](P6/EVALUATION_TEAM_HANDOFF.md).
+Concrete deliverables: [implementation plan](P6/EVALUATION_EXECUTION_PLAN.md).
+The [walkthrough](../notebooks/p6_evaluation_walkthrough.ipynb) runs synthetic examples.
+Verification: 87 tests passed across P6, P1/P2 evaluation, agent experiment and
+generation Week 6 suites; all five walkthrough code cells passed; new Python Ruff
+checks passed. Real pinned P3 audit/export ran locally with 1,665/1,853 matches
+(89.854%) and 188 disagreements. Submission-history/independence review,
+third-person adjudication, actual final inference outputs, freeze decisions and
+live judge access/validation remain human/runtime inputs. No final quality scores
+are reported. Changes remain local pending teammate review and PR integration.
+
+P6 follow-up on 5 November adds `evidence` scoring for static@5/@8/@10 and
+adaptive cumulative mapped-passage recall, with validated gold/corpus hashes,
+separate failure-inclusive/successful-only denominators, and side-specific K
+selection in comparisons. Updated verification: 89 tests passed. Final-set use
+history, isolation policy, runner compatibility and actual approvals remain team
+decisions; see [held-out coordination](P6/HELD_OUT_COORDINATION.md).
