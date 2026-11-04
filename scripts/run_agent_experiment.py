@@ -38,9 +38,12 @@ from src.agent.experiments import (
     AnswerFn,
     ExperimentItem,
     compute_metrics,
+    depth_recall,
+    format_baseline_section,
     format_table,
     matched_recall_gain,
     paired_recall_gain,
+    refusal_rule_check,
     run_system,
 )
 
@@ -233,12 +236,17 @@ def summarise(arm_records: dict[str, list[dict[str, Any]]], items: Sequence[Expe
     if {"adaptive", WIDE_ARM} <= set(arm_records):
         summary["matched_recall_gain"] = matched_recall_gain(
             arm_records[WIDE_ARM], arm_records["adaptive"], items)
+    if WIDE_ARM in arm_records:
+        summary["static_depth_recall"] = depth_recall(arm_records[WIDE_ARM], items)
+    if "adaptive" in arm_records:
+        summary["refuse_if_unsatisfied"] = refusal_rule_check(results["adaptive"])
     return summary
 
 
 def write_outputs(out_dir: Path, summary: dict[str, Any], manifest: dict[str, Any]) -> None:
     (out_dir / "metrics.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    (out_dir / "metrics.md").write_text(format_table(summary["metrics"]) + "\n", encoding="utf-8")
+    report = format_table(summary["metrics"]) + format_baseline_section(summary) + "\n"
+    (out_dir / "metrics.md").write_text(report, encoding="utf-8")
     (out_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 

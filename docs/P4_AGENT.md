@@ -93,13 +93,17 @@ Reported per arm: evidence recall before and after retries, average rounds, crit
 recovery (first verdict insufficient, final sufficient), full-recall recovery, unnecessary
 retries (all gold already retrieved), ineffective retries (no new gold), redundant retries
 (nothing new at all), refusal rate (and correct/false refusals given answerability),
-critic fallback rate and the share of verdicts reused, answer errors, and a paired bootstrap recall gain.
+critic fallback rate and the share of verdicts reused, mean passages read, answer errors, and a paired bootstrap recall gain.
 
 The adaptive arm can collect more passages than the static one (up to top-k x 3). To check that
 a recall gain is not just extra text, add the control arm `--arms static adaptive static-wide`:
 a one-round static run with `--wide-k` passages (default top-k x (max-retries + 1)). The summary
 then also holds `matched_recall_gain`: per question, adaptive final recall minus static recall
 over the same number of passages, with a bootstrap CI.
+With the `static-wide` arm `metrics.md` also lists the plain question at depth 3, 5, 8, 10 and 15
+(`static_depth_recall`, one run, no extra cost) with the adaptive arm's recall and mean passages
+beneath it, and prices the refusal rule below (`refuse_if_unsatisfied`). Compare the adaptive arm with
+the row of the same depth, never with top-5 alone.
 Recall needs gold evidence mapped to passage IDs (P3); without it recall is `n/a`.
 `--from-qa` runs use an approximation (`approximate_gold`). For gold from P3's mapping
 (`gold-evidence-to-passage-v0-proposed`) build an items file and pass it with `--items`:
@@ -144,13 +148,39 @@ rebuilt 365/40 corpus and reproducible with `scripts/evaluate_retrieval_depth.py
 
 ## Abstention
 
-The critic returned INSUFFICIENT_INFORMATION for 2 of 81 verdicts, so only 1 of 8 unanswerable
-questions was refused (and 1 of 32 answerable ones). On job 50701 the alternative rule "refuse if the
-critic is still unsatisfied after the last round" would refuse all 8 unanswerable questions but also
-12 of 32 answerable ones (37.5%), because the critic was over-strict. It is not enabled.
-Every question the critic called sufficient was answerable, so the rule becomes usable once
-`unsatisfied_rate_answerable` (reported per run beside `unsatisfied_rate_unanswerable`) falls
-well below that; decide after the next run of the calibrated critic.
+Not enabled. The critic returns INSUFFICIENT_INFORMATION rarely (1 of 69 verdicts in job 50977), so on its
+own it refuses 1 of 8 unanswerable questions. The alternative rule, "refuse if the critic is still
+unsatisfied after the last round", was priced on three runs:
+
+| run | refuses unanswerable | refuses answerable (wrongly) |
+| --- | ---: | ---: |
+| job 50701, original critic | 8/8 | 12/32 |
+| job 50977, calibrated critic | 4/8 | 5/32 (15.6%) |
+
+Proposed gate, to be agreed by the team and fixed before any held-out run: the rule is enabled only if,
+on development questions, it refuses at least 50% of the unanswerable ones and at most 5% of the
+answerable ones (`PROPOSED_REFUSAL_MIN_CORRECT`, `PROPOSED_REFUSAL_MAX_FALSE`). `metrics.md` and
+`metrics.json` report `meets_proposed_gate` for every run. Until it holds, refusal stays with P5's
+generator, which refuses on its own evidence. Tune only on development questions; once the rule and
+thresholds are frozen they must not change after the held-out labels are read.
+
+## What the results support
+
+Job 50977, 40 development questions (32 with gold), Qwen3-8B critic, adaptive against plain retrieval:
+
+| claim | supported? | evidence |
+| --- | --- | --- |
+| Adaptive recovers more gold than static top-5 | Weakly | 0.740 to 0.802; paired gain +0.0625, 95% CI [0.0, 0.156]; two questions |
+| Adaptive beats plain retrieval reading the same number of passages | **No** | matched gain -0.010, CI [-0.094, 0.083] at 5.7 passages |
+| Adaptive beats a well-set static baseline | **No** | plain top-8 0.885, top-10 0.974, against 0.802 |
+| The calibrated critic wastes fewer retries | Yes | retries 41 to 27, unnecessary 55.6% to 38.9%, model calls fewer |
+| The loop reliably refuses unanswerable questions | **No** | 1 of 8 refused by the critic; the unsatisfied rule fails the gate |
+
+Write the results as: the critic and loop spend fewer passages and model calls than before and match
+plain retrieval at equal budget, but on this slice reading more passages up front is better than retrying.
+Do not write that adaptive retrieval improves recall unless a later run clears the matched-budget
+comparison. Report the static baseline at depth 5, 8 (the generator takes at most 8 passages) and 10,
+not at 5 alone. Dev results of 32 questions have wide intervals; the held-out set decides.
 
 ## Known limits
 
