@@ -141,11 +141,12 @@ class CriticClient:
     """Reports a missing result until a results passage has been retrieved."""
 
     def complete(self, prompt: str) -> str:
-        match = re.search(r"\[(p\d+)\] section: Experiments ::: Results", prompt)
+        match = re.search(r"\[(p\d+)\] section: Experiments ::: Results\n((?:\S+\s+){6})", prompt)
         found = match is not None
         return json.dumps({
             "sufficient": found,
             "supporting_passage_ids": [match.group(1)] if found else [],
+            "evidence_quote": match.group(2).strip() if found else "",
             "gap_label": "NONE" if found else "MISSING_RESULT",
             "missing_components": [] if found else ["reported accuracy"],
             "reason": "Results found." if found else "No numbers yet.",

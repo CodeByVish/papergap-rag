@@ -15,6 +15,8 @@ safety net, not a sufficiency judge.
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
@@ -77,6 +79,48 @@ def pool_view(state: AgentState) -> list[ViewedPassage]:
     ]
 
 
+_WORD = re.compile(r"[a-z0-9]+(?:[.,%'-][a-z0-9]+)*")
+MIN_QUOTE_WORDS = 4
+QUOTE_OVERLAP = 0.8
+
+
+def _words(text: str) -> list[str]:
+    return _WORD.findall(unicodedata.normalize("NFKC", text).lower())
+
+
+def _segment_supported(words: list[str], text_words: list[str]) -> bool:
+    """`words` occur contiguously in the text, or share most of their trigrams with it."""
+    if not words:
+        return True
+    n = len(words)
+    if any(text_words[i : i + n] == words for i in range(len(text_words) - n + 1)):
+        return True
+    if n < 3:
+        return False
+    wanted = {tuple(words[i : i + 3]) for i in range(n - 2)}
+    have = {tuple(text_words[i : i + 3]) for i in range(len(text_words) - 2)}
+    return len(wanted & have) / len(wanted) >= QUOTE_OVERLAP
+
+
+def quote_supported(quote: str, texts: Sequence[str]) -> bool:
+    """True if `quote` was copied from one of `texts`, allowing small edits.
+
+    The quote must hold at least MIN_QUOTE_WORDS words. Each part of it (a "..." or "…"
+    elision splits it into parts) must appear in one text as a run of words, or share
+    QUOTE_OVERLAP of its word trigrams with that text, which tolerates dropped
+    punctuation or one changed word.
+    """
+    parts = [_words(part) for part in re.split(r"\.\.\.|\u2026", quote)]
+    parts = [part for part in parts if part]
+    if sum(len(part) for part in parts) < MIN_QUOTE_WORDS:
+        return False
+    for text in texts:
+        text_words = _words(text)
+        if all(_segment_supported(part, text_words) for part in parts):
+            return True
+    return False
+
+
 class CriticOutputError(ValueError):
     """The model reply could not be parsed or failed deterministic validation."""
 
@@ -91,6 +135,7 @@ Reply with one JSON object and nothing else, in exactly this shape:
   "sufficient": true or false,
   "gap_label": one of {labels},
   "supporting_passage_ids": [handles of the passages that state the facts the answer needs, for example "p1", "p3"; empty if none do],
+  "evidence_quote": "one sentence copied word for word from a cited passage that states the key fact of the answer; empty if not sufficient",
   "missing_components": [the specific facts that appear in none of the passages, empty if sufficient],
   "reason": "one or two sentences"
 }}
@@ -98,10 +143,11 @@ Reply with one JSON object and nothing else, in exactly this shape:
 What "sufficient" means:
 - The passages together state the concrete facts needed to answer the question (a name, a number, a dataset, a baseline, a step of the method, a stated limitation).
 - A partial but concrete answer counts. Do not mark the evidence insufficient because a passage is short, is not exhaustive, or words things differently from the question.
-- Mark it insufficient only when you can name a specific fact the answer needs that no passage states.
+- You must be able to quote it: copy the sentence that states the key fact, word for word, into evidence_quote. If the question asks for a specific value, name or list, the quote must contain it.
+- A passage that is only about the same topic does not count, and neither does one about a different dataset, model or quantity than the one asked about. If you cannot quote a sentence that states the fact, the evidence is insufficient.
 
 Rules:
-- If sufficient is true, gap_label must be "NONE", missing_components must be [] and supporting_passage_ids must list at least one passage.
+- If sufficient is true, gap_label must be "NONE", missing_components must be [], supporting_passage_ids must list at least one passage and evidence_quote must be a sentence copied from one of them.
 - If sufficient is false, gap_label must be one of the other labels:
 {label_help}
 - Write each missing component as a short noun phrase for the missing fact (for example "names of the baseline systems"), never as a remark about the passages such as "not clearly described"."""
@@ -197,12 +243,17 @@ def parse_critic_output(raw: str) -> CriticOutput:
 
 
 def validate_critic_output(
-    output: CriticOutput, state: AgentState, shown: Sequence[str] | None = None
+    output: CriticOutput,
+    state: AgentState,
+    shown: Sequence[str] | None = None,
+    bodies: dict[str, str] | None = None,
 ) -> None:
     """Reject replies that are contradictory or ignore what was shown.
 
     `shown` are the names the reply may cite. The node passes the handles of the
     passages in the critic's view; the default is every retrieved passage id.
+    `bodies` maps each of those names to the text shown under it: with it, a sufficient
+    verdict must quote a sentence that really occurs in one of the passages it cites.
     """
     problems = []
     if shown is None:
@@ -224,6 +275,12 @@ def validate_critic_output(
             problems.append("sufficient=true but no passages were retrieved")
         elif not output.supporting_passage_ids:
             problems.append("sufficient=true requires supporting_passage_ids")
+        elif bodies is not None:
+            cited = [bodies[i] for i in output.supporting_passage_ids if i in bodies]
+            if not output.evidence_quote.strip():
+                problems.append("sufficient=true requires evidence_quote")
+            elif not quote_supported(output.evidence_quote, cited):
+                problems.append("evidence_quote does not occur in the cited passages")
     elif output.gap_label is GapLabel.NONE:
         problems.append("sufficient=false requires a gap_label other than NONE")
     if problems:
@@ -292,6 +349,7 @@ def make_critic_node(
         viewed = view(state)
         passage_ids = [shown.passage_id for shown in viewed]
         handles = [handle_for(position) for position in range(len(viewed))]
+        bodies = [shown.body for shown in viewed]
         previous = state.critic_log[-1] if state.critic_log else None
         if (
             previous is not None
@@ -322,7 +380,9 @@ def make_critic_node(
                     raw_replies.append(raw[:MAX_RAW_REPLY_CHARS])
                     output = parse_critic_output(raw)
                     output = _with_handles_normalised(output)
-                    validate_critic_output(output, state, handles)
+                    validate_critic_output(
+                        output, state, handles, dict(zip(handles, bodies, strict=True))
+                    )
                     output = _with_ids_resolved(output, dict(zip(handles, passage_ids)))
                     source = "llm"
                     break
@@ -339,6 +399,7 @@ def make_critic_node(
             "gap_label": output.gap_label.value,
             "passage_ids": passage_ids,
             "supporting_passage_ids": output.supporting_passage_ids,
+            "evidence_quote": output.evidence_quote,
             "missing_components": output.missing_components,
             "reason": output.reason,
             "errors": errors,

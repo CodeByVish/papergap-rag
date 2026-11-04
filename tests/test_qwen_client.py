@@ -21,7 +21,8 @@ VERDICT = {"sufficient": False, "gap_label": "MISSING_RESULT",
            "missing_components": ["reported accuracy"], "reason": "No numbers."}
 GOOD = json.dumps(VERDICT)
 GOOD_YES = json.dumps({"sufficient": True, "gap_label": "NONE", "missing_components": [],
-                       "reason": "Result found.", "supporting_passage_ids": ["p2"]})
+                       "reason": "Result found.", "supporting_passage_ids": ["p2"],
+                       "evidence_quote": "We encode passages with a bi-LSTM encoder"})
 
 
 class FakeGenerator:
@@ -39,7 +40,7 @@ class FakeGenerator:
         return self.replies.pop(0)
 
 
-def hit(pid="p1", section="Method", text="We encode passages.") -> RetrievedPassage:
+def hit(pid="p1", section="Method", text="We encode passages with a bi-LSTM encoder.") -> RetrievedPassage:
     return RetrievedPassage(
         passage=Passage(passage_id=pid, paper_id="paper", title="t", section=section,
                         chunk_number=0, text=text),

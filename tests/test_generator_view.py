@@ -20,7 +20,7 @@ from src.generation.prompts.grounded_qa import PromptConfig
 from src.retrieval.schemas import Passage, RetrievedPassage, SourceScore
 
 
-def hit(n: int, text: str = "short text") -> RetrievedPassage:
+def hit(n: int, text: str = "short text for the view test") -> RetrievedPassage:
     return RetrievedPassage(
         passage=Passage(passage_id=f"pid-{n:02d}", paper_id="paper", title="t",
                         section="Results", chunk_number=n, text=text),
@@ -39,7 +39,7 @@ def state_with(*hits) -> AgentState:
 def reply(sufficient: bool, *cited: str) -> str:
     return json.dumps({
         "sufficient": sufficient, "gap_label": "NONE" if sufficient else "MISSING_RESULT",
-        "supporting_passage_ids": list(cited),
+        "supporting_passage_ids": list(cited), "evidence_quote": "short text for the view test",
         "missing_components": [] if sufficient else ["reported accuracy"], "reason": "r"})
 
 

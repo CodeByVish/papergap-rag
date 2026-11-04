@@ -19,7 +19,7 @@ paper cannot answer (`INSUFFICIENT_INFORMATION`). Every round is logged.
 | Planner | `planner.py` | Rule-based: question type (factual, method, result, comparison, limitation) and structured evidence requirements. Never predicts `unanswerable`; the question text cannot show it. |
 | Retrieve | `nodes.py` | Calls the injected `retrieve(query, paper_id, top_k)`; merges and dedupes passages by opaque `passage_id`. With a `section_selector` it scopes the search and, if that finds nothing, repeats the round over the whole paper. |
 | Evidence mapper | `nodes.py` | Maps each requirement to passages by section hint or keywords. **Weak and advisory**, see below. |
-| Critic | `critic.py` | LLM verdict `{sufficient, gap_label, supporting_passage_ids, missing_components, reason}`, parsed and validated deterministically (a "sufficient" verdict must cite passages it was shown, by short handle `p1`, `p2`, ... that the code maps back to passage ids), with a rule-based fallback. In a runner the critic reads exactly what P5's prompt renders (`--critic-view generator`, the default: `select_passages` and `visible_text` from `src/generation`, today 8 passages cut at 1,200 characters), so a "sufficient" verdict is about text the answer step will see; `--critic-view pool` shows every retrieved passage up to 3,000 characters, for diagnosis only. It judges sufficiency as "states a concrete fact the answer needs; partial counts". A retry that brings no new passage reuses the previous verdict (`source` "reused") instead of asking the model again. |
+| Critic | `critic.py` | LLM verdict `{sufficient, gap_label, supporting_passage_ids, missing_components, reason}`, parsed and validated deterministically (a "sufficient" verdict must cite passages it was shown, by short handle `p1`, `p2`, ... that the code maps back to passage ids) and must quote, word for word, the sentence that states the key fact, which is checked against the text the critic was shown, with a rule-based fallback. In a runner the critic reads exactly what P5's prompt renders (`--critic-view generator`, the default: `select_passages` and `visible_text` from `src/generation`, today 8 passages cut at 1,200 characters), so a "sufficient" verdict is about text the answer step will see; `--critic-view pool` shows every retrieved passage up to 3,000 characters, for diagnosis only. It judges sufficiency as "states a concrete fact the answer needs; partial counts". A retry that brings no new passage reuses the previous verdict (`source` "reused") instead of asking the model again. |
 | Rewriter | `rewriter.py` | One action per gap label. Adds the critic's own content terms for the missing fact (its commentary on the passages is dropped) or, if it gave none, the gap's fixed words, never both; the paper's own recurring terms are added only to avoid repeating an earlier query. Capped at 40 words. |
 | Section selector | `sections.py` | Optional. Picks this paper's own section whose name matches the gap's hints; never repeats a section. |
 
@@ -153,6 +153,16 @@ Every question the critic called sufficient was answerable, so the rule becomes 
 well below that; decide after the next run of the calibrated critic.
 
 ## Known limits
+
+- **A lenient critic.** After the calibration of job 50977 the critic accepted 4 of 8 unanswerable
+  questions and called 6 answerable ones sufficient with gold still missing; 8 of 26 sufficient
+  verdicts cited no gold passage. How much of a question's wording a cited passage shares does not
+  tell these apart (gold-citing 0.0-1.0, lookalike-citing 0.0-1.0), so no lexical guard was added.
+  Instead a sufficient verdict must now quote a sentence that states the key fact and the code checks
+  the quote occurs in the cited text (`quote_supported`, tolerant of punctuation, one changed word
+  and "..." elisions). **Not yet run on the real model.** Watch `critic_fallback_rate` (a model that
+  cannot quote falls back to the rules; above about 10% the instruction needs rewording), the number
+  of unanswerable questions ending sufficient, and `unsatisfied_rate_answerable`.
 
 - **The rewrite is not what limits recall.** Job 50701 was replayed offline (the 365/40 corpus rebuilt,
   the cluster's round-1 and round-2 retrievals reproduced exactly, the critic's recorded verdicts

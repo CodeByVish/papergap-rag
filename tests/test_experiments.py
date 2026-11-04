@@ -45,7 +45,8 @@ class OracleCritic:
         if found:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
                                "missing_components": [], "reason": "Result found.",
-                               "supporting_passage_ids": [found.group(1)]})
+                               "supporting_passage_ids": [found.group(1)],
+                               "evidence_quote": "Our model achieves 82.4 F1 and 91% accuracy"})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 
