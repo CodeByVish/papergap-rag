@@ -51,6 +51,17 @@ class ViewedPassage:
     body: str
 
 
+def handle_for(position: int) -> str:
+    """The short name the critic is shown for the passage at `position` (0-based): p1, p2, ..."""
+    return f"p{position + 1}"
+
+
+def normalise_handle(raw: str) -> str:
+    """Accept "p1", "P1", "[p1]", " 1 " and "p 1" for the handle "p1"."""
+    cleaned = "".join(ch for ch in str(raw).lower() if ch.isalnum())
+    return f"p{cleaned}" if cleaned.isdigit() else cleaned
+
+
 PassageView = Callable[[AgentState], list[ViewedPassage]]
 """Which passages, and how much of each, the critic is shown for a state."""
 
@@ -79,7 +90,7 @@ Reply with one JSON object and nothing else, in exactly this shape:
 {{
   "sufficient": true or false,
   "gap_label": one of {labels},
-  "supporting_passage_ids": [ids of the passages that state the facts the answer needs, exactly as shown in square brackets; empty if none do],
+  "supporting_passage_ids": [handles of the passages that state the facts the answer needs, for example "p1", "p3"; empty if none do],
   "missing_components": [the specific facts that appear in none of the passages, empty if sufficient],
   "reason": "one or two sentences"
 }}
@@ -130,7 +141,7 @@ def build_critic_messages(
         f"- {r.name}: {r.description}" for r in state.evidence_requirements
     ) or "- (none specified)"
     passages = "\n\n".join(
-        f"[{shown.passage_id}] {shown.body}" for shown in view(state)
+        f"[{handle_for(position)}] {shown.body}" for position, shown in enumerate(view(state))
     ) or "(no passages were retrieved)"
     return [
         {
@@ -186,18 +197,16 @@ def parse_critic_output(raw: str) -> CriticOutput:
 
 
 def validate_critic_output(
-    output: CriticOutput, state: AgentState, passage_ids: Sequence[str] | None = None
+    output: CriticOutput, state: AgentState, shown: Sequence[str] | None = None
 ) -> None:
     """Reject replies that are contradictory or ignore what was shown.
 
-    `passage_ids` are the passages the critic was shown (default: everything retrieved).
+    `shown` are the names the reply may cite. The node passes the handles of the
+    passages in the critic's view; the default is every retrieved passage id.
     """
     problems = []
-    shown = (
-        [hit.passage.passage_id for hit in state.retrieved_passages]
-        if passage_ids is None
-        else list(passage_ids)
-    )
+    if shown is None:
+        shown = [hit.passage.passage_id for hit in state.retrieved_passages]
     known = set(shown)
     unknown = [i for i in output.supporting_passage_ids if i not in known]
     if unknown:
@@ -253,6 +262,17 @@ def _ask(client: CriticClient, state: AgentState, view: PassageView) -> str:
     return client.complete(build_critic_prompt(state, view))
 
 
+def _with_handles_normalised(output: CriticOutput) -> CriticOutput:
+    cited = [normalise_handle(h) for h in output.supporting_passage_ids]
+    return output.model_copy(update={"supporting_passage_ids": list(dict.fromkeys(cited))})
+
+
+def _with_ids_resolved(output: CriticOutput, by_handle: dict[str, str]) -> CriticOutput:
+    """Replace the handles the model cited by the real passage ids they stand for."""
+    ids = [by_handle[handle] for handle in output.supporting_passage_ids]
+    return output.model_copy(update={"supporting_passage_ids": ids})
+
+
 def make_critic_node(
     client: CriticClient | None = None,
     max_attempts: int = DEFAULT_ATTEMPTS,
@@ -271,6 +291,7 @@ def make_critic_node(
     def critic_node(state: AgentState) -> dict:
         viewed = view(state)
         passage_ids = [shown.passage_id for shown in viewed]
+        handles = [handle_for(position) for position in range(len(viewed))]
         previous = state.critic_log[-1] if state.critic_log else None
         if (
             previous is not None
@@ -300,7 +321,9 @@ def make_critic_node(
                     raw = _ask(client, state, view)
                     raw_replies.append(raw[:MAX_RAW_REPLY_CHARS])
                     output = parse_critic_output(raw)
-                    validate_critic_output(output, state, passage_ids)
+                    output = _with_handles_normalised(output)
+                    validate_critic_output(output, state, handles)
+                    output = _with_ids_resolved(output, dict(zip(handles, passage_ids)))
                     source = "llm"
                     break
                 except Exception as error:  # noqa: BLE001 - any client/reply failure retries

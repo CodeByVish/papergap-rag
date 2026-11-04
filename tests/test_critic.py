@@ -7,6 +7,7 @@ import pytest
 from src.agent.critic import (
     MAX_PASSAGE_CHARS,
     CriticOutputError,
+    normalise_handle,
     build_critic_prompt,
     make_critic_node,
     parse_critic_output,
@@ -72,7 +73,8 @@ def state_with(*hits, question=QUESTION) -> AgentState:
 def test_prompt_contains_question_passages_requirements_and_labels():
     prompt = build_critic_prompt(state_with(hit("abc", "Results", "F1 is 82.4.")))
     assert QUESTION in prompt
-    assert "[abc] section: Results" in prompt and "F1 is 82.4." in prompt
+    assert "[p1] section: Results" in prompt and "F1 is 82.4." in prompt
+    assert "abc" not in prompt  # the critic is shown handles, not passage ids
     assert "- result:" in prompt
     assert QuestionType.RESULT.value in prompt
     for label in GapLabel:
@@ -258,6 +260,38 @@ def test_node_rejects_zero_attempts():
         make_critic_node(FakeLLM(), max_attempts=0)
 
 
+# --- citing passages by short handle --------------------------------------
+
+def test_handles_are_resolved_to_the_real_passage_ids():
+    state = state_with(hit("long-id-aaa"), hit("long-id-bbb"))
+    update = make_critic_node(FakeLLM(yes("p2")))(state)
+    entry = update["critic_log"][0]
+    assert entry["source"] == "llm" and entry["supporting_passage_ids"] == ["long-id-bbb"]
+    assert entry["raw_replies"] == [yes("p2")]  # the log keeps what the model wrote
+
+
+@pytest.mark.parametrize("spelling", ["p2", "P2", "[p2]", " p 2 ", "2"])
+def test_handles_are_read_leniently(spelling):
+    assert normalise_handle(spelling) == "p2"
+    state = state_with(hit("a"), hit("b"))
+    update = make_critic_node(FakeLLM(yes(spelling)))(state)
+    assert update["critic_log"][0]["supporting_passage_ids"] == ["b"]
+
+
+def test_an_unknown_handle_or_a_raw_id_is_rejected():
+    state = state_with(hit("a"), hit("b"))
+    for cited in ("p3", "a"):  # only p1 and p2 were shown; "a" is an id, not a handle
+        update = make_critic_node(FakeLLM(yes(cited), yes(cited)))(state)
+        assert update["critic_log"][0]["source"] == "fallback"
+        assert "not among the retrieved passages" in update["critic_log"][0]["errors"][0]
+
+
+def test_citing_the_same_passage_twice_counts_once():
+    state = state_with(hit("a"), hit("b"))
+    update = make_critic_node(FakeLLM(yes("p1", "P1")))(state)
+    assert update["critic_log"][0]["supporting_passage_ids"] == ["a"]
+
+
 # --- reusing a verdict when a retry brings nothing new ---------------------
 
 def test_node_reuses_the_verdict_when_the_passages_did_not_change():
@@ -319,7 +353,7 @@ def test_graph_retries_on_llm_gap_then_stops_when_sufficient():
         calls.append(query)
         return [method_hit] if len(calls) == 1 else [method_hit, results_hit]
 
-    client = FakeLLM(reply(), yes("r"))
+    client = FakeLLM(reply(), yes("p2"))  # p2 is the Results passage, id "r"
     result = build_agent_graph(retriever, critic_client=client).invoke(
         AgentState(question=QUESTION, paper_id="paper")
     )

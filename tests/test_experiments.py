@@ -1,6 +1,7 @@
 """Tests for the static-vs-adaptive experiment harness."""
 
 import json
+import re
 
 import pytest
 
@@ -40,10 +41,11 @@ class OracleCritic:
     """Says sufficient exactly when the gold passage is in the prompt."""
 
     def complete(self, prompt: str) -> str:
-        if "[gold]" in prompt:
+        found = re.search(r"\[(p\d+)\] section: Results\n[^\n]*91% accuracy", prompt)
+        if found:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
                                "missing_components": [], "reason": "Result found.",
-                               "supporting_passage_ids": ["gold"]})
+                               "supporting_passage_ids": [found.group(1)]})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 

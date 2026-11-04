@@ -83,7 +83,7 @@ def test_view_of_an_empty_pool_is_empty():
 def test_prompt_lists_only_viewed_passages():
     state = state_with(*[hit(n) for n in range(1, 11)])
     prompt = build_critic_prompt(state, make_generator_view())
-    assert "[pid-08]" in prompt and "[pid-09]" not in prompt and "[pid-10]" not in prompt
+    assert "[p8]" in prompt and "[p9]" not in prompt and "pid-" not in prompt
 
 
 def test_a_citation_outside_the_view_is_rejected_even_if_retrieved():
@@ -91,13 +91,14 @@ def test_a_citation_outside_the_view_is_rejected_even_if_retrieved():
     shown = [v.passage_id for v in make_generator_view()(state)]
     output = parse_critic_output(reply(True, "pid-10"))  # retrieved, but never shown
     validate_critic_output(output, state)  # fine against the whole pool
+    assert len(shown) == 8
     with pytest.raises(CriticOutputError, match="not among the retrieved passages"):
         validate_critic_output(output, state, shown)
 
 
 def test_node_asks_the_model_about_the_view_and_rejects_unseen_citations():
     state = state_with(*[hit(n) for n in range(1, 11)])
-    client = Chat(reply(True, "pid-10"), reply(True, "pid-10"))  # cites an unseen passage twice
+    client = Chat(reply(True, "p9"), reply(True, "p9"))  # p9 was retrieved but not shown
     update = make_critic_node(client, view=make_generator_view())(state)
     assert update["critic_log"][0]["source"] == "fallback"
     assert update["critic_log"][0]["passage_ids"] == [f"pid-{n:02d}" for n in range(1, 9)]

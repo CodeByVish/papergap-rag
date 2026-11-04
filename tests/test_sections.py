@@ -1,6 +1,7 @@
 """Tests for per-paper section selection and the same-round scope fallback."""
 
 import json
+import re
 
 import pytest
 
@@ -140,9 +141,11 @@ class CriticClient:
     """Reports a missing result until a results passage has been retrieved."""
 
     def complete(self, prompt: str) -> str:
-        found = "[r1]" in prompt or "[r2]" in prompt
+        match = re.search(r"\[(p\d+)\] section: Experiments ::: Results", prompt)
+        found = match is not None
         return json.dumps({
             "sufficient": found,
+            "supporting_passage_ids": [match.group(1)] if found else [],
             "gap_label": "NONE" if found else "MISSING_RESULT",
             "missing_components": [] if found else ["reported accuracy"],
             "reason": "Results found." if found else "No numbers yet.",
