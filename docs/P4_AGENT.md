@@ -19,8 +19,8 @@ paper cannot answer (`INSUFFICIENT_INFORMATION`). Every round is logged.
 | Planner | `planner.py` | Rule-based: question type (factual, method, result, comparison, limitation) and structured evidence requirements. Never predicts `unanswerable`; the question text cannot show it. |
 | Retrieve | `nodes.py` | Calls the injected `retrieve(query, paper_id, top_k)`; merges and dedupes passages by opaque `passage_id`. With a `section_selector` it scopes the search and, if that finds nothing, repeats the round over the whole paper. |
 | Evidence mapper | `nodes.py` | Maps each requirement to passages by section hint or keywords. **Weak and advisory**, see below. |
-| Critic | `critic.py` | LLM verdict `{sufficient, gap_label, missing_components, reason}`, parsed and validated deterministically, with a rule-based fallback. |
-| Rewriter | `rewriter.py` | One action per gap label; adds the paper's own recurring terms and content words from the LLM critic's missing components (its commentary on the passages is dropped); never repeats an earlier query. |
+| Critic | `critic.py` | LLM verdict `{sufficient, gap_label, supporting_passage_ids, missing_components, reason}`, parsed and validated deterministically (a "sufficient" verdict must cite retrieved passages), with a rule-based fallback. It sees each passage in full (up to 3,000 characters) and judges sufficiency as "states a concrete fact the answer needs; partial counts". A retry that brings no new passage reuses the previous verdict (`source` "reused") instead of asking the model again. |
+| Rewriter | `rewriter.py` | One action per gap label. Adds the critic's own content terms for the missing fact (its commentary on the passages is dropped) or, if it gave none, the gap's fixed words, never both; the paper's own recurring terms are added only to avoid repeating an earlier query. Capped at 40 words. |
 | Section selector | `sections.py` | Optional. Picks this paper's own section whose name matches the gap's hints; never repeats a section. |
 
 Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
@@ -93,7 +93,7 @@ Reported per arm: evidence recall before and after retries, average rounds, crit
 recovery (first verdict insufficient, final sufficient), full-recall recovery, unnecessary
 retries (all gold already retrieved), ineffective retries (no new gold), redundant retries
 (nothing new at all), refusal rate (and correct/false refusals given answerability),
-critic fallback rate, answer errors, and a paired bootstrap recall gain.
+critic fallback rate and the share of verdicts reused, answer errors, and a paired bootstrap recall gain.
 
 The adaptive arm can collect more passages than the static one (up to top-k x 3). To check that
 a recall gain is not just extra text, add the control arm `--arms static adaptive static-wide`:
@@ -115,13 +115,61 @@ The mapping's gold IDs exist only in the **365/40-word corpus** that P3 selected
 (32,073 passages), so the script stops when the IDs do not match `--passages`. The index the
 agent searches must be built on the same 365/40 corpus. The test split is refused.
 
+## Retrieval depth: the static baseline to beat
+
+Recall of plain retrieval (the question as the query, hybrid RRF with the shipped defaults, no
+reranker, no critic, no retry) on the 32 development items with P3 gold, measured offline on the
+rebuilt 365/40 corpus and reproducible with `scripts/evaluate_retrieval_depth.py`:
+
+| top-k | 3 | 5 (shipped default) | 8 | 10 | 15 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| mean gold recall | 0.599 | 0.740 | 0.885 | **0.974** | 0.974 |
+| questions with full recall | 17/32 | 22/32 | 26/32 | 30/32 | 30/32 |
+
+- The adaptive loop of job 50701 reached 0.802 reading about 6 passages. Plain top-10 reaches 0.974, so
+  the loop has to be compared with a static baseline at depth 8-10, not 5. Add the control arm with
+  `--arms static adaptive static-wide --wide-k 10`.
+- `candidate_k` 10/20/40 and `rrf_k` 30/60/90 move recall@5 between 0.74 and 0.80 (one or two
+  questions), so they were not tuned. Depth is what matters: 6 of 32 questions have their best gold
+  passage at rank 6-10.
+- An ideal stopping rule (stop at the smallest of 3/5/8/10/15 that holds all gold) reads 5.56
+  passages for the same 0.974. That is the most an adaptive loop can save over static top-10; the
+  Qwen critic is far from it.
+- The reranker is not covered here (its weights were not available offline). On the cluster, rerun
+  with `--bge` to see whether reranking moves gold into the top 5.
+- **Generation budget (P5, frozen v7).** `PromptConfig` uses `max_passages=8` and
+  `max_chars_per_passage=1200`, sized for the old 200/40 chunks. With 365/40 chunks a top-10 run
+  would lose its last two passages, and every passage is cut at 1200 characters (71% of the gold
+  passages are longer, 28% of their text on average). Raise both with P5 before an answer-quality run.
+
+## Abstention
+
+The critic returned INSUFFICIENT_INFORMATION for 2 of 81 verdicts, so only 1 of 8 unanswerable
+questions was refused (and 1 of 32 answerable ones). On job 50701 the alternative rule "refuse if the
+critic is still unsatisfied after the last round" would refuse all 8 unanswerable questions but also
+12 of 32 answerable ones (37.5%), because the critic was over-strict. It is not enabled.
+Every question the critic called sufficient was answerable, so the rule becomes usable once
+`unsatisfied_rate_answerable` (reported per run beside `unsatisfied_rate_unanswerable`) falls
+well below that; decide after the next run of the calibrated critic.
+
 ## Known limits
+
+- **The rewrite is not what limits recall.** Job 50701 was replayed offline (the 365/40 corpus rebuilt,
+  the cluster's round-1 and round-2 retrievals reproduced exactly, the critic's recorded verdicts
+  injected). Five rewrite strategies, including re-asking the plain question, land between 0.77 and
+  0.82 recall at about 6 passages; the original query with top-10 and no retry reaches 0.974. The gold
+  passages sit at ranks 6-10 of the plain query.
 
 - The rule-based mapper cannot tell evidence from lookalikes: on QASPER train a plan is
   satisfied by gold evidence 55.6% of the time and by the five closest non-evidence
   paragraphs 79.2% (`scripts/evaluate_planner.py`). `evidence_map` is advisory, and the
   rule-based critic accepts most questions in round 1.
-- The Qwen critic prompt has not yet been validated on the real model.
+- The first two real critic runs (jobs 50550 and 50701, 40 development questions) gave valid JSON every
+  time, but the critic was over-strict: in 23 of its 39 "insufficient" verdicts all gold passages were
+  already retrieved, and it saw only the first 1,200 characters of each passage, cutting 28% of the
+  text of the gold passages. The calibrated prompt, the 3,000-character view and the cited-passage
+  check were written for that and have **not yet been run on the real model**; compare them with
+  `runs/p4/critic-second-40` on the same items before relying on them.
 - Exact section names such as "Results" exist in about 20% of papers. The selector matches
   hints against each paper's own names (about 86% of papers have a result-like section).
 - Reranker caches make repeat latency unrepresentative; use a fresh cache path for timings.

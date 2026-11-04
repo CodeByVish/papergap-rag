@@ -23,7 +23,7 @@ GOLD = hit("gold", "Results", "Our model achieves 82.4 F1 and 91% accuracy.")
 
 
 def retriever(query, paper_id, top_k):
-    return [METHOD, GOLD] if "results" in query.lower() else [METHOD]
+    return [METHOD, GOLD] if "result" in query.lower() else [METHOD]
 
 
 class OracleChat:
@@ -34,7 +34,8 @@ class OracleChat:
         self.calls += 1
         if "[gold]" in messages[-1]["content"]:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
-                               "missing_components": [], "reason": "Result found."})
+                               "missing_components": [], "reason": "Result found.",
+                               "supporting_passage_ids": ["gold"]})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 

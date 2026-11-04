@@ -21,7 +21,7 @@ VERDICT = {"sufficient": False, "gap_label": "MISSING_RESULT",
            "missing_components": ["reported accuracy"], "reason": "No numbers."}
 GOOD = json.dumps(VERDICT)
 GOOD_YES = json.dumps({"sufficient": True, "gap_label": "NONE", "missing_components": [],
-                       "reason": "Result found."})
+                       "reason": "Result found.", "supporting_passage_ids": ["r"]})
 
 
 class FakeGenerator:

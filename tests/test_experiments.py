@@ -32,8 +32,8 @@ EXTRA = passage("extra", "Setup", "A held-out dataset.")
 
 
 def retriever(query, paper_id, top_k):
-    """Finds the gold passage only after the query is rewritten towards results."""
-    return [METHOD, GOLD] if "results" in query.lower() else [METHOD]
+    """Finds the gold passage only after the query is rewritten towards results (the critic's "reported result")."""
+    return [METHOD, GOLD] if "result" in query.lower() else [METHOD]
 
 
 class OracleCritic:
@@ -42,7 +42,8 @@ class OracleCritic:
     def complete(self, prompt: str) -> str:
         if "[gold]" in prompt:
             return json.dumps({"sufficient": True, "gap_label": "NONE",
-                               "missing_components": [], "reason": "Result found."})
+                               "missing_components": [], "reason": "Result found.",
+                               "supporting_passage_ids": ["gold"]})
         return json.dumps({"sufficient": False, "gap_label": "MISSING_RESULT",
                            "missing_components": ["reported result"], "reason": "No result."})
 
@@ -93,6 +94,40 @@ def test_metrics_adaptive_shows_recovery_and_retry_quality(adaptive_records):
     assert m["gap_detected"] == 3 and m["critic_gap_recovery_rate"] == 1.0
     assert m["retries"] == 3 and m["mean_rounds"] == 2
     assert m["critic_llm_rate"] == 1.0 and m["critic_fallback_rate"] == 0.0
+    assert m["critic_reused_rate"] == 0.0
+
+
+def test_unsatisfied_rates_price_the_refuse_if_unsatisfied_rule(adaptive_records):
+    m = compute_metrics(adaptive_records, ITEMS)
+    # every adaptive question ends sufficient here, so that rule would refuse nothing
+    assert m["unsatisfied_rate_answerable"] == 0.0
+    assert m["unsatisfied_rate_unanswerable"] == 0.0
+
+
+def test_unsatisfied_rates_split_by_answerability():
+    def record(qid, sufficient):
+        return {"question_id": qid, "paper_id": "p", "question": "?", "retrieval_round": 3,
+                "sufficient": sufficient, "gap_label": "MISSING_RESULT", "elapsed_s": 1.0,
+                "retrieval_log": [], "retrieved_passages": [{}], "critic_log": []}
+
+    items = [ExperimentItem("a", "?", "p", frozenset({"g"}), True),
+             ExperimentItem("b", "?", "p", frozenset({"g"}), True),
+             ExperimentItem("c", "?", "p", None, False)]
+    m = compute_metrics([record("a", True), record("b", False), record("c", False)], items)
+    assert m["unsatisfied_rate_answerable"] == 0.5 and m["unsatisfied_rate_unanswerable"] == 1.0
+
+
+def test_reused_verdicts_are_counted_apart_from_model_calls():
+    entry = lambda source: {"round": 1, "source": source, "sufficient": False,
+                            "gap_label": "MISSING_RESULT", "errors": [], "raw_replies": []}
+    record = {"question_id": "q1", "paper_id": "p", "question": "?", "retrieval_round": 3,
+              "sufficient": False, "gap_label": "MISSING_RESULT", "elapsed_s": 1.0,
+              "retrieval_log": [], "retrieved_passages": [],
+              "critic_log": [entry("llm"), entry("reused"), entry("reused")]}
+    items = [ExperimentItem(question_id="q1", question="?", paper_id="p")]
+    m = compute_metrics([record], items)
+    assert m["critic_reused_rate"] == pytest.approx(2 / 3)
+    assert m["critic_llm_rate"] == 1.0  # of the calls that asked the model
 
 
 def test_unnecessary_and_ineffective_retries_counted_against_gold(adaptive_records):

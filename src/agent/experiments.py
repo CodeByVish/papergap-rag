@@ -181,7 +181,8 @@ def compute_metrics(
 
     answerable = [r for r in ok if by_id[r["question_id"]].answerable is True]
     unanswerable = [r for r in ok if by_id[r["question_id"]].answerable is False]
-    critic_entries = [e for r in ok for e in r["critic_log"]]
+    all_entries = [e for r in ok for e in r["critic_log"]]
+    critic_entries = [e for e in all_entries if e["source"] != "reused"]  # asked the model
 
     return {
         "questions": len(records),
@@ -201,6 +202,15 @@ def compute_metrics(
         "refusal_rate": _rate(sum(refuses(r) for r in ok), len(ok)),
         "correct_refusal_rate": _rate(sum(refuses(r) for r in unanswerable), len(unanswerable)),
         "false_refusal_rate": _rate(sum(refuses(r) for r in answerable), len(answerable)),
+        # A candidate abstention rule, "refuse if the critic is still unsatisfied after the
+        # last round", reported for both kinds of question so its price is visible.
+        "unsatisfied_rate_unanswerable": _rate(
+            sum(not r["sufficient"] for r in unanswerable), len(unanswerable)
+        ),
+        "unsatisfied_rate_answerable": _rate(
+            sum(not r["sufficient"] for r in answerable), len(answerable)
+        ),
+        "critic_reused_rate": _rate(len(all_entries) - len(critic_entries), len(all_entries)),
         "critic_llm_rate": _rate(sum(e["source"] == "llm" for e in critic_entries), len(critic_entries)),
         "critic_fallback_rate": _rate(
             sum(e["source"] == "fallback" for e in critic_entries), len(critic_entries)
@@ -209,6 +219,40 @@ def compute_metrics(
             sum(bool(e.get("thinking_drift")) for e in critic_entries), len(critic_entries)
         ),
         "mean_elapsed_s": _mean([r["elapsed_s"] for r in ok if "elapsed_s" in r]),
+    }
+
+
+def depth_curve(
+    items: Iterable[ExperimentItem], retriever: Retriever, ks: Sequence[int]
+) -> dict[str, Any]:
+    """Gold recall of one plain retrieval (the question as the query) at several depths.
+
+    This is the static baseline at each `top_k`, with no critic and no retry. It also
+    gives the least any stopping rule could read: `oracle` stops at the smallest depth
+    in `ks` that retrieves every gold passage (or the deepest if none does), as a
+    critic that always knew the gold would. Questions without gold are skipped.
+    """
+    depths = sorted(set(ks))
+    if not depths or depths[0] < 1:
+        raise ValueError("ks must be positive integers")
+    per_k: dict[int, list[float]] = {k: [] for k in depths}
+    oracle_depth: list[int] = []
+    oracle_recall: list[float] = []
+    for item in items:
+        if not item.gold_passage_ids:
+            continue
+        found = [h.passage.passage_id for h in retriever(item.question, item.paper_id, depths[-1])]
+        recalls = {k: _recall(item.gold_passage_ids, set(found[:k])) for k in depths}
+        for k in depths:
+            per_k[k].append(recalls[k])
+        stop = next((k for k in depths if recalls[k] == 1.0), depths[-1])
+        oracle_depth.append(stop)
+        oracle_recall.append(recalls[stop])
+    return {
+        "questions_with_gold": len(oracle_depth),
+        "recall_at_k": {str(k): _mean(v) for k, v in per_k.items()},
+        "full_recall_at_k": {str(k): sum(r == 1.0 for r in v) for k, v in per_k.items()},
+        "oracle": {"mean_passages": _mean(oracle_depth), "mean_recall": _mean(oracle_recall)},
     }
 
 

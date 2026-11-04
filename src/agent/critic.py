@@ -20,7 +20,7 @@ from typing import Protocol, runtime_checkable
 from src.agent.nodes import gap_classifier
 from src.agent.schemas import AgentState, CriticOutput, GapLabel
 
-MAX_PASSAGE_CHARS = 1200
+MAX_PASSAGE_CHARS = 3000  # 99.9% of the 365/40-word dev chunks (median 1,272 chars) fit whole
 DEFAULT_ATTEMPTS = 2
 
 
@@ -54,20 +54,27 @@ Reply with one JSON object and nothing else, in exactly this shape:
 {{
   "sufficient": true or false,
   "gap_label": one of {labels},
-  "missing_components": [short descriptions of what is missing, empty if sufficient],
+  "supporting_passage_ids": [ids of the passages that state the facts the answer needs, exactly as shown in square brackets; empty if none do],
+  "missing_components": [the specific facts that appear in none of the passages, empty if sufficient],
   "reason": "one or two sentences"
 }}
 
+What "sufficient" means:
+- The passages together state the concrete facts needed to answer the question (a name, a number, a dataset, a baseline, a step of the method, a stated limitation).
+- A partial but concrete answer counts. Do not mark the evidence insufficient because a passage is short, is not exhaustive, or words things differently from the question.
+- Mark it insufficient only when you can name a specific fact the answer needs that no passage states.
+
 Rules:
-- If sufficient is true, gap_label must be "NONE" and missing_components must be [].
+- If sufficient is true, gap_label must be "NONE", missing_components must be [] and supporting_passage_ids must list at least one passage.
 - If sufficient is false, gap_label must be one of the other labels:
-{label_help}"""
+{label_help}
+- Write each missing component as a short noun phrase for the missing fact (for example "names of the baseline systems"), never as a remark about the passages such as "not clearly described"."""
 
 _USER = """\
 Question: {question}
 Question type: {question_type}
 
-Evidence the answer needs:
+Hints about the kind of evidence the answer probably needs (a heuristic from the question wording; judge the question itself):
 {requirements}
 
 Retrieved passages:
@@ -150,6 +157,10 @@ def parse_critic_output(raw: str) -> CriticOutput:
 def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
     """Reject replies that are contradictory or ignore what was retrieved."""
     problems = []
+    known = {hit.passage.passage_id for hit in state.retrieved_passages}
+    unknown = [i for i in output.supporting_passage_ids if i not in known]
+    if unknown:
+        problems.append(f"supporting_passage_ids not among the retrieved passages: {unknown}")
     if not output.reason.strip():
         problems.append("reason is empty")
     if any(not item.strip() for item in output.missing_components):
@@ -161,6 +172,8 @@ def validate_critic_output(output: CriticOutput, state: AgentState) -> None:
             problems.append("sufficient=true requires empty missing_components")
         if not state.retrieved_passages:
             problems.append("sufficient=true but no passages were retrieved")
+        elif not output.supporting_passage_ids:
+            problems.append("sufficient=true requires supporting_passage_ids")
     elif output.gap_label is GapLabel.NONE:
         problems.append("sufficient=false requires a gap_label other than NONE")
     if problems:
@@ -176,6 +189,9 @@ def rule_based_critic(state: AgentState) -> CriticOutput:
             gap_label=GapLabel.NONE,
             missing_components=[],
             reason="Every required evidence component has a matching passage.",
+            supporting_passage_ids=list(
+                dict.fromkeys(i for ids in state.evidence_map.values() for i in ids)
+            ),
         )
     return CriticOutput(
         sufficient=False,
@@ -200,12 +216,32 @@ def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEF
     """Build the critic node. Each round's outcome is appended to `critic_log`.
 
     The log keeps every raw model reply (cut to MAX_RAW_REPLY_CHARS) so the first
-    real traces can be inspected to validate the prompt.
+    real traces can be inspected to validate the prompt. A round that sees exactly the
+    passages of the previous model verdict reuses that verdict (`source` "reused").
     """
     if max_attempts < 1:
         raise ValueError("max_attempts must be at least 1")
 
     def critic_node(state: AgentState) -> dict:
+        passage_ids = [hit.passage.passage_id for hit in state.retrieved_passages]
+        previous = state.critic_log[-1] if state.critic_log else None
+        if (
+            previous is not None
+            and previous["source"] in ("llm", "reused")
+            and previous["passage_ids"] == passage_ids
+        ):
+            # A retry that found nothing new hands the model the same input, so it
+            # would repeat its verdict; skip the call and say so in the log.
+            entry = {**previous, "round": state.retrieval_round, "source": "reused",
+                     "errors": [], "raw_replies": [], "thinking_drift": False}
+            return {
+                "sufficient": previous["sufficient"],
+                "gap_label": GapLabel(previous["gap_label"]),
+                "missing_components": previous["missing_components"],
+                "critic_reason": previous["reason"],
+                "critic_log": [*state.critic_log, entry],
+            }
+
         errors: list[str] = []
         raw_replies: list[str] = []
         output: CriticOutput | None = None
@@ -231,6 +267,10 @@ def make_critic_node(client: CriticClient | None = None, max_attempts: int = DEF
             "source": source,
             "sufficient": output.sufficient,
             "gap_label": output.gap_label.value,
+            "passage_ids": passage_ids,
+            "supporting_passage_ids": output.supporting_passage_ids,
+            "missing_components": output.missing_components,
+            "reason": output.reason,
             "errors": errors,
             "raw_replies": raw_replies,
             # Qwen3 with thinking off should never emit these; if the backend silently
