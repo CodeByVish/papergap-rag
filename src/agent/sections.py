@@ -50,7 +50,7 @@ def make_section_selector(passages: Iterable[Passage]) -> SectionSelector:
         by_paper.setdefault(passage.paper_id, {})[passage.section] = None
 
     def selector(state: AgentState) -> str | None:
-        if state.gap_label is GapLabel.NONE:
+        if state.paper_id is None or state.gap_label is GapLabel.NONE:
             return None
         hints = GAP_SECTION_HINTS.get(state.gap_label)
         if not hints:

@@ -12,7 +12,14 @@ Each gap label maps to one retrieval action from docs/EXECUTION_PLAN.md:
 | INSUFFICIENT_INFORMATION   | no rewrite (the loop stops and refuses)   |
 
 The rewrite only changes the query text. Section-scoped retrieval ("Prioritize
-Results") needs the retriever to accept a section and is not wired in here.
+Results") is a separate step (src/agent/sections.py).
+
+The added vocabulary is the critic's own terms for the missing fact when it gave
+any, otherwise the gap's fixed words, never both: replaying job 50701 offline, the
+critic's terms alone or the fixed words alone each fetched a gold passage in round 2
+that the two combined did not, and no strategy (including re-asking the plain
+question) moved recall by more than 0.05. The rewrite is not what limits recall;
+see docs/P4_AGENT.md.
 """
 
 from __future__ import annotations
@@ -24,9 +31,25 @@ from src.agent.planner import key_terms
 from src.agent.schemas import AgentState, GapLabel
 
 MAX_PAPER_TERMS = 4
-MAX_MISSING_PHRASES = 2
-MAX_QUERY_WORDS = 60
+MAX_MISSING_TERMS = 4
+MAX_QUERY_WORDS = 40
 _MIN_TERM_LENGTH = 5
+_TERM = re.compile(r"[a-z0-9][a-z0-9\-]*")
+
+# Words a critic uses to talk about the retrieved text rather than about the paper. Qwen
+# answers in full sentences ("... is not clearly described in the retrieved passages"),
+# and none of this belongs in a search query.
+_CRITIC_COMMENTARY = frozenset({
+    "passage", "passages", "retrieved", "retrieval", "text", "texts", "excerpt", "excerpts",
+    "clearly", "explicitly", "directly", "specifically", "described", "describe", "describes",
+    "description", "mention", "mentions", "mentioned", "provide", "provides", "provided",
+    "specific", "detail", "details", "detailed", "explanation", "information", "lack",
+    "lacks", "lacking", "missing", "absent", "present", "include", "includes", "included",
+    "context", "evidence", "answer", "question", "section", "content", "relevant",
+    "insufficient", "sufficient", "enough", "unclear", "complete", "fully", "generally",
+    "stating", "states", "proposed", "propose", "proposes", "discuss", "discusses",
+    "discussing", "show", "shows", "showing", "shown", "paper", "authors",
+})
 
 _GAP_VOCABULARY: dict[GapLabel, str] = {
     GapLabel.MISSING_METHOD: "method approach architecture we propose",
@@ -69,11 +92,29 @@ def paper_terms(state: AgentState, limit: int = MAX_PAPER_TERMS) -> list[str]:
     return ranked[:limit]
 
 
-def _model_missing_phrases(state: AgentState) -> list[str]:
-    """What the LLM critic said is missing; ignored for rule-based verdicts."""
+def _critic_terms(phrase: str):
+    """Content words of `phrase`, plus two-character metric names such as "f1"."""
+    content = set(key_terms(phrase))
+    for word in _TERM.findall(phrase.lower()):
+        if word in content or (len(word) == 2 and any(char.isdigit() for char in word)):
+            yield word
+
+
+def _model_missing_terms(state: AgentState) -> list[str]:
+    """Content words of what the LLM critic said is missing; ignored for rule-based verdicts.
+
+    Only terms are kept, not the critic's sentences: the sentences are commentary on the
+    retrieved passages and would pull the query toward text that talks about retrieval.
+    """
     if not state.critic_log or state.critic_log[-1].get("source") != "llm":
         return []
-    return [p.strip() for p in state.missing_components if p.strip()][:MAX_MISSING_PHRASES]
+    skip = {*key_terms(state.question), *_GAP_VOCABULARY.get(state.gap_label, "").split()}
+    terms: list[str] = []
+    for phrase in state.missing_components:
+        for term in _critic_terms(phrase):
+            if term not in skip and term not in _CRITIC_COMMENTARY and term not in terms:
+                terms.append(term)
+    return terms[:MAX_MISSING_TERMS]
 
 
 def _extend(question: str, additions: list[str]) -> str:
@@ -89,17 +130,17 @@ def _extend(question: str, additions: list[str]) -> str:
 def rewrite_query(state: AgentState) -> dict:
     """Extend the question with vocabulary aimed at the diagnosed gap.
 
-    If the result equals a query already used this run, more of the paper's own
+    The critic's terms for the missing fact are used when it gave any, otherwise the
+    gap's fixed words. If the result equals a query already used this run, more of the paper's own
     terms are added so a retry never repeats an earlier search verbatim.
     """
     label = state.gap_label
     if label in (GapLabel.NONE, GapLabel.INSUFFICIENT_INFORMATION):
         return {"rewritten_query": state.question}
 
-    base: list[str] = []
-    if label in _USES_MISSING_PHRASES:
-        base.extend(_model_missing_phrases(state))
-    base.append(_GAP_VOCABULARY.get(label, ""))
+    base = _model_missing_terms(state) if label in _USES_MISSING_PHRASES else []
+    if not base:  # the critic gave no usable terms: fall back on the gap's fixed words
+        base = [_GAP_VOCABULARY.get(label, "")]
 
     used = {entry["query"] for entry in state.retrieval_log}
     query = state.question

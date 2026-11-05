@@ -1,11 +1,16 @@
 """Run the static and adaptive agent arms on real retrieval and write the records.
 
+The passages must be the 365/40-word development corpus (`python -m scripts.build_corpus
+--scope development --chunk-size-words 365 --chunk-overlap-words 40`; the builder's own defaults
+are the old 200/40) and the dense index must be built on that same file. Gold passage ids in an
+items file only exist in that corpus, so the run stops if they are missing.
+
 One process owns one generator (a single A40 fits one Qwen3-8B), shared by the
 adaptive arm's critic and by P5's answer step:
 
     python -m scripts.run_agent_experiment \\
         --passages data/processed/passages.jsonl \\
-        --dense-index-dir indexes/p2-qasper-development \\
+        --dense-index-dir indexes/<dense index built on the same corpus> \\
         --from-qa data/processed/qa.jsonl --split validation --limit 100 \\
         --critic generator --generator vllm --model-id "$P5_ROOT/models/Qwen3-8B" \\
         --answers p5 --out-dir runs/p4/dev-001
@@ -38,12 +43,19 @@ from src.agent.experiments import (
     AnswerFn,
     ExperimentItem,
     compute_metrics,
+    depth_recall,
+    format_baseline_section,
     format_table,
+    matched_recall_gain,
     paired_recall_gain,
+    refusal_rule_check,
     run_system,
 )
 
 ARMS = ("static", "adaptive")
+# Optional control: a one-round static run with a larger top_k, so the adaptive arm's extra
+# passages can be matched against the same number of static ones (matched_recall_gain).
+WIDE_ARM = "static-wide"
 # P5's frozen generation settings (their message of 2026-10-29); the backend default is 768.
 FROZEN_PROMPT_VERSION = "p5-grounded-qa-v7"
 FROZEN_MAX_NEW_TOKENS = 1024
@@ -87,6 +99,24 @@ def load_items_jsonl(path: Path) -> list[ExperimentItem]:
     if not items:
         raise ValueError(f"{path}: no items")
     return items
+
+
+def check_gold_in_corpus(items: Sequence[ExperimentItem], passages: Sequence[Any]) -> None:
+    """Stop if the items name gold passages the corpus does not contain.
+
+    Passage ids are content hashes, so ids built on the 365/40-word corpus are absent from
+    the old 200/40 corpus. Without this check such a run completes with recall 0 and reads
+    as a failed method instead of a wrong input.
+    """
+    known = {passage.passage_id for passage in passages}
+    wanted = {pid for item in items for pid in (item.gold_passage_ids or ())}
+    missing = wanted - known
+    if missing:
+        raise SystemExit(
+            f"{len(missing)} of {len(wanted)} gold passage ids in the items are not in the corpus "
+            f"({len(passages)} passages), so recall would be wrong. Gold ids come from P3's mapping on "
+            "the 365/40-word corpus; pass that corpus and a dense index built on it."
+        )
 
 
 def load_qa_items(qa_path: Path, passages: Sequence[Any], split: str, limit: int | None
@@ -155,6 +185,7 @@ def run_arm(
     max_retries: int = 2,
     top_k: int = 5,
     section_selector: Callable[..., Any] | None = None,
+    critic_view: Callable[..., Any] | None = None,
     resume: bool = False,
     log: Callable[[str], None] = print,
 ) -> list[dict[str, Any]]:
@@ -186,6 +217,7 @@ def run_arm(
             todo, retriever, adaptive=adaptive, critic_client=critic_client,
             max_retries=max_retries, top_k=top_k, answer_fn=answer_fn, on_record=write,
             section_selector=section_selector,
+            **({} if critic_view is None else {"critic_view": critic_view}),
         ) if todo else []
     by_id = {r["question_id"]: r for r in [*kept, *fresh]}
     return [by_id[item.question_id] for item in items if item.question_id in by_id]
@@ -221,15 +253,23 @@ def summarise(arm_records: dict[str, list[dict[str, Any]]], items: Sequence[Expe
               ) -> dict[str, Any]:
     results = {arm: compute_metrics(records, items) for arm, records in arm_records.items()}
     summary: dict[str, Any] = {"metrics": results}
-    if set(arm_records) == set(ARMS):
+    if set(ARMS) <= set(arm_records):
         summary["paired_recall_gain"] = paired_recall_gain(
             arm_records["static"], arm_records["adaptive"], items)
+    if {"adaptive", WIDE_ARM} <= set(arm_records):
+        summary["matched_recall_gain"] = matched_recall_gain(
+            arm_records[WIDE_ARM], arm_records["adaptive"], items)
+    if WIDE_ARM in arm_records:
+        summary["static_depth_recall"] = depth_recall(arm_records[WIDE_ARM], items)
+    if "adaptive" in arm_records:
+        summary["refuse_if_unsatisfied"] = refusal_rule_check(results["adaptive"])
     return summary
 
 
 def write_outputs(out_dir: Path, summary: dict[str, Any], manifest: dict[str, Any]) -> None:
     (out_dir / "metrics.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    (out_dir / "metrics.md").write_text(format_table(summary["metrics"]) + "\n", encoding="utf-8")
+    report = format_table(summary["metrics"]) + format_baseline_section(summary) + "\n"
+    (out_dir / "metrics.md").write_text(report, encoding="utf-8")
     (out_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
 
@@ -263,6 +303,26 @@ def build_retriever(args: argparse.Namespace, passages: list[Any]):
         if args.score_cache:
             scorer = scorer.cached(args.score_cache)
     return HybridRetriever(sparse, dense, scorer=scorer, candidate_k=args.candidate_k).retrieve
+
+
+def build_critic_view(args: argparse.Namespace):
+    """The critic's passage view; None keeps the default pool view."""
+    if args.critic != "generator" or args.critic_view == "pool":
+        return None
+    from src.agent.generator_view import make_generator_view
+
+    return make_generator_view()
+
+
+def prompt_budget() -> dict[str, Any] | None:
+    """The generator's rendering limits, which the manifest must record with every run."""
+    try:
+        from src.generation.pipeline import PipelineConfig
+    except ImportError:
+        return None
+    prompt = PipelineConfig().prompt
+    return {"max_passages": prompt.max_passages,
+            "max_chars_per_passage": prompt.max_chars_per_passage}
 
 
 def prompt_version() -> str:
@@ -309,9 +369,13 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--split", default="validation", help="with --from-qa: train or validation")
     p.add_argument("--limit", type=int, help="with --from-qa: number of questions")
     p.add_argument("--out-dir", type=Path, required=True)
-    p.add_argument("--arms", nargs="+", choices=ARMS, default=list(ARMS))
+    p.add_argument("--arms", nargs="+", choices=[*ARMS, WIDE_ARM], default=list(ARMS),
+                   help=f"{WIDE_ARM}: static with --wide-k passages, the budget-matched control")
     p.add_argument("--critic", choices=["rules", "generator"], default="rules")
     p.add_argument("--answers", choices=["none", "p5"], default="none")
+    p.add_argument("--critic-view", choices=["generator", "pool"], default="generator",
+                   help="what the LLM critic reads: generator = exactly the passages and text\n"
+                        "P5's prompt renders (default); pool = every retrieved passage, 3,000 chars")
     p.add_argument("--generator", default="vllm", help="P5 backend: vllm, transformers, mock")
     p.add_argument("--model-id", help="model path or hub id for the generator")
     p.add_argument("--max-new-tokens", type=int, default=FROZEN_MAX_NEW_TOKENS,
@@ -323,6 +387,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--score-cache", type=Path, help="persistent reranker score cache (SQLite)")
     p.add_argument("--candidate-k", type=int, default=20)
     p.add_argument("--top-k", type=int, default=5)
+    p.add_argument("--wide-k", type=int,
+                   help="top_k of the static-wide arm (default: top-k x (max-retries + 1), "
+                        "the most passages the adaptive arm can collect)")
     p.add_argument("--max-retries", type=int, default=2)
     p.add_argument("--device", default="cpu", help="device for the retrieval models")
     p.add_argument("--cache-folder", type=Path, default=ROOT / ".cache/huggingface/hub")
@@ -335,6 +402,10 @@ def main(argv: Sequence[str] | None = None) -> None:
     args = parse_args(argv)
     from scripts.build_indexes import load_passages
 
+    wide_k = args.wide_k or args.top_k * (args.max_retries + 1)
+    if WIDE_ARM in args.arms and wide_k > args.candidate_k:
+        raise SystemExit(f"--wide-k {wide_k} exceeds --candidate-k {args.candidate_k}")
+
     if args.out_dir.exists() and any(args.out_dir.iterdir()) and not args.resume:
         raise SystemExit(f"{args.out_dir} is not empty; choose a new --out-dir or pass --resume")
     args.out_dir.mkdir(parents=True, exist_ok=True)
@@ -342,6 +413,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     passages = load_passages(args.passages)
     items = (load_items_jsonl(args.items) if args.items
              else load_qa_items(args.from_qa, passages, args.split, args.limit))
+    check_gold_in_corpus(items, passages)
     print(f"{len(passages)} passages, {len(items)} questions, "
           f"{sum(1 for i in items if i.gold_passage_ids)} with gold passages")
 
@@ -349,6 +421,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     # (--device cuda) would make it fail. The default retrieval device is the CPU.
     generator, critic, answer_fn = build_generation(args)
     retriever = build_retriever(args, passages)
+    critic_view = build_critic_view(args)
     retriever(items[0].question, items[0].paper_id, args.top_k)  # warm up before timing
     selector = None
     if args.scoped:
@@ -361,7 +434,8 @@ def main(argv: Sequence[str] | None = None) -> None:
         arm_records[arm] = run_arm(
             arm, items, retriever, args.out_dir, adaptive=arm == "adaptive",
             critic_client=critic, answer_fn=answer_fn, max_retries=args.max_retries,
-            top_k=args.top_k, section_selector=selector, resume=args.resume)
+            top_k=wide_k if arm == WIDE_ARM else args.top_k, section_selector=selector,
+            critic_view=critic_view, resume=args.resume)
 
     summary = summarise(arm_records, items)
     manifest = {
@@ -374,6 +448,8 @@ def main(argv: Sequence[str] | None = None) -> None:
                           if critic is not None else None),
         "generator": generator.info() if generator is not None and hasattr(generator, "info") else None,
         "prompt_version": prompt_version() if answer_fn is not None else None,
+        "prompt_budget": prompt_budget() if generator is not None else None,
+        "critic_view": args.critic_view if critic is not None else None,
         "environment": environment(),
     }
     write_outputs(args.out_dir, summary, manifest)

@@ -1,0 +1,124 @@
+{
+  "schema_version": "v0-proposed",
+  "status": "draft",
+  "purpose": "Freeze record for P4's end-to-end run on P3's frozen held-out question list. Procedure and field meanings: docs/P4_FREEZE_RECORD.md.",
+  "frozen_at": null,
+  "code": {
+    "commit": null,
+    "note": "Full 40-character hash of the main commit the run is made at. Set when freezing; scripts/make_held_out_items.py checks that it exists."
+  },
+  "corpus": {
+    "development": {
+      "chunk_size_words": 365,
+      "chunk_overlap_words": 40,
+      "passages": 21360,
+      "papers": 1168,
+      "sha256": "ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403"
+    },
+    "all_paper_text": {
+      "chunk_size_words": 365,
+      "chunk_overlap_words": 40,
+      "passages": 28617,
+      "papers": 1584,
+      "sha256": "8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e",
+      "source": "P3's pinned reference on origin/p3-qasper-foundation (data/processed/passages_all_paper_text.jsonl); rebuilt locally with scripts.build_corpus --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40, byte-identical."
+    }
+  },
+  "dense_index": {
+    "model": "BAAI/bge-small-en-v1.5",
+    "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+    "built_on": "all_paper_text",
+    "path": null,
+    "metadata_sha256": null,
+    "note": "Only 65 of the 174 held-out papers are in the development corpus, so the run needs an index over the all-paper-text corpus. Record the index directory and the SHA-256 of its metadata.json when it is built."
+  },
+  "questions": {
+    "source": "data/processed/qa_for_held_out_v2.jsonl on origin/p3-qasper-foundation (status frozen, schema v0-proposed)",
+    "sha256": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+    "count": 200,
+    "papers": 174,
+    "annotated_by_p4_ids_file": "configs/p4_annotated_held_out_ids.jsonl"
+  },
+  "retrieval": {
+    "method": "per-paper hybrid: BM25 and dense, fused with reciprocal rank fusion",
+    "candidate_k": 20,
+    "rrf_k": 60,
+    "top_k": 5,
+    "reranker": false,
+    "scoped": true,
+    "reranker_note": "P5's paired run on the development items found the BGE reranker below plain RRF at every depth (top-5 0.724 against 0.740; top-10 0.885 against 0.974)."
+  },
+  "agent": {
+    "max_retries": 2,
+    "critic_model": "Qwen/Qwen3-8B",
+    "critic_view": "generator",
+    "prompt_budget": {"max_passages": 8, "max_chars_per_passage": 1200},
+    "prompt_version": "p5-grounded-qa-v7",
+    "refusal_rule": "off",
+    "refusal_gate_for_enabling": "refuse at least 50% of unanswerable and at most 5% of answerable development questions; not met (job 50977: 4/8 and 5/32; job 51172: 6/8 and 9/32)"
+  },
+  "arms": ["static", "adaptive", "static-wide"],
+  "static_wide_k": 15,
+  "baseline_depths": [3, 5, 8, 10, 15],
+  "answers": {
+    "generate": null,
+    "note": "Decide with P5 before freezing whether the held-out run also generates answers (ANSWERS=p5)."
+  },
+  "metrics": [
+    "mean gold recall and full-recall questions, per arm",
+    "adaptive against the plain ranking at equal passages (matched-budget gain) and against depth 5, 8 and 10",
+    "paired bootstrap 95% intervals (2,000 resamples, seed 0)",
+    "retries, unnecessary / ineffective / redundant retries, mean rounds, mean passages, agent seconds",
+    "critic audit (scripts/audit_critic.py), critic fallback rate and reused share",
+    "refusals under the rule that is on; the 'refuse if unsatisfied' rule priced but not applied"
+  ],
+  "reporting": {
+    "subsets": [
+      "all 200 questions",
+      "the 160 questions P4 did not annotate (leave out configs/p4_annotated_held_out_ids.jsonl)",
+      "answerable questions with mapped gold, and unanswerable questions, separately"
+    ],
+    "rules": [
+      "Each arm is run once. A rerun is allowed only for a genuine bug; its cause is recorded and every affected arm is rerun (P3-D006). A held-out result never drives a targeted improvement.",
+      "No baseline, metric or subset is added after the results are seen.",
+      "If the adaptive arm does not beat the plain ranking at equal passages, the report says so.",
+      "Every table states which questions it covers."
+    ]
+  },
+  "disclosures": [
+    {
+      "id": "p4-annotated-40",
+      "text": "P4's author labelled annotator B's batches 09 and 10 (relevance labels) on 4 November, so read 40 of the 200 held-out questions and their retrieved passages. Their ids are in configs/p4_annotated_held_out_ids.jsonl. The labelling came before the critic recalibration, the simplified rewriter and the depth analysis (PR #33), and before the critic view, passage handles, quote check, reporting and demo changes (PR #34, #35). Those changes were driven by the results of development jobs 50701 and 50977, not by these questions. The 160 questions P4 did not annotate are reported separately as a check."
+    },
+    {
+      "id": "p4-dev-no-overlap",
+      "text": "None of P4's 40 development questions, and none of their 39 papers, is in the held-out list (checked on 4 November)."
+    },
+    {
+      "id": "validation-in-held-out",
+      "text": "The held-out list contains 78 validation-split questions and 122 test-split ones. P4 evaluated its rule-based mapper on the validation split but tuned nothing on it, and the mapper figures reported exclude the held-out ids."
+    },
+    {
+      "id": "unvalidated-changes",
+      "text": "The generator-view alignment, passage handles and quote requirement (PR #34) were run on the real model once, in development job 51172 (commit 37cb0c6, 4 November). Against job 50977 the critic accepted fewer unanswerable questions (2 of 8, was 4) and was stricter on answerable ones (9 of 32 left unsatisfied, was 5). Nothing was changed afterwards."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "refusal-rule-off",
+      "date": "2026-11-05",
+      "text": "The team had no objection to the gate (enable the 'refuse if the critic is unsatisfied after the last round' rule only if, on development questions, it refuses at least 50% of the unanswerable and at most 5% of the answerable ones). Development job 51172: 6 of 8 unanswerable and 9 of 32 answerable would be refused, so the gate is not met. The rule stays off and refusal stays with the generator. Thresholds and the off setting are part of this record and are not changed after held-out labels are read."
+    },
+    {
+      "id": "critic-final",
+      "date": "2026-11-05",
+      "text": "The critic (Qwen3-8B reading the generator's view, handles, quote check) is frozen as run in job 51172. It does not beat plain retrieval at equal passages and is lenient on unanswerable questions; the report states this."
+    }
+  ],
+  "unresolved_before_freezing": [
+    "build the all-paper-text dense index and record dense_index.path and metadata_sha256",
+    "decide with P5 whether the run generates answers",
+    "confirm with P3 and P6 that the agent's held-out run uses this 200-question list",
+    "set code.commit and frozen_at, then set status to frozen (the commit must include the stop_reason change, PR p4/stop-reason)"
+  ]
+}

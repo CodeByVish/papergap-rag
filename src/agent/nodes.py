@@ -79,6 +79,8 @@ def make_retrieve_node(
             "query": query,
             "triggered_by": state.gap_label.value,
             "passage_ids": [hit.passage.passage_id for hit in hits],
+            "paper_ids": sorted({hit.passage.paper_id for hit in hits}),
+            "search_scope": "corpus" if state.paper_id is None else "paper",
             "section": section,
             "scope_fallback": scope_fallback,
             "scoped_retrieval_ms": scoped_ms,
@@ -128,14 +130,38 @@ def gap_classifier(state: AgentState) -> dict:
     return {"gap_label": GapLabel.WEAK_EVIDENCE}
 
 
+STOP_SUFFICIENT = "sufficient"
+STOP_INSUFFICIENT_INFORMATION = "insufficient_information"
+STOP_MAX_ROUNDS = "max_rounds"
+
+
+def stop_reason(state: AgentState, max_rounds: int = MAX_ROUNDS) -> str | None:
+    """Why the loop ends after this critic call, or None when it retries.
+
+    Checked in this order: the critic is satisfied, the critic says the paper cannot answer,
+    the round budget is spent. `max_rounds` is the budget, so a run with `max_retries=0`
+    also ends here with "max_rounds" when its one round was not enough.
+    """
+    if state.sufficient:
+        return STOP_SUFFICIENT
+    if state.gap_label is GapLabel.INSUFFICIENT_INFORMATION:
+        return STOP_INSUFFICIENT_INFORMATION
+    if state.retrieval_round >= max_rounds:
+        return STOP_MAX_ROUNDS
+    return None
+
+
 def route_after_critic(
     state: AgentState, max_rounds: int = MAX_ROUNDS
 ) -> Literal["retry", "stop"]:
     """Deterministic stop: sufficient, out of budget, or the paper cannot answer."""
-    if (
-        state.sufficient
-        or state.gap_label is GapLabel.INSUFFICIENT_INFORMATION
-        or state.retrieval_round >= max_rounds
-    ):
-        return "stop"
-    return "retry"
+    return "retry" if stop_reason(state, max_rounds) is None else "stop"
+
+
+def make_finish_node(max_rounds: int = MAX_ROUNDS) -> Callable[[AgentState], dict]:
+    """Last node: record why the loop stopped and the round budget it ran under."""
+
+    def finish(state: AgentState) -> dict:
+        return {"stop_reason": stop_reason(state, max_rounds), "max_rounds": max_rounds}
+
+    return finish
