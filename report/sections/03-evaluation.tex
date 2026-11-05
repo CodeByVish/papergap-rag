@@ -1,0 +1,75 @@
+\section{Generation and evaluation (Q4)}
+\subsection{Generation approach (Q4.1)}
+The intended GPU generator is \texttt{Qwen/Qwen3-8B} \citep{qwen2025}, served through vLLM with prompt version grounded QA, version 7. Generative QA permits synthesis across passages rather than requiring a single extracted span. An open-weight model lets us control prompting, logging and post-generation checks. The design is motivated by evidence-conditioned generation; we have not benchmarked it against external systems and make no state-of-the-art performance claim.
+
+The model returns structured JSON containing an answer, citations, evidence status, retrieval rounds and claim provenance. It receives a closed list of citable passage IDs and an explicit refusal instruction. Validation checks citation references, numerical grounding and provenance consistency. These checks expose some errors, but a valid citation does not prove that a passage entails a claim. Heuristic warnings are diagnostics, not faithfulness scores.
+
+\begin{review}{Model and prompt provenance}
+Insert the final generator revision, precision, decoding settings, GPU model, dependency snapshot and run manifest. Do not transfer timings or quality observations from the local 14B model to the 8B GPU model.
+\end{review}
+\input{review-checks/q4-1}
+
+\subsection{Preprocessing (Q4.2)}
+Scientific text requires little linguistic normalization. Stored evidence preserves case and punctuation; only BM25's matching representation is lowercased and tokenized. Dense embeddings use query instruction and normalization. Generation renders at most eight passages, each clipped at 1,200 characters, and parses structured output with limited repair of malformed escapes. Consequently, retrieval can find a relevant passage whose useful sentence is absent from the prompt. The agent development analysis reports that 71\% of mapped gold passages exceed the character limit.
+
+
+\input{review-checks/q4-2}
+
+\subsection{Evaluation records and annotation (Q4.3)}\label{sec:annotation}
+The annotation pool contains 1,853 unique question--passage pairs for 200 questions across 174 papers. Each pair has two binary relevance labels, yielding 3,706 judgments. The audited source-split composition is 703 validation pairs and 1,150 test pairs; official split names alone do not establish independent project-held-out status. A pair found by multiple retrievers is labeled once. The draft final labels contain 820 relevant and 1,033 non-relevant records (44.3\% relevant).
+
+The current revised files agree on 1,665 of 1,853 pairs (89.85\%), leaving 188 disagreements. This exceeds the numerical 80\% threshold, but does not establish compliance with the requirement for independent manual annotation. Table~\ref{tab:agreement} reports raw agreement and chance-corrected Cohen's kappa by annotator pair.
+\input{tables/agreement}
+\begin{review}{Annotation validity: required disclosure and action}
+Agreement is measured on revised files, not preserved original independent submissions. Some batches began as AI suggestions later confirmed by a person; method identities were visible to annotators. Changyan Xu resolved all 188 disagreements and had annotated 73 of those pairs. Resolution provenance records 102 human-reviewed labels, 20 human spot-checks and 66 unchecked AI suggestions. AI suggestions may have been visible during review; most records lack written reasons. The label manifest's true confirmation flags only satisfy CLI checks and do not represent team approval. Review the 66 unchecked suggestions, recover original submissions where available, and obtain team agreement on qualifying manual records and evaluation status. Do not describe this as independent third-person adjudication.
+\end{review}
+The Qian/Yin pair has substantially higher positive-label rates (83.3\% and 74.8\%) than other pairs. This may reflect batch difficulty or differing relevance criteria; the current evidence cannot distinguish them. Review examples across batches before attributing the lower kappa to annotator quality.
+
+\input{review-checks/q4-3}
+
+\subsection{Answer quality (Q4.4)}
+The implemented scorer uses a proposed project policy, project QA policy, version 0 (proposed), rather than the official QASPER evaluator. It lowercases text, removes ASCII punctuation and English articles, and normalizes whitespace. Exact match compares normalized strings; token F1 uses multiset token overlap. Reference extraction supports yes/no, free-form and extractive-span annotations; mixed answerability uses available answerable references. Confirm aggregation and coverage policy before final scoring.
+
+For scientific generative answers, overlap scores can penalize correct paraphrases and reward incomplete wording. We therefore report them with refusal behavior, failures and RAG metrics rather than treating either as a complete quality measure. Relevance labels alone do not supply answer references; QA scoring also needs the linked QASPER reference answers.
+\begin{table}[htbp]\centering\small
+\caption{Reserved final QA table. No final answer scores are available in this draft.}
+\begin{tabularx}{\linewidth}{Ycccc}\toprule
+Arm / subset & EM & Token F1 & Unanswerable correct & Coverage\\\midrule
+Static / all 200 & \pending & \pending & \pending & \pending\\
+Adaptive / all 200 & \pending & \pending & \pending & \pending\\
+Static / remaining 160 & \pending & \pending & \pending & \pending\\
+Adaptive / remaining 160 & \pending & \pending & \pending & \pending\\\bottomrule
+\end{tabularx}
+\end{table}
+\begin{review}{Final QA run}
+Complete and verify the freeze record, then score paired arms on identical questions. Report answered, refused, failed and missing counts, the answerable/unanswerable denominators, reference policy and confidence intervals. The agent developer saw 40 evaluation questions while annotating: report both all 200 and the remaining 160, with exposure disclosed. Do not call the 160 independently held out until other members' prior question use is audited.
+\end{review}
+
+\input{review-checks/q4-4}
+
+\subsection{Answer-level RAG metrics (Q4.5)}
+RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project has a runner for RAGAS 0.2.15, but no live-judge results are available. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. Exact metric classes and reference requirements must be frozen with the chosen backend.
+\begin{table}[htbp]\centering
+\caption{Reserved RAG evaluation; valid-score counts must accompany means.}
+\begin{tabular}{lccc}\toprule
+Arm & Faithfulness & Response relevance & Context precision\\\midrule
+Static & \pending & \pending & \pending\\
+Adaptive & \pending & \pending & \pending\\\bottomrule
+\end{tabular}
+\end{table}
+\begin{review}{RAGAS prerequisites}
+Choose and record judge and embedding model IDs/revisions, budget, prompts, retry policy and API configuration without publishing credentials. Test the live evaluator. Evaluate against the exact clipped contexts supplied to generation, not full retrieved chunks. Disclose exclusions, refusals, failed judge calls, score counts and judge limitations.
+\end{review}
+
+\input{review-checks/q4-5}
+
+\subsection{Latency, cost and scaling (Q4.6)}
+The local five-query measurements in Q2.2 are the directly inspected end-to-end timing evidence. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the current laptop timings or interpreted as a controlled final speedup.
+
+Per-paper exact search depends mainly on the selected paper's passages. All-papers exact vector search grows with the indexed corpus. The current service permits one active answer request and returns HTTP 429 when busy; serial demonstration throughput does not establish concurrent capacity. Local and university model serving avoids per-call API charges, but compute and energy are not free. Paid judge cost remains unmeasured.
+\assetplaceholder{Reserved final performance figure}{Insert paired end-to-end p50/p95 latency and stage breakdowns from the final GPU run; report hardware, warm-up, errors, tokens and serial/concurrent policy.}
+\begin{review}{Final performance measurements}
+Populate elapsed wall time, processed-question count, successful answers, latency percentiles and judge cost from a single documented final setup. Separate startup, fresh inference and cache-hit timing. Historical cluster timings summarized in the workbook lack raw local records and are not used here as final benchmark results.
+\end{review}
+
+\input{review-checks/q4-6}

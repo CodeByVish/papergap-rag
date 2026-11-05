@@ -1,0 +1,14 @@
+{
+  "note": "Report source audit, not an experiment manifest. Generated/raw results remain outside Git.",
+  "sources": {
+    "results/p6/retrieval-draft-v3/summary.json": "380daf4a19fa07107b20cb0cad46f8915d80fba2496e745fcceb07391d9c605b",
+    "results/p6/retrieval-draft-v3/run_manifest.json": "178ac9b5227941426ae922ff59d2684a777fed02d2fb39f396dcbab64987adee",
+    "results/p6/annotation-audit-verified-20261105/agreement.json": "fbf72e04a0a812634be9f1b90961323ccd0de1ec9b7fe03513cdd3ffcf22f85d",
+    "results/p6-local/five-queries-20261105.json": "e2aef11b686b051d77f20683e48d8dd98ee1f963b172c16343e459288816b58f",
+    "data/gold/p6/draft-v3/final_labels_manifest.json": "2e238f1d7c9fff8c07fc3718511b01359e8909452615f43fd20220bccfa5209e",
+    "docs/ASSIGNMENT_WORKBOOK.md": "3273a6fef725656fe2eaa6623d58db770711a64cc6090fadf683574fc8c7c058",
+    "docs/P4_REPORT_CONTRIBUTION.md": "c297bd5ca74226c88c7b9ccca447b76eb6584109af3cb1d5611b72c5e9a53d13",
+    "configs/p4_freeze.json": "0e0889645ea1908814f1150b97e867d7be309ad08ea8975e7c2a7c180f1266cc"
+  },
+  "handout_sha256": "89d71e59b62acebeff3763c27ea10088ce05e7f8b009ebb19d79c6d7dc2d5c7d"
+}

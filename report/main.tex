@@ -1,0 +1,66 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=24mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,booktabs,tabularx,array,graphicx,xcolor,amsmath}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hypertexnames=false,colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black,citecolor=blue!45!black]{hyperref}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{14pt}
+\setlength{\emergencystretch}{2em}
+\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\todo}[1]{\begingroup\setlength{\fboxsep}{2pt}\colorbox{yellow!45}{\strut\textbf{TODO:} #1}\endgroup}
+\newtcolorbox{review}[1]{colback=yellow!12,colframe=orange!65!black,title={REVIEW: #1},fonttitle=\bfseries,boxrule=0.6pt}
+\newcommand{\aistars}[1]{\foreach \n in {1,...,5}{\ifnum\n>#1\relax\textcolor{gray!40}{$\star$}\else\textcolor{orange!80!black}{$\star$}\fi}}
+% Temporary internal review assignments: change to \draftreviewersfalse to hide.
+\newif\ifdraftreviewers
+\draftreviewerstrue
+\newcommand{\draftreview}[3]{\ifdraftreviewers\textbf{Draft reviewers: #1 (lead); #2 (support).} #3\par\smallskip\fi}
+\newcommand{\pending}{\textcolor{orange!70!black}{\textbf{Pending}}}
+\newcommand{\assetplaceholder}[2]{\begin{review}{#1}\centering\vspace{8mm}\par\textit{#2}\par\vspace{8mm}\end{review}}
+\begin{document}
+\raggedbottom
+\begin{titlepage}
+\centering
+{\large Nanyang Technological University\par}
+{\large AI6127: Deep Neural Networks for Natural Language Processing\par}
+\vspace{17mm}
+{\LARGE Evidence-grounded question answering over NLP research papers\par}
+\vspace{9mm}
+{\large Assignment report --- review draft\par}
+{Due: 7 November 2026\par}\vspace{8mm}
+Group number: 24\par\vspace{6mm}
+\begin{tabularx}{\textwidth}{Yr}\toprule
+Member name (alphabetical order) & Matriculation number\\\midrule
+Ananya Redhu & \todo{matriculation number}\\
+Changyan Xu & G2607680G\\
+Jingshuai Qian & \todo{matriculation number}\\
+Junlin Yin & \todo{matriculation number}\\
+Junyu Hu & \todo{matriculation number}\\
+Maheshwari Vishakha Praveen & \todo{matriculation number}\\\bottomrule
+\end{tabularx}
+\vspace{6mm}
+\begin{review}{Submission metadata}
+Members are listed alphabetically by displayed full name. Confirm official spellings and name order against university records. Names are taken from the project README and annotation audit; the audit also records Junyu Hu as ``HU JUNYU.'' Add the remaining matriculation numbers above. Select the Blackboard submitter.
+\end{review}
+\vfill
+\begin{review}{Draft status}
+Available measurements are development results, not final held-out scores. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Pending entries are not zero scores. Final QA, RAG evaluation and controlled ablations remain to be inserted.
+\end{review}
+\end{titlepage}
+\begin{abstract}
+Our system answers questions about NLP research papers using hybrid retrieval and evidence-conditioned generation. The knowledge base contains 28,617 section-aware passages from 1,584 papers with indexed text. BM25 and BGE dense retrieval are combined through reciprocal rank fusion (RRF); a bounded critic loop can request further evidence before Qwen3-8B generates a cited answer or refuses. On 200 questions scored against draft relevance labels, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. Reranking reduces all four reported top-five metrics. A separate 32-question development analysis finds that static top-eight retrieval recovers more mapped evidence than adaptive top-five retrieval. These findings motivate a top-eight RRF configuration without reranking, but do not establish answer accuracy or independent held-out performance.
+\end{abstract}
+\tableofcontents
+\input{sections/01-system}
+\input{sections/02-retrieval}
+\input{sections/03-evaluation}
+\input{sections/04-discussion}
+\input{sections/05-ai-disclosure}
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
