@@ -18,7 +18,7 @@ author already knew. The scripts below enforce the order.
 
 | Part | Content |
 | --- | --- |
-| `code`, `frozen_at`, `approved_by` | the main commit the run is made at, when, and who agreed |
+| `code`, `frozen_at` | the main commit the run is made at, and when the record was frozen |
 | `corpus` | the development corpus (21,360 passages) and the all-paper-text corpus the run needs (28,617 passages, 1,584 papers, SHA-256 `8eeef011...`, byte-identical to P3's pinned build) |
 | `dense_index` | the pinned `bge-small-en-v1.5` revision and, once built, the index path and the SHA-256 of its `metadata.json` |
 | `questions` | P3's frozen list: 200 questions, 174 papers, SHA-256 `d509010b...` (the hash in P3's own manifest) |
@@ -26,6 +26,7 @@ author already knew. The scripts below enforce the order.
 | `arms`, `baseline_depths` | static, adaptive, and the 15-passage run from which the plain ranking at depth 3, 5, 8, 10 and 15 is read |
 | `metrics`, `reporting` | what is reported whatever the outcome, and the subsets |
 | `disclosures` | what the author already knew (below) |
+| `decisions` | what was decided before the freeze: the refusal rule stays off, the critic is final |
 
 ## Disclosure: 40 of the 200 questions were read while annotating
 
@@ -37,9 +38,10 @@ questions in the same way while annotating; the rule forbids tuning on them.
 
 ## Order of work
 
-1. **Read the next cluster job** (critic with the generator view, handles and quote check) with
-   `python -m scripts.audit_critic --run-dir ... --items items.jsonl`. Decide the final configuration;
-   merge it; note the merge commit.
+1. **Final configuration: done.** Job 51172 (critic with the generator view, handles and quote check),
+   read with `python -m scripts.audit_critic --run-dir ... --items items.jsonl`, is the configuration
+   that is frozen; the refusal rule stays off (decision `refusal-rule-off`). Merge the
+   `stop_reason` change and note the merge commit; the freeze commit must include it.
 2. **Build the held-out index** over the all-paper-text corpus (CPU is enough, or on the cluster):
 
    ```bash
@@ -49,7 +51,7 @@ questions in the same way while annotating; the rule forbids tuning on them.
    ```
 
 3. **Freeze.** Fill `code.commit`, `dense_index.path`, `dense_index.metadata_sha256`, `frozen_at`,
-   `approved_by`, resolve `answers.generate`, set `status` to `frozen`, and commit. That commit is the
+   resolve `answers.generate`, set `status` to `frozen`, and commit. That commit is the
    freeze. `freeze_problems` in `src/agent/protocol.py` lists whatever is still missing.
 4. **Write the run's input** (refuses unless step 3 is done and the list matches the recorded hash):
 
@@ -80,7 +82,6 @@ questions in the same way while annotating; the rule forbids tuning on them.
 
 ## Still to settle before step 3
 
-- the final configuration after the next cluster job;
 - whether the run also generates answers (needs P5's compute and a decision on the 8-passage,
   1200-character budget, which P5 keeps frozen);
 - P3's confirmation, with P6, that the agent's held-out run uses this 200-question list (the plan names

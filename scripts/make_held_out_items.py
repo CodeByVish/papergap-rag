@@ -6,7 +6,7 @@
 
 The protocol (docs/EVALUATION.md) says to record the final commit and configuration before any
 held-out question is read. This script is where that is enforced: it does not open the list unless
-`configs/p4_freeze.json` is frozen (status, time, approvers, commit, hashes), the frozen commit exists
+`configs/p4_freeze.json` is frozen (status, time, commit, hashes), the frozen commit exists
 in this repository and the list is byte-identical to the one the record names. The output carries only
 `question_id`, `question` and `paper_id`: no answer, no gold, no split. Existing outputs are refused.
 """

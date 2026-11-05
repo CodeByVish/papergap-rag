@@ -3,7 +3,6 @@
   "status": "draft",
   "purpose": "Freeze record for P4's end-to-end run on P3's frozen held-out question list. Procedure and field meanings: docs/P4_FREEZE_RECORD.md.",
   "frozen_at": null,
-  "approved_by": [],
   "code": {
     "commit": null,
     "note": "Full 40-character hash of the main commit the run is made at. Set when freezing; scripts/make_held_out_items.py checks that it exists."
@@ -56,7 +55,7 @@
     "prompt_budget": {"max_passages": 8, "max_chars_per_passage": 1200},
     "prompt_version": "p5-grounded-qa-v7",
     "refusal_rule": "off",
-    "refusal_gate_for_enabling": "refuse at least 50% of unanswerable and at most 5% of answerable development questions; not met (job 50977: 4/8 and 5/32)"
+    "refusal_gate_for_enabling": "refuse at least 50% of unanswerable and at most 5% of answerable development questions; not met (job 50977: 4/8 and 5/32; job 51172: 6/8 and 9/32)"
   },
   "arms": ["static", "adaptive", "static-wide"],
   "static_wide_k": 15,
@@ -101,14 +100,25 @@
     },
     {
       "id": "unvalidated-changes",
-      "text": "The generator-view alignment, passage handles and quote requirement (PR #34) had not been run on the real model when this record was drafted."
+      "text": "The generator-view alignment, passage handles and quote requirement (PR #34) were run on the real model once, in development job 51172 (commit 37cb0c6, 4 November). Against job 50977 the critic accepted fewer unanswerable questions (2 of 8, was 4) and was stricter on answerable ones (9 of 32 left unsatisfied, was 5). Nothing was changed afterwards."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "refusal-rule-off",
+      "date": "2026-11-05",
+      "text": "The team had no objection to the gate (enable the 'refuse if the critic is unsatisfied after the last round' rule only if, on development questions, it refuses at least 50% of the unanswerable and at most 5% of the answerable ones). Development job 51172: 6 of 8 unanswerable and 9 of 32 answerable would be refused, so the gate is not met. The rule stays off and refusal stays with the generator. Thresholds and the off setting are part of this record and are not changed after held-out labels are read."
+    },
+    {
+      "id": "critic-final",
+      "date": "2026-11-05",
+      "text": "The critic (Qwen3-8B reading the generator's view, handles, quote check) is frozen as run in job 51172. It does not beat plain retrieval at equal passages and is lenient on unanswerable questions; the report states this."
     }
   ],
   "unresolved_before_freezing": [
-    "read the next cluster job (critic with PR #34) and decide the final configuration",
     "build the all-paper-text dense index and record dense_index.path and metadata_sha256",
     "decide with P5 whether the run generates answers",
     "confirm with P3 and P6 that the agent's held-out run uses this 200-question list",
-    "set code.commit, frozen_at and approved_by, then set status to frozen"
+    "set code.commit and frozen_at, then set status to frozen (the commit must include the stop_reason change, PR p4/stop-reason)"
   ]
 }
