@@ -634,3 +634,12 @@ and anchors, and the PR delta's whitespace check passed.
 PR mergeability, CI status and another member's review must be checked
 separately after pushing. This branch synchronization does not record a
 review approval or a merge of PR #8 into main.
+
+## P2 final evaluation preparation — 3 November 2026
+
+Added a reproducible read-only audit of P3's committed annotation batches and
+updated the P2 report for the 365/40 inference corpus. At P3 `c612ef3`, B09–10
+still lack 372 labels; 344 of 1,481 paired records disagree. These are preliminary
+counts, not final independent-human agreement or retrieval scores. P3/P6 must
+resolve label provenance and adjudication before final scoring. See
+[P2 report](P2_REPORT_CONTRIBUTION.md) for the command and limitations.
