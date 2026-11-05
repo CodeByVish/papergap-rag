@@ -36,7 +36,12 @@ Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
   thinking off, one retry with 512 tokens if the reply is cut off.
 - **Record out:** `export_record(state)` / `to_jsonl_line(state)` in `export.py`: the full
   terminal state, `retrieved_passages` with text, `question_id`, `evidence_map`, `gap_label`,
-  `sufficient`, `retrieval_round`, `retrieval_log` and `critic_log` (with raw model replies).
+  `sufficient`, `retrieval_round`, `retrieval_log` and `critic_log` (with raw model replies),
+  and, since the last node was added, `stop_reason` (`sufficient`, `insufficient_information` or
+  `max_rounds`) with `max_rounds` (the round budget, `max_retries + 1`). A static run (`max_rounds`
+  1) that is not satisfied also stops with `max_rounds`, so a rule meant for the adaptive loop
+  must test `stop_reason == "max_rounds"` and `max_rounds > 1`. Both fields are additive and
+  `None` in records written before this change.
 - **Answer step in:** `answer_fn(record) -> dict`, P5's `make_answer_fn(pipeline)`.
   Refusal rule (agreed with P5): refuse without a model call only for
   `INSUFFICIENT_INFORMATION` or no passages; `sufficient=False` still generates and is

@@ -1,3 +1,17 @@
+> Local corpus-search extension (`v0-proposed`): the prepared P6 runtime now
+> reports `corpus_search=true` and accepts omitted/null `paper_id` for all-paper
+> search. A nonempty paper ID remains an optional filter. The original service
+> CLI retains its paper-required behavior. See
+> [the extension and owner review points](P6/CORPUS_SEARCH_CONTRACT.md).
+> Paper-required statements below describe the original endpoint deployment.
+
+> UI layout update (2026-11-02): title **NLP Scientific Paper RAG** and
+> **How to use** are in the drawer above Connection. Search scope is followed by
+> History; the main area shows input/examples, then one submitted question and
+> Answer, warning explanation, Sources, Pipeline details and Debug information.
+> Workspaces are internal storage, not a required user step. See
+> [the current workflow](P6/P6_REAL_ENV_E2E_GUIDE.md#layout-and-controls).
+
 # P6 UI contract — the demo service
 
 **Status (2026-10-29): decided.** P5 runs everything for the demo: the cluster
@@ -41,8 +55,10 @@ Two mutually exclusive request forms:
 {"question": "What result is reported?", "paper_id": "1706.04115"}
 ```
 
-The second form is the free-form one. `paper_id` is mandatory because QASPER
-retrieval is paper-scoped — offer a selector fed by `GET /papers`.
+The second form is the original paper-scoped free-form request. The standalone
+service requires `paper_id`. The prepared local corpus-capable runtime also accepts
+`{"question": "..."}`; enable All papers only when `/health` advertises
+`corpus_search=true`. The optional paper filter is fed by `GET /papers`.
 
 Response (trimmed; the full bodies are in the fixture):
 
@@ -79,20 +95,25 @@ Response (trimmed; the full bodies are in the fixture):
 }
 ```
 
-`agent` is present only when the input was an exported `AgentState`; the
-free-form form does not produce it.
+`agent` is present when the input was an exported `AgentState`, and also on a
+free-form question served by an agent hook — either the CLI's `--record-fn` or
+the prepared local adaptive runtime — because both return that same exported
+state. Plain `--retriever` free-form answers do not carry it. The UI accepts
+either case and does not require agent metadata.
 
 ### `GET /health`
 
 ```json
 {"status": "ok", "backend": "vllm", "model_id": "...",
- "prompt_version": "p5-grounded-qa-v7", "retrieval": true,
+ "prompt_version": "p5-grounded-qa-v7", "retrieval": true, "agent": true,
  "passage_text": true, "top_k": 5, "papers": 100,
  "warmup_seconds": 41.2, "uptime_seconds": 812.4}
 ```
 
 Use it for the status badge. `retrieval: false` means free-form is disabled;
-`passage_text: false` means citations can only be shown as ids.
+`agent: true` means free-form runs the agent loop (retrieval + critic)
+rather than a plain retriever; `passage_text: false` means citations can
+only be shown as ids.
 
 ### `GET /papers`
 
@@ -142,7 +163,7 @@ Everything below is decided from the response body, never from the status code.
 | condition | UI |
 |---|---|
 | `result.evidence_status == "SUFFICIENT"`, `downgraded == false`, no violations | answered |
-| same, with only `severity == "WARNING"` violations | answered + warnings badge (expandable list) |
+| same, with only `severity == "WARNING"` violations | Evidence needs review + exact warning details (answer retained) |
 | `INSUFFICIENT`, `downgraded == false`, code `EMPTY_CONTEXT` | refused: nothing was retrieved |
 | `INSUFFICIENT`, `downgraded == false`, code `AGENT_INSUFFICIENT` | refused: the agent's critic judged the gap unanswerable |
 | `INSUFFICIENT`, `downgraded == false`, no code | refused by the model itself |
@@ -204,7 +225,8 @@ changes on demo day.
 - **p90 is ~17 s.** Set the HTTP timeout to at least 120 s and keep a spinner;
   a Streamlit button that looks frozen for 20 s is the most common demo failure.
 - **No streaming.** The answer arrives validated, in one piece.
-- **Paper selector required** for free-form; `GET /papers` is the source.
+- **Paper selector required** for legacy paper-scoped services; corpus-capable
+  health enables All papers. `GET /papers` supplies optional-filter IDs.
 - **Citations are hashes**; text comes from `POST /passages`.
 - **No gold answers** on the 100-question pool: the UI can show compliance
   (`SUFFICIENT`, violations, citations), not correctness.

@@ -44,3 +44,10 @@ ProjectPlan.pdf
 
 # Local assistant settings
 .claude/
+
+# Dedicated P6 local runtime
+/.venv-p6/
+
+# Local browser verification artifacts
+/output/playwright/
+/.playwright-cli/

@@ -6,7 +6,8 @@ from pathlib import Path
 import pytest
 
 from src.agent.graph import build_agent_graph
-from src.agent.nodes import MAX_ROUNDS
+from src.agent.export import export_record
+from src.agent.nodes import MAX_ROUNDS, stop_reason
 from src.agent.schemas import AgentState, GapLabel
 from src.retrieval.hybrid_retriever import HybridRetriever
 from src.retrieval.schemas import RetrievalHit, RetrievedPassage
@@ -166,3 +167,47 @@ def test_works_with_real_hybrid_retriever():
     assert result["retrieval_round"] == 1
     assert all(isinstance(h, RetrievedPassage) for h in result["retrieved_passages"])
     assert set(result["retrieved_passages"][0].source_scores) == {"bm25", "dense"}
+
+
+def test_stop_reason_sufficient(all_hits):
+    result = build_agent_graph(lambda query, paper_id, top_k: all_hits).invoke(initial_state())
+
+    assert result["stop_reason"] == "sufficient"
+    assert result["max_rounds"] == MAX_ROUNDS
+
+
+def test_stop_reason_max_rounds_after_retries(without_results):
+    result = build_agent_graph(lambda query, paper_id, top_k: without_results).invoke(initial_state())
+
+    assert result["stop_reason"] == "max_rounds"
+    assert result["max_rounds"] == MAX_ROUNDS == result["retrieval_round"]
+
+
+def test_static_run_is_told_apart_by_its_round_budget(without_results):
+    """One round and still unsatisfied also ends on the budget; max_rounds == 1 marks it."""
+    result = build_agent_graph(lambda query, paper_id, top_k: without_results, max_retries=0).invoke(
+        initial_state())
+
+    assert result["stop_reason"] == "max_rounds"
+    assert result["max_rounds"] == 1
+
+
+def test_stop_reason_order_and_retry():
+    state = AgentState(question=QUESTION, paper_id=PAPER_ID, retrieval_round=1)
+    assert stop_reason(state, 3) is None
+    assert stop_reason(state.model_copy(update={"retrieval_round": 3}), 3) == "max_rounds"
+    cannot = state.model_copy(update={"gap_label": GapLabel.INSUFFICIENT_INFORMATION})
+    assert stop_reason(cannot, 3) == "insufficient_information"
+    # sufficient wins over a spent budget; the paper-cannot-answer label wins over the budget
+    done = state.model_copy(update={"sufficient": True, "retrieval_round": 3})
+    assert stop_reason(done, 3) == "sufficient"
+    spent = cannot.model_copy(update={"retrieval_round": 3})
+    assert stop_reason(spent, 3) == "insufficient_information"
+
+
+def test_exported_record_carries_stop_reason(without_results):
+    result = build_agent_graph(lambda query, paper_id, top_k: without_results).invoke(initial_state())
+    record = export_record(result)
+
+    assert record["stop_reason"] == "max_rounds"
+    assert record["max_rounds"] == MAX_ROUNDS
