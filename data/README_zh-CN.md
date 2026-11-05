@@ -1381,3 +1381,41 @@ python -m scripts.build_annotation_pool freeze
 | `source_split_counts` | `object<string,integer>` | 按官方划分统计的抽样题数。 |
 | `source_split_counts.<split>` | `integer` | 该划分入选的问题数。 |
 | `usage_boundary` | `string` | 禁止根据 held-out 监督或结果选参、开发。 |
+
+
+## P2 AI 标注复核：批次 08–10
+
+`data/processed/p2_ai_annotation_review_08_10/` 包含 Codex (AI) 生成的 563 条判断，仅供与已独立完成的人工结果进行复核。它不占用 A/B 人工标注槽位，不计入人工标注数量或人工一致性，不作为 gold 或最终评估标签，不用于 held-out 调参。生成时未查看其他人的标签或 gold；模板显示了检索系统名称。标签由交互式 Codex 会话产生，没有确定性的重新生成命令。以下命令取得已提交的精确产物；合并后亦可从 P3 分支获取。
+
+```bash
+git fetch origin p2/ai-annotation-review-08-10
+git restore --source=origin/p2/ai-annotation-review-08-10 -- data/processed/p2_ai_annotation_review_08_10
+```
+
+在干净工作副本中运行。每批提供 Markdown 标签、`ai-review.md` 歧义说明和 `ai-review.json` 逐条理由；`manifest.json` 记录源提交与哈希。原空白模板由 manifest 中的 `source_commit` 和 `template_path` 定位。以下表格涵盖 manifest、复核 JSON 和 Markdown 字段；复核 JSON 的 `annotation_origin`、`purpose`、`human_annotation` 与 manifest 含义相同。
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `schema_version` | `string` | 暂定产物格式版本。 |
+| `annotation_origin` | `string` | 标注生成者 Codex (AI)。 |
+| `human_annotation` | `boolean` | 恒为 false；不是独立人工标注。 |
+| `purpose` | `string` | 仅供复核，不作为 gold 或人工一致性输入。 |
+| `source_commit` | `string` | 原始模板所在 Git 提交。 |
+| `labeling_date` | `string` | AI 标注日期，YYYY-MM-DD。 |
+| `label_count` | `integer` | 总判断数（563）。 |
+| `files` | `array<object>` | 每个批次的文件清单。 |
+| `files[].batch / files[].file` | `string` | 批次编号 / Markdown 文件名。 |
+| `files[].label_count` | `integer` | 判断数：191、177 或 195。 |
+| `files[].sha256` | `string` | 已标注 Markdown 字节的 SHA-256。 |
+| `files[].template_path / files[].template_sha256` | `string` | source_commit 中原始模板路径 / 字节哈希。 |
+| `date / scope` | `string` | 复核 JSON：判断日期 / 批次文件名。 |
+| `input_sha256 / output_sha256` | `string` | 复核 JSON：原始本地输入 / AI 输出哈希；输入包含原工作副本所有者姓名。 |
+| `other_annotator_labels_consulted / gold_answers_consulted` | `boolean` | false：生成标注时未查看其他标注者结果或 gold 答案。 |
+| `rule` | `string` | 基于可见文本的相关性规则；部分证据也可相关。 |
+| `records` | `array<object>` | 复核 JSON：每个显示的相关性记录对应一条判断。 |
+| `records[].question_number` | `string` | 导出显示题号，并非稳定问题 ID。 |
+| `records[].record_number` | `integer` | 导出相关性记录号，并非稳定段落 ID。 |
+| `records[].label` | `integer` | 0 或 1：无有用证据 / 有用回答证据。 |
+| `records[].reason` | `string` | AI 判断理由，未经人工裁定。 |
+| `records[].review_note` | `string or null` | 若有，则为需要复核的具体歧义。 |
+| `Annotator / Question / Passage / Relevance / Label` | `Markdown fields` | Codex 署名；原编号问题和段落；0/1 标签。保留原文与编号。 |

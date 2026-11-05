@@ -1,0 +1,1379 @@
+{
+  "annotation_origin": "AI (Codex)",
+  "purpose": "Comparison with separately completed human judgments; not ground truth or independent human annotation",
+  "date": "2026-11-03",
+  "scope": "batch_10.md",
+  "input_sha256": "8b74ea0156d933970cf4561e311b8f0622ad7f3da60bf7f54c878460741c09ad",
+  "output_sha256": "4bd5c577f7e45a3764dcbbe82ee3e8bee0911ec9f0195c797aba6e4c3a06f5b2",
+  "human_annotation": false,
+  "other_annotator_labels_consulted": false,
+  "gold_answers_consulted": false,
+  "rule": "Useful answer evidence including partial evidence = 1; topic overlap alone = 0. Judge visible text; do not reconstruct missing tables/formulas.",
+  "records": [
+    {
+      "question_number": "0181",
+      "record_number": 1659,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1660,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1664,
+      "label": 1,
+      "reason": "Identifies an additional stop-word dataset used in preprocessing.",
+      "review_note": "Only identifies a supplementary stop-word dataset, not the main question corpus."
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1665,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1666,
+      "label": 1,
+      "reason": "Describes their question dataset through its 3150/350 cross-validation split; no corpus name is visible.",
+      "review_note": "Split sizes identify part of the dataset setup, but the source/name of the question corpus is absent."
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1667,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1661,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1662,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1663,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1668,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1669,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0181",
+      "record_number": 1670,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1671,
+      "label": 1,
+      "reason": "Discusses BLEU scoring of their translations.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1672,
+      "label": 1,
+      "reason": "Explicitly reports BLEU for both evaluated models.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1674,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1675,
+      "label": 1,
+      "reason": "Uses BLEU to compare BPE ablation variants.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1676,
+      "label": 1,
+      "reason": "Explicitly identifies BLEU for quantitative evaluation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1679,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1673,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1677,
+      "label": 1,
+      "reason": "Identifies BLEU scores alongside qualitative examples.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1678,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1680,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0182",
+      "record_number": 1681,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1682,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1685,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "News/poetry counts describe prior work, not this study's training source; 0."
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1688,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1689,
+      "label": 1,
+      "reason": "Explicitly says this study abandons news-corpus pretraining; helps distinguish own data from prior work.",
+      "review_note": "Useful negative evidence: contemporary-news pretraining is explicitly not used here. The cited prior-work corpus must not be reported as this study's."
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1690,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1683,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1684,
+      "label": 1,
+      "reason": "Identifies CCPC1.0 and its SHI/CI contents; partial corpus-source evidence.",
+      "review_note": "CCPC1.0 is named in corpus statistics, without an explicit train/test split in this passage."
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1686,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1687,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1691,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1692,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "The entire visible passage is formatting debris ('1.1.1em'); no usable evidence, 0."
+    },
+    {
+      "question_number": "0183",
+      "record_number": 1693,
+      "label": 1,
+      "reason": "States selection of 121 CI forms from CCPC1.0 for this research.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1694,
+      "label": 1,
+      "reason": "Defines and reports coverage and precision.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1695,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1696,
+      "label": 1,
+      "reason": "Reports precision and manual better/equal/worse comparisons for conceptualization.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1697,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1698,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1699,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1700,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1701,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1702,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1703,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0184",
+      "record_number": 1704,
+      "label": 1,
+      "reason": "Explicitly identifies precision and coverage in evaluation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1705,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1706,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1708,
+      "label": 1,
+      "reason": "Names Transformer base/big, Localness, Context-Aware SANs and global-deep context comparisons.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1709,
+      "label": 1,
+      "reason": "Lists AllText, F8W and MLM/DAE/MASS pretraining comparisons.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1710,
+      "label": 1,
+      "reason": "Lists Localness, Context-Aware and global-deep context comparison systems.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1711,
+      "label": 1,
+      "reason": "Names unsupervised and RNN seq2seq baselines plus MLM, DAE and MASS.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1707,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1712,
+      "label": 1,
+      "reason": "Explicitly identifies Transformer base as a baseline.",
+      "review_note": null
+    },
+    {
+      "question_number": "0185",
+      "record_number": 1713,
+      "label": 1,
+      "reason": "Names AllText, F8W, RandSample and Transformer base comparisons.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1714,
+      "label": 1,
+      "reason": "Explicitly identifies UD train/dev/test datasets.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1716,
+      "label": 1,
+      "reason": "Names XNLI and UD as fine-tuning tasks; partial identification.",
+      "review_note": "Fine-tuning datasets are named; their use for testing is established more directly in 1714/1717/1720."
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1717,
+      "label": 1,
+      "reason": "Lists XNLI and UD v2.4 with exact treebanks.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1718,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1719,
+      "label": 1,
+      "reason": "Reports evaluation on XNLI (spelled XLNI in this passage).",
+      "review_note": "The passage spells the dataset 'XLNI'; this appears to be a typo for XNLI."
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1715,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1720,
+      "label": 1,
+      "reason": "Explicitly identifies the XNLI test set.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1721,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0186",
+      "record_number": 1722,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1723,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1724,
+      "label": 1,
+      "reason": "Explicitly identifies OpenSubtitles and the 5M dialogue entries provided via OpenNMT.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1725,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1726,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1727,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1728,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0187",
+      "record_number": 1729,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1730,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1731,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1732,
+      "label": 1,
+      "reason": "States they built a new dataset through expert collection, annotation and summary writing.",
+      "review_note": "Expert collection/annotation is provenance information but does not identify the news sites."
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1733,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1735,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1736,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1734,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1737,
+      "label": 1,
+      "reason": "Describes Google News/Twitter/archive topic discovery, news websites/comments and expert-written summaries.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1738,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0188",
+      "record_number": 1739,
+      "label": 1,
+      "reason": "Identifies expert data collection, annotation and summary creation as dataset provenance.",
+      "review_note": "Describes expert-created data rather than naming its web sources; partial evidence."
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1740,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1741,
+      "label": 1,
+      "reason": "Explicitly defines lexical connection as sharing words, with lexical-glue examples.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1744,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1745,
+      "label": 1,
+      "reason": "Illustrates overlap with Apple computers versus apples as fruit; same word need not mean same sense.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1747,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Says lexical overlap connects sentences but does not define what overlap means; 0."
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1742,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1743,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1746,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1748,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1749,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Describes visualizing lexical overlap, not its definition; 0."
+    },
+    {
+      "question_number": "0189",
+      "record_number": 1750,
+      "label": 1,
+      "reason": "Gives shared-word/Apple example illustrating lexical overlap without semantic equivalence.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1751,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1753,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1754,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1756,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1758,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1752,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1755,
+      "label": 1,
+      "reason": "Identifies computer, router and speaker evaluation domains.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1757,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1759,
+      "label": 1,
+      "reason": "Directly lists computers, wireless routers and speakers.",
+      "review_note": null
+    },
+    {
+      "question_number": "0190",
+      "record_number": 1760,
+      "label": 1,
+      "reason": "Identifies electronics reviews as sentiment-model training data; distinct from evaluation domains.",
+      "review_note": "Electronics refers to sentiment-model training data, while evaluation uses computers, routers and speakers."
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1762,
+      "label": 1,
+      "reason": "Describes BERT-based document/sentence encoding and inter-sentence Transformer layers.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1763,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1765,
+      "label": 1,
+      "reason": "Details per-sentence CLS tokens, alternating segment embeddings and extended positions.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1766,
+      "label": 1,
+      "reason": "Describes novel encoder/decoder optimization and two-stage encoder fine-tuning; training rather than structural novelty.",
+      "review_note": "Explains training innovations, not the structural changes to the document encoder. Review if the question is restricted to architecture."
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1767,
+      "label": 1,
+      "reason": "Explains sentence CLS representations and inter-sentence Transformer layers.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1761,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1764,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1768,
+      "label": 1,
+      "reason": "Describes separate optimization and two-stage fine-tuning of the encoder.",
+      "review_note": "Explains training innovations, not encoder structure; review the intended scope."
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1769,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0191",
+      "record_number": 1770,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1771,
+      "label": 1,
+      "reason": "Explains explicit semantic knowledge for entity and word disambiguation with scalable improved translation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1772,
+      "label": 1,
+      "reason": "Describes entity linking/types/knowledge embeddings for entity and OOV translation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1774,
+      "label": 1,
+      "reason": "Proposes topic-aware multi-resource semantic disambiguation and ontology reasoning.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1775,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1776,
+      "label": 1,
+      "reason": "Describes semantic disambiguation and access to emerging knowledge.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1773,
+      "label": 1,
+      "reason": "Describes translated/bilingual knowledge bases and embeddings to improve entity/domain translation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1777,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0192",
+      "record_number": 1778,
+      "label": 1,
+      "reason": "Lists ambiguity/OOV resolution, multilingual ontologies and RDF dictionaries/alignment opportunities.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1779,
+      "label": 1,
+      "reason": "Describes generation failure analysis and experiments suppressing repetition during testing/training.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1780,
+      "label": 1,
+      "reason": "Describes automatic and human evaluation of ironic-to-non-ironic transformation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1781,
+      "label": 1,
+      "reason": "Summarizes generative-model comparisons, reward effectiveness and error analysis.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1782,
+      "label": 1,
+      "reason": "Reports trying language-model rewards and analyzing generation errors.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1784,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1785,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1786,
+      "label": 1,
+      "reason": "Details automatic metrics and a four-annotator comparison on 50 inputs.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1787,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1783,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0193",
+      "record_number": 1788,
+      "label": 1,
+      "reason": "Describes non-ironic-to-ironic generation and the reverse-direction exploration.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1789,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1790,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1791,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1792,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1794,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "Lists translation unit granularities, not the underlying MT architecture. Assigned 0 for the model-type interpretation."
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1795,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1793,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1796,
+      "label": 1,
+      "reason": "Explicitly identifies the employed approach as statistical MT with BPE translation units.",
+      "review_note": "Identifies SMT with BPE units, but does not specify phrase-based architecture in the visible passage. Other passages about tokenization alone were marked 0; review if 'model' means tokenization variant."
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1797,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1798,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0194",
+      "record_number": 1799,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1801,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1803,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1804,
+      "label": 1,
+      "reason": "Names same-different and ABX intrinsic evaluations.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1805,
+      "label": 1,
+      "reason": "Defines average precision/area under precision-recall curve on the same-different task.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1806,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1807,
+      "label": 1,
+      "reason": "Explicitly compares ABX error rates and same-different AP.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1800,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1802,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": "These are downstream segmentation/clustering metrics, not the intrinsic representation measures requested; 0."
+    },
+    {
+      "question_number": "0195",
+      "record_number": 1808,
+      "label": 1,
+      "reason": "Describes same-different and within-/cross-speaker ABX error evaluations.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1809,
+      "label": 1,
+      "reason": "Names BLEU and human-rated faithfulness on a 0–5 scale.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1810,
+      "label": 1,
+      "reason": "Specifies case-insensitive 4-gram BLEU.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1813,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1814,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1815,
+      "label": 1,
+      "reason": "Describes subjective faithfulness scores from 0 to 5.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1811,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1812,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1816,
+      "label": 1,
+      "reason": "Reports BLEU for large-scale translation evaluation.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1817,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1818,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1819,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0196",
+      "record_number": 1820,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1821,
+      "label": 1,
+      "reason": "Identifies partner-provided city/hotel database and information elicited from users.",
+      "review_note": null
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1822,
+      "label": 1,
+      "reason": "Identifies 21K labeled messages used for NER; relevant if information means model-training data.",
+      "review_note": "Relevant only to the broad interpretation of 'information' as training data. For hotel facts specifically, see 1821."
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1823,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1824,
+      "label": 1,
+      "reason": "Explicitly identifies user-agent conversations and professionally annotated past messages as data sources.",
+      "review_note": "Training-data provenance; the question is ambiguous between training information and hotel facts."
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1825,
+      "label": 1,
+      "reason": "Describes retrieving information from the city/hotel database and annotated search messages.",
+      "review_note": null
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1826,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1827,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0197",
+      "record_number": 1828,
+      "label": 1,
+      "reason": "Describes user preferences, supplier databases and agent feedback as information sources.",
+      "review_note": "Covers user input, supplier databases and agent feedback; distinguish these sources in any answer."
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1829,
+      "label": 1,
+      "reason": "Explicitly names document retrieval and document clustering.",
+      "review_note": null
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1830,
+      "label": 1,
+      "reason": "Explicitly states both evaluated tasks.",
+      "review_note": null
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1831,
+      "label": 1,
+      "reason": "Describes the document-clustering experiment.",
+      "review_note": null
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1832,
+      "label": 1,
+      "reason": "Describes the document-retrieval experiment.",
+      "review_note": null
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1833,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1834,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0198",
+      "record_number": 1835,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1836,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1837,
+      "label": 1,
+      "reason": "Provides all three split counts, which sum to 56,216 examples.",
+      "review_note": "Split counts total 56,216. The 250,000+ archive links are not the number of examples."
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1838,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1839,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1841,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1843,
+      "label": 1,
+      "reason": "Explicitly states 56,216 article-summary pairs.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1840,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1842,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0199",
+      "record_number": 1844,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1845,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1846,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1848,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1849,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1850,
+      "label": 1,
+      "reason": "Directly identifies Food.com as the collection source.",
+      "review_note": "Food.com source is clear; raw counts differ from passage 1851 and are not needed for this source question."
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1851,
+      "label": 1,
+      "reason": "Directly states the raw recipes were scraped from Food.com.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1847,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1852,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    },
+    {
+      "question_number": "0200",
+      "record_number": 1853,
+      "label": 0,
+      "reason": "The visible passage does not supply the requested fact or a necessary component of its answer.",
+      "review_note": null
+    }
+  ]
+}
