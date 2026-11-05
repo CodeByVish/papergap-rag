@@ -176,6 +176,8 @@ def test_controlled_hybrid_agent_reuse_and_empty_retry_budget_are_independent():
             "query": OTHER_QUESTION,
             "triggered_by": "NONE",
             "passage_ids": ["opaque:paper-b:other"],
+            "paper_ids": ["paper-b"],
+            "search_scope": "paper",
             "section": None,
             "scope_fallback": False,
             "scoped_retrieval_ms": None,
