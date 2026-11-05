@@ -771,3 +771,49 @@ def test_dropped_disagreements_are_unjudged_and_scored_condensed(tmp_path):
     assert rows[0]["pool_recall_at_k"] == 1 and rows[0]["mrr_at_k"] == 1
     assert rows[0]["judged_coverage"] == pytest.approx(2 / 3)
     assert summary[0]["judged_coverage"] == pytest.approx(2 / 3)
+
+
+def test_drop_questions_removes_every_question_with_a_disagreement(tmp_path):
+    pairs = [
+        {
+            "record_number": i,
+            "question_id": qid,
+            "paper_id": "p1",
+            "question": f"Question {qid}?",
+            "passage_id": f"p{i}",
+            "passage": f"Text {i}",
+        }
+        for i, qid in enumerate(["q1", "q1", "q2", "q2"], 1)
+    ]
+    judgments = {(s, i): {"annotator": s, "label": 1} for s in "AB" for i in range(1, 5)}
+    judgments["B", 2] = {"annotator": "B", "label": 0}
+    corpus = dump(
+        tmp_path / "corpus.jsonl",
+        [
+            {"passage_id": p["passage_id"], "paper_id": "p1", "text": p["passage"]}
+            for p in pairs
+        ],
+    )
+    review = {
+        "source_commit": "synthetic",
+        "independence_confirmed": True,
+        "usage_and_freeze_reviewed": True,
+        "review_note": "synthetic fixture only",
+        "project_role": "development",
+    }
+    report = {"commit": "synthetic", "threshold_pass": True, "pool_output_sha256": {}}
+    disputes = [{"record_number": 2, "question_id": "q1"}]
+    finalize_gold(
+        tmp_path, report, pairs, judgments, disputes, None, review, corpus,
+        "drop-questions",
+    )
+    labels = read_jsonl(tmp_path / "final_labels.jsonl")
+    assert [row["question_id"] for row in labels] == ["q2"]
+    assert labels[0]["judged_passage_ids"] == ["p3", "p4"]
+    questions = read_jsonl(tmp_path / "questions.jsonl")
+    assert [row["question_id"] for row in questions] == ["q2"]
+    manifest = json.loads((tmp_path / "final_labels_manifest.json").read_text())
+    assert manifest["dropped_questions"] == 1
+    assert manifest["question_scope"]["question_ids"] == ["q2"]
+    provenance = read_jsonl(tmp_path / "original_and_final_judgments.jsonl")
+    assert provenance[0]["dropped_question"] and provenance[0]["final_label"] is None

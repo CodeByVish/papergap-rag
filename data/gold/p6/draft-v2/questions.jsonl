@@ -1,0 +1,91 @@
+{"question_id": "042800c3336ed5f4826203616a39747c61382ba6", "paper_id": "1709.05453", "question": "Which commonsense knowledge base are they using?"}
+{"question_id": "0602a974a879e6eae223cdf048410b5a0111665e", "paper_id": "1908.09246", "question": "What baseline approaches does this approach out-perform?"}
+{"question_id": "0a70af6ba334dfd3574991b1dd06f54fc6a700f2", "paper_id": "1910.01160", "question": "What nuances between fake news and satire were discovered?"}
+{"question_id": "1002bd01372eba0f3078fb4a951505278ed45f2e", "paper_id": "1906.01076", "question": "Do they compare against other models?"}
+{"question_id": "114934e1a1e818630ff33ac5c4cd4be6c6f75bb2", "paper_id": "1811.08603", "question": "How effective is their NCEL approach overall?"}
+{"question_id": "11679d1feba747c64bbbc62939a20fbb69ada0f3", "paper_id": "1902.06734", "question": "What community-based profiling features are used?"}
+{"question_id": "1a419468d255d40ae82ed7777618072a48f0091b", "paper_id": "1704.06851", "question": "How to extract affect attributes from the sentence?"}
+{"question_id": "1bdc990c7e948724ab04e70867675a334fdd3051", "paper_id": "1909.00105", "question": "Where do they get the recipes from?"}
+{"question_id": "1c182b4805b336bd6e1a3f43dc84b07db3908d4a", "paper_id": "1910.12203", "question": "What are the neural baselines mentioned?"}
+{"question_id": "1d047286ac63e5dca1ab811172b89d7d125679e5", "paper_id": "1910.03943", "question": "what dataset was used for training?"}
+{"question_id": "1f053f338df6d238cb163af1a0b1b073e749ed8a", "paper_id": "1806.09652", "question": "Do they evaluate their parallel sentence generation?"}
+{"question_id": "20e38438471266ce021817c6364f6a46d01564f2", "paper_id": "1911.02855", "question": "How are weights dynamically adjusted?"}
+{"question_id": "22488c8628b6db5fd708b6471c31a8eac31f66df", "paper_id": "1906.01749", "question": "What is the size of Multi-news dataset?"}
+{"question_id": "2317ca8d475b01f6632537b95895608dc40c4415", "paper_id": "1910.06592", "question": "How is a \"chunk of posts\" defined in this work?"}
+{"question_id": "2686e8d51caff9a19684e0c9984bcb5a1937d08d", "paper_id": "1606.02892", "question": "What morphological features are considered?"}
+{"question_id": "30870a962cf88ac8c8e6b7b795936fd62214f507", "paper_id": "1709.06136", "question": "Which neural network architecture do they use for the dialog agent and user simulator?"}
+{"question_id": "33554065284110859a8ea3ca7346474ab2cab100", "paper_id": "1911.01371", "question": "How large is the Twitter dataset?"}
+{"question_id": "37f8c034a14c7b4d0ab2e0ed1b827cc0eaa71ac6", "paper_id": "2002.07306", "question": "What metrics are used for evaluation?"}
+{"question_id": "420862798054f736128a6f0c4393c7f9cc648b40", "paper_id": "1603.09405", "question": "Which datasets do they evaluate on?"}
+{"question_id": "42eb7c5311fc1ac0344f0b38d3184ccd4faad3be", "paper_id": "2004.01820", "question": "What agreement measure is used?"}
+{"question_id": "430ad71a0fd715a038f3c0fe8d7510e9730fba23", "paper_id": "1805.09960", "question": "which attention based nmt method did they compare with?"}
+{"question_id": "43729be0effb5defc62bae930ceacf7219934f1e", "paper_id": "2003.07568", "question": "Which languages does their newly created dataset contain?"}
+{"question_id": "4485e32052741972877375667901f61e602ec4de", "paper_id": "1805.11850", "question": "How big is the self-collected corpus?"}
+{"question_id": "46e660becd727c994a2a35c6587e15ea8bf8272d", "paper_id": "1809.08935", "question": "what model is used?"}
+{"question_id": "4ae0b50c88a174cfc283b90cd3c9407de13fd370", "paper_id": "1802.09059", "question": "Do they use pretrained word embeddings?"}
+{"question_id": "4c18081ae3b676cc7831403d11bc070c10120f8e", "paper_id": "1712.00991", "question": "What clustering algorithms were used?"}
+{"question_id": "4eb42c5d56d695030dd47ea7f6d65164924c4017", "paper_id": "1910.09387", "question": "What domain do the audio samples fall under?"}
+{"question_id": "506d21501d54a12d0c9fd3dbbf19067802439a04", "paper_id": "1806.11432", "question": "What are the user-defined keywords?"}
+{"question_id": "521a3e7300567f6e8e4c531f223dbc9fc306c393", "paper_id": "1911.00202", "question": "Does regularization of the fine-tuning process hurt performance in the target domain?"}
+{"question_id": "568466c62dd73a025bfd9643417cdb7a611f23a1", "paper_id": "1909.12016", "question": "Which data-selection algorithms do they use?"}
+{"question_id": "56d41e0fcc288c1e65806ae77097d685c83e22db", "paper_id": "1709.09749", "question": "which document understanding tasks did they evaluate on?"}
+{"question_id": "576a3ed6e4faa4c3893db632e97a52ac6e864aac", "paper_id": "1605.04278", "question": "How long is the dataset?"}
+{"question_id": "58c6737070ef559e9220a8d08adc481fdcd53a24", "paper_id": "2002.04181", "question": "What measures are used for evaluation?"}
+{"question_id": "59a3d4cdd1c3797962bf8d72c226c847e06e1d44", "paper_id": "1908.05925", "question": "What are the post-processing approaches applied to the output?"}
+{"question_id": "63a1cbe66fd58ff0ead895a8bac1198c38c008aa", "paper_id": "1912.08960", "question": "Which existing models are evaluated?"}
+{"question_id": "63cdac43a643fc1e06da44910458e89b2c7cd921", "paper_id": "1904.03670", "question": "How was the dataset collected?"}
+{"question_id": "6411622cc8b2fbedbfa468859d453596d3bd2f03", "paper_id": "1909.09534", "question": "What objective function is used in the GAN?"}
+{"question_id": "64632981279c7aa16ffc1a44ffc31f4520f5559e", "paper_id": "1710.07695", "question": "what evaluation metrics are used?"}
+{"question_id": "65c7a2b734dab51c4c81f722527424ff33b023f8", "paper_id": "1610.06510", "question": "Which translation model do they employ?"}
+{"question_id": "6883767bbdf14e124c61df4f76335d3e91bfcb03", "paper_id": "1902.06734", "question": "What is the drawback to methods that rely on textual cues?"}
+{"question_id": "6a31db1aca57a818f36bba9002561724655372a7", "paper_id": "1611.03599", "question": "What is the size of the Chinese data?"}
+{"question_id": "718c0232b1f15ddb73d40c3afbd6c5c0d0354566", "paper_id": "1806.09652", "question": "What are the BLEU performance improvements they achieve?"}
+{"question_id": "72f7ef55e150e16dcf97fe443aff9971a32414ef", "paper_id": "1911.02855", "question": "What are method's improvements of F1 w.r.t. baseline BERT tagger for Chinese POS datasets?"}
+{"question_id": "74a17eb3bf1d4f36e2db1459a342c529b9785f6e", "paper_id": "1805.09960", "question": "what were the evaluation metrics?"}
+{"question_id": "7561bd3b8ba7829b3a01ff07f9f3e93a7b8869cc", "paper_id": "2002.06851", "question": "What extractive models were trained on this dataset?"}
+{"question_id": "7705dd04acedaefee30d8b2c9978537afb2040dc", "paper_id": "1604.00727", "question": "What word level and character level model baselines are used?"}
+{"question_id": "7d503b3d4d415cf3e91ab08bd5a1a2474dd1047b", "paper_id": "1909.08357", "question": "How long is the vocabulary of subwords?"}
+{"question_id": "8795bb1f874e5f3337710d8c3d5be49e672ab43a", "paper_id": "1908.05803", "question": "What crowdsourcing platform did they obtain the data from?"}
+{"question_id": "894bbb1e42540894deb31c04cba0e6cfb10ea912", "paper_id": "1911.12237", "question": "Do authors propose some better metric than ROUGE for measurement of abstractive dialogue summarization?"}
+{"question_id": "90dde59e1857a0d2b1ee4615ab017fee0741f29f", "paper_id": "1911.12893", "question": "How did they identify what language the text was?"}
+{"question_id": "998fa38634000f2d7b52d16518b9e18e898ce933", "paper_id": "1908.05758", "question": "Does the SESAME dataset include discontiguous entities?"}
+{"question_id": "99e99f2c25706085cd4de4d55afe0ac43213d7c8", "paper_id": "2002.09616", "question": "What is the source of their datasets?"}
+{"question_id": "9b76f428b7c8c9fc930aa88ee585a03478bff9b3", "paper_id": "2003.13032", "question": "How many documents are in the new corpus?"}
+{"question_id": "9be9354eeb2bb1827eeb1e23a20cfdca59fb349a", "paper_id": "2002.03056", "question": "How this system recommend features for the new application?"}
+{"question_id": "9f1e60ee86a5c46abe75b67ef369bf92a5090568", "paper_id": "1911.11899", "question": "By how much do they outperform previous state-of-the-art in terms of top-n precision?"}
+{"question_id": "a18d74109ed55ed14c33913efa62e12f207279c0", "paper_id": "1802.09059", "question": "How many layers does their model have?"}
+{"question_id": "a2edd0454026811223b8f31512bdae91159677be", "paper_id": "2002.03056", "question": "What are meta elements of language for specifying NLP features?"}
+{"question_id": "a464052fd11af1d2d99e407c11791269533d43d1", "paper_id": "1802.06053", "question": "What bayesian model is trained?"}
+{"question_id": "a4a9971799c8860b50f219c93f050ebf6a627b3d", "paper_id": "1905.08067", "question": "What languages feature in the dataset?"}
+{"question_id": "a778b8204a415b295f73b93623d09599f242f202", "paper_id": "2001.03131", "question": "What is the Random Kitchen Sink approach?"}
+{"question_id": "a87a009c242d57c51fc94fe312af5e02070f898b", "paper_id": "1609.00425", "question": "What predictive model do they build?"}
+{"question_id": "b3d01ac226ee979e188a4141877a6d2a5482de98", "paper_id": "1910.14599", "question": "What are the weaknesses found by non-expert annotators of current state-of-the-art NLI models?"}
+{"question_id": "b591853e938984e6069d738371500ebdec50d256", "paper_id": "1611.01576", "question": "What sentiment classification dataset is used?"}
+{"question_id": "c47312f2ca834ee75fa9bfbf912ea04239064117", "paper_id": "1907.00937", "question": "What dataset is used for training?"}
+{"question_id": "cbb3c1c1e6e1818b6480f929f1c299eaa5ffd07a", "paper_id": "1907.10676", "question": "What are the opportunities presented by the use of Semantic Web technologies in Machine Translation?"}
+{"question_id": "d27438b11bc70e706431dda0af2b1c0b0d209f96", "paper_id": "1901.05287", "question": "Were any of these tasks evaluated in any previous work?"}
+{"question_id": "d3ff2986ca8cb85a9a5cec039c266df756947b43", "paper_id": "1910.06592", "question": "Based on this paper, what is the more predictive set of features to detect fake news?"}
+{"question_id": "d41e20ec716b5904a272938e5a8f5f3f15a7779e", "paper_id": "2003.03014", "question": "How do they identify discussions of LGBTQ people in the New York Times?"}
+{"question_id": "d622564b250cffbb9ebbe6636326b15ec3c622d9", "paper_id": "1902.10246", "question": "How much lower is the computational cost of the proposed model?"}
+{"question_id": "d66c31f24f582c499309a435ec3c688dc3a41313", "paper_id": "1907.00937", "question": "What were the baseline methods?"}
+{"question_id": "d6a815d24c46557827d8aca65d3ffd008ac1bc07", "paper_id": "1803.02914", "question": "Which movie subtitles dataset did they use?"}
+{"question_id": "dfdd309e56b71589b25412ba85b0a5d79a467ceb", "paper_id": "1610.09722", "question": "what is the size of the dataset?"}
+{"question_id": "e56c1f0e9eabda41f929d0dfd5cfa50edd69fa89", "paper_id": "1909.06708", "question": "Were any datasets other than WMT used to test the model?"}
+{"question_id": "e5f8d2fc1332e982a54ee4b4c1f7f55e900d0b86", "paper_id": "1811.04791", "question": "Which intrisic measures do they use do evaluate obtained representations?"}
+{"question_id": "e6bc11bd6cfd4b2138c29602b9b56fc5378a4293", "paper_id": "1709.04491", "question": "what domain do the opinions fall under?"}
+{"question_id": "e838275bb0673fba0d67ac00e4307944a2c17be3", "paper_id": "2004.02192", "question": "How did they analyze which topics, dialects and gender are most associated with tweets?"}
+{"question_id": "e9a0a69eacd554141f56b60ab2d1912cc33f526a", "paper_id": "1803.06745", "question": "what was the baseline?"}
+{"question_id": "ebe1084a06abdabefffc66f029eeb0b69f114fd9", "paper_id": "1810.02268", "question": "what are the baselines?"}
+{"question_id": "ecaa10a2d9927fa6ab6a954488f12aa6b42ddc1a", "paper_id": "1909.04242", "question": "How does the proposed training framework mitigate the bias pattern?"}
+{"question_id": "ecc63972b2783ee39b3e522653cfb6dc5917d522", "paper_id": "1706.09673", "question": "How do they encourage understanding of literature as part of their objective function?"}
+{"question_id": "ef6304512652ba56bd13dbe282a5ce1d41a4f171", "paper_id": "1909.03553", "question": "What are state-of-the-art models on this dataset?"}
+{"question_id": "f1a50f88898556ecdba8e9cac13ae54c11835945", "paper_id": "1909.03553", "question": "How many general qualitative statements are in dataset?"}
+{"question_id": "f4496316ddd35ee2f0ccc6475d73a66abf87b611", "paper_id": "1702.03342", "question": "What is the benchmark dataset?"}
+{"question_id": "f4e16b185b506713ff99acc4dbd9ec3208e4997b", "paper_id": "1602.07563", "question": "Which measures of inter-annotator agreement are used?"}
+{"question_id": "f651cd144b7749e82aa1374779700812f64c8799", "paper_id": "1810.04428", "question": "what evaluation metrics did they use?"}
+{"question_id": "f77d7cddef3e021d70e16b9e16cecfd4b8ee80d3", "paper_id": "1606.07947", "question": "Which dataset do they train on?"}
+{"question_id": "f8f64da7172e72e684f0e024a19411b43629ff55", "paper_id": "1804.05306", "question": "How many songs were collected?"}
+{"question_id": "fd0a3e9c210163a55d3ed791e95ae3875184b8f8", "paper_id": "1709.07814", "question": "Which dataset do they use?"}
+{"question_id": "fe1a74449847755cd7a46647cc9d384abfee789e", "paper_id": "1901.03253", "question": "Where can I access the dataset?"}
+{"question_id": "fe6181ab0aecf5bc8c3def843f82e530347d918b", "paper_id": "1911.09753", "question": "What are the baseline models?"}
+{"question_id": "fea9b4d136156f23a88e5c7841874a467f2ba86d", "paper_id": "1908.06259", "question": "How do they determine that a decoder handles an easier task than the encoder?"}

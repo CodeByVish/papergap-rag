@@ -215,10 +215,14 @@ def finalize_gold(
     """Export gold labels. `disagreements="drop"` keeps only agreed pairs.
 
     Dropped pairs are left unjudged, not relabelled; initial agreement is unchanged.
+    `disagreements="drop-questions"` instead removes every question with a disagreement.
     """
-    if disagreements not in {"adjudicate", "drop"}:
-        raise ValueError("Disagreement policy must be adjudicate or drop")
-    if (disagreements == "drop") != (adjudication_path is None):
+    if disagreements not in {"adjudicate", "drop", "drop-questions"}:
+        raise ValueError(
+            "Disagreement policy must be adjudicate, drop or drop-questions"
+        )
+    dropping = disagreements != "adjudicate"
+    if dropping != (adjudication_path is None):
         raise ValueError(
             "Supply an adjudication file only when disagreements are adjudicated"
         )
@@ -240,7 +244,12 @@ def finalize_gold(
             "Raw agreement below 80%; preserve this round and review the protocol"
         )
     expected = {int(r["record_number"]): r for r in disputes}
-    if disagreements == "drop":
+    removed_questions = (
+        {r["question_id"] for r in disputes}
+        if disagreements == "drop-questions"
+        else set()
+    )
+    if dropping:
         rows = []
     else:
         with Path(adjudication_path).open(newline="") as f:
@@ -278,9 +287,13 @@ def finalize_gold(
         c = catalog.get(p["passage_id"])
         if not c or c["paper_id"] != p["paper_id"] or c["text"] != p["passage"]:
             raise ValueError("Corpus identity/text differs from the frozen pool")
-        dropped = disagreements == "drop" and n in expected
-        label = None if dropped else final.get(n, judgments["A", n]["label"])
-        grouped[p["question_id"]].append((p, label))
+        dropped = dropping and n in expected
+        removed = p["question_id"] in removed_questions
+        label = (
+            None if dropped or removed else final.get(n, judgments["A", n]["label"])
+        )
+        if not removed:
+            grouped[p["question_id"]].append((p, label))
         provenance.append(
             {
                 "record_number": n,
@@ -290,6 +303,7 @@ def finalize_gold(
                 "B": judgments["B", n],
                 "final_label": label,
                 "dropped_disagreement": dropped,
+                "dropped_question": removed,
                 "adjudication": next(
                     (r for r in rows if int(r["record_number"]) == n), None
                 ),
@@ -310,6 +324,18 @@ def finalize_gold(
             }
         )
     write_jsonl(output / "final_labels.jsonl", labels)
+    if removed_questions:
+        write_jsonl(
+            output / "questions.jsonl",
+            [
+                {
+                    "question_id": qid,
+                    "paper_id": records[0][0]["paper_id"],
+                    "question": records[0][0]["question"],
+                }
+                for qid, records in sorted(grouped.items())
+            ],
+        )
     write_jsonl(output / "original_and_final_judgments.jsonl", provenance)
     write_json(
         output / "final_labels_manifest.json",
@@ -321,9 +347,8 @@ def finalize_gold(
             if disagreements == "adjudicate"
             else "agreed_only",
             "disagreement_policy": disagreements,
-            "dropped_disagreement_pairs": len(expected)
-            if disagreements == "drop"
-            else 0,
+            "dropped_disagreement_pairs": len(expected) if dropping else 0,
+            "dropped_questions": len(removed_questions),
             "questions_without_relevant": sum(
                 not row["relevant_passage_ids"] for row in labels
             ),

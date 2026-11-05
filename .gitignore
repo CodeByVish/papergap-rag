@@ -21,6 +21,7 @@ dist/
 .streamlit/secrets.toml
 # Local data, models, indexes and outputs
 /data/*
+!/data/gold/
 !/data/README.md
 /results/*
 !/results/README.md
