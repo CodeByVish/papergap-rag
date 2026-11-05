@@ -2,11 +2,11 @@
 
 Updated: 5 November 2026.
 
-This is an **offline scoring package**. It does not run RAG. Each team owner runs their own system and saves the outputs, then the evaluation lead turns those files into report tables. **The evaluation lead is not decided yet, and it won't be P6.**
+This is an **offline scoring package**. It does not run RAG. Each team owner runs their own system and saves the outputs, then each run owner turns those files into report tables. Section 1 lists the proposed owner of each run.
 
 ```
 Owners run static / adaptive RAG → save answers, contexts, timings
-        → evaluation lead scores them against gold → tables for the report
+        → run owners score them against gold → tables for the report
 ```
 
 Ground rules:
@@ -19,15 +19,21 @@ Ground rules:
 
 ## 1. Who does what
 
-These owners are unknown. P6 will not run the end-to-end evaluation. Fill this in before the final run; each role needs one named person.
+The owners below are proposed and need team agreement. P6 does not run the evaluation; P6 answers tooling questions and reads the tables as a second person.
 
-| Role | Name | Responsible for |
-| --- | --- | --- |
-| Evaluation lead | *unknown* | Runs steps 3–10, checks results, commits the summaries |
-| Batch operator | *unknown* | Runs the final static and adaptive batches and delivers the files in section 1 |
-| Judge owner | *unknown* | Gets the approved judge model, API key and budget, and runs step 7 |
-| Report owner | *unknown* | Puts the tables in the report with the required disclosures |
-| Module owners | *unknown* | Review any claim about their module before it goes in the report |
+| # | Run | Handoff step | Output | Proposed owner |
+| --- | --- | --- | --- | --- |
+| 0 | Final batch: `static`, `adaptive` and `static-wide` at top-8, with answers | Section 1 file list | Agent records, contexts, timings, `run-notes.md` | P5 Junyu Hu runs it; P4 Ananya prepares the freeze |
+| 1 | Retrieval scoring at $K=1,3,5$ | 4 | `retrieval.csv` | P2 Vishakha |
+| 2 | Retrieval comparisons at $K=5$ | 9 | `ablation.csv` | P1 Junlin Yin (BM25 vs Dense); P2 Vishakha (hybrid and reranking) |
+| 3 | Evidence recall: static at $K=5,8,10$, adaptive across rounds | 6 | `evidence_recall.csv` | P4 Ananya |
+| 4 | Static vs adaptive comparison | 9 | `ablation.csv` | P4 Ananya |
+| 5 | QA scoring for both arms | 5 | `qa.csv` | P5 Junyu Hu |
+| 6 | RAGAS for both arms | 7 | `ragas.csv` | P5 Junyu Hu |
+| 7 | Performance and cost for both arms | 8 | `performance.csv` | P4 Ananya |
+| 8 | Annotation agreement | 3a | `agreement.json` | P3 Jingshuai Qian |
+
+Runs 1, 2 and 8 need only the signed-off gold. All other runs need run 0. The report owner is not yet assigned.
 
 The whole team confirms the question freeze, independence and the use of `draft-v3` as the gold before anything is reported as final.
 
@@ -36,13 +42,13 @@ The whole team confirms the question freeze, independence and the use of `draft-
 | Step | Owner | Status | Blocked on |
 | --- | --- | --- | --- |
 | 3a Audit + export P3 inputs | Done | ✅ Done (`results/p6/p3-snapshot-20261105/`) | – |
-| 3b–3d Review files + final gold | Unknown | ⏳ Draft ready (`draft-v3`) | Team confirms annotator independence, question freeze and role |
-| 4 Retrieval scores | Unknown | ⏳ Development run done | Final gold (3c) |
-| 5 QA scores | Unknown | ⏳ To do | P4/P5 answer files |
-| 6 Evidence recall | Unknown | ⏳ To do | P4 static top-10 + adaptive records |
-| 7 RAGAS | Unknown | ⏳ To do | Exact contexts, approved judge model + API key |
-| 8 Performance/cost | Unknown | ⏳ To do | P4/P5 timings, usage, batch wall time |
-| 9–12 Comparisons, saving, checks, report tables | Unknown | ⏳ To do | Steps 4–8 |
+| 3b–3d Review files + final gold | Team | ⏳ Draft ready (`draft-v3`) | Team confirms annotator independence, question freeze and role |
+| 4 Retrieval scores | P2 | ⏳ Development run done | Final gold (3c) |
+| 5 QA scores | P5 | ⏳ To do | P4/P5 answer files |
+| 6 Evidence recall | P4 | ⏳ To do | P4 static top-10 + adaptive records |
+| 7 RAGAS | P5 | ⏳ To do | Exact contexts, approved judge model + API key |
+| 8 Performance/cost | P4 | ⏳ To do | P4/P5 timings, usage, batch wall time |
+| 9–12 Comparisons, saving, checks, report tables | Run owners | ⏳ To do | Steps 4–8 |
 
 Open team decisions: who runs the final batch, which judge model, and the judge budget.
 
@@ -76,7 +82,7 @@ Put these in `results/p4-final/`, as one JSONL row per question, covering every 
 
 - [ ] `static.jsonl` and `adaptive.jsonl`: agent records from `scripts/run_agent_experiment.py`, run with `--top-k 8`, the frozen depth in `configs/p4_freeze.json`. The script defaults to 5, so set it explicitly. Each row needs `question_id`, an answer `status`, `retrieval_log`, and timings `elapsed_s` + `answer_s`.
 - [ ] `static-top10.jsonl`: a static run whose saved ranking is at least 10 deep (for evidence recall @5/@8/@10).
-- [ ] `static-contexts.jsonl` / `adaptive-contexts.jsonl`: the exact text shown to the generator (format in step 7a), **or** the original `PromptConfig` JSON so the evaluation lead can rebuild it.
+- [ ] `static-contexts.jsonl` / `adaptive-contexts.jsonl`: the exact text shown to the generator (format in step 7a), **or** the original `PromptConfig` JSON so the run owner can rebuild it.
 - [ ] `run-notes.md`: generator model, prompt version, hardware, concurrency, total batch wall-clock seconds, and token usage per call if available.
 
 ## 2. Setup and a practice run
