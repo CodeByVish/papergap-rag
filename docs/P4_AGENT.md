@@ -91,6 +91,17 @@ P5's Option C server needs a hook to run the agent per typed question: `src/agen
 (`make_record_fn`) and `scripts/demo_agent_factory.py`. The server change and the open checks are in
 `docs/handoffs/P4_AGENT_DEMO_HOOK_20261030.md`.
 
+Checked locally on 4 November: P5's `origin/p5/demo-service` server merged with `main` in a scratch tree
+(merges cleanly), the mock generator, the 40-paper development corpus and index, `fastapi` and `uvicorn`
+installed outside the project. `/health` reports `"agent": true`. A question sent with
+`scripts/demo_client.py` returns 200 with a cited answer, and all 3 cited passage ids resolve through
+`/passages` (365/40 corpus). The log line `agent <id>: rounds=1 retrieved=10 critic=[(1, 'fallback', 8)]`
+shows the critic reading the generator's 8 of 10 retrieved passages; with `DEMO_AGENT_CRITIC_VIEW=pool` it
+shows 10. **P5's server calls the hook as `record_fn(question, paper_id)`, so its `--top-k` never reaches the
+agent**: set the depth with `DEMO_AGENT_TOP_K` (default 5). Not verified: the Qwen critic through vLLM, GPU
+memory with the retrieval models beside the engine, latency with the real critic (about 7 s per question
+here, mock critic), the SSH tunnel. `--record-fn` is still only on P5's branch.
+
 ## Measures (`src/agent/experiments.py`)
 
 Static = one round, rule-based critic (`max_retries=0`); adaptive = up to 2 retries.

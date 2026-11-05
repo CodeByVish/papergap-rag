@@ -34,8 +34,12 @@ def make_record_fn(
     max_retries: int = 2,
     section_selector: SectionSelector | None = None,
     critic_view: PassageView = pool_view,
+    default_top_k: int = 5,
 ) -> RecordFn:
     """Build the server hook around `retriever(query, paper_id, top_k)`.
+
+    P5's server calls `record_fn(question, paper_id)` without a depth, so `default_top_k` is the
+    depth the demo retrieves per round (the factory reads it from `DEMO_AGENT_TOP_K`).
 
     `critic_view` is what the critic reads; the factory passes the server's own prompt
     view so the demo judges evidence the way the scored runs do.
@@ -59,7 +63,7 @@ def make_record_fn(
         return graphs[top_k]
 
     def record_fn(
-        question: str, paper_id: str | None, top_k: int = 5, request_id: str | None = None
+        question: str, paper_id: str | None, top_k: int | None = None, request_id: str | None = None
     ) -> dict[str, Any]:
         started = time.perf_counter()
         state = AgentState(
@@ -67,7 +71,7 @@ def make_record_fn(
             paper_id=paper_id,
             question_id=request_id or f"ui-{int(time.time() * 1000)}",
         )
-        record = export_record(graph_for(top_k).invoke(state))
+        record = export_record(graph_for(default_top_k if top_k is None else top_k).invoke(state))
         record["elapsed_s"] = time.perf_counter() - started
         # The HTTP answer record carries no critic_log, so this line is how a live run shows
         # what the critic read: per round (round, verdict source, passages shown).

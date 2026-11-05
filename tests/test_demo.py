@@ -202,3 +202,57 @@ def test_the_log_line_shows_the_generators_cut_on_a_wide_first_round(caplog):
     make_record_fn(many, chat, max_retries=0, critic_view=make_generator_view())("What F1?", "p", 12, "r")
     line = next(r.getMessage() for r in caplog.records if r.name == "src.agent.demo")
     assert "retrieved=12" in line and "(1, 'llm', 8)" in line  # 12 retrieved, 8 shown
+
+
+# --- retrieval depth when the server does not pass one --------------------
+
+def test_the_hook_uses_its_default_depth_when_called_with_question_and_paper_only(monkeypatch):
+    import src.agent.demo as demo
+
+    built = []
+    real = demo.build_agent_graph
+    monkeypatch.setattr(demo, "build_agent_graph",
+                        lambda *a, **k: built.append(k["top_k"]) or real(*a, **k))
+    record_fn = make_record_fn(retriever, None, default_top_k=10)
+    record_fn("What accuracy did it get?", "p")  # how P5's server calls it
+    record_fn("What accuracy did it get?", "p", 3)  # an explicit depth still wins
+    assert built == [10, 3]
+
+
+def test_the_default_depth_is_five():
+    import src.agent.demo as demo
+
+    built = []
+    real = demo.build_agent_graph
+    demo.build_agent_graph = lambda *a, **k: built.append(k["top_k"]) or real(*a, **k)
+    try:
+        make_record_fn(retriever, None)("What accuracy did it get?", "p")
+    finally:
+        demo.build_agent_graph = real
+    assert built == [5]
+
+
+def test_factory_reads_the_depth_from_the_environment(monkeypatch):
+    from types import SimpleNamespace
+
+    import scripts.build_indexes as build_indexes
+    import scripts.run_agent_experiment as run_agent_experiment
+    import src.agent.demo as demo
+    from scripts import demo_agent_factory as f
+
+    built = []
+    real = demo.build_agent_graph
+    monkeypatch.setattr(demo, "build_agent_graph",
+                        lambda *a, **k: built.append(k["top_k"]) or real(*a, **k))
+    monkeypatch.setattr(build_indexes, "load_passages", lambda path: [])
+    monkeypatch.setattr(run_agent_experiment, "build_retriever", lambda args, passages: retriever)
+    monkeypatch.setenv("PAPERGAP_CORPUS", "corpus.jsonl")
+    monkeypatch.setenv("PAPERGAP_DENSE_INDEX", "/idx")
+    monkeypatch.setenv("DEMO_AGENT_CRITIC_VIEW", "pool")
+    pipeline = SimpleNamespace(generator=object())
+
+    monkeypatch.setenv("DEMO_AGENT_TOP_K", "10")
+    f.factory(pipeline)("What accuracy did it get?", "p")
+    monkeypatch.delenv("DEMO_AGENT_TOP_K")
+    f.factory(pipeline)("What accuracy did it get?", "p")
+    assert built == [10, 5]  # the variable sets the depth; without it the default is 5
