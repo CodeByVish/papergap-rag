@@ -1,14 +1,183 @@
 {
   "note": "Report source audit, not an experiment manifest. Generated/raw results remain outside Git.",
   "sources": {
-    "results/p6/retrieval-draft-v3/summary.json": "380daf4a19fa07107b20cb0cad46f8915d80fba2496e745fcceb07391d9c605b",
-    "results/p6/retrieval-draft-v3/run_manifest.json": "178ac9b5227941426ae922ff59d2684a777fed02d2fb39f396dcbab64987adee",
     "results/p6/annotation-audit-verified-20261105/agreement.json": "fbf72e04a0a812634be9f1b90961323ccd0de1ec9b7fe03513cdd3ffcf22f85d",
     "results/p6-local/five-queries-20261105.json": "e2aef11b686b051d77f20683e48d8dd98ee1f963b172c16343e459288816b58f",
-    "data/gold/p6/draft-v3/final_labels_manifest.json": "2e238f1d7c9fff8c07fc3718511b01359e8909452615f43fd20220bccfa5209e",
     "docs/ASSIGNMENT_WORKBOOK.md": "3273a6fef725656fe2eaa6623d58db770711a64cc6090fadf683574fc8c7c058",
     "docs/P4_REPORT_CONTRIBUTION.md": "c297bd5ca74226c88c7b9ccca447b76eb6584109af3cb1d5611b72c5e9a53d13",
-    "configs/p4_freeze.json": "0e0889645ea1908814f1150b97e867d7be309ad08ea8975e7c2a7c180f1266cc"
+    "configs/p4_freeze.json": "0e0889645ea1908814f1150b97e867d7be309ad08ea8975e7c2a7c180f1266cc",
+    "results/p2-final-retrieval-handoff/scored/summary.json": "3fcf968b3f7ad254399865793da931c3eabe4f105d4ed1d5f682333a2448455e",
+    "results/p2-final-retrieval-handoff/scored/run_manifest.json": "6997a6f08a7699c9e4efa0a83b76ec3651f8ea1de2ca3919e0330665042ea9f2",
+    "data/gold/p6/final/final_labels_manifest.json": "50e56effe4385e02c265ce9496fc737273dd635e77d364d55afdac71071526a1"
   },
-  "handout_sha256": "89d71e59b62acebeff3763c27ea10088ce05e7f8b009ebb19d79c6d7dc2d5c7d"
+  "handout_sha256": "89d71e59b62acebeff3763c27ea10088ce05e7f8b009ebb19d79c6d7dc2d5c7d",
+  "p1_review_update": {
+    "date": "2026-11-06",
+    "report_base_commit": "e13abd3b0e841be1fe38b769e665d6a6e1cb47cc",
+    "source_pool_commit": "1a1dc15b824590a39c80ea11a568fbe5814a926e",
+    "accepted_label_commit": "f70bf95593a6b9f705674770b8c3e833ca76290c",
+    "comparison_code_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "human_review_status": "owner_approved_p1_scope",
+    "verification_scope": "One prior independent execution of paired compare from saved scores; no retrieval or original scoring rerun.",
+    "hash_scope": "SHA-256 of local evidence file bytes; unchanged drafting-source hashes are retained from the report base.",
+    "sources": {
+      "results/p2-final-retrieval-handoff/scored/retrieval.csv": "8ca147ed74d1c19aa765c91371de33074e026c893421990e0530a1486210b9bf",
+      "results/p2-final-retrieval-handoff/scored/scores.jsonl": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e",
+      "results/p2-final-retrieval-handoff/inputs/questions.jsonl": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+      "results/p2-final-retrieval-handoff/inputs/pairs.jsonl": "2915d5b789f3adfc73487636aa26bf74b34a64c6f42c584dceeb4871330f8602",
+      "results/p2-final-retrieval-handoff/inputs/rankings.jsonl": "b5c04581f01693503d0a8586e24c38f76b50a54c493207e2e1e1e8ae2e9193f2",
+      "results/p2-final-retrieval-handoff/inputs/final_labels.jsonl": "902dab4c56c6c3a3d9da04859d2bfb4447f39afa6e0d1a7710e1fba8098effec",
+      "results/p1-bm25-vs-dense-verification-20261105/comparison/ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+      "results/p1-bm25-vs-dense-verification-20261105/comparison/summary.json": "0846e71dfb406f7a2167501d7e2ed5f52e883a848b0ed5de953d25e78ca7daca",
+      "results/p1-bm25-vs-dense-verification-20261105/comparison/run_manifest.json": "24365221b5d86247c6cdcf43b3eea29b30e5f11923e528d23b3119b8a465b080",
+      "results/p1-bm25-vs-dense-verification-20261105/verification.json": "e4afb95a8a26f1218b265f34924347166c86f1a6c9049abf78f0f5bdb4128040"
+    },
+    "case_review_status": {
+      "B1": "qualified_interpretation_confirmed_by_user_on_2026-11-06",
+      "remaining_P1_content": "owner_approved_p1_scope"
+    },
+    "methods_revision": {
+      "date": "2026-11-06",
+      "authorized_scope": [
+        "Dense 512-token disclosure",
+        "four-method top-five union",
+        "question macro average and percentile paper-cluster bootstrap",
+        "primary-source citations"
+      ],
+      "source_hashes": {
+        "src/retrieval/dense_retriever.py": "8c70b15b015c6c0f39c052b4830b0d5c34acc99c2a4c766d930e75af74c305e4",
+        "src/evaluation/retrieval.py": "22305c2061674bd44ca65ec3a28272dac3221cc421d533c0f63a3247cc374dfc",
+        "src/evaluation/comparison.py": "38ed4e2becae862e6d5a2eea6e62a75617707669c50933a9a44e46f1b2d995fd",
+        "src/evaluation/performance.py": "72cde7410fec4a16e39c0c5a2e5afbff795b284d67a23cb6356f278ae1260eaa",
+        "results/p1-365-40-handoff-20261102/p1-365-40-all-paper-text/p1-365-40-all-paper-text-dense/metadata.json": "a14070a74a041accb93064f893a560a5dacc94eb85391896d2f8d548222ba7ef"
+      },
+      "primary_sources_checked": {
+        "robertson2009bm25": "https://www.staff.city.ac.uk/~sbrp622/papers/foundations_bm25_review.pdf",
+        "baai2023bgesmallv15": "https://huggingface.co/BAAI/bge-small-en-v1.5/blob/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md",
+        "young2017dialog": "https://arxiv.org/abs/1709.05453",
+        "ahia2020pidgin": "https://arxiv.org/abs/2003.12660"
+      },
+      "d1_bibliographic_choice": "User selected arXiv abstract metadata: Dialog, Huang fourth, first-submission year 2017; PDF extraction version unknown.",
+      "pool_check": {
+        "ranking_rows": 800,
+        "questions": 200,
+        "unique_pairs": 1853,
+        "equal_to_pairs_file": true
+      },
+      "new_experiment": false,
+      "owner_final_review": "pending"
+    },
+    "exposition_and_figures_revision": {
+      "date": "2026-11-06",
+      "authorized_scope": [
+        "Method principles before configuration",
+        "Paired effect-size interpretation",
+        "Project-specific preprocessing rationale",
+        "Offline Dense 512-token limit",
+        "Online critic-view retry origin and separate agent/evaluation cutoffs"
+      ],
+      "source_hashes": {
+        "src/retrieval/bm25_retriever.py": "afafe45caaf4e0888c36b6209ac46a057dfe68ed0538a03b2023f71730e44e3d",
+        "src/retrieval/dense_retriever.py": "8c70b15b015c6c0f39c052b4830b0d5c34acc99c2a4c766d930e75af74c305e4",
+        "src/evaluation/retrieval.py": "22305c2061674bd44ca65ec3a28272dac3221cc421d533c0f63a3247cc374dfc",
+        "src/agent/generator_view.py": "b29d1a6dc4524a8de462341efc59a2230024cae8bad622409a72ba3e031f715b",
+        "results/p1-bm25-vs-dense-verification-20261105/comparison/ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a"
+      },
+      "precision_gain_percentage_points": 4.5,
+      "mean_additional_gold_positive_top_five_entries": 0.225,
+      "pool_recall_gain_percentage_points_rounded": 9.09,
+      "figures_regenerated": [
+        "offline-corpus-index.png",
+        "offline-corpus-index.pdf",
+        "online-hybrid-retrieval.png",
+        "online-hybrid-retrieval.pdf"
+      ],
+      "case_prose_table_values_statistical_protocol_and_annotation_wording_unchanged": true,
+      "new_experiment": false,
+      "owner_final_review": "pending"
+    },
+    "final_two_point_polish": {
+      "date": "2026-11-06",
+      "authorized_scope": [
+        "One B1 zero-score and tie-break qualification",
+        "Two paragraph breaks in section 3.1"
+      ],
+      "additional_user_approved_formatting": "allowbreak inside the complete unchanged model revision; no font-size change",
+      "B1_saved_BM25_rank5_score": 0.0,
+      "B1_evidence": [
+        "results/p2-final-retrieval-handoff/inputs/rankings.jsonl:29",
+        "results/p2-final-retrieval-handoff/inputs/pairs.jsonl:64",
+        "src/retrieval/bm25_retriever.py:68-73,99-109"
+      ],
+      "D1_tables_protocol_labels_and_figures_unchanged": true,
+      "RRF_symbol_definition_unchanged": true,
+      "new_experiment": false,
+      "new_dependencies": false,
+      "owner_final_review": "pending"
+    },
+    "owner_signoff": {
+      "status": "owner_approved_p1_scope",
+      "owner": "Junlin Yin",
+      "date": "2026-11-06",
+      "timezone": "Asia/Shanghai",
+      "authorization": "Explicit user confirmation of the current P1 draft and approval of the scoped completion-marker plan",
+      "approved_content_baseline_pdf_sha256": "348880f367bda000cb6062087edf55ee26a509597a922b4eae45575ff85170b8",
+      "approved_content_baseline_report_hashes": {
+        "report/.gitignore": "5542812cbc838190ca4e1f03f5c637992320af5b2745bed4a65da85f309d7564",
+        "report/Makefile": "be4b09e90d58237c5adfe5b18452cae56c7fb70ff441cdab76f1f64e8e440648",
+        "report/README.md": "d6170bfc96e12c17507d1cdad0196874204a43afd67947299b568b942038b976",
+        "report/figures/hybrid-retrieval.tex": "d9e104796419e567cbda86a8af501d9444837d6f590d2bde8061a78818ebd210",
+        "report/figures/offline-indexing.tex": "d3c89a743faf4589caa32f5269bb8f132d0c26dbc53328fdf261f5ce438c364b",
+        "report/figures/ui-answer.png": "05fc5ae09e585d0b6e20094626dbeabbca9a34b8c3109cf9c8a914c42596558b",
+        "report/images/offline-corpus-index.pdf": "033a869d24a8ecd59770d331a1456c08334b80aba1fbbec924fc4adfe3a0d143",
+        "report/images/offline-corpus-index.png": "bf1b0b005ce21264ea919fd21b2ec37f9a2e9d745d6d235719f60972f18db706",
+        "report/images/online-hybrid-retrieval.pdf": "8a1995c938a746769f42956be3e0ac760d66ff20ce60de18cf2a1865e8450892",
+        "report/images/online-hybrid-retrieval.png": "a7f190655cc0009a1c8c8aa409bf02e8297beff8bf5d4bef81609b475729a174",
+        "report/main.tex": "7928f3c43e71dc5c05f47e3d0639cecf86c5230d525505e057045df099aab004",
+        "report/references.bib": "4ac0155ef681a04960e6d7b7b9359d34d8cf8a874f5193dce879be92bca0c95f",
+        "report/review-checks/p1-evidence.md": "ebfe1d59b284660a5a15e532f9908b0b068e163d6aa2ad1324a2825cf158a8ef",
+        "report/review-checks/q1-1.tex": "705324f1a1cdb65081a98fce55d99bd150d065d5c9c6226810e4076f2ed42ba1",
+        "report/review-checks/q1-2.tex": "ae6e295d05f9c7ee9e4f3d9542df030c77fe49ed4eed87858a82c37d48c26ba6",
+        "report/review-checks/q1-3.tex": "a239b6e20278c13a832395259b4120d56ee432824ab3f63f7f0f12b59779cae1",
+        "report/review-checks/q2-1.tex": "5ea0b83739be72c968999c55c8d222ec9da3879ef97388698aaff18f9d979cfb",
+        "report/review-checks/q2-2.tex": "08574df43591c17472e361fda9bc60a15911cbacf0415cdb23456bf5cdfde78d",
+        "report/review-checks/q3.tex": "2b1d034a1a1fa32ccc4466db92949f1ce15b5699f4b5c7080e71b9a070d09dd1",
+        "report/review-checks/q4-1.tex": "3b991026d846128063f1b34e78831ae51a4d2ef584ee6fe1adc3a184f6085ee4",
+        "report/review-checks/q4-2.tex": "aa4a63fc4e73df0555d17608660c42f05bd520041faaa563ec5e14b3c96f7b94",
+        "report/review-checks/q4-3.tex": "37d68630e693aa9c9687d7b375b647062cad097ffa1b3ec65ca031cca7e6e035",
+        "report/review-checks/q4-4.tex": "168080880bce0ad7fd107d9b112e86cb297057c2500d7cd0d26424f08243795b",
+        "report/review-checks/q4-5.tex": "4b3cffa40bfee4c55df22eab19bfff0da1ccb7bf234b2cec8f9ec2d54a5f37ca",
+        "report/review-checks/q4-6.tex": "d35ff6e841797525dccb47c8f2dfa3f44e46f831e45fcb6d10c2f105f41fd7b9",
+        "report/review-checks/q5.tex": "def30e7bc83ba88973c6e76e4ad4afddf761079bbd393188a869cf0e8b3ae410",
+        "report/scripts/draw_pipeline_charts.py": "735372ab662ec7cb59760166f42d45c2c10175e724ed09d43f87121cb99290ca",
+        "report/scripts/refresh_tables.py": "4424a117090603aff4643ea805c0750d72cdda25513c4ea460d8d9cddaa05a28",
+        "report/sections/01-system.tex": "f8fc4eb16c8b17a00364b706da237224abaf6d8f53816c83a9659e696c7ff46a",
+        "report/sections/02-retrieval.tex": "2dd0c57fc46e71225b419293d67e3f303bab4e671500dc91df44ced299d03f75",
+        "report/sections/03-evaluation.tex": "8f5bbc7d8b1050cfc56198413cf44e296f101fb3118bf50f809915fa9ab91330",
+        "report/sections/04-discussion.tex": "e9016299f16038032c065fc0c008ae1ab26f386d71281dff182bdda4747a5dfd",
+        "report/sections/05-ai-disclosure.tex": "8009432785048048c61478daac9e88c1a0d005f5af0cf3dec13e997cc4649b4d",
+        "report/source-audit.json": "3db93ec2b0612059cfea8e2afc01ad6466af0a8a2c274b264e754f3b6141b1aa",
+        "report/tables/agreement.tex": "227c1c8d07e8c6d9dd1b82a440da42231fea0f6b9b00327f72657462f0fec1b0",
+        "report/tables/bm25-dense-comparison.tex": "63bf751bb1805f861a343d9304f11b9e68a8ed7c5c19dd82c399e80b22688bb0",
+        "report/tables/five-queries.tex": "8a5c686dfa0702648cd28f86693103a06c68897cb9a3cb8d24c7b994c49ab82f",
+        "report/tables/retrieval.tex": "3ee0e9cc7335474ae129c695d570379b5364f2b93617259c4b1382686c8f1d8f"
+      },
+      "scope": {
+        "Q1.1": "Indexing-diagram consistency with the BM25/Dense implementation",
+        "Q3": "BM25/Dense methods, paired comparison and both examples",
+        "Q4.2": "Lexical and Dense preprocessing",
+        "Q4.6": "Sources and report wording for historical retrieval measurements only"
+      },
+      "does_not_confirm": [
+        "Whole Q3 or whole-team report completion",
+        "New timing execution or final GPU-performance validation",
+        "Personal annotation-process independence",
+        "Group AI-use disclosure or missing member information"
+      ],
+      "historical_status_note": "Earlier nested owner_final_review values record their revision-time status; this dated owner_signoff is the current P1 status.",
+      "technical_content_changed": false,
+      "new_experiment": false,
+      "publication_performed": false
+    }
+  }
 }
