@@ -4,7 +4,7 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** The four-method common pool contains $1853$ unique pairs from the unchanged $200$ held-out questions. Two blank English sets are ready in `data/processed/annotation_common_v3_markdown/`; Step $4$ needs $3706$ independent initial judgments from two people per pair. Real BGE reranking is verified; human labels, generation and UI integration remain pending. See the [evaluation protocol](docs/EVALUATION.md) and [data guide](data/README.md).
+**Status:** P1/P2 real-data retrieval and evaluation tools, P4 agent components, P5 v7 generation with R4 reranked inputs, and the Streamlit UI are available. P5 reports Qwen generation measurements on training-integration examples; real-Qwen validation of P4's critic, final held-out evaluation and acceptance of the complete shared pipeline remain pending. See [P1 experiments](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md), [P5 Week 6](docs/P5_WEEK6.md) and the [29 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026).
 
 ## Start here
 
@@ -12,9 +12,12 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Requirements and open decisions](docs/REQUIREMENTS.md): rubric mapping and decisions to resolve in Week 1.
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
-- [Data and JSONL fields](data/README.md): versioned QASPER exports, all-splits gold references, and question-isolated annotation pools on the P3 branch.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
-- [Chunk-size experiment](experiments/chunk_size/README.md): compare word-based chunks and export evidence and readability reviews using P1/P2 retrieval, defaulting to BM25. Select other modes through the JSON `retrieval` block; models load offline by default.
+- [P1 used-question inventory](docs/handoffs/P1_QUESTION_USAGE.md): prior development usage for the team held-out exclusion audit.
+- [Data guide](data/README.md) / [中文数据指南](data/README_zh-CN.md): versioned QASPER artifacts, fields and reproduction commands.
+- [Chunk-size experiments](experiments/chunk_size/README.md): selection evidence and reproducible retrieval comparisons.
+
+P3 has delivered the $365/40$ word corpus, gold mappings, paper catalog and four-method pool covering $200$ questions and $1853$ unique pairs. Both label sets are populated and handed over to P6. Completeness does not establish independent annotation, adjudication or final evaluation. See the [Week 3 report](weekly-work/week-3/week-3-report-en.md) and [Week 4 report](weekly-work/week-4/week-4-report-en.md); schemas remain `v0-proposed`.
 
 ## Team
 
@@ -24,8 +27,8 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 | P2 | Vishakha | Hybrid fusion and reranking | Hybrid and reranking ablations |
 | P3 | Jingshuai Qian | QASPER processing, chunks and passage schema | Chunking and corpus statistics |
 | P4 | Ananya | LangGraph planner, critic and adaptive retrieval | Static vs adaptive RAG |
-| P5 | Pending | Generation, citations and answer API | QA and grounding |
-| P6 | Pending | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
+| P5 | Junyu Hu | Generation, citations and answer API (v7/R4 integrated) | QA and grounding |
+| P6 | Changyan Xu | Streamlit, evaluation infrastructure and reproducibility | RAGAS and end-to-end latency |
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.
 
@@ -48,29 +51,132 @@ python -m pip install -r requirements-dev.txt
 
 Windows activation: `.venv\Scripts\activate`.
 
-The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. No application launch command exists yet.
+The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
+
+The UI currently uses `IndexedRetriever` and a direct LLM client. Connecting it
+to the shared P1/P2 retrieval, P4 orchestration and P5 `GroundedQAPipeline`
+remains an integration and acceptance task.
+
+## P1 retrieval: Week 1 / Week 2
+
+Use Python 3.11 with the dependencies from `requirements-dev.txt` installed as described above. For an existing Conda environment, run `conda activate papergap` and check `python --version`; a VS Code interpreter selection does not change every terminal's Python. Run all commands below from the repository root.
+
+`BM25Retriever` and `DenseRetriever` share this interface:
+
+```python
+retrieve(query: str, paper_id: str, top_k: int) -> list[RetrievalHit]
+```
+
+Both use the existing `Passage` and `RetrievalHit` schemas. Results preserve the original Passage fields and IDs, use continuous ranks starting at 1, and contain at most K distinct passages from the selected paper. Unknown papers return `[]`; invalid queries, paper IDs and K values raise `ValueError`. Each paper has its own index, so retrieval selects the top K within that paper. Equal scores are ordered by passage ID.
+
+Dense retrieval uses `BAAI/bge-small-en-v1.5`. The commands below pin revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a` and default to CPU. Only queries receive `Represent this sentence for searching relevant passages: `, including the trailing space; passages use their original text. Both embedding types receive L2 normalization, and FAISS `IndexFlatIP` computes cosine similarity. This embedding model is separate from P2's `BAAI/bge-reranker-base` cross-encoder.
+
+Build the dense index from an explicit Passage JSONL input:
+
+```bash
+python -B -m scripts.build_indexes --passages tests/fixtures/mock_passages.jsonl --output-dir indexes/p1-week2-synthetic --local-files-only
+```
+
+The output directory must be new or empty. The saved artifacts contain the per-paper FAISS indexes, complete row-to-Passage mappings, and checked model/encoding metadata; loading them does not re-encode passages. BM25 is built in memory from the JSONL input and is not persisted by this command. `--model-name` accepts only the selected BGE model; `--revision`, `--device` and `--cache-folder` are available when an explicit setting is needed. `--revision` must be a 40-character lowercase commit SHA; branch and tag names such as `main` are rejected. Use the same revision when building and loading. The default model cache is `.cache/huggingface`. `--local-files-only` requires the pinned model to be cached; omit it to allow a first model download.
+
+Run a sample query against BM25 and the saved dense index:
+
+```bash
+python -B -m scripts.demo_p1 --passages tests/fixtures/mock_passages.jsonl --dense-index-dir indexes/p1-week2-synthetic --paper-id synthetic-ir --query "Which method uses sparse term matching for passage retrieval?" --top-k 3 --local-files-only
+```
+
+Without `--dense-index-dir`, the demo builds dense indexes in memory from the supplied JSONL. The demo reports both rankings and times `retrieve` with `time.perf_counter` after one warm-up call per retriever. Loading, passage encoding and index construction are excluded; dense query encoding is included. The bundled fixture has eight synthetic passages across two papers. These timings are only a local smoke measurement, not real-corpus performance results.
+
+Run the offline regression tests with the same Python 3.11 interpreter:
+
+```bash
+python -B -m pytest tests/test_p1.py -v
+python -B -m pytest -q
+```
+
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending compatible gold mappings and the agreed P6 evaluation protocol; P1/P2 metric tooling is available. Track the agreed QASPER raw/processed artifacts and manifests under `data/` following the bilingual data guides. Keep model weights, caches, indexes and large local outputs ignored; review shared results under `results/README.md`.
+
+## P1 retrieval: Week 3 / Week 4
+
+The real-data workflow and reproducible PowerShell commands are documented in
+[P1 Week 3 / Week 4](docs/P1_WEEK3_WEEK4.md). It runs P3's pinned data preparation
+in a separate worktree and validates its Passage JSONL and manifests before
+using the existing P1 retrievers. The recorded development convention indexes
+train plus validation paper text and queries **train only**; the split policy
+remains `v0-proposed`.
+
+`python -B -m scripts.run_p1_experiment --help` describes the experiment entry
+point. It loads the saved Dense index, saves/reloads a reproducible BM25 JSON
+snapshot, verifies both complete Passage mappings, and writes `results.jsonl`,
+`queries.jsonl` and `run.json` to a new or empty output directory. `--limit`
+limits queries only; the full corpus remains indexed. Zero-hit questions are
+retained. The run records input hashes, model revision, code state, source
+hashes and retrieval latency. BM25 loading rebuilds its in-memory term index;
+Dense loading reuses the stored passage vectors without re-encoding them.
+The `evaluate` subcommand audits saved rankings and adapts independently supplied
+labels; see the [provisional evaluation contract](docs/P1_EVALUATION.md).
+
+The original `retrieve(query, paper_id, top_k)` callback remains supported.
+Both independent retrievers also accept keyword-only `section="Results"`
+with exact matching before top-K selection. Callers can supply a rewritten
+query directly. Merged P2 Hybrid retrieval forwards exact sections to both
+callbacks, and the P4 graph accepts a caller-supplied section selector. P4 still
+owns the per-paper selector and same-round unscoped fallback. The historical
+P1 integration checks used fixed request bindings; they do not establish
+dynamic section selection. See [section interfaces](docs/P2_AGENT_CACHE.md).
+
+P1 saved-ranking scoring and P2 retrieval evaluation/pooling tools are
+available. Compatible gold evidence-to-passage mappings, relevance rules and
+the approved held-out/configuration freeze remain external inputs. This
+workflow exports real retrieval candidates and latency; quality metrics remain
+unavailable until those inputs are supplied. See the [P2 evaluation handoff](docs/P2_EVALUATION_HANDOFF.md)
+and the linked P1 verification record for scope and limitations.
+
+The Week 3/4 delivery branch includes main's merged P2 and P4 APIs.
+`python -B -m scripts.run_p1_integration --help` describes the bounded integration
+check using existing artifacts and fixed request sections. It does not establish
+dynamic section selection or real critic quality. The [18 October integration](docs/P1_WEEK3_WEEK4.md#main-integration-after-p2-merge-18-october-2026)
+records historical execution. The [28 October checkpoint](docs/WEEKLY_TRACKER.md#p1-question-usage-handoff-and-main-sync-28-october-2026)
+records the question-use handoff; see the [29 October checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026)
+for the current branch refresh and validation.
+
+## P2 real-data Hybrid and reranking
+
+`python -B -m scripts.demo_hybrid --help` is now available from main. The CLI
+loads the supplied Passage JSONL and saved Dense index, checks their mapping,
+and runs RRF; `--bge` enables optional BGE reranking. See [P2 commands, model
+revisions and measured pilot](docs/P2_WEEK2.md) for inputs, offline cache controls
+and `scripts.benchmark_p2`. Use dependencies appropriate to your platform;
+the documented macOS ARM64 lock and repair procedure are platform-specific.
+
+P1's 100-question handoff remains RRF-only with null reranker fields. P2's later
+independent reranked export is recorded separately and does not change the P1
+package's provenance or establish a retrieval-quality gain. See the [separate
+artifact records](docs/P1_WEEK3_WEEK4.md#separate-p1-and-p2-artifacts).
 
 ## Repository layout
 
 ```text
 papergap-rag/
-├── docs/             # Plan, requirements, evaluation and team tracker
-├── configs/          # Proposed shared configuration
+├── docs/                    # Plan, requirements, evaluation and team tracker
+├── configs/                 # Proposed shared configuration
 ├── src/
-│   ├── data/         # P3: data preparation
-│   ├── retrieval/    # P1/P2: retrievers, fusion and reranking
-│   ├── agent/        # P4: planning and adaptive retrieval
-│   ├── generation/   # P5: generation and citation validation
-│   ├── evaluation/   # P6 + experiment owners: metrics and logging
-│   └── ui/           # P6: Streamlit
-├── scripts/          # Reproducible command-line entry points
-├── tests/            # Module and integration tests
-├── data/             # Tracked QASPER data, manifests and bilingual guides
-└── results/          # Shared experiment metrics, reports and reproducibility records
+│   ├── data/                # P3: data preparation
+│   ├── retrieval/           # P1/P2: retrievers, fusion and reranking
+│   ├── agent/               # P4: planning and adaptive retrieval
+│   ├── generation/          # P5: generation and citation validation
+│   ├── evaluation/          # P6 + experiment owners: metrics and logging
+│   └── ui/                  # P6: Streamlit
+├── scripts/                 # Reproducible command-line entry points
+├── tests/                   # Module and integration tests
+├── data/                    # Tracked QASPER data, manifests and bilingual guides
+├── results/                 # Reviewed chunk-size results; other outputs ignored
+├── experiments/chunk_size/  # Chunk selection and reproduction
+└── weekly-work/             # Published bilingual reports only
 ```
 
 ## Assignment delivery
 
-Deadline supplied: **7 November, 23:59 SGT**. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
+Deadline supplied: **7 November, 11:59 PM SGT**. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
 
 **Rubric clarification confirmed by the team:** passage chunks count toward 10,000 documents, and query–passage pairs count toward 1,000 evaluation records. Actual corpus size and annotation agreement still need verification; see [requirements](docs/REQUIREMENTS.md).

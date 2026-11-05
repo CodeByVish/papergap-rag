@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GenerationResult",
+  "description": "P5 final-answer object (p5-answer-v1) consumed by P6. evidence_status=INSUFFICIENT implies empty citations and provenance, and answer equal to the canonical refusal text.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "answer",
+    "citations",
+    "evidence_status",
+    "retrieval_rounds",
+    "provenance"
+  ],
+  "properties": {
+    "answer": {
+      "type": "string",
+      "description": "The generated answer, or the canonical refusal text. Contains no citation markers; citations live in the citations field."
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Passage ids. Every id was present in the retrieved context, de-duplicated, in order of first appearance. Empty for a refusal."
+    },
+    "evidence_status": {
+      "type": "string",
+      "enum": [
+        "SUFFICIENT",
+        "INSUFFICIENT"
+      ],
+      "description": "Whether the retrieved passages supported an answer."
+    },
+    "retrieval_rounds": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of retrieval rounds that produced the context. Preserved through a downgrade so retrieval cost stays attributable."
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ProvenanceEntry"
+      },
+      "description": "Per-claim evidence map. Empty for a refusal. After a downgrade it is empty too: the model's original claims survive only in the validation report's raw_result, because a refusal makes no claims."
+    }
+  },
+  "$defs": {
+    "ProvenanceEntry": {
+      "type": "object",
+      "required": [
+        "claim"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "type": "string"
+        },
+        "passage_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "support": {
+          "type": "string",
+          "enum": [
+            "direct",
+            "partial",
+            "unsupported"
+          ]
+        }
+      }
+    }
+  }
+}

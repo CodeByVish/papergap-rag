@@ -1,0 +1,191 @@
+# P2 report contribution — draft for P6
+
+## Hybrid retrieval and reranking
+
+PaperGap retrieves evidence within a selected paper. BM25 and the pinned
+`BAAI/bge-small-en-v1.5` dense retriever each return up to 20 candidates. Dense
+queries use the documented BGE retrieval instruction; passages retain original
+text. Vectors are L2 normalized and FAISS IndexFlatIP supplies cosine scores.
+
+We deduplicate by opaque passage ID and fuse source ranks using
+`RRF(p) = sum_s 1 / (60 + rank_s(p))`. Source scores remain separate because
+BM25 and cosine scores do not share a scale. Missing-source contributions are
+absent. Ties use passage ID. The pinned `BAAI/bge-reranker-base` cross-encoder
+scores the full unique union (at most 40 candidates) and selects the final five.
+It uses raw logits, maximum input length 512, batch size eight and CPU inference.
+Long query/passage pairs are truncated by the tokenizer. Reranker ties are
+resolved by RRF score then passage ID. Empty and short candidate pools remain
+empty/short rather than being padded.
+
+Returned records preserve the full passage, final rank, source ranks and raw
+scores, RRF score and nullable reranker score. RRF-only output has null reranker
+scores. Exact-section forwarding, per-round agent trace and persistent
+content/configuration-keyed score caching are implemented in merged PR #10.
+P4 has a rule-based planner/evidence mapper and an LLM critic interface with
+rule-based fallback, including a Qwen-compatible adapter. Real Qwen critic
+behavior has not been validated in this P2 work. Per-paper section selection
+and same-round unscoped fallback have since been implemented by P4.
+
+## Reproducibility and integration evidence
+
+The historical 200/40 development corpus has 32,073 passages from 1,168 papers with nonempty
+passages; its SHA-256 is
+`abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790`.
+Model revisions and reproduction commands are recorded in P2_WEEK2.md and
+P2_EVALUATION_HANDOFF.md. Split/schema conventions remain proposed pending team
+agreement. Corpus text may be indexed as inference evidence; held-out questions
+and labels must not be used for tuning.
+
+The 17 October integration handoff reran P1's unchanged 100 training questions.
+Each method returned 485 passages across 97 nonempty questions; three questions
+had no indexed full text and returned empty lists. The fresh local RRF output
+matched P1's top-five passage order for every question. BGE changed selection or
+order for all 97 nonempty questions. These are wiring/provenance observations,
+not relevance-quality conclusions.
+
+## Preliminary latency
+
+The earlier six-training-question paired pilot on macOS ARM64 CPU measured:
+
+| Candidates per source | RRF p50 / p95 ms | RRF+BGE p50 / p95 ms |
+| --- | --- | --- |
+| 10 | 10.1 / 10.4 | 1835.3 / 2147.8 |
+| 20 | 10.3 / 11.9 | 3172.5 / 4151.5 |
+
+Each path was warmed; model loading/index construction were excluded. The
+embedding index was built on Metal, with retrieval/reranking on CPU and four
+threads. These percentiles describe only that small pilot, not final benchmark
+latency or throughput. BGE dominated CPU latency. Cache-hit timings must be
+reported separately from fresh cross-encoder inference.
+
+## Quality ablations and error analysis — awaiting independent labels
+
+Compare BM25, dense, RRF and RRF+BGE on identical frozen inputs at agreed K.
+Select candidate count/RRF constant only using labelled development/validation
+results, then freeze before held-out inference. Report paired differences on the
+same covered questions to isolate fusion and reranking contributions. Include
+judged coverage, exclusions, short/empty pools and mapping limitations. Pooled
+recall is not exhaustive full-paper recall; unjudged passages are unknown.
+
+| Result | Status |
+| --- | --- |
+| Precision@K, Recall@K, MRR@K, nDCG@K | Pending P3/P6 labels and metric agreement |
+| Best development parameters | Not selected; 20/60/top-5 remain development defaults |
+| Held-out four-method table | Pending approved freeze/question manifest and labels |
+| Error-category counts and reviewed examples | Awaiting labelled run and human review |
+| Independent annotation agreement | Pending human labels and P6 aggregation |
+
+Use the execution scripts to populate this section after inputs arrive. Do not
+replace missing metrics with the synthetic test fixture, ranking-change counts,
+LLM-generated relevance judgments, or the three-question workflow smoke run.
+
+## 100-question integration timing (historical run, not a warmed benchmark)
+
+The [shared ZIP](https://drive.google.com/file/d/1XM84LDukvCmQaNXFOBFfAW_j_JkkpWV3/view) preserves the 17 October executed source,
+configuration and timing records. Using all 100 per-question timing rows:
+
+| Method | p50 ms | p95 ms | Sum of recorded retrieval seconds |
+| --- | ---: | ---: | ---: |
+| RRF | 17.57 | 21.34 | 7.61 |
+| RRF + BGE | 2387.34 | 3768.72 | 243.92 |
+
+Percentiles use linear interpolation at `(n-1)*q`. These rows include three
+empty retrievals per method and first-use costs: first-question times were
+5904.84 ms (RRF) and 9280.55 ms (BGE). No warm-up was performed. The sum is
+retrieval-call time, not whole-process wall time; model/index setup outside the
+call is excluded. Do not mix these figures with the warmed six-question pilot,
+claim causal speedup, or treat ranking changes as quality improvements.
+
+Reproduce from the downloaded ZIP without models or labels:
+
+```python
+import json
+import statistics
+import zipfile
+
+with zipfile.ZipFile("p2-batch-reranking-handoff-20261017.zip") as archive:
+    for method in ("rrf", "bge"):
+        values = sorted(
+            json.loads(line)["elapsed_ms"]
+            for line in archive.read(f"{method}/latency.jsonl").splitlines()
+        )
+        position = (len(values) - 1) * 0.95
+        lower = int(position)
+        p95 = values[lower] + (values[min(lower + 1, len(values) - 1)] - values[lower]) * (position - lower)
+        print(method, len(values), statistics.median(values), p95, sum(values) / 1000)
+```
+
+## Final evaluation preparation — 3 November 2026
+
+The current inference handoff uses the 365-word / 40-word-overlap all-paper-text
+corpus: 28,617 passages across 1,584 papers with passages. Its SHA-256 is
+`8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e`.
+Use its matching rebuilt dense index; rebuild BM25 from that same corpus.
+The agreed inference configuration is 20 candidates per source, RRF k=60,
+BGE reranking of the deduplicated union (up to 40), and final top five.
+The earlier 100-question timings above describe the older corpus, not this one.
+
+The P3 `annotation_common_v3` pool already contains saved rankings for BM25,
+dense, RRF and RRF+BGE. Reuse those exact rankings for the corresponding
+annotation evaluation; do not substitute the old 100-question training run.
+P3/P6 must confirm final label provenance, adjudication and evaluation scope
+before final quality claims. A source split named validation does not by itself
+establish an independently held-out project evaluation set.
+
+At P3 commit `c612ef362e8dcbfed62103799140e9a34df17f3d`, all A batches and B01–08
+are populated; B09–10 still lack 372 judgments. Of 1,481 paired records,
+1,137 agree and 344 disagree (76.77% observed agreement). This is an incomplete
+label audit, not certified independent human agreement. A08–10 originated as
+Codex suggestions subsequently confirmed by P2; preserve that provenance when
+P6 determines which records qualify for independent human agreement.
+Do not automatically choose A, B, OR or AND to resolve conflicts.
+
+Reproduce the audit from a checkout containing this script:
+
+```bash
+git fetch origin p3-qasper-foundation
+python -m scripts.audit_annotation_batches \
+  --ref origin/p3-qasper-foundation \
+  --output results/p2-final-preparation/annotation-audit-new.json
+```
+
+The output records the exact source commit, file hashes, per-batch completion,
+and disagreement IDs. Generated data remain local. Final metric tables and
+error-analysis examples remain pending the accepted scoring labels. No new
+latency measurement or final demo rehearsal is claimed by this audit.
+
+## Current decision and handoff — 5 November 2026
+
+Use RRF-only retrieval for the final agent/generation configuration, with 20
+candidates per source, RRF k=60 and eight returned passages. Keep BGE as an
+experimental comparison. This supersedes the earlier reranked top-five inference
+recommendation; it does not change the frozen top-five annotation rankings.
+P4/P5's reported paired development results show RRF recall@8 of 0.885 versus
+0.854 with BGE (32 questions with mapped gold out of 40). These are development
+evidence-recall results, not adjudicated annotation-pool metrics; raw cluster
+outputs were not independently recomputed in this P2 update.
+
+The pinned BGE reranker tokenizer was measured on all 28,617 corpus passages:
+7,750 (27.08%) exceed 512 tokens before adding the question. Pair formatting adds
+four tokens; a hypothetical 20-token question raises the affected count to
+8,725 (30.49%). This is a corpus-wide scenario, not a measurement of the actual
+40-question candidate pairs, and does not establish the cause of the recall loss.
+The dense encoder uses a different tokenizer; its truncation rate must be reported
+separately. Preserve the frozen corpus and indexes.
+
+For P5/P6's live dry run, set `DEMO_AGENT_BGE=0`,
+`DEMO_AGENT_CANDIDATE_K=20`, and **`DEMO_AGENT_TOP_K=8`**, plus server `--top-k 8`.
+The latest factory reads its own top-K environment variable; changing only YAML
+or the server flag is insufficient. Keep corpus and dense-index paths paired.
+Verify the generator's effective eight-passage budget and text clipping, and
+confirm citations resolve in the UI. Local hook tests are not a live cluster
+rehearsal. P2 does not have access to P5's personal cluster job.
+
+At P3 commit `1a1dc15b824590a39c80ea11a568fbe5814a926e`, all 3,706 A/B entries
+are present: 1,665/1,853 paired labels agree (89.85%), with 188 disagreements.
+This supersedes the incomplete 3 November snapshot. It is agreement on the
+current revised files, not the original pre-review independent agreement rate.
+Preserve original submissions and AI-assisted provenance separately. P3/P6 must
+publish accepted scoring labels and the question/configuration freeze before
+final retrieval quality claims. Report gold-evidence recall separately from
+pool-relative relevance recall. No final scores or held-out approval are invented.

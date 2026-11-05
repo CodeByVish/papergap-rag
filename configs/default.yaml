@@ -28,7 +28,7 @@ data:
       require_frozen_for_final_evaluation: true
 retrieval:
   paper_scoped: true
-  dense_model: null  # P1 to select exact BGE checkpoint
+  dense_model: BAAI/bge-small-en-v1.5
   reranker_model: BAAI/bge-reranker-base
   sparse_candidates: 20
   dense_candidates: 20

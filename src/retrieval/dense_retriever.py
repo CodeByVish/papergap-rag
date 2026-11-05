@@ -210,15 +210,30 @@ class DenseRetriever:
             raise ValueError("Encoder model_name or revision changed during encoding")
         return vectors
 
-    def retrieve(self, query: str, paper_id: str, top_k: int) -> list[RetrievalHit]:
-        """Return deterministic cosine top-K within the selected paper only."""
+    def retrieve(
+        self, query: str, paper_id: str, top_k: int, *, section: str | None = None
+    ) -> list[RetrievalHit]:
+        """Return cosine top-K within the paper and optional exact section.
+
+        Section filtering precedes top-k truncation, including boundary ties.
+        Callers can pass a rewritten query directly; this retriever does not
+        rewrite it or add a passage instruction.
+        """
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be a nonempty string")
         if not isinstance(paper_id, str) or not paper_id.strip():
             raise ValueError("paper_id must be a nonempty string")
         if isinstance(top_k, bool) or not isinstance(top_k, int) or top_k < 1:
             raise ValueError("top_k must be a positive integer")
+        if section is not None and (
+            not isinstance(section, str) or not section.strip()
+        ):
+            raise ValueError("section must be a nonempty string or None")
         if paper_id not in self._indexes:
+            return []
+        if section is not None and not any(
+            passage.section == section for passage in self._passages[paper_id]
+        ):
             return []
         query_vector = self._encode([QUERY_INSTRUCTION + query])
         index = self._indexes[paper_id]
@@ -231,12 +246,55 @@ class DenseRetriever:
             (
                 (passages[int(row)], float(score))
                 for row, score in zip(rows[0], scores[0])
+                if section is None or passages[int(row)].section == section
             ),
             key=lambda item: (-item[1], item[0].passage_id),
         )
         return [
             RetrievalHit(passage=passage, rank=rank, score=score)
             for rank, (passage, score) in enumerate(ranked[:top_k], start=1)
+        ]
+
+    def retrieve_corpus(
+        self, query: str, top_k: int, *, section: str | None = None
+    ) -> list[RetrievalHit]:
+        """Search one global cosine space, reusing the validated saved vectors.
+
+        No passage is re-encoded. Original paper IDs and row mappings survive.
+        The query is encoded once per call, regardless of the number of papers.
+        """
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError("query must be nonempty")
+        if isinstance(top_k, bool) or not isinstance(top_k, int) or top_k < 1:
+            raise ValueError("top_k must be positive")
+        if section is not None and (
+            not isinstance(section, str) or not section.strip()
+        ):
+            raise ValueError("section must be nonempty or None")
+        if not self._indexes:
+            return []
+        if not hasattr(self, "_corpus_index"):
+            self._corpus_index = faiss.IndexFlatIP(self._dimension)
+            self._corpus_passages = []
+            for paper_id in sorted(self._indexes):
+                index = self._indexes[paper_id]
+                self._corpus_index.add(index.reconstruct_n(0, index.ntotal))
+                self._corpus_passages.extend(self._passages[paper_id])
+        vector = self._encode([QUERY_INSTRUCTION + query])
+        scores, rows = self._corpus_index.search(vector, self._corpus_index.ntotal)
+        if not np.isfinite(scores).all():
+            raise ValueError("FAISS must return finite cosine scores")
+        ranked = sorted(
+            (
+                (self._corpus_passages[int(row)], float(score))
+                for row, score in zip(rows[0], scores[0])
+                if section is None or self._corpus_passages[int(row)].section == section
+            ),
+            key=lambda item: (-item[1], item[0].passage_id),
+        )
+        return [
+            RetrievalHit(passage=p, rank=i, score=score)
+            for i, (p, score) in enumerate(ranked[:top_k], 1)
         ]
 
     def save(self, directory: str | Path) -> None:

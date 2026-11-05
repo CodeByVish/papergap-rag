@@ -19,13 +19,21 @@ dist/
 .env.*
 !.env.example
 .streamlit/secrets.toml
-# Local models, indexes and caches
+# Local data, models, indexes and outputs
+/data/*
+!/data/README.md
+!/data/README_zh-CN.md
+!/data/raw/
+!/data/processed/
+/results/*
+!/results/README.md
+!/results/chunk_size/
+/tmp/
 /models/
 /indexes/
 /cache/
 .cache/
 /logs/
-/tmp/
 *.faiss
 *.safetensors
 *.pt
@@ -36,7 +44,31 @@ dist/
 Instruction.pdf
 ProjectPlan.pdf
 
-# Personal Week 3 notes; retain only the published bilingual reports
+# Personal work notes
+/weekly-work/*
+!/weekly-work/week-1/
+!/weekly-work/week-2/
+!/weekly-work/week-3/
+!/weekly-work/week-4/
+/weekly-work/week-1/*
+!/weekly-work/week-1/week-1-report-en.md
+!/weekly-work/week-1/week-1-report-zn.md
+/weekly-work/week-2/*
+!/weekly-work/week-2/week-2-report-en.md
+!/weekly-work/week-2/week-2-report-zn.md
 /weekly-work/week-3/*
 !/weekly-work/week-3/week-3-report-en.md
 !/weekly-work/week-3/week-3-report-zn.md
+/weekly-work/week-4/*
+!/weekly-work/week-4/week-4-report-en.md
+!/weekly-work/week-4/week-4-report-zn-CN.md
+
+# Local assistant settings
+.claude/
+
+# Dedicated P6 local runtime
+/.venv-p6/
+
+# Local browser verification artifacts
+/output/playwright/
+/.playwright-cli/

@@ -1,0 +1,6 @@
+# Optional prebuilt-index backend from the Streamlit implementation plan.
+-r requirements-ui.txt
+numpy>=1.26,<3
+sentence-transformers>=3,<6
+faiss-cpu>=1.8,<2
+pyserini>=0.44,<2

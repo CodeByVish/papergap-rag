@@ -1,0 +1,83 @@
+{
+  "synthetic_passages": true,
+  "scorer": "mock",
+  "query": "What F1 score does the model achieve?",
+  "paper_id": "mock-paper",
+  "results": [
+    {
+      "passage": {
+        "passage_id": "mock-paper_results_0",
+        "paper_id": "mock-paper",
+        "title": "Synthetic retrieval example",
+        "section": "results",
+        "chunk_number": 0,
+        "text": "Our model achieves 82.4 F1 on the evaluation set, compared with the baseline at 78.1 F1.",
+        "previous_passage_id": null,
+        "next_passage_id": null
+      },
+      "rank": 1,
+      "source_scores": {
+        "bm25": {
+          "rank": 2,
+          "score": 9.0
+        },
+        "dense": {
+          "rank": 1,
+          "score": 0.91
+        }
+      },
+      "rrf_score": 0.03252247488101534,
+      "reranker_score": 3.0
+    },
+    {
+      "passage": {
+        "passage_id": "mock-paper_method_0",
+        "paper_id": "mock-paper",
+        "title": "Synthetic retrieval example",
+        "section": "method",
+        "chunk_number": 0,
+        "text": "We encode passages with a dense bi-encoder and combine rankings using reciprocal rank fusion.",
+        "previous_passage_id": null,
+        "next_passage_id": null
+      },
+      "rank": 2,
+      "source_scores": {
+        "bm25": {
+          "rank": 1,
+          "score": 12.0
+        },
+        "dense": {
+          "rank": 3,
+          "score": 0.71
+        }
+      },
+      "rrf_score": 0.032266458495966696,
+      "reranker_score": -1.0
+    },
+    {
+      "passage": {
+        "passage_id": "mock-paper_setup_0",
+        "paper_id": "mock-paper",
+        "title": "Synthetic retrieval example",
+        "section": "setup",
+        "chunk_number": 0,
+        "text": "We evaluate on a held-out question answering dataset and report token F1.",
+        "previous_passage_id": null,
+        "next_passage_id": null
+      },
+      "rank": 3,
+      "source_scores": {
+        "bm25": {
+          "rank": 3,
+          "score": 4.0
+        },
+        "dense": {
+          "rank": 2,
+          "score": 0.85
+        }
+      },
+      "rrf_score": 0.03200204813108039,
+      "reranker_score": -1.0
+    }
+  ]
+}
