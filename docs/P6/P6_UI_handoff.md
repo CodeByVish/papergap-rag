@@ -36,7 +36,7 @@ The earlier local integration adds an Ollama adapter and a corpus-search extensi
 Download [P3's passages.jsonl](https://github.com/CodeByVish/papergap-rag/blob/p3-qasper-foundation/data/processed/passages.jsonl)
 using GitHub's **Download raw file** action, then copy it to
 `data/processed/passages.jsonl` in this checkout. Save the JSONL itself, not the
-GitHub HTML page.
+GitHub HTML page. 
 Expect `data/processed/passages.jsonl: OK`. This download supplies the passage corpus only.
 
 ## 1. Run the prepared demo on this Mac (Ollama)

@@ -1,1159 +1,93 @@
-# QASPER data guide
+# Local QASPER data
 
-[中文版](README_zh-CN.md)
+## Directory structure
 
-Raw and processed data and their manifests are tracked on the P3 working branch, `p3-qasper-foundation`. This guide describes Git-based sharing, local reproduction, and the fields of each processed artifact. Run commands from the repository root in the project Python 3.11 environment after installing `requirements.txt` or `requirements-dev.txt`.
-
-## Data versions and updates
-
-The obsolete three-method `annotation_common_v2/` and `annotation_common_v2_markdown/` directories have been removed from the checkout because they omit BGE reranking. Use only `annotation_common_v3/` and `annotation_common_v3_markdown/` for annotation. The v2 bytes remain in Git history; v3 verification reads them there and checks the original hashes without restoring the directories. To inspect the historical artifacts and the v2 field tables below, use a separate checkout of a commit that contains them. A full clone with that history is required.
-
-Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. The files were blank at export; both current label sets are populated and were handed over to P6 as of 2026/11/04. Completeness does not certify independent annotation; agreement acceptance, adjudication and final evaluation remain pending. See the [Week 4 report](../weekly-work/week-4/week-4-report-en.md). The v2 pool/templates are available only in Git history.
-
-The scoped exclusion inventory combines P1's $2593$, P2's $106$ and P3's $250$ selection IDs into $2654$ unique banned questions, retaining all qualifying overlapping sources. It does not claim coverage of unrecorded external/P4–P6 use. Isolation is question-level and permits shared papers. Add explicit new usage evidence in a new inventory version before further sampling; held-out content or results must not guide system choices.
-
-The fourth method was checked on the first $5$ saved development questions ($45$ pairs), then frozen before formal retrieval in `configs/annotation_four.json` and `annotation_pilot_four_v3/frozen_config.json`. BGE reranker base revision `2cfc18c9415c912f9d8155881c133215df768a70`, CPU, batch $8$, longest-first query/passage truncation at $512$ tokens, raw logits and ties by descending RRF then ascending passage ID are fixed. Score the full union of BM25 top-$20$ and Dense top-$20$ before selecting final top-$5$; equal-weight RRF $k=60$ and all original three-method settings remain unchanged. No held-out-driven tuning or resampling occurred.
-
-Cleanup commit `685a08c` had removed older pilot/BM25 files while their hashes remained required by existing manifests. Verification now checks current files first and reads only missing legacy annotation blobs from local Git history, checking the original SHA-256 without restoring deleted working files. Use a full Git clone containing that history. The common-pool verifier checks the saved held-out list hash, input hashes, canonical text/order, bans and paper eligibility without drawing questions again; the legacy freeze reconstruction command still expects its old working files.
-
-For a new cache, download these pinned models first with network access. Retain safetensors, configuration and tokenizer files, avoiding duplicate weight formats; subsequent inference loads offline.
-
-```powershell
-python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-small-en-v1.5', revision='5c38ec7c405ec4b44b94cc5a9bb96e735b38267a', cache_dir='.cache/huggingface', allow_patterns=['*.json', '*.safetensors', 'vocab.txt'])"
-python -c "from huggingface_hub import snapshot_download; snapshot_download('BAAI/bge-reranker-base', revision='2cfc18c9415c912f9d8155881c133215df768a70', cache_dir='.cache/huggingface', allow_patterns=['*.json', '*.safetensors', 'sentencepiece.bpe.model'])"
-```
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
-python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
-```
-
-For local reproduction use `--output tmp/tmp_annotation_common_v3`, then the corresponding `--pool` and `--output tmp/tmp_annotation_common_v3_markdown`; reproduce the pilot with `--output tmp/tmp_annotation_pilot_four_v3`. Existing directories are refused. Obtain data and manifests from the GitHub `p3` working branch. Models remain only in ignored `.cache/huggingface/`. The v2 sections below describe history; do not use v2 for Step $4$.
-
-## `data/processed/annotation_common_v3/questions.jsonl`
-
-Generation and verification:
-
-```powershell
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id, paper_id` | `string` | Canonical question and paper identifiers; persisted order. |
-| `question` | `string` | Unmodified query text. |
-| `source_split` | `string` | Official provenance, not the evaluation role. |
-
-## `data/processed/annotation_pilot_four_v3/questions.jsonl`
-
-Field names and types follow the `questions.jsonl` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id, paper_id` | `string` | Same field contract as the corresponding formal artifact above. |
-| `question` | `string` | Same field contract as the corresponding formal artifact above. |
-| `source_split` | `string` | Same field contract as the corresponding formal artifact above. |
-
-## `data/processed/annotation_common_v3/pairs.jsonl`
-
-Generation and verification:
-
-```powershell
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `record_number` | `integer` | Stable first-encounter numbering within this version only. |
-| `question_id, paper_id, passage_id` | `string` | Unique query/passage identity and paper scope. |
-| `source_split, question, paper_title, passage` | `string` | Source split, original question, real title and complete passage. |
-| `label` | `null` | One initially null final label shared by retrieving methods. |
-| `retrieved_by[]` | `string` | All actual methods in frozen method order. |
-| `retrievals[]` | `object` | One native hit relation for every retrieving method. |
-| `retrievals[].method` | `string` | One of the four frozen method names. |
-| `retrievals[].rank` | `integer` | Native rank 1 through 5. |
-| `retrievals[].score` | `number` | Finite BM25 score, cosine, RRF score or raw BGE logit. |
-| `display_group` | `string` | Common Retrieved Chunks for at least two sources; otherwise the sole method. |
-
-## `data/processed/annotation_pilot_four_v3/pairs.jsonl`
-
-Field names and types follow the `pairs.jsonl` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `record_number` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `question_id, paper_id, passage_id` | `string` | Same field contract as the corresponding formal artifact above. |
-| `source_split, question, paper_title, passage` | `string` | Same field contract as the corresponding formal artifact above. |
-| `label` | `null` | Same field contract as the corresponding formal artifact above. |
-| `retrieved_by[]` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrievals[]` | `object` | Same field contract as the corresponding formal artifact above. |
-| `retrievals[].method` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrievals[].rank` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `retrievals[].score` | `number` | Same field contract as the corresponding formal artifact above. |
-| `display_group` | `string` | Same field contract as the corresponding formal artifact above. |
-
-## `data/processed/annotation_common_v3/rankings.jsonl`
-
-Generation and verification:
-
-```powershell
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id, method` | `string` | One row per question and method. |
-| `hits[]` | `object` | Exactly five distinct valid same-paper hits in native order. |
-| `hits[].passage_id` | `string` | Canonical passage identifier. |
-| `hits[].record_number` | `integer` | Foreign key to the unique union pair. |
-| `hits[].rank` | `integer` | Original algorithm rank 1 through 5. |
-| `hits[].score` | `number` | Unmodified finite native score. |
-
-## `data/processed/annotation_pilot_four_v3/rankings.jsonl`
-
-Field names and types follow the `rankings.jsonl` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id, method` | `string` | Same field contract as the corresponding formal artifact above. |
-| `hits[]` | `object` | Same field contract as the corresponding formal artifact above. |
-| `hits[].passage_id` | `string` | Same field contract as the corresponding formal artifact above. |
-| `hits[].record_number` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `hits[].rank` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `hits[].score` | `number` | Same field contract as the corresponding formal artifact above. |
-
-## `data/processed/annotation_common_v3/frozen_config.json`
-
-Generation and verification:
-
-```powershell
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | v0-proposed; team confirmation pending. |
-| `chunk_size_words, chunk_overlap_words, top_k` | `integer` | $365$, $40$ and $5$. |
-| `methods[]` | `string` | BM25, Dense, Hybrid RRF, Hybrid RRF followed by BGE reranking. |
-| `scope, candidate_policy, record_order` | `string` | Original-query paper scope; full fused union; stable native first-encounter numbering. |
-| `retrieval.mode` | `string` | hybrid_rerank; all four backends share its normalized configuration. |
-| `retrieval.candidate_k, retrieval.rrf_k` | `integer` | $20$ per source and equal-weight RRF $k=60$. |
-| `retrieval.dense.revision` | `string` | 5c38ec7c405ec4b44b94cc5a9bb96e735b38267a (BGE small English v1.5). |
-| `retrieval.reranker.revision` | `string` | 2cfc18c9415c912f9d8155881c133215df768a70 (BGE reranker base). |
-| `retrieval.dense.device, retrieval.reranker.device` | `string` | cpu for both models. |
-| `retrieval.dense.batch_size, retrieval.reranker.batch_size` | `integer` | $32$ and $8$ respectively. |
-| `retrieval.reranker.max_length` | `integer` | $512$ tokens for the query/passage pair. |
-| `retrieval.dense.cache_folder, retrieval.reranker.cache_folder` | `string` | Resolved ignored .cache/huggingface path. |
-| `retrieval.dense.local_files_only, retrieval.reranker.local_files_only` | `boolean` | true; prepare pinned model files before running. |
-| `execution.HF_HUB_OFFLINE` | `string` | 1 before model imports, restored by CLI finally block. |
-| `execution.persistent_score_cache` | `boolean` | false; fresh model scoring. |
-| `reranker_inference.model_name, reranker_inference.truncation, reranker_inference.score, reranker_inference.tie_break` | `string` | BAAI/bge-reranker-base; longest-first pair truncation; raw float32 logit; descending logit then RRF then ascending passage ID. |
-| `reranker_inference.padding` | `boolean` | true; padding within each inference batch. |
-| `retrievers.<method>` | `object` | Active metadata follows the complete nested retrievers field table in the v2 frozen-config section below. Component flags reflect each backend. |
-| `retrievers.<method>.reranker.revision, .device, .cache_folder, .model_name, .tokenizer_revision, .length_limit, .truncation_observation` | `string` | Fourth-method model/tokenizer revision, device, cache, pair length contract and observation limit; metadata does not claim measured token truncation. |
-| `retrievers.<method>.reranker.batch_size, .max_length` | `integer` | $8$ and $512$ for the active fourth backend. |
-| `retrievers.<method>.reranker.local_files_only, .enabled, .padding, .truncation, .raw_logits` | `boolean` | true for the active fourth backend. |
-| `retrievers.<method>.candidate_k_per_source, .rrf_k, .final_top_k` | `integer` | $20$, $60$, $5$ for both hybrid variants. |
-| `retrievers.<method>.rerank_all_fused_candidates` | `boolean` | true only for the fourth method; no early top-five truncation. |
-
-## `data/processed/annotation_pilot_four_v3/frozen_config.json`
-
-Field names and types follow the `frozen_config.json` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | Same field contract as the corresponding formal artifact above. |
-| `chunk_size_words, chunk_overlap_words, top_k` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `methods[]` | `string` | Same field contract as the corresponding formal artifact above. |
-| `scope, candidate_policy, record_order` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.mode` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.candidate_k, retrieval.rrf_k` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.dense.revision` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.reranker.revision` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.dense.device, retrieval.reranker.device` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.dense.batch_size, retrieval.reranker.batch_size` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.reranker.max_length` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.dense.cache_folder, retrieval.reranker.cache_folder` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrieval.dense.local_files_only, retrieval.reranker.local_files_only` | `boolean` | Same field contract as the corresponding formal artifact above. |
-| `execution.HF_HUB_OFFLINE` | `string` | Same field contract as the corresponding formal artifact above. |
-| `execution.persistent_score_cache` | `boolean` | Same field contract as the corresponding formal artifact above. |
-| `reranker_inference.model_name, reranker_inference.truncation, reranker_inference.score, reranker_inference.tie_break` | `string` | Same field contract as the corresponding formal artifact above. |
-| `reranker_inference.padding` | `boolean` | Same field contract as the corresponding formal artifact above. |
-| `retrievers.<method>` | `object` | Same field contract as the corresponding formal artifact above. |
-| `retrievers.<method>.reranker.revision, .device, .cache_folder, .model_name, .tokenizer_revision, .length_limit, .truncation_observation` | `string` | Same field contract as the corresponding formal artifact above. |
-| `retrievers.<method>.reranker.batch_size, .max_length` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `retrievers.<method>.reranker.local_files_only, .enabled, .padding, .truncation, .raw_logits` | `boolean` | Same field contract as the corresponding formal artifact above. |
-| `retrievers.<method>.candidate_k_per_source, .rrf_k, .final_top_k` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `retrievers.<method>.rerank_all_fused_candidates` | `boolean` | Same field contract as the corresponding formal artifact above. |
-
-## `data/processed/annotation_common_v3/run_inputs.json`
-
-Generation and verification:
-
-```powershell
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `inputs.<path>` | `string` | Pre-run input SHA-256, including corpus, questions, bans and freezes. |
-| `code.commit, code.python` | `string` | Pre-run Git HEAD and Python version. |
-| `code.working_tree_status[]` | `string` | Exact pre-run short status, including uncommitted changes. |
-| `code.source_sha256.<path>` | `string` | src/scripts source hashes checked again before saving results. |
-| `history.<path>` | `string` | Unchanged v2 pool/templates and retired BM25 hashes; empty for development. |
-
-## `data/processed/annotation_pilot_four_v3/run_inputs.json`
-
-Field names and types follow the `run_inputs.json` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `inputs.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
-| `code.commit, code.python` | `string` | Same field contract as the corresponding formal artifact above. |
-| `code.working_tree_status[]` | `string` | Same field contract as the corresponding formal artifact above. |
-| `code.source_sha256.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
-| `history.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
-
-## `data/processed/annotation_common_v3/manifest.json`
-
-Generation and verification:
-
-```powershell
-python -m src.data.build_common_pool run --four
-python -m src.data.build_common_pool verify --four
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version, purpose, reason, usage_boundary` | `string` | Proposed schema, run purpose, rebuild reason and held-out/no-label boundaries. |
-| `pilot` | `boolean` | true only for the development run. |
-| `settings` | `object` | Exact frozen_config.json object, with all nested fields documented above. |
-| `inputs.<path>, outputs.<path>, historical_retained_files.<path>` | `string` | Exact input/output/history SHA-256; current bytes preferred, deleted legacy blobs checked in local Git history. |
-| `code` | `object` | Same nested identity fields as run_inputs.json. |
-| `historical_comparison.rankings_compared, .identical_id_rank_lists, .identical_score_lists` | `integer` | Formal comparison of $600$ original rankings; score equality reported independently; pilot object is empty. |
-| `indexed_passage_count, indexed_paper_count` | `integer` | Complete selected-paper index sizes. |
-| `validation.question_count, .pair_count, .ranking_count, .hits_per_method` | `integer` | Actual questions, unique pairs, native ranking rows and hits per method. |
-| `validation.pair_counts_per_question.<question_id>, validation.group_counts.<group>` | `integer` | Actual unique-pair counts per question and display group. |
-| `validation.pair_count_range[]` | `integer` | Observed minimum/maximum within $5$–$20$. |
-| `runtime.platform, runtime.policy` | `string` | Host and single CPU/index-plus-four-method timing policy, not a latency benchmark. |
-| `runtime.elapsed_seconds` | `number` | Wall-clock seconds for indexing/retrieval. |
-
-## `data/processed/annotation_pilot_four_v3/manifest.json`
-
-Field names and types follow the `manifest.json` table immediately above. Uses only the first $5$ saved development questions, $5$ papers and $70$ passages: $45$ unique pairs, $20$ rankings and $25$ hits per method. `pilot=true`; history/comparison mappings are empty. Development does not read held-out questions or gold.
-
-```powershell
-python -m src.data.build_common_pool pilot --four
-python -m src.data.build_common_pool verify --four --output data/processed/annotation_pilot_four_v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version, purpose, reason, usage_boundary` | `string` | Same field contract as the corresponding formal artifact above. |
-| `pilot` | `boolean` | Same field contract as the corresponding formal artifact above. |
-| `settings` | `object` | Same field contract as the corresponding formal artifact above. |
-| `inputs.<path>, outputs.<path>, historical_retained_files.<path>` | `string` | Same field contract as the corresponding formal artifact above. |
-| `code` | `object` | Same field contract as the corresponding formal artifact above. |
-| `historical_comparison.rankings_compared, .identical_id_rank_lists, .identical_score_lists` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `indexed_passage_count, indexed_paper_count` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `validation.question_count, .pair_count, .ranking_count, .hits_per_method` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `validation.pair_counts_per_question.<question_id>, validation.group_counts.<group>` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `validation.pair_count_range[]` | `integer` | Same field contract as the corresponding formal artifact above. |
-| `runtime.platform, runtime.policy` | `string` | Same field contract as the corresponding formal artifact above. |
-| `runtime.elapsed_seconds` | `number` | Same field contract as the corresponding formal artifact above. |
-
-## `data/processed/annotation_common_v3_markdown/annotator_A/` / `annotator_B/`
-
-```powershell
-python -m src.data.export_common_annotations run --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
-python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `Annotator:` | `text` | Initially blank identity; assign two distinct people in Step 4. |
-| `Question NNNN; Paper:; quoted question` | `text/headings` | Global saved question number, real paper title and original query. |
-| `Common Retrieved Chunks; four method sections` | `headings` | At least two sources in Common record order; exclusives in native rank; empty groups None. |
-| `Passage N; Relevance N; Retrieved by:` | `text/headings` | One occurrence per pair per slot, full quoted passage and all true sources. |
-| `Label:` | `empty text` | Only Label: 0 or Label: 1; helpful partial evidence is relevant; topic overlap alone is insufficient. |
-
-Each slot has $10$ batches of $20$ complete questions. Hide gold, scores, ranks, internal IDs and the other person's labels; generate no HTML or notes field. Preserve pristine templates and returned originals separately; the pristine verifier intentionally rejects filled labels.
-
-## `data/processed/annotation_common_v3_markdown/manifest.json`
-
-Use the export and verification commands in the preceding section.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version, purpose, policy` | `string` | v0-proposed; independent blank source-disclosed views and preserved native-rank metric policy. |
-| `inputs.<path>, outputs.<path>, source_sha256.<path>` | `string` | Pool inputs, Markdown outputs and generation source SHA-256. |
-| `question_count, pair_count_per_annotator` | `integer` | Saved questions and actual unique pairs in each slot. |
-| `slots[]` | `string` | A and B template slots, not assigned people. |
-| `batches[].batch, .question_count, .pair_count` | `integer` | One-based batch number, complete questions and actual pairs. |
-
-## `data/processed/annotation_common_v2_markdown/annotator_A/` and `annotator_B/`
-
-Generate with `python -m src.data.export_common_annotations run`; verify pristine templates with `python -m src.data.export_common_annotations verify`. Obtain the templates and manifest with the tracked data from the GitHub `p3` working branch. For local reproduction use `python -m src.data.export_common_annotations run --output tmp/tmp_annotation_export`; verify with the same `--output`. Existing directories are refused. No model download, retrieval, resampling or gold join occurs. The six source common-pool files retain their hashes.
-
-Each slot has `batch_01.md` through `batch_10.md`, each with $20$ complete questions. Pair counts per batch are $156,158,156,155,146,152,151,152,144,162$, totaling $1532$ per slot. These are two copies of the same pairs, not $3064$ unique records. A/B are template slots; Step $2.9$ must assign different people for each pair. Distribute only each person's Markdown copies and preserve these pristine originals; completed copies will intentionally fail the pristine-template verifier. Do not share gold/reference JSONL or the other person's judgments before independent submission.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `Annotator:` | `text` | Initially empty; fill in a name or agreed identifier. |
-| `0 — Not relevant`, `1 — Relevant` | `instructions` | Helpful answer evidence, including partial evidence, is relevant; topic overlap alone is insufficient. |
-| `Question NNNN` | `level-two heading` | Saved question order, numbered continuously across batches. |
-| `Paper:` and quoted question | `text` | Real title and original query; no internal IDs. |
-| `Common Retrieved Chunks`, `BM25`, `Dense`, `Hybrid` | `level-three headings` | Common has at least two sources in stable record order; exclusive groups use native rank; empty groups show `None`. |
-| `Passage N`, `Relevance N` | `level-four headings` | Existing `record_number`, appearing once per pair per slot; original passage text is quoted. |
-| `Retrieved by:` | `text` | All actual algorithm sources; algorithm identity is disclosed. |
-| `Label:` | `empty text` | Fill only `Label: 0` or `Label: 1`; preserve numbering, question and passage. |
-
-There is no generated HTML or notes field. Gold, scores, native ranks, internal question/paper/passage IDs and other labels are excluded from the projection. Native ranks and ID mappings stay in the original JSONL; use those ranks with shared final labels for metrics, never Markdown display order. No human judgments or agreement are claimed by this export.
-
-## `data/processed/annotation_common_v2_markdown/manifest.json`
-
-Generated and verified with the same `src.data.export_common_annotations` commands above; acquire it alongside both template sets from the GitHub `p3` branch. The schema remains `v0-proposed`. The verifier checks source-pool and retained-history hashes, template hashes, complete coverage and exact per-record projection. Source hashes record the generation implementation; read-only verification does not require the current checkout to match historical source bytes.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version`, `purpose`, `policy` | `string` | Proposed schema, empty-template purpose and independent-judgment/source-disclosure policy. |
-| `inputs` | `object<string,string>` | Pool manifest, questions, pairs and rankings paths mapped to byte SHA-256 values. |
-| `source_sha256` | `object<string,string>` | Exporter and reused renderer source paths mapped to generation-time SHA-256 values. |
-| `question_count`, `pair_count_per_annotator` | `integer` | $200$ questions and $1532$ unique pairs per slot. |
-| `slots` | `array<string>` | Independent blank template slots `A` and `B`; no assigned people yet. |
-| `batches` | `array<object>` | Coverage of each batch, identical in both slots. |
-| `batches[].batch` | `integer` | One-based batch number. |
-| `batches[].question_count`, `batches[].pair_count` | `integer` | Whole-question and actual union-pair counts in that batch. |
-| `outputs` | `object<string,string>` | All $20$ Markdown paths mapped to byte SHA-256 values; the manifest excludes itself. |
-
-## `data/processed/annotation_common_v2/questions.jsonl`
-
-Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id`, `paper_id` | `string` | Canonical identifiers in saved question order. |
-| `question` | `string` | Original unmodified question. |
-| `source_split` | `string` | Official provenance; no split filter. |
-
-## `data/processed/annotation_common_v2/pairs.jsonl`
-
-Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `record_number` | `integer` | Stable numbering within this formal version, starting at one. |
-| `question_id`, `paper_id`, `passage_id` | `string` | Unique question/passage pair and paper scope. |
-| `source_split`, `question`, `paper_title`, `passage` | `string` | Provenance, original query, real title and full passage text. |
-| `label` | `null` | One shared final relevance label; all initially null. |
-| `retrieved_by[]` | `string` | Ordered BM25/Dense/Hybrid sources. |
-| `retrievals[]` | `object` | One native retrieval relation per source. |
-| `retrievals[].method` | `string` | BM25, Dense or Hybrid. |
-| `retrievals[].rank` | `integer` | Original one-based algorithm rank, one through five. |
-| `retrievals[].score` | `number` | Finite native BM25, cosine or RRF score. |
-| `display_group` | `string` | Common Retrieved Chunks for at least two sources; otherwise the sole method. |
-
-## `data/processed/annotation_common_v2/rankings.jsonl`
-
-Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id`, `method` | `string` | One row per frozen question and method. |
-| `hits[]` | `object` | Exactly five distinct same-paper hits in native rank order. |
-| `hits[].passage_id` | `string` | Canonical corpus passage ID. |
-| `hits[].record_number` | `integer` | Foreign key to the single union pair. |
-| `hits[].rank` | `integer` | Original rank, one through five. |
-| `hits[].score` | `number` | Unmodified finite method score. |
-
-## `data/processed/annotation_common_v2/frozen_config.json`
-
-Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | v0-proposed. |
-| `chunk_size_words`, `chunk_overlap_words`, `top_k`, `question_count` | `integer` | $365$, $40$, $5$ and $200$. |
-| `question_selection`, `scope`, `record_order`, `label_policy` | `string` | Saved questions, paper scope, stable first-encounter numbering and one null label per pair. |
-| `execution.HF_HUB_OFFLINE`, `execution.model_loading` | `string` | Offline setting 1 and the same loading policy as the development CLI. |
-| `retrieval` | `object` | Normalized retrieval configuration used by all three algorithms. |
-| `retrieval.mode` | `string` | hybrid; no reranker. |
-| `retrieval.candidate_k`, `retrieval.rrf_k` | `integer` | $20$ and $60$; equal-weight RRF. |
-| `retrieval.dense` | `object` | BGE small English v1.5 inference settings, detailed below. |
-| `retrieval.dense.revision` | `string` | Pinned model/tokenizer revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`. |
-| `retrieval.dense.device`, `retrieval.dense.cache_folder` | `string` | CPU and ignored local model cache. |
-| `retrieval.dense.batch_size` | `integer` | $32$ queries or passages per inference batch. |
-| `retrieval.dense.local_files_only` | `boolean` | True; load the pinned model from the local cache. |
-| `retrieval.reranker` | `object` | Inactive normalized defaults; not loaded or used in this run. |
-| `retrieval.reranker.revision`, `retrieval.reranker.device`, `retrieval.reranker.cache_folder` | `string` | Inactive revision, CPU and local cache path. |
-| `retrieval.reranker.batch_size`, `retrieval.reranker.max_length` | `integer` | Inactive defaults $8$ and $512$. |
-| `retrieval.reranker.local_files_only` | `boolean` | Inactive offline default, true. |
-| `retrievers.<method>` | `object` | Complete effective metadata, including nested bm25/dense/reranker, package versions and fusion settings; nested fields are described below. |
-| `retrievers.<method>.id`, `retrievers.<method>.mode`, `retrievers.<method>.source_commit`, `retrievers.<method>.scope`, `retrievers.<method>.score`, `retrievers.<method>.tie_break` | `string` | Implementation identity, method, upstream commit, paper scope, native score semantics and tie rules. |
-| `retrievers.<method>.packages.<package>` | `string` | Installed dependency versions. |
-| `retrievers.<method>.persistent_score_cache`, `retrievers.<method>.bm25.enabled`, `retrievers.<method>.dense.enabled`, `retrievers.<method>.reranker.enabled` | `boolean` | Cache/component flags; no persistent score cache or reranker. |
-| `retrievers.<method>.bm25.tokenizer` | `string` | Casefold plus Unicode word runs; absent for standalone Dense. |
-| `retrievers.<method>.bm25.k1`, `retrievers.<method>.bm25.b`, `retrievers.<method>.bm25.epsilon` | `number` | Active BM25 parameters $1.5$, $0.75$, $0.25$. |
-| `retrievers.<method>.dense.revision`, `retrievers.<method>.dense.device`, `retrievers.<method>.dense.cache_folder`, `retrievers.<method>.dense.model_name`, `retrievers.<method>.dense.tokenizer_revision`, `retrievers.<method>.dense.query_instruction`, `retrievers.<method>.dense.normalization`, `retrievers.<method>.dense.similarity_metric`, `retrievers.<method>.dense.index_type`, `retrievers.<method>.dense.truncation`, `retrievers.<method>.dense.truncation_observation` | `string` | Active model/tokenizer identity, CPU device, local cache, query instruction, L2 normalization, cosine similarity, FAISS IndexFlatIP and token truncation metadata. |
-| `retrievers.<method>.dense.batch_size`, `retrievers.<method>.dense.max_seq_length` | `integer` | Active dense batch size $32$ and token limit $512$. |
-| `retrievers.<method>.dense.local_files_only` | `boolean` | True for active Dense/Hybrid model loading. |
-| `retrievers.Hybrid.candidate_k_per_source`, `retrievers.Hybrid.rrf_k`, `retrievers.Hybrid.final_top_k` | `integer` | $20$, $60$ and $5$. |
-| `retrievers.Hybrid.rerank_all_fused_candidates` | `boolean` | False. |
-
-## `data/processed/annotation_common_v2/run_inputs.json`
-
-Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `inputs.<path>` | `string` | Pre-run exact-byte SHA-256 of configuration, held-out list/manifest, bans, corpus, QA/papers and provenance records. |
-| `code.commit`, `code.python` | `string` | HEAD and Python version captured before retrieval. |
-| `code.working_tree_status[]` | `string` | Saved Git short status, including uncommitted implementation. |
-| `code.source_sha256.<path>` | `string` | Exact implementation hashes; src and script sources checked again before writing results. |
-
-## `data/processed/annotation_common_v2/manifest.json`
-
-Generate with `python -m src.data.build_common_pool run`; verify with `python -m src.data.build_common_pool verify`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version`, `purpose`, `reason`, `reuse_policy`, `usage_boundary` | `string` | Proposed formal version, rebuild reason, no old-result reuse and evaluation boundaries. |
-| `historical_retained_files.<path>` | `string` | Generation-time provenance path-to-SHA-256 mapping. |
-| `settings` | `object` | Exact frozen_config.json object; nested fields above. |
-| `inputs.<path>`, `outputs.<path>` | `string` | Exact input/output hashes; manifest does not hash itself. |
-| `code` | `object` | Same nested fields as run_inputs.json above. |
-| `indexed_paper_count`, `indexed_passage_count` | `integer` | Complete selected-paper index size, equivalent under paper-scoped retrieval. |
-| `validation.question_count`, `validation.pair_count`, `validation.ranking_count`, `validation.hits_per_method` | `integer` | 200 questions, actual union size, 600 ranking rows and 1000 hits per method. |
-| `validation.pair_counts_per_question.<question_id>`, `validation.group_counts.<group>` | `integer` | Actual per-question and source-group unique-pair counts. |
-| `validation.pair_count_range[]` | `integer` | Observed minimum and maximum, each within five to fifteen. |
-| `runtime.platform`, `runtime.processor`, `runtime.timing_policy` | `string` | Host details and single-run index-plus-retrieval timing policy; not a latency benchmark. |
-| `runtime.elapsed_seconds` | `number` | Index and retrieval wall time in seconds. |
-
-## `data/processed/qa_for_held_out_v2.jsonl`
-
-Step $2.5$ freezes this independent held-out question list for the new common evaluation. Before the first draw, `configs/held_out_sampling_v2.json` fixed seed $2026102805$, ascending candidate IDs and Python `Random(seed).sample` without replacement, preserving draw order. From $3329$ valid all-splits gold-mapped questions, $1884$ are banned and none of the remaining questions fail the minimum-$5$-passage condition, leaving $1445$ eligible IDs. The frozen $200$ unique questions have no banned intersection: $78$ validation and $122$ test, covering $174$ papers with at least $6$ passages each. These split counts are sampling outcomes, not quotas; no official-split filter is applied. Isolation is question-level and permits shared papers. No candidate question, answer, evidence or historical retrieval/label content was previewed to select the draw.
-
-Run the following from the project Python $3.11$ environment at the repository root. Generation refuses existing outputs. The retirement command has already run; do not delete its record to rerun it. Obtain the JSONL, both manifests below, configs and their matching inputs from the GitHub P3 branch with the other tracked data; no Release is required. Locally reproduce JSONL bytes with `python -m src.data.freeze_held_out freeze --output tmp/tmp_qa_for_held_out_v2.jsonl`; its companion records that output path and the local code identity.
-
-```powershell
-python -m src.data.freeze_held_out retire
-python -m src.data.freeze_held_out freeze
-python -m src.data.freeze_held_out verify
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id` | `string` | Canonical unique question ID, in frozen draw order. |
-| `paper_id` | `string` | Paper used for scoped retrieval. |
-| `question` | `string` | Original QA query copied verbatim after ID sampling. |
-| `source_split` | `string` | Official split provenance; no evaluation-role assignment. |
-
-## `data/processed/qa_for_held_out_v2.manifest.json`
-
-Generated by `python -m src.data.freeze_held_out freeze` and reconstructed by `verify` above. The freeze verifies the complete banned inventory and historical hashes before drawing; it checks the gold/corpus/QA companion hashes, fixed $365/40$ chunking, unique nonempty passages and canonical identity metadata. It preserves all eligible IDs, disjoint rejection lists and exact final IDs. Later explicit development-use evidence requires a new inventory/version; no held-out content or results may guide system choices. This question freeze does not perform Step $2.6$ retrieval or freeze future generator/agent configurations.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version`, `purpose`, `status` | `string` | Proposed schema, held-out purpose and frozen state. |
-| `configuration` | `object` | Exact predeclared sampling configuration. |
-| `configuration.schema_version` | `string` | `v0-proposed`. |
-| `configuration.seed`, `configuration.question_count`, `configuration.minimum_passages_per_paper` | `integer` | Seed, required draw size and passage threshold. |
-| `configuration.sampling_rule`, `configuration.scope`, `configuration.isolation`, `configuration.eligibility` | `string` | Ordering/draw, all-splits scope, question isolation and metadata-only filters. |
-| `configuration.reason`, `configuration.usage_boundary` | `string` | Resampling reason and prohibition on held-out-driven tuning. |
-| `inputs.<path>` | `string` | SHA-256 of config, retirement, banned list/manifest, gold/manifest, corpus/manifest and source exports. |
-| `code.commit`, `code.python`, `code.implementation_sha256` | `string` | Generation HEAD, Python version and exact uncommitted implementation fingerprint. Verification preserves the saved HEAD. |
-| `candidate_count`, `banned_question_count`, `question_count`, `paper_count` | `integer` | Gold candidate total, complete banned total, selected questions and selected papers. |
-| `eligible_question_ids[]` | `string` | Sorted eligible question IDs. |
-| `rejections.banned[]`, `rejections.fewer_than_minimum_passages[]` | `string` | Rejected IDs; banned takes precedence over corpus-size rejection. |
-| `question_ids[]` | `string` | Final frozen IDs in draw order. |
-| `source_split_counts.<split>` | `integer` | Selected split counts. |
-| `selected_paper_passage_counts.<paper_id>` | `integer` | Distinct corpus passages in each selected paper. |
-| `historical_redrawn_question_ids[]` | `string` | $13$ eligible historical IDs randomly drawn again, without result reuse. |
-| `validation.exactly_200_unique`, `validation.banned_intersection_empty`, `validation.at_least_five_passages_per_paper` | `boolean` | Cardinality, exclusion and corpus-capacity checks. |
-| `validation.canonical_question_text`, `validation.retained_history_hashes_verified`, `validation.exclusion_inventory_reconstructed` | `boolean` | Original text, unchanged history and complete banned-inventory reconstruction checks. |
-| `output.path`, `output.sha256` | `string` | Versioned question-list path and exact byte hash. |
-| `next_action` | `string` | Generation-time next action retained verbatim; Step $2.6$ retrieval is now complete in the independent common-pool directory. |
-
-## `data/processed/historical_bm25_retirement.manifest.json`
-
-Generated once by `python -m src.data.freeze_held_out retire`. This existing provenance manifest records the resampling rationale, question-level usage decision, original byte fingerprints and replacement question-list path. It is not a current annotation pool.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version`, `status`, `reason` | `string` | Proposed schema, retired state and resampling rationale. |
-| `retained_files.<path>` | `string` | Generation-time provenance path-to-SHA-256 mapping. |
-| `banned_manifest_sha256` | `string` | Hash of the verified Step $2.4$ inventory manifest. |
-| `usage_decision.source_id`, `usage_decision.path`, `usage_decision.sha256` | `string` | Historical-use decision identity and saved BM25 manifest hash. |
-| `usage_decision.question_ids[]` | `string` | All $200$ old evaluation question IDs. |
-| `usage_decision.decision`, `usage_decision.usage`, `usage_decision.reason` | `string` | No automatic exclusion for normal frozen evaluation; other sources still apply. |
-| `historical_question_count` | `integer` | Original question count. |
-| `historical_banned_question_ids[]`, `other_historical_question_ids[]` | `string` | Old IDs inside and outside the complete banned inventory. |
-| `reuse_policy`, `replacement_questions` | `string` | No old-result reuse and canonical replacement question path. |
-
-## `data/processed/held_out_exclusion_sources/p1_used_question_ids.jsonl`
-
-Byte-preserving snapshot of `docs/handoffs/p1_used_question_ids.jsonl` from branch `p1/week3-week4`, commit `3bb545c967efe63197cb99a799628162f5c2b512`, containing $2593$ unique IDs. Obtain it with the other data from the GitHub P3 branch. To reproduce the snapshot locally, capture `git show <commit>:docs/handoffs/p1_used_question_ids.jsonl` through Python `subprocess.check_output` and save with `Path.write_bytes`, then compare SHA-256 with `configs/held_out_exclusions.json`. Avoid shell text redirection that changes bytes. Owner quotes and source pins are preserved in the config/manifest. Historical files named inside the inventory need not exist or parse; reducing designated IDs requires explicit owner correction.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id`, `paper_id`, `source_split` | `string` | Delivered QA identity, checked against local QA. |
-| `sources` | `array<string>` | All owner-reported usage paths, kept verbatim. |
-| `usage` | `string` | Owner's usage description. |
-| `usage_categories` | `array<string>` | Owner's detailed usage categories. |
-
-## `data/processed/held_out_exclusion_sources/p2_used_question_ids.jsonl`
-
-Byte-preserving snapshot of `docs/handoffs/p2_used_question_ids.jsonl` from branch `p2/question-usage-inventory`, commit `3b13f22fe6df29d15babea529cf2fc8f13c18f68`, containing $106$ unique IDs. Obtain from the GitHub P3 branch or reproduce through the same Python byte-preserving `git show` route using this commit/path and check the pinned SHA-256.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id`, `paper_id`, `source_split` | `string` | Delivered QA identity. |
-| `sources` | `array<string>` | All owner-reported usage paths. |
-| `usage` | `string` | Owner's usage description. |
-
-## `data/processed/qa_banned_for_held_out.jsonl`
-
-Generate with `python -m src.data.build_held_out_exclusions`; verify existing artifacts with `python -m src.data.build_held_out_exclusions --verify`. Reproduce without replacing shared data using `python -m src.data.build_held_out_exclusions --output tmp/tmp_qa_banned_for_held_out.jsonl`: JSONL bytes match, while the manifest records the new output path and generation identity. Existing outputs are refused. Generation uses owner snapshots, QA, the preparation audit and generation-time usage records; exact input hashes are recorded in the companion manifest. Obtain JSONL, manifest, snapshots and config together from the GitHub P3 branch; no Release is needed.
-
-All owner-designated IDs are banned. Other questions are banned when used to choose or adjust models, parameters, algorithms, prompts or evidence handling; failed/void runs follow the same purpose rule. Pure functional tests and evaluation under frozen settings do not automatically ban questions, though other qualifying sources can ban them. Raw export and gold mapping alone do not imply exclusion. Usage evidence and decisions are recorded in the config/manifest. The banned inventory itself is not a question freeze; the independent `v2` freeze is documented above. Isolation is question-level and permits shared papers.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `question_id`, `paper_id`, `question`, `source_split` | `string` | Unique ID, matching paper, unmodified original question and official split. |
-| `sources` | `array<object>` | Every qualifying source, preserving overlaps. |
-| `sources[].source_id`, `sources[].usage`, `sources[].exclusion_reason` | `string` | Manifest source key, purpose and exclusion rationale. |
-| `sources[].original_record` | `object` | Entire delivered row, with all original metadata. |
-| `sources[].original_record.question_id` | `string` | Always present; canonical QA join key. |
-| `sources[].original_record.paper_id`, `.question`, `.source_split` | optional `string` | Source-supplied identity/text, checked against QA when present. |
-| `sources[].original_record.sources`, `.usage_categories` | optional `array<string>` | Complete original owner paths/categories. |
-| `sources[].original_record.usage` | optional `string` | Original owner usage description. |
-
-## `data/processed/qa_banned_for_held_out.manifest.json`
-
-Generated and verified by the same commands. Inputs use exact-byte SHA-256; owner sources additionally pin branch/commit/path. Local version records generation HEAD/branch and exact input/implementation hashes, including uncommitted files; it does not claim these files were already committed. Verification allows later HEAD changes while reconstructing rows and checking all saved hashes. Unknown IDs, identity conflicts, duplicate question IDs within a source, changed pins/counts, lost provenance and unresolved usage evidence fail before writing.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version`, `purpose`, `repository`, `scope`, `exclusion_rule` | `string` | `v0-proposed`, purpose, origin and bounded usage policy. |
-| `local_source_version` | `object` | Generation version. |
-| `local_source_version.branch`, `.commit` | `string` | Local P3 branch and full HEAD SHA. |
-| `implementation` | `object` | Exact source identity. |
-| `implementation.path`, `.sha256` | `string` | Module path and SHA-256. |
-| `inputs` | `object<string,string>` | Generation-input paths mapped to SHA-256. |
-| `owner_inventories` | `array<object>` | Owner source pins and exact statements. |
-| `owner_inventories[].source_id`, `.branch`, `.commit`, `.path`, `.snapshot`, `.sha256`, `.owner_statement` | `string` | Owner key, source identity, snapshot, hash and quote. |
-| `owner_inventories[].question_count` | `integer` | Expected unique count. |
-| `source_counts`, `source_split_counts` | `object<string,integer>` | Pre-union source counts and final split counts. |
-| `question_count`, `provenance_count` | `integer` | Unique questions and qualifying source memberships. |
-| `usage_decisions` | `array<object>` | Purpose decisions for historical P3 use/frozen evaluation. |
-| `usage_decisions[].source_id`, `.path`, `.sha256`, `.decision`, `.usage`, `.reason` | `string` | Source identity/hash, decision, purpose and reason. |
-| `usage_decisions[].question_ids` | `array<string>` | Persisted IDs covered by each decision. |
-| `configuration` | `object` | Deterministic generation settings. |
-| `configuration.join_key`, `.order`, `.sampling` | `string` | ID join, ascending ID order, no sampling. |
-| `configuration.question_fields` | `array<string>` | Canonical retained fields. |
-| `unresolved_records` | `array<object>` | Empty within accepted scope; unknown use blocks generation. |
-| `validation` | `object<string,boolean>` | ID uniqueness, complete fields, identity, full owner/selection/provenance coverage and scoped resolution checks. |
-| `output` | `object` | Final JSONL identity. |
-| `output.path`, `.sha256` | `string` | Output path and SHA-256. |
-
-## Data sharing and updates
-
-Track `data/raw/`, `data/processed/` and both guides together. GitHub Releases are not required. Preserve source license declarations, upstream revisions, generation parameters, evaluation scope and companion manifests. Git history records each published snapshot; use an exact commit to reproduce a version.
-
-Rebuild changed outputs in a separate local staging directory, keeping canonical basenames. Regenerate dependent artifacts and manifests together, verify hashes and schemas, and document provenance, parameters, scope and changes in both guides before committing. Keep credentials, caches, model weights, indexes and personal notes outside the shared snapshot. Preserve hash-bound bytes through `.gitattributes`.
-
-### Obtain the data
-
-Clone the P3 working branch to a new directory:
-
-```powershell
-git clone --branch p3-qasper-foundation https://github.com/CodeByVish/papergap-rag.git
-Set-Location papergap-rag
-git rev-parse HEAD
-```
-
-For an exact version, check out its recorded commit in a clean checkout. The raw and processed files are under `data/` alongside their manifests. Verify hashes before use; never edit a JSONL without regenerating its manifest and dependent outputs. Use the artifact-specific commands below for local reproduction. No Release download or archive extraction is needed.
-
-The all-splits mapping is a mechanical gold reference export. Use the saved question lists and usage audit below to determine eligibility; exporting or downloading all splits does not authorize tuning on held-out questions.
-
-## Directory structure and build order
-
-The tree lists the existing raw and processed artifacts. `README_zh-CN.md`, `README.md` and the listed generated artifacts are tracked together.
+The tree below shows the local layout after acquisition and export. Raw and processed data files are downloaded or generated locally and remain out of Git.
 
 ```text
 data/
-├── README.md                                           # English guide / 英文指南
-├── README_zh-CN.md                                     # Chinese guide / 中文指南
-├── raw/                                                # Tracked source data / 纳入 Git 的源数据
+├── README.md                                # Acquisition, processing, data contracts, and usage guide
+├── raw/                                     # Downloaded source data; ignored by Git
 │   └── qasper/
-│       ├── manifest.json                               # Source metadata and hashes / 来源及哈希
-│       ├── train.jsonl
-│       ├── validation.jsonl
-│       └── test.jsonl
-└── processed/                                          # Tracked generated outputs / 纳入 Git 的生成产物
-    ├── papers.jsonl
-    ├── qa.jsonl
-    ├── qasper_export.manifest.json
-    ├── passages.jsonl
-    ├── passages.manifest.json
-    ├── paper_catalog.json
-    ├── passages_all_paper_text.jsonl
-    ├── passages_all_paper_text.manifest.json
-    ├── gold_evidence_mapping_all_splits.jsonl
-    ├── gold_evidence_mapping_all_splits.manifest.json
-    ├── qa_for_choosing_chunk_size.jsonl
-    ├── annotation_preparation.manifest.json
-    ├── qa_for_held_out.jsonl
-    ├── qa_for_held_out.manifest.json
-    ├── qa_for_held_out_v2.jsonl
-    ├── qa_for_held_out_v2.manifest.json
-    ├── historical_bm25_retirement.manifest.json
-    ├── annotation_common_v3/
-    ├── annotation_common_v3_markdown/
-    ├── held_out_exclusion_sources/
-    ├── qa_banned_for_held_out.jsonl
-    ├── qa_banned_for_held_out.manifest.json
-    ├── sample_passages_100.jsonl
-    └── sample_passages_100.manifest.json
+│       ├── manifest.json                    # Pinned source metadata, split inventory, and checksums
+│       ├── train.jsonl                      # Raw training-split paper records
+│       ├── validation.jsonl                 # Raw development split, named validation locally
+│       └── test.jsonl                       # Raw held-out paper records
+└── processed/                               # Generated local exports; ignored by Git
+    ├── papers.jsonl                         # Paper-only records from all three splits
+    ├── passages_all_paper_text.jsonl        # Passages from all paper text; inference index
+    ├── passages_all_paper_text.manifest.json # Inference corpus scope, counts, and hashes
+    ├── qa.jsonl                             # Questions with answer and evidence annotations
+    ├── qasper_export.manifest.json          # Paper and Q&A export provenance, counts, and hashes
+    ├── sample_passages_100.jsonl            # 100-passage reproducibility sample
+    └── sample_passages_100.manifest.json    # Sample selection details and hashes
 ```
 
-Build order: raw acquisition → `papers.jsonl`, `qa.jsonl`, export manifest → development/all-paper-text corpora and sample → evidence mappings. Every file below has its own generation command and field table; repeated commands generate companion files together, so execute each distinct build only once.
+Keep the three manifests beside their JSONL files: they preserve provenance and checksums, and the export manifest is required by the passage and sample builders. `passages_all_paper_text.jsonl` includes held-out paper text and is for inference indexing only; do not use held-out questions, answers, evidence, or labels for tuning or prompt design. This compact layout omits the diagnostic inspection report and duplicate development-passage and sample exports.
 
-The builders refuse existing output paths. For rebuilds, use a new staging directory and pass its corresponding input/output paths throughout. The corpus and sample CLIs do not read YAML: their legacy defaults are $200/40$ words, so explicitly pass the selected $365/40$ settings. These are words, not model tokens.
+## JSONL record examples
 
-Field tables use JSON types. Dotted paths and `[]` describe nested fields; `<split>` means `train`, `validation`, or `test`, and `<input>` is one of the named inputs. Source exports preserve additional original fields if present; tables describe the pinned QASPER source and current exporter, not a schema repair step.
+Each JSONL physical line contains one compact JSON object. The examples below show one representative record for every JSONL file; placeholder values such as `<paper-id>` are illustrative. The examples are kept on one line to match the file format, and the notes below explain each key.
 
-## Raw QASPER acquisition
+### `data/raw/qasper/train.jsonl`
 
-### Generation command
-
-```powershell
-python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
 ```
 
-The download maps upstream `dev` to local `validation`; `train` and `test` keep their names. Each raw JSONL line is a whole paper with `id`, `title`, `abstract`, `full_text`, `figures_and_tables`, and `qas`. `qas[]` has the question fields documented under `qa.jsonl`, without the added `paper_id` and `source_split`. The paper content fields match `papers.jsonl`, without `source_split`. Raw records are neither normalized nor chunked.
+### `data/raw/qasper/validation.jsonl`
 
-`--output-dir` is required. Existing destinations are rejected unless `--force` is supplied; `--force` replaces the whole verified acquisition with rollback, not an append/resume operation. The exact accepted directory contains only `manifest.json`, `train.jsonl`, `validation.jsonl`, and `test.jsonl`. The command needs network access to the Hugging Face Hub and official archives; QASPER is public and needs no Hugging Face token.
-
-### Raw manifest fields
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `manifest_schema_version` | `integer` | Manifest contract version. |
-| `dataset` | `object` | Dataset ID/config, requested/resolved revision, source dataset version, local parser version. |
-| `licenses` | `object` | Hub/source license declarations; retain on redistribution. |
-| `repository_files` | `array<object>` | Byte counts and SHA-256 of pinned qasper.py and dataset_infos.json. |
-| `splits` | `array<object>` | Split name, filename, rows, bytes, SHA-256 for each JSONL. |
-| `source_verification` | `string` | Fixed verification contract identifier. |
-| `source_archives` | `array<object>` | Official URLs, declared/observed bytes and hashes, required members. |
-| `libraries` | `object` | Python and huggingface-hub runtime versions. |
-| `output` | `object` | Encoding, newline, aggregate-hash algorithm and aggregate_sha256. |
-
-Acquisition validates pinned `qasper.py` and `dataset_infos.json` as bytes, never executes remote code, and never uses `trust_remote_code`. Both official archives must match byte counts, SHA-256, and required members; they are not extracted to disk. Source, fingerprint, or schema changes fail closed. `--revision main` is for upstream checks, not team reproduction. The aggregate digest covers sorted JSONL relative paths and file hashes, excluding `manifest.json`. Raw JSONL uses UTF-8, LF, recursively sorted keys, and compact serialization; retain the manifest for reproduction.
-
-## `data/processed/papers.jsonl`
-
-One paper per row from every official split. Preserves all original top-level fields except qas and adds source_split. It is paper-only input for passage builders.
-
-### Generation command
-
-```powershell
-python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
 ```
 
-### Field table
+### `data/raw/qasper/test.jsonl`
 
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `id` | `string` | Original paper identifier. |
-| `title` | `string` | Original paper title. |
-| `abstract` | `string` | Original abstract; retained but not currently indexed. |
-| `full_text` | `array<object>` | Ordered source sections. |
-| `full_text[].section_name` | `string or null` | Original section label; blank/null labels are dropped by the passage builder. |
-| `full_text[].paragraphs` | `array<string>` | Original ordered paragraphs, before normalization. |
-| `figures_and_tables` | `array<object>` | Original figure/table metadata; not currently indexed. |
-| `figures_and_tables[].caption` | `string` | Original figure/table caption. |
-| `figures_and_tables[].file` | `string` | Source figure/table file reference; not a bundled image. |
-| `source_split` | `string` | Official split: train, validation, or test. |
-
-## `data/processed/paper_catalog.json`
-
-Lightweight metadata for loading the UI paper selector once. Build it after the selected passage corpus; the UI is not integrated yet. The command below uses `data.passages_path` in `configs/default.yaml`. Always pass the exact file used by UI retrieval through the required `--passages` option; if that corpus changes, rebuild the catalog into a new staging path and replace the local snapshot only after validation. Existing output paths are rejected.
-
-### Generation command
-
-```powershell
-python -m scripts.build_paper_catalog --papers data/processed/papers.jsonl --passages data/processed/passages.jsonl --output data/processed/paper_catalog.json
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"qas":[{"question_id":"<question-id>","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}]}
 ```
 
-Only papers and sections with passages appear. Paper IDs in the export and passage IDs in the corpus must be unique; every passage must have nonblank text and reference an exported paper and normalized source section. Papers retain export order; sections retain their first occurrence in `full_text`, with repeated normalized names merged because section filters use names. Section names follow passage normalization (LF line endings and trimmed outer whitespace). Missing/blank metadata strings become `null`, absent authors become `[]`; authors are never inferred. Here, retrievable means a passage exists, not that every query will return it.
+The three raw split files share this structure. `id` identifies the paper; `title` and `abstract` hold its title and abstract; `full_text` is an ordered list of source sections, each with a `section_name` and a list of `paragraphs`; `figures_and_tables` is a list of items with `caption` and `file`; and `qas` is a list of questions and annotations. Each Q&A item has `question_id`, `question`, and the question context fields `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background`. Each entry in `answers` has an `annotation_id`, a `worker_id`, and an `answer` object. That object contains `evidence`, `extractive_spans`, `free_form_answer`, `highlighted_evidence`, the `unanswerable` flag, and `yes_no` (a boolean or `null`). The source split is determined by the filename and is not a raw record key.
 
-### Field table
+### `data/processed/papers.jsonl`
 
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | Proposed catalog contract, `v0-proposed`. |
-| `passages_file` | `string` | Exact `--passages` input path with forward slashes; relative paths are relative to the repository root when built there. UI retrieval must use the same corpus. |
-| `papers` | `array<object>` | Selectable papers with at least one passage. |
-| `papers[].paper_id` | `string` | Unique source paper ID. |
-| `papers[].title` | `string or null` | Source title, or `null` when unavailable. |
-| `papers[].authors` | `array<string or null>` | Available source authors; missing strings are `null`, missing author lists are empty. The current pinned QASPER export has no authors. |
-| `papers[].passage_count` | `integer` | Total passage count for this paper in the selected corpus. |
-| `papers[].sections` | `array<object>` | Only sections represented in the selected corpus, in source order. |
-| `papers[].sections[].name` | `string or null` | Normalized source section name, or `null` when unavailable and represented by a null-section passage. The current builder drops unnamed sections. |
-| `papers[].sections[].passage_count` | `integer` | Passage count for this paper and section name; section counts sum to the paper count. |
-
-For local reproduction, first build `papers.jsonl` and the chosen passage corpus using their commands in this guide, then run the catalog command. For Git-based use, obtain the P3 snapshot as described above and retain the matching corpus with the catalog; rebuild the catalog locally if needed. The path records the selected file, not a content hash; rebuild after corpus replacement.
-
-## `data/processed/qa.jsonl`
-
-One original question per row, with every answer annotation. Includes every official split; paper_id and source_split are added without filtering source QA fields. Use paper_id to join papers, then evidence matching to recover passage IDs.
-
-### Generation command
-
-```powershell
-python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
+```json
+{"id":"<paper-id>","title":"Example title","abstract":"<abstract>","full_text":[{"section_name":"Introduction","paragraphs":["<paragraph>"]}],"figures_and_tables":[{"caption":"<caption>","file":"<file>"}],"source_split":"train"}
 ```
 
-### Field table
+This keeps the paper fields described above, omits `qas`, and adds `source_split` to identify `train`, `validation`, or `test`. Each line is one paper record.
 
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `question_id` | `string` | Original question identifier. |
-| `paper_id` | `string` | Foreign key to papers.jsonl:id. |
-| `source_split` | `string` | Official provenance split; retained independently of evaluation roles. |
-| `question` | `string` | Original question text. |
-| `nlp_background` | `string` | Question author's NLP background. |
-| `paper_read` | `string` | Source record of how much of the paper was read. |
-| `question_writer` | `string` | Original question-writer identifier. |
-| `search_query` | `string` | Original search query. |
-| `topic_background` | `string` | Question author's topic background. |
-| `answers` | `array<object>` | All alternative answer annotations; preserved independently. |
-| `answers[].annotation_id` | `string` | Original annotation identifier. |
-| `answers[].worker_id` | `string` | Original annotator metadata; not relevance supervision. |
-| `answers[].answer` | `object` | Original answer payload. |
-| `answers[].answer.evidence` | `array<string>` | Annotated evidence text, including possible FLOAT SELECTED markers. |
-| `answers[].answer.extractive_spans` | `array<string>` | Extractive reference answer spans. |
-| `answers[].answer.free_form_answer` | `string` | Free-form reference answer, possibly empty. |
-| `answers[].answer.highlighted_evidence` | `array<string>` | Original highlighted evidence; not used for paragraph matching. |
-| `answers[].answer.unanswerable` | `boolean` | Whether the question is marked unanswerable. |
-| `answers[].answer.yes_no` | `boolean or null` | Yes/no reference answer, or null for another answer type. |
+### `data/processed/qa.jsonl`
 
-## `data/processed/qasper_export.manifest.json`
-
-Generated alongside papers.jsonl and qa.jsonl, not in a separate build. Binds source and output hashes, split counts, and the proposed policy. Output filenames are basenames; keep all three export files together.
-
-### Generation command
-
-```powershell
-python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
+```json
+{"question_id":"<question-id>","paper_id":"<paper-id>","source_split":"train","question":"<question>","answers":[{"annotation_id":"<annotation-id>","worker_id":"<worker-id>","answer":{"evidence":["<evidence>"],"extractive_spans":["<span>"],"free_form_answer":"<answer>","highlighted_evidence":["<highlighted-evidence>"],"unanswerable":false,"yes_no":null}}],"nlp_background":"<background>","paper_read":"<paper-read-record>","question_writer":"<writer-id>","search_query":"<search-query>","topic_background":"<background>"}
 ```
 
-### Field table
+Each line represents one question. `question_id` identifies it; `paper_id` links it to `papers.jsonl`; `source_split` records its source split; `question` is the query text; and `answers` contains the QASPER annotations described above. `nlp_background`, `paper_read`, `question_writer`, `search_query`, and `topic_background` preserve the corresponding question context fields.
 
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `manifest_schema_version` | `integer` | Manifest format version. |
-| `artifact` | `string` | qasper_papers_and_qa. |
-| `split_policy_version` | `string` | Proposed paper-disjoint split policy version. |
-| `source` | `object` | Pinned upstream and export provenance. |
-| `source.dataset_id` | `string` | allenai/qasper. |
-| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
-| `source.local_parser_version` | `integer` | Local source parser version. |
-| `source.source_manifest_sha256` | `string` | Hash of raw/qasper/manifest.json. |
-| `source.split_files` | `object` | Input inventory keyed by train, validation, test. |
-| `source.split_files.<split>.rows` | `integer` | Number of source paper rows. |
-| `source.split_files.<split>.sha256` | `string` | Source split JSONL byte hash. |
-| `split_counts` | `object` | Counts keyed by official split. |
-| `split_counts.<split>.papers` | `integer` | Paper count. |
-| `split_counts.<split>.questions` | `integer` | Question count. |
-| `split_counts.<split>.answer_annotations` | `integer` | Answer annotation count. |
-| `outputs` | `object` | Inventory of the two output JSONL files. |
-| `outputs.<papers\|qa>.file` | `string` | Output basename; outputs share a directory. |
-| `outputs.<papers\|qa>.rows` | `integer` | Output row count. |
-| `outputs.<papers\|qa>.sha256` | `string` | Output SHA-256. |
-| `outputs.qa.answer_annotation_count` | `integer` | Total answer annotations across all QA rows. |
+### `data/processed/passages_all_paper_text.jsonl`
 
-## `data/processed/passages.jsonl`
-
-Default development corpus used by configs/default.yaml:data.passages_path. Includes train and validation only. Current pinned 365/40 build contains 21,360 passages; manifests are authoritative for exact counts and hashes.
-
-### Generation command
-
-```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
+```json
+{"passage_id":"qasper-passage-v1-<64-lowercase-hex-characters>","paper_id":"<paper-id>","title":"Example title","section":"Introduction","chunk_number":1,"text":"<passage text>","previous_passage_id":"qasper-passage-v1-<previous-id>","next_passage_id":"qasper-passage-v1-<next-id>"}
 ```
 
-### Field table
+`passage_id` is the stable passage identifier; `paper_id` and `title` identify the source paper; `section` is the display section name; `chunk_number` is the zero-based position within its source section; `text` is the passage content; and `previous_passage_id` and `next_passage_id` link to adjacent passages in that section, or are `null` at its boundaries.
 
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `passage_id` | `string` | Opaque deterministic qasper-passage-v1- SHA-256 identifier. |
-| `paper_id` | `string` | Source paper identifier. |
-| `title` | `string` | Normalized paper title. |
-| `section` | `string` | Normalized display section label; equal labels do not merge containers. |
-| `chunk_number` | `integer` | Zero-based contiguous chunk index within one original source container. |
-| `text` | `string` | Normalized full-text chunk; contains no QA supervision. |
-| `previous_passage_id` | `string or null` | Direct predecessor in the same container; null at the start. |
-| `next_passage_id` | `string or null` | Direct successor in the same container; null at the end. |
+### `data/processed/sample_passages_100.jsonl`
 
-## `data/processed/passages.manifest.json`
-
-Companion to passages.jsonl. scope=development, artifact=development_corpus, purpose=development. All official splits are recorded, including excluded test with zero emitted passages.
-
-### Generation command
-
-```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
+```json
+{"passage_id":"qasper-passage-v1-<64-lowercase-hex-characters>","paper_id":"<paper-id>","title":"Example title","section":"Introduction","chunk_number":0,"text":"<passage text>","previous_passage_id":null,"next_passage_id":null}
 ```
 
-### Field table
+This sample uses the same eight-key `Passage` structure and key meanings as `passages_all_paper_text.jsonl`. The example shows a one-passage section, so both neighbor links are `null`.
 
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `manifest_schema_version` | `integer` | Manifest format version. |
-| `artifact` | `string` | development_corpus or inference_corpus. |
-| `purpose` | `string` | development or index_for_inference. |
-| `scope` | `string` | development or all-paper-text. |
-| `source` | `object` | Pinned upstream and export provenance. |
-| `source.dataset_id` | `string` | allenai/qasper. |
-| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
-| `source.local_parser_version` | `integer` | Local source parser version. |
-| `source.export_papers_file` | `string` | Input paper-export basename. |
-| `source.export_papers_sha256` | `string` | SHA-256 of exact paper-export bytes. |
-| `source.source_splits` | `object` | Raw split inventory copied from export source.split_files. |
-| `source.source_splits.<split>.rows` | `integer` | Original split paper count. |
-| `source.source_splits.<split>.sha256` | `string` | Raw split byte hash. |
-| `source.split_policy_version` | `string` | Proposed split policy version. |
-| `source.split_counts` | `object` | Scope/count metadata keyed by split. |
-| `source.split_counts.<split>.project_role` | `string` | development, validation, or held_out. |
-| `source.split_counts.<split>.included_in_scope` | `boolean` | Whether the split was included. |
-| `source.split_counts.<split>.source_paper_count` | `integer` | Paper count in the input export for this split. |
-| `source.split_counts.<split>.passage_count` | `integer` | Generated passage count for this split. |
-| `chunking` | `object` | Exact normalization/chunking settings. |
-| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
-| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
-| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
-| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
-| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
-| `chunking.word_rule` | `string` | Definition of word counting. |
-| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
-| `output` | `object` | Corpus inventory, counts, and rubric checks. |
-| `output.file` | `string` | Corpus basename. |
-| `output.sha256` | `string` | Exact corpus byte hash. |
-| `output.scope` | `string` | Same scope as the top-level field. |
-| `output.purpose` | `string` | Same purpose as the top-level field. |
-| `output.source_paper_count` | `integer` | Input papers in the selected scope. |
-| `output.indexed_paper_count` | `integer` | Papers emitting at least one passage. |
-| `output.passage_count` | `integer` | Total passages. |
-| `output.unique_passage_count` | `integer` | Distinct passage IDs. |
-| `output.source_word_count` | `integer` | Source words counted once without chunk overlap duplication. |
-| `output.passage_word_count` | `integer` | Words in emitted passages, including overlap. |
-| `output.passage_word_type_count` | `integer` | Distinct casefolded passage word types. |
-| `output.minimum_passages` | `integer` | Required minimum passage count. |
-| `output.minimum_words` | `integer` | Required minimum word count. |
-| `output.rubric_minimum_met` | `boolean` | Whether at least 10,000 passages and 100,000 words are met. |
+Generated or downloaded data stays out of Git. Do not commit `data/raw/`, source archives, Hugging Face cache files, staging directories, or other locally generated data.
 
-## `data/processed/passages_all_paper_text.jsonl`
+## Scope and data shape
 
-Includes train, validation, and test paper bodies for inference indexing. It contains no QA fields. Current pinned 365/40 build contains 28,617 passages; held-out paper inclusion does not permit supervision-based tuning.
+The acquisition command downloads the uncleaned, unchunked, paper-level QASPER source data as JSONL. Each JSONL line represents one paper record.
 
-### Generation command
-
-```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages_all_paper_text.jsonl --manifest-output data/processed/passages_all_paper_text.manifest.json
-```
-
-### Field table
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `passage_id` | `string` | Opaque deterministic qasper-passage-v1- SHA-256 identifier. |
-| `paper_id` | `string` | Source paper identifier. |
-| `title` | `string` | Normalized paper title. |
-| `section` | `string` | Normalized display section label; equal labels do not merge containers. |
-| `chunk_number` | `integer` | Zero-based contiguous chunk index within one original source container. |
-| `text` | `string` | Normalized full-text chunk; contains no QA supervision. |
-| `previous_passage_id` | `string or null` | Direct predecessor in the same container; null at the start. |
-| `next_passage_id` | `string or null` | Direct successor in the same container; null at the end. |
-
-## `data/processed/passages_all_paper_text.manifest.json`
-
-Companion to passages_all_paper_text.jsonl. scope=all-paper-text, artifact=inference_corpus, purpose=index_for_inference. Records included paper bodies by source split; not a frozen question-pool manifest.
-
-### Generation command
-
-```powershell
-python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope all-paper-text --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/passages_all_paper_text.jsonl --manifest-output data/processed/passages_all_paper_text.manifest.json
-```
-
-### Field table
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `manifest_schema_version` | `integer` | Manifest format version. |
-| `artifact` | `string` | development_corpus or inference_corpus. |
-| `purpose` | `string` | development or index_for_inference. |
-| `scope` | `string` | development or all-paper-text. |
-| `source` | `object` | Pinned upstream and export provenance. |
-| `source.dataset_id` | `string` | allenai/qasper. |
-| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
-| `source.local_parser_version` | `integer` | Local source parser version. |
-| `source.export_papers_file` | `string` | Input paper-export basename. |
-| `source.export_papers_sha256` | `string` | SHA-256 of exact paper-export bytes. |
-| `source.source_splits` | `object` | Raw split inventory copied from export source.split_files. |
-| `source.source_splits.<split>.rows` | `integer` | Original split paper count. |
-| `source.source_splits.<split>.sha256` | `string` | Raw split byte hash. |
-| `source.split_policy_version` | `string` | Proposed split policy version. |
-| `source.split_counts` | `object` | Scope/count metadata keyed by split. |
-| `source.split_counts.<split>.project_role` | `string` | development, validation, or held_out. |
-| `source.split_counts.<split>.included_in_scope` | `boolean` | Whether the split was included. |
-| `source.split_counts.<split>.source_paper_count` | `integer` | Paper count in the input export for this split. |
-| `source.split_counts.<split>.passage_count` | `integer` | Generated passage count for this split. |
-| `chunking` | `object` | Exact normalization/chunking settings. |
-| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
-| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
-| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
-| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
-| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
-| `chunking.word_rule` | `string` | Definition of word counting. |
-| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
-| `output` | `object` | Corpus inventory, counts, and rubric checks. |
-| `output.file` | `string` | Corpus basename. |
-| `output.sha256` | `string` | Exact corpus byte hash. |
-| `output.scope` | `string` | Same scope as the top-level field. |
-| `output.purpose` | `string` | Same purpose as the top-level field. |
-| `output.source_paper_count` | `integer` | Input papers in the selected scope. |
-| `output.indexed_paper_count` | `integer` | Papers emitting at least one passage. |
-| `output.passage_count` | `integer` | Total passages. |
-| `output.unique_passage_count` | `integer` | Distinct passage IDs. |
-| `output.source_word_count` | `integer` | Source words counted once without chunk overlap duplication. |
-| `output.passage_word_count` | `integer` | Words in emitted passages, including overlap. |
-| `output.passage_word_type_count` | `integer` | Distinct casefolded passage word types. |
-| `output.minimum_passages` | `integer` | Required minimum passage count. |
-| `output.minimum_words` | `integer` | Required minimum word count. |
-| `output.rubric_minimum_met` | `boolean` | Whether at least 10,000 passages and 100,000 words are met. |
-
-## `data/processed/gold_evidence_mapping_all_splits.jsonl`
-
-Full gold reference mapping across all official splits. Independent question lists and actual usage records determine evaluation roles; coverage alone neither freezes nor invalidates held-out status. The superseded development-only mapping and manifest have been removed.
-
-### Generation command
-
-```powershell
-python -m scripts.export_evidence_mapping --scope all-splits-reference
-```
-
-### Field table
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed. |
-| `question_id` | `string` | Original question identifier. |
-| `paper_id` | `string` | Source paper identifier. |
-| `source_split` | `string` | Official source split. |
-| `question` | `string` | Original question text. |
-| `qa_metadata` | `object` | Other source QA fields; current exporter preserves them unchanged. |
-| `qa_metadata.nlp_background` | `string` | Question author's NLP background. |
-| `qa_metadata.paper_read` | `string` | Source record of how much of the paper was read. |
-| `qa_metadata.question_writer` | `string` | Original question-writer identifier. |
-| `qa_metadata.search_query` | `string` | Original search query. |
-| `qa_metadata.topic_background` | `string` | Question author's topic background. |
-| `annotations` | `array<object>` | Alternative answers retained separately with located evidence. |
-| `annotations[].annotation_id` | `string` | Source annotation ID converted to string; answer-array index if absent. |
-| `annotations[].worker_id` | `string (if present)` | Original worker metadata retained by the current exporter. |
-| `annotations[].answer` | `object` | Original answer payload. |
-| `annotations[].answer.evidence` | `array<string>` | Annotated evidence text, including possible FLOAT SELECTED markers. |
-| `annotations[].answer.extractive_spans` | `array<string>` | Extractive reference answer spans. |
-| `annotations[].answer.free_form_answer` | `string` | Free-form reference answer, possibly empty. |
-| `annotations[].answer.highlighted_evidence` | `array<string>` | Original highlighted evidence; not used for paragraph matching. |
-| `annotations[].answer.unanswerable` | `boolean` | Whether the question is marked unanswerable. |
-| `annotations[].answer.yes_no` | `boolean or null` | Yes/no reference answer, or null for another answer type. |
-| `annotations[].evidence_locations` | `array<string>` | Nonempty references to evidence_paragraphs[].location. |
-| `evidence_paragraphs` | `array<object>` | Deduplicated source evidence paragraphs across answers. |
-| `evidence_paragraphs[].location` | `string` | paper_id:section_index:paragraph_index reference. |
-| `evidence_paragraphs[].section_index` | `integer` | Zero-based original full_text index. |
-| `evidence_paragraphs[].paragraph_index` | `integer` | Zero-based original paragraphs index; blanks still count. |
-| `evidence_paragraphs[].text` | `string` | Original evidence paragraph, preserving whitespace and line endings. |
-| `evidence_paragraphs[].fully_covered_by_passage_union` | `boolean` | True for exported questions: matches jointly cover all non-whitespace characters. |
-| `evidence_paragraphs[].passage_matches` | `array<object>` | All passages with non-whitespace overlap. |
-| `evidence_paragraphs[].passage_matches[].passage_id` | `string` | Exact identifier in the selected corpus. |
-| `evidence_paragraphs[].passage_matches[].source_char_span` | `array<integer>` | Two half-open [start, end) Python character offsets in the original evidence paragraph; not bytes, tokens, or passage offsets. |
-| `evidence_paragraphs[].passage_matches[].covers_full_paragraph` | `boolean` | Whether this passage alone covers all non-whitespace paragraph content. |
-| `gold_passage_ids` | `array<string>` | Sorted unique IDs overlapping any annotated evidence; not manual relevance labels. |
-
-A question is retained only if it has at least one answer and every answer has nonempty evidence uniquely located in whole full-text paragraphs, fully covered by the supplied corpus. Empty evidence, `FLOAT SELECTED`, missing paragraphs, duplicate-text ambiguity, or incomplete coverage excludes the entire question. Matching normalizes line endings and outer whitespace only; it uses no fuzzy or answer-substring matching. Compute coverage separately for alternative answers, without merging them. `gold_passage_ids` includes partial-overlap passages; an individual passage need not cover complete evidence. An unlisted passage is not automatically irrelevant. Keep questions, answers, evidence, and derived labels out of the retrieval corpus.
-
-## `data/processed/gold_evidence_mapping_all_splits.manifest.json`
-
-The all-splits mapping is a mechanical gold reference export. Use the saved question lists and usage audit below to determine eligibility; exporting or downloading all splits does not authorize tuning on held-out questions.
-
-### Generation command
-
-```powershell
-python -m scripts.export_evidence_mapping --scope all-splits-reference
-```
-
-### Field table
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | gold-evidence-to-passage-v0-proposed. |
-| `split_policy_version` | `string` | Proposed split policy version. |
-| `source_splits` | `array<string>` | Official splits selected for evidence mapping. |
-| `scope` | `string` | development or all-splits-reference; absent in older development exports. |
-| `evaluation_design` | `string` | Evaluation interpretation; absent in older development exports. |
-| `chunking` | `object` | Exact normalization/chunking settings. |
-| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
-| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
-| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
-| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
-| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
-| `chunking.word_rule` | `string` | Definition of word counting. |
-| `chunking.type_rule` | `string` | Casefolded word-type definition (corpus/mapping manifests). |
-| `inputs` | `object` | Hashes of papers, qa, export_manifest, passages, and passages_manifest. |
-| `inputs.<input>.file` | `string` | Input basename. |
-| `inputs.<input>.sha256` | `string` | Input byte hash. |
-| `filtering_counts` | `object` | Question counts keyed by official split; zero categories can be absent. |
-| `filtering_counts.<split>.total` | `integer` | Questions inspected. |
-| `filtering_counts.<split>.eligible` | `integer` | Questions retained. |
-| `filtering_counts.<split>.held_out_excluded` | `integer` | Questions excluded by development scope. |
-| `filtering_counts.<split>.invalid_or_uncovered_answer_evidence` | `integer` | Questions rejected for missing, ambiguous, or incompletely covered evidence. |
-| `mapping_rule` | `string` | Unique whole-paragraph evidence; every answer required. |
-| `passage_match_rule` | `string` | Any non-whitespace overlap, with complete union coverage. |
-| `offset_rule` | `string` | Zero-based half-open Python character offsets in evidence text. |
-| `label_status` | `string` | Derived gold references, not human relevance labels. |
-| `held_out_freeze` | `boolean` | False: not a final held-out freeze record. |
-| `output` | `object` | Mapping output inventory. |
-| `output.file` | `string` | Mapping JSONL basename. |
-| `output.rows` | `integer` | Eligible question rows. |
-| `output.sha256` | `string` | Exact mapping JSONL byte hash. |
-
-## `data/processed/sample_passages_100.jsonl`
-
-Deterministic dependency sample from train and validation only. Selects complete source containers by stable paper-ordered subset sum, allowing at most one container per paper and preferring more papers. Always exactly 100 passages; the pinned 365/40 sample has 100 papers and 20,017 passage words.
-
-### Generation command
-
-```powershell
-python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
-```
-
-### Field table
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `passage_id` | `string` | Opaque deterministic qasper-passage-v1- SHA-256 identifier. |
-| `paper_id` | `string` | Source paper identifier. |
-| `title` | `string` | Normalized paper title. |
-| `section` | `string` | Normalized display section label; equal labels do not merge containers. |
-| `chunk_number` | `integer` | Zero-based contiguous chunk index within one original source container. |
-| `text` | `string` | Normalized full-text chunk; contains no QA supervision. |
-| `previous_passage_id` | `string or null` | Direct predecessor in the same container; null at the start. |
-| `next_passage_id` | `string or null` | Direct successor in the same container; null at the end. |
-
-## `data/processed/sample_passages_100.manifest.json`
-
-Generated together with the sample. Records source hashes, normalization totals before selection, complete selected containers, and output hash. Sample neighbors remain complete because partial containers are never selected.
-
-### Generation command
-
-```powershell
-python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --chunk-size-words 365 --chunk-overlap-words 40 --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
-```
-
-### Field table
-
-| Field name | JSON type | Meaning |
-| --- | --- | --- |
-| `manifest_schema_version` | `integer` | Manifest format version. |
-| `artifact` | `string` | sample_passages_100. |
-| `source` | `object` | Pinned upstream and export provenance. |
-| `source.dataset_id` | `string` | allenai/qasper. |
-| `source.resolved_revision` | `string` | Immutable full upstream commit SHA. |
-| `source.local_parser_version` | `integer` | Local source parser version. |
-| `source.export_papers_file` | `string` | Input paper-export basename. |
-| `source.export_papers_sha256` | `string` | SHA-256 of exact paper-export bytes. |
-| `source.source_splits` | `array<object>` | Development source split inventory. |
-| `source.source_splits[].name` | `string` | train or validation. |
-| `source.source_splits[].project_role` | `string` | Proposed project role. |
-| `source.source_splits[].input_paper_count` | `integer` | Input papers in the split. |
-| `source.source_splits[].source_sha256` | `string` | Raw split SHA-256. |
-| `normalization` | `object` | Counters across all examined development records, before sample selection. |
-| `normalization.paragraphs_seen` | `integer` | Source paragraphs examined. |
-| `normalization.paragraphs_emitted` | `integer` | Nonblank normalized paragraphs retained. |
-| `normalization.blank_paragraphs_dropped` | `integer` | Blank paragraphs dropped. |
-| `normalization.line_ending_replacements` | `integer` | CRLF/CR-to-LF replacements. |
-| `normalization.outer_whitespace_trims` | `integer` | Outer-whitespace trim operations. |
-| `normalization.sections_seen` | `integer` | Source sections examined. |
-| `normalization.sections_emitted` | `integer` | Sections retained. |
-| `normalization.blank_sections_dropped` | `integer` | Blank-name sections dropped. |
-| `normalization.null_sections_dropped` | `integer` | Null-name sections dropped. |
-| `normalization.empty_sections_dropped` | `integer` | Sections without usable paragraphs dropped. |
-| `normalization.invalid_papers_dropped` | `integer` | Papers rejected by normalization. |
-| `chunking` | `object` | Exact normalization/chunking settings. |
-| `chunking.source_kinds` | `array<string>` | Currently full_text only. |
-| `chunking.normalization_version` | `string` | Text-normalization implementation version. |
-| `chunking.chunking_version` | `string` | Word-chunking implementation version. |
-| `chunking.chunk_size_words` | `integer` | Maximum Unicode non-whitespace runs per chunk; selected value 365. |
-| `chunking.chunk_overlap_words` | `integer` | Overlap in word runs; selected value 40. |
-| `chunking.word_rule` | `string` | Definition of word counting. |
-| `selection` | `object` | Deterministic complete-container selection metadata. |
-| `selection.method` | `string` | Stable paper-ordered complete-container subset sum. |
-| `selection.target_passage_count` | `integer` | Target passage count (100). |
-| `selection.selected_container_count` | `integer` | Selected source-container count. |
-| `selection.selected_paper_count` | `integer` | Selected distinct paper count. |
-| `selection.selected_section_count` | `integer` | Selected distinct section count. |
-| `selection.selected_groups` | `array<object>` | Complete selected source containers. |
-| `selection.selected_groups[].source_split` | `string` | Official source split. |
-| `selection.selected_groups[].project_role` | `string` | Proposed project role. |
-| `selection.selected_groups[].paper_id` | `string` | Source paper identifier. |
-| `selection.selected_groups[].source_kind` | `string` | full_text. |
-| `selection.selected_groups[].section_index` | `integer` | Original zero-based section position. |
-| `selection.selected_groups[].passage_count` | `integer` | Passages in this selected container. |
-| `output` | `object` | Sample serialization and counts. |
-| `output.file` | `string` | Sample basename. |
-| `output.format` | `string` | jsonl. |
-| `output.encoding` | `string` | utf-8. |
-| `output.newline` | `string` | lf. |
-| `output.passage_count` | `integer` | Total sample passages (100). |
-| `output.unique_passage_count` | `integer` | Distinct passage IDs. |
-| `output.unique_paper_count` | `integer` | Distinct source papers. |
-| `output.passage_word_count` | `integer` | Emitted sample words, including overlap. |
-| `output.sha256` | `string` | Exact sample byte hash. |
+The source members `train`, `dev`, and `test` are published as `train.jsonl`, `validation.jsonl`, and `test.jsonl`, respectively. The acquisition stage does not clean or chunk these records; the later sections document the current proposed Passage contract, deterministic chunking behavior, and the 100-passage dependency sample.
 
 ## Passage ID contract
 
@@ -1210,51 +144,177 @@ Whether abstract or figure/table containers will actually be indexed remains a t
 
 ## Normalization and chunking contract
 
-The implementation is in `src/data/chunking.py`. The selected Week 3 configuration in `configs/default.yaml` is `normalization_version="text-normalization-v1"`, `chunking_version="word-chunking-v1"`, `chunk_words=365`, and `overlap_words=40`. These are words, not tokens. Valid Round 1–4 experiments selected this working setting for BM25; the evidence, selection rationale, and limitations are in [the experiment criteria](../experiments/chunk_size/criteria.md) and [Chinese criteria](../experiments/chunk_size/criteria_zn-CN.md). It is not a demonstrated stable optimum or a validated dense/hybrid/reranker setting. The configuration, passage schema, and split policy remain `v0-proposed` pending team confirmation.
-
-The corpus and sample builders do not read `configs/default.yaml`; their legacy CLI defaults remain $200/40$. Always pass `--chunk-size-words 365 --chunk-overlap-words 40` as shown in the file sections above to reproduce the selected corpus. Chunk size and overlap are included in passage identity, so rebuilding changes passage IDs; consumers must rebuild dependent indexes and refresh saved passage references.
+The Step 5 implementation is in `src/data/chunking.py`. The current provisional configuration is `normalization_version="text-normalization-v1"`, `chunking_version="word-chunking-v1"`, `chunk_size_words=200`, and `chunk_overlap_words=40`. Week 3 must compare `$150`, `$200`, and `$250` chunk sizes using development and validation data before selecting a working setting.
 
 Normalization is deliberately conservative. For each source paragraph, the builder replaces CRLF and lone CR line endings with LF, removes only leading and trailing Unicode whitespace, drops paragraphs that become empty, and leaves internal whitespace, punctuation, casing, Unicode content, paragraph order, and evidence-marker text unchanged. Section names and paper titles receive the same line-ending and outer-whitespace treatment; a blank or `null` section name is dropped rather than replaced with a guessed label, and a blank paper title causes that paper to produce no passages. The returned `NormalizationReport` records paragraph and section counts, dropped blanks or `null` section names, line-ending replacements, outer-whitespace trims, and invalid-paper drops so a corpus manifest can preserve the observed transformations.
 
 The word rule is the number of Unicode-aware non-whitespace runs matched by `\\S+`. A chunk window contains at most `chunk_size_words` runs; the next window starts `chunk_size_words - chunk_overlap_words` runs later. Chunk text is the original normalized character span from the first selected run through the last selected run, so internal whitespace and punctuation are not reconstructed or collapsed. Paragraphs are joined only with an internal LF-LF separator inside one source container, and the private build result retains the original paragraph indices touched by each chunk.
 
-`build_passages_from_record` reads only `id`, `title`, and `full_text`. It never reads `qas`, answers, evidence, highlighted evidence, or figure/table metadata. Each original `full_text[section_index]` is processed independently, including sections with repeated display names; blank section names are dropped. Empty sections do not cause later sections to be renumbered: the original `section_index` remains in the passage ID coordinate. The current public record builder generates `full_text` passages only; abstract and figure/table sources remain deferred team decisions.
+`build_passages_from_record` reads only `id`, `title`, and `full_text`. It never reads `qas`, answers, evidence, highlighted evidence, or figure/table metadata. Each original `full_text[section_index]` is processed independently, including sections with repeated or blank display names. Empty sections do not cause later sections to be renumbered: the original `section_index` remains in the passage ID coordinate. The current public record builder generates `full_text` passages only; abstract and figure/table sources remain deferred team decisions.
 
 `build_passages_from_records` produces a deterministic order by `paper_id`, source kind, original section index, and chunk index. The private coordinate is `(paper_id, source_kind, section_index, chunk_index)`, while the public `Passage` remains the eight-field contract. Neighbor links are filled only within one `(paper_id, source_kind, section_index)` sequence, and `validate_built_passages` rejects duplicate IDs, empty text, missing chunk numbers, dangling links, and non-mutual or cross-container adjacency. The builder never infers boundaries from output order or display section names.
 
-## Question-level held-out policy
+## Unified paper and QA exports
 
-The Week 4 annotation workflow uses question-level isolation across all official splits, permits shared papers, and excludes all recorded experimental questions. The legacy official-split mapping in `src/data/split_policy.py` remains `v0-proposed` for earlier chunk-size experiments; it does not select this annotation pool. Never index QA supervision; retrieval receives only paper text and the saved query. The pool freeze does not establish that downstream generator or agent settings have been frozen.
+The local data flow is: verify the fixed-revision download; export one combined paper file, one combined question file, and a manifest; build development passages, the 100-passage sample, or an all-paper-text inference index from the paper file; then select questions and answers from the QA file under the evaluation protocol. The source `data/raw/qasper/` files and manifest remain unchanged.
 
-## Validation and reference snapshot
+`papers.jsonl` has one record per paper in `train`, `validation`, `test` order and preserves every original top-level field except `qas`; it adds only `source_split`. `qa.jsonl` has one record per question, retains the complete original question object and `answers` array, and adds `paper_id` and `source_split`. It contains all three source splits. Neither the paper builder nor the paper loader opens `qa.jsonl`.
 
-Run the following independent checks after extracting a package or rebuilding its companion files:
+`qasper_export.manifest.json` records the pinned source metadata, source manifest hash, input split hashes and row counts, output filenames and hashes, counts by source split, and the current `v0-proposed` split policy version. Output filenames in the manifest are basenames and all three export files share one directory. The JSONL outputs use deterministic compact JSON, UTF-8 without a BOM, and LF line endings. Generated files under `data/processed/` are ignored by Git.
+
+Export and independently verify the combined files with:
 
 ```powershell
+python -m scripts.export_qasper --input-dir data/raw/qasper --papers-output data/processed/papers.jsonl --qa-output data/processed/qa.jsonl --manifest-output data/processed/qasper_export.manifest.json
 python -m scripts.check_qasper_export --papers data/processed/papers.jsonl --qa data/processed/qa.jsonl --manifest data/processed/qasper_export.manifest.json
-python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
-python -m scripts.check_corpus --corpus data/processed/passages_all_paper_text.jsonl --manifest data/processed/passages_all_paper_text.manifest.json
-git check-ignore -v data/raw/qasper/manifest.json data/processed/papers.jsonl
 ```
 
-The corpus checker validates the published corpus and manifest without requiring raw/export inputs. Builders enforce at least $10{,}000$ passages and $100{,}000$ source words (and sufficient emitted words). Evidence export checks its paper/QA inputs, hashes, corpus scope and configuration, then rebuilds passages to verify exact IDs/text before mapping. There is no separate evidence-mapping checker CLI; do not mistake the QA checker for an evidence-mapping validator.
+The export command and structural checker may read `test` records mechanically to project fields, calculate hashes and counts, and verify links. Their summaries contain no question or answer text. People and experiment code must not preview or use `test` questions, answers, evidence, or labels before the evaluation freeze. A future evaluation entry point must first expose only `question_id`, `paper_id`, and `question` to RAG, persist query results, and read `answers` and evidence separately for scoring after inference.
 
-The following is the pinned $365/40$ reference snapshot tracked in Git. Changed artifacts require updated companion manifests. The export contains $1{,}585$ papers, $5{,}049$ questions, and $7{,}993$ answer annotations; question counts are $2{,}593$ train, $1{,}005$ validation, and $1{,}451$ test.
+The export command refuses any existing target. If publication is interrupted before the manifest is present, inspect the partial files manually before choosing new output names. It uses `tmp_` sibling files while staging; it does not silently replace an existing export.
 
-| Corpus | Source papers | Indexed papers | Passages | Source words | Passage words | Casefolded word types |
+## 100-passage dependency sample
+
+Build the sample from the verified paper-only export:
+
+```powershell
+python -m scripts.build_sample_passages --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --output data/processed/sample_passages_100.jsonl --manifest-output data/processed/sample_passages_100.manifest.json
+```
+
+The builder selects only `train` and `validation`, uses `full_text`, selects complete source-container sequences with a stable paper-ordered subset-sum rule, and validates each output record with `Passage`. The generated JSONL contains exactly `100` passages from `100` papers. For the pinned source revision and default $200$-word chunks with $40$-word overlap, its expected SHA-256 is `d017b7937d2e9a54ee653c8a3a94f37afa2819d548c0f79eacc93f08832bdb42`. The manifest records the export papers hash and source split hashes. Existing outputs are rejected; choose new output names when rebuilding for comparison.
+
+## Full development corpus and rubric check
+
+Build the default development corpus and independently check its published passage file:
+
+```powershell
+python -m scripts.build_corpus --papers data/processed/papers.jsonl --export-manifest data/processed/qasper_export.manifest.json --scope development --output data/processed/passages.jsonl --manifest-output data/processed/passages.manifest.json
+python -m scripts.check_corpus --corpus data/processed/passages.jsonl --manifest data/processed/passages.manifest.json
+```
+
+The default `development` scope processes only `train` and `validation`. The alternate `--scope all-paper-text` also processes `test` paper bodies and labels its output purpose as `index_for_inference`; use distinct output filenames and never use that corpus as tuning or prompt-design material. Both scopes enforce at least $10{,}000$ passages and $100{,}000$ source words. The manifest records the chosen scope, export papers SHA-256, and paper and passage counts by official source split. The checker validates the generated passage file and its manifest without needing the export inputs.
+
+For the pinned source revision and default $200$-word chunks with $40$-word overlap, the current development baseline is $1{,}169$ source papers, $1{,}168$ indexed papers, $32{,}073$ unique passages, $4{,}262{,}446$ source words, $4{,}897{,}846$ passage words, and $174{,}636$ case-folded passage word types. Its expected passage SHA-256 is `abc42568dbd7eecaa951ffd28b9f8c58a3629e62f401f102eff3b2a59da97790`. Word counts use Unicode non-whitespace runs. Existing output paths are never overwritten; use new filenames to compare a rebuild. These counts describe the current development scope and do not freeze the team's split or source-kind decisions.
+
+## Proposed split policy
+
+The split policy is `qasper-official-paper-disjoint-v0-proposed` and applies at the whole-paper level. The proposal maps the official source splits exactly as `train -> development`, `validation -> validation`, and `test -> held_out`. The official split name and project role are both retained in corpus or experiment manifests; neither `source_split` nor the project role is part of a single `Passage` identity.
+
+The proposal is supported by the deterministic inspection report for resolved revision `fdc9d8214fbab5dd782958601db4d678e6934a54`: `train`, `validation`, and `test` contain `888`, `281`, and `416` papers, respectively; each split has zero duplicate paper IDs; all three pairwise paper-ID intersections are empty; and the report records `observed_paper_disjoint: true`. These are review evidence, not hard-coded runtime counts.
+
+The paper-level invariant is strict: a paper's title, text, questions, answers, evidence, and all passages derived from that paper stay in one project role. The policy does not split or rebalance papers by question or passage, and it does not claim that the official names are model-training semantics. `validate_paper_disjoint_splits` in `src/data/split_policy.py` requires exactly the three official split keys, clean non-empty paper IDs, no within-split duplicates, and no cross-split overlap; it reads no files and does not modify its input.
+
+The configuration is still a proposal under `P3-D004`, pending P5/P6 review. `evaluation.held_out_manifest: null` means that the held-out question and annotation pool has not been created; it is not permission to sample from `test` for tuning. Any future remapping must increment the policy version and repeat the paper-leakage check. The `Passage` schema and passage ID remain unchanged, while corpus manifests must record the source split, project role, policy version, chunking configuration, and relevant output hashes.
+
+## Held-out asset-use policy
+
+The policy distinguishes the assets `paper_text`, `question`, `answer`, and `label` from the purposes `index_for_inference`, `tuning`, `prompt_design`, `chunk_selection`, and `final_evaluation`. `label` includes human relevance labels and supervision derived from answers or evidence; `prompt_design` includes template wording, few-shot example selection, and critic or generator prompt iteration.
+
+The complete policy matrix is:
+
+| Project role | Asset | `index_for_inference` | `tuning` | `prompt_design` | `chunk_selection` | `final_evaluation` |
 | --- | --- | --- | --- | --- | --- | --- |
-| Development | $1{,}169$ | $1{,}168$ | $21{,}360$ | $4{,}262{,}446$ | $4{,}469{,}326$ | $174{,}636$ |
-| All paper text | $1{,}585$ | $1{,}584$ | $28{,}617$ | $5{,}659{,}921$ | $5{,}930{,}961$ | $210{,}909$ |
+| `development` or `validation` | `paper_text`, `question`, `answer`, `label` | Allowed | Allowed | Allowed | Allowed | Allowed |
+| `held_out` | `paper_text` | Allowed | Forbidden | Forbidden | Forbidden | Forbidden |
+| `held_out` | `question` | Forbidden | Forbidden | Forbidden | Forbidden | Allowed after freeze |
+| `held_out` | `answer` or `label` | Forbidden | Forbidden | Forbidden | Forbidden | Allowed after freeze |
 
-All-paper-text passage counts are $16{,}457$ train, $4{,}903$ validation, and $7{,}257$ test. Word counts use Unicode non-whitespace runs; source words exclude duplicated chunk overlap.
+`src/data/split_policy.py:assert_data_use_allowed` is the machine-readable guard. Every caller must provide `evaluation_frozen` explicitly as a boolean; held-out questions may be used only as final evaluation queries after freeze, and held-out answers or labels may be used only for final scoring and reporting after freeze. The guard does not infer freeze state from a date, branch, file, or environment variable.
 
-| Artifact | Expected SHA-256 |
+Development and validation assets may support tuning, prompt design, and chunk-selection decisions, but those decisions must be recorded and frozen before any held-out evaluation asset is read. Permission to use development or validation supervision for an experiment does not permit writing questions, answers, evidence, worker IDs, annotation IDs, or labels into the retrieval passage corpus.
+
+## Held-out index sanitization
+
+Held-out paper text may be indexed for inference evidence only. Before normalization or chunking, a passage builder that receives a complete QASPER paper record must construct an internal view from an explicit allowlist of team-approved paper-content fields; it must exclude `qas` and all nested `question`, `answers`, `evidence`, `highlighted_evidence`, `worker_id`, and `annotation_id` fields. Indexing held-out paper text does not authorize use of the supervision fields distributed in the same source record.
+
+Corpus manifests must record the source split, project role, `SPLIT_POLICY_VERSION`, chunking configuration, and relevant output hashes, while a single `Passage` must not gain a split field. The held-out or annotation manifest must remain separate from the retrieval corpus and preserve the freeze commit and configuration used to create it; its creation is tracked as `P3-D005`.
+
+The current `data.split_policy.held_out_usage` configuration records `index_paper_text: true`, forbids `tuning`, `prompt_design`, and `chunk_selection`, and requires an explicit frozen state for final evaluation. `evaluation.held_out_manifest: null` means that the question pool has not been created; it is not permission to sample temporary held-out questions for tuning. The freeze-record and rerun rules remain `P3-D005` and `P3-D006` pending team review.
+
+## Requirements
+
+Run the command from the repository root with the project Python 3.11 environment. Install the project dependencies first, for example with `python -m pip install -r requirements.txt` or `python -m pip install -r requirements-dev.txt`.
+
+## Reproducible local workflow
+
+Run the following commands from the repository root in order. The commands use repository-relative paths and do not depend on a local shell variable or a hidden configuration file.
+
+1. Download the pinned acquisition: `python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54`.
+2. Inspect the existing acquisition without network access: `python -m scripts.inspect_qasper --input-dir data/raw/qasper --output data/processed/qasper_inspection.json`.
+3. Export and structurally verify the combined files using the commands in [Unified paper and QA exports](#unified-paper-and-qa-exports).
+4. Build the 100-passage dependency sample using the command in [100-passage dependency sample](#100-passage-dependency-sample), or build a passage corpus as described in [Full development corpus and rubric check](#full-development-corpus-and-rubric-check).
+
+The download command requires `--output-dir`; `--revision` defaults to the pinned commit SHA and `--force` is required to replace an existing acquisition directory. The inspection command requires `--input-dir` and `--output`, creates the report parent directory, and replaces the report at the requested output path; it has no `--force` flag. Before writing a report, it requires exactly `manifest.json`, `train.jsonl`, `validation.jsonl`, and `test.jsonl`, verifies split hashes and row counts, and stops on invalid JSON or critical nested structure errors. `download_qasper` and `inspect_qasper` still take the raw acquisition directory. The `build_corpus` and `build_sample_passages` commands now take `--papers` and `--export-manifest`; their former `--input-dir` form has been replaced. Generated export, sample, and passage outputs reject existing names, so use new names when rebuilding for comparison.
+
+The acquisition requires network access to the Hugging Face Hub and the official QASPER source archives. QASPER is public data; do not configure or provide a Hugging Face token for this command.
+
+## Reproducible acquisition
+
+The recommended team command pins the supported QASPER source revision explicitly:
+
+```powershell
+python -m scripts.download_qasper --output-dir data/raw/qasper --revision fdc9d8214fbab5dd782958601db4d678e6934a54
+```
+
+If `--revision` is omitted, the CLI uses the same fixed commit SHA as its default. Team reproductions should still pass the SHA explicitly so that the intended source version is visible in the command.
+
+The command resolves the requested branch, tag, or SHA to a full commit SHA and records both values in `manifest.json`. The acquisition only accepts the fixed source profile supported by the local parser.
+
+## Command-line options
+
+| Option | Required | Behavior |
+| --- | --- | --- |
+| `--output-dir PATH` | Yes | Destination directory for the published acquisition, such as `data/raw/qasper`. |
+| `--revision REVISION` | No | Hub branch, tag, or commit SHA to resolve. The default is `fdc9d8214fbab5dd782958601db4d678e6934a54`; both requested and resolved revisions are recorded in the manifest. |
+| `--force` | No | Replace an existing destination only after the new result has been completely staged, verified, serialized, and given a valid manifest. |
+
+Without `--force`, an existing output directory is rejected before downloading. `--force` is a whole-directory replacement operation, not an append, resume, or partial-overwrite operation. The previous directory is retained until the new directory is published successfully, with rollback on a publish failure.
+
+## Successful output
+
+On success, the output directory contains exactly these four files:
+
+```text
+data/raw/qasper/
+├── train.jsonl
+├── validation.jsonl
+├── test.jsonl
+└── manifest.json
+```
+
+The JSONL files use UTF-8 encoding, LF newlines, recursively sorted JSON keys, compact JSON separators, and one record per line. Use `manifest.json` as the authority for the observed row counts, byte counts, and SHA-256 digests; this document does not provide machine-specific download results.
+
+The CLI prints the output directory, resolved revision, split row counts, and aggregate SHA-256 after a successful publication. The aggregate digest covers the relative path and individual SHA-256 of each JSONL file in lexicographic path order; `manifest.json` is not included.
+
+## Manifest reference
+
+`manifest.json` is deterministic metadata for the acquisition and contains no timestamp, username, hostname, absolute path, cache path, token, environment variable, or complete environment dump.
+
+| Top-level field | Contents and purpose |
 | --- | --- |
-| `passages.jsonl` | `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403` |
-| `passages_all_paper_text.jsonl` | `8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e` |
-| `sample_passages_100.jsonl` | `b3343a793f7428ad796bff83a79f8bd70528a89cd9d099d978fe69727ec0fa2c` |
+| `manifest_schema_version` | Version of the manifest field contract. |
+| `dataset` | Dataset ID and configuration, `requested_revision`, resolved immutable `resolved_revision`, supported source dataset version, and `local_parser_version`. |
+| `licenses` | License information reported by the Hub dataset card and the fixed source metadata. |
+| `repository_files` | Observed byte count and SHA-256 for the pinned `qasper.py` and `dataset_infos.json` files. These files are read as ordinary bytes only; they are not imported or executed. |
+| `splits` | Output split name, JSONL filename, observed row count, byte count, and individual SHA-256 for `train`, `validation`, and `test`. |
+| `source_verification` | Identifier for the source verification contract, including archive SHA-256 checks and required-member checks. |
+| `source_archives` | Each official archive URL, declared and observed byte counts, declared and observed SHA-256 values, and the required archive members read by the parser. |
+| `libraries` | Runtime Python version and the `huggingface-hub` package version used by the acquisition. |
+| `output` | JSONL encoding and newline rules, the aggregate-hash algorithm identifier, and `aggregate_sha256` for the three JSONL files. |
 
-To read raw splits locally with the optional `datasets` package:
+The two official source archives must match their declared byte counts and SHA-256 values. The parser reads only the explicitly whitelisted root members and does not extract the archive to disk. If the source version, archive URL, checksum, required member, repository-file fingerprint, or supported schema changes, the acquisition fails closed instead of guessing a new format.
+
+## Source safety and reproducibility
+
+The Hub copies of `qasper.py` and `dataset_infos.json` are downloaded only to validate fixed source metadata and fingerprints. The acquisition never imports or executes the Hub `qasper.py`, uses `trust_remote_code`, or relies on a remote dataset loader.
+
+`--revision main` is useful only for actively checking upstream changes and is not the team reproduction command. Even if `main` resolves to a new SHA, the command safely fails when that revision is not supported by the current source profile or parser.
+
+For an experiment reproduction, retain the manifest values for `resolved_revision`, `local_parser_version`, repository-file fingerprints, source-archive fingerprints, split file digests, and `aggregate_sha256`.
+
+## Loading the local JSONL files
+
+The files can be loaded locally with the `datasets` JSON loader. This example uses local paths and does not access the Hub:
 
 ```python
 import datasets
@@ -1269,242 +329,16 @@ dataset = datasets.load_dataset(
 )
 ```
 
-This is a local JSON loader, not a Hub acquisition or passage builder. Source records are still paper-level. Track raw files, generated corpora and companion manifests together; keep source archives, caches and staging directories outside Git. Remove local outputs only when no longer needed and after satisfying experiment-retention requirements.
+At this point the records are still paper-level raw QASPER records. They are not passage-cleaned, passage-chunked, or converted into the project's later retrieval corpus.
 
-## `data/processed/qa_for_choosing_chunk_size.jsonl`
+The offline inspection report is a deterministic validation artifact at `data/processed/qasper_inspection.json`. It contains provenance, split counts, field and nested-structure anomalies, answer types, evidence observations, duplicate-paragraph observations, and split-overlap results. The exporter publishes `data/processed/papers.jsonl`, `data/processed/qa.jsonl`, and `data/processed/qasper_export.manifest.json`; the corpus and sample builders publish their passage JSONL files and manifests. All are generated artifacts and remain outside Git.
 
-All $250$ saved fourth-round selection questions, in persisted order with original text; never reconstructed from a seed.
+## Git ignore check and cleanup
 
-```powershell
-python -m scripts.build_annotation_pool prepare
-```
-
-| Field name | Type | Meaning |
-| --- | --- | --- |
-| `question_id` | `string` | Original unique question ID. |
-| `paper_id` | `string` | Original paper ID; shared papers are allowed. |
-| `question` | `string` | Unmodified source question text. |
-| `source_split` | `string` | Official provenance, not the evaluation role. |
-
-## `data/processed/annotation_preparation.manifest.json`
-
-Preparation provenance and usage audit, including invalidated runs.
+Verify that the generated acquisition is ignored before working with it:
 
 ```powershell
-python -m scripts.build_annotation_pool prepare
+git check-ignore -v data/raw/qasper/manifest.json
 ```
 
-| Field name | Type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | v0-proposed. |
-| `inputs` | `object<string,string>` | Input path to exact SHA-256 digest mapping. |
-| `inputs.<path>` | `string` | Hash of that input file's bytes. |
-| `settings` | `object` | Frozen corpus and retrieval configuration. |
-| `settings.chunk_size_words` | `integer` | $365$ words. |
-| `settings.chunk_overlap_words` | `integer` | $40$ words. |
-| `settings.top_k` | `integer` | Five distinct passages per question. |
-| `usage_audit` | `array<object>` | Every persisted local results manifest/question list. |
-| `usage_audit[].file` | `string` | Audited path. |
-| `usage_audit[].sha256` | `string` | Audited file hash. |
-| `usage_audit[].question_ids` | `array<string>` | Queries exposed in that run. |
-| `excluded_question_ids` | `array<string>` | Union of all recorded used queries and selection queries. |
-| `audit_scope` | `string` | Local persisted records only; external unrecorded use is unknown. |
-| `seed` | `integer` | Predeclared 20261028. |
-| `sampling_rule` | `string` | Sorted IDs, seeded simple random sampling without replacement; preserve draw order. |
-| `scope` | `array<string>` | All three official splits. |
-| `isolation` | `string` | Question-level; shared papers allowed. |
-
-## `data/processed/qa_for_held_out.jsonl`
-
-The saved $200$-question list retained for provenance. Current formal evaluation uses `qa_for_held_out_v2.jsonl`.
-
-```powershell
-python -m scripts.build_annotation_pool freeze
-```
-
-| Field name | Type | Meaning |
-| --- | --- | --- |
-| `question_id` | `string` | Original unique question ID. |
-| `paper_id` | `string` | Original paper ID; shared papers are allowed. |
-| `question` | `string` | Unmodified source question text. |
-| `source_split` | `string` | Official provenance, not the evaluation role. |
-
-## `data/processed/qa_for_held_out.manifest.json`
-
-Frozen question list and pool configuration; this does not freeze future generator, agent or prompt settings.
-
-```powershell
-python -m scripts.build_annotation_pool freeze
-```
-
-| Field name | Type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | v0-proposed. |
-| `purpose` | `string` | held-out question list. |
-| `inputs` | `object<string,string>` | Input path to exact SHA-256 digest mapping. |
-| `inputs.<path>` | `string` | Hash of that input file's bytes. |
-| `settings` | `object` | Frozen corpus and retrieval configuration. |
-| `settings.chunk_size_words` | `integer` | $365$ words. |
-| `settings.chunk_overlap_words` | `integer` | $40$ words. |
-| `settings.top_k` | `integer` | Five distinct passages per question. |
-| `code` | `object` | Code identity, including dirty changes. |
-| `code.commit` | `string` | Git HEAD at execution time. |
-| `code.python` | `string` | Python runtime version. |
-| `code.working_tree_status` | `array<string>` | Git short status; the run may use uncommitted code. |
-| `code.source_sha256` | `object<string,string>` | Exact hashes of all src/scripts Python files. |
-| `code.source_sha256.<path>` | `string` | Source-byte SHA-256, checked at export. |
-| `retriever` | `object` | Metadata from the maintained P1/P2 adapter. |
-| `retriever.id` | `string` | p1-p2-static-retrieval adapter. |
-| `retriever.mode` | `string` | bm25. |
-| `retriever.source_commit` | `string` | Upstream adapter integration commit; actual code is identified separately. |
-| `retriever.packages` | `object<string,string or null>` | Active package versions. |
-| `retriever.packages.<package>` | `string or null` | Installed package version, null if unavailable. |
-| `retriever.scope` | `string` | Selected paper only. |
-| `retriever.persistent_score_cache` | `boolean` | False; no persisted score cache. |
-| `retriever.score` | `string` | Raw BM25 score. |
-| `retriever.tie_break` | `string` | Stable upstream ranking tie rule. |
-| `retriever.bm25` | `object` | Active sparse retriever settings. |
-| `retriever.bm25.enabled` | `boolean` | True. |
-| `retriever.bm25.tokenizer` | `string` | Casefold and Unicode word runs. |
-| `retriever.bm25.k1` | `number` | 1.5. |
-| `retriever.bm25.b` | `number` | 0.75. |
-| `retriever.bm25.epsilon` | `number` | 0.25. |
-| `retriever.dense` | `object` | Disabled dense component. |
-| `retriever.dense.enabled` | `boolean` | False; dense retrieval is disabled. |
-| `retriever.reranker` | `object` | Disabled reranker component. |
-| `retriever.reranker.enabled` | `boolean` | False; reranking is disabled. |
-| `seed` | `integer` | 20261028. |
-| `sampling_rule` | `string` | Exact predeclared sampling procedure. |
-| `scope` | `array<string>` | train, validation and test. |
-| `isolation` | `string` | Question-level with shared papers allowed. |
-| `eligible_question_ids` | `array<string>` | Sorted IDs before the draw; at least five passages per paper. |
-| `excluded` | `object<string,string>` | Mapping of gold-mapped question IDs to exclusion reasons. |
-| `excluded.<question_id>` | `string` | Prior use or fewer than five passages. |
-| `prior_usage_excluded_question_ids` | `array<string>` | All used IDs, even when absent from gold references. |
-| `question_ids` | `array<string>` | Exact final draw order. |
-| `source_split_counts` | `object<string,integer>` | Draw counts by official split. |
-| `source_split_counts.<split>` | `integer` | Number of selected queries from this split. |
-| `usage_boundary` | `string` | No tuning or development based on held-out supervision/results. |
-
-
-## P2 AI annotation review: batches 08–10
-
-`data/processed/p2_ai_annotation_review_08_10/` contains 563 Codex (AI) judgments for reviewing separately completed human work. It does not occupy either human A/B slot and is excluded from manual-label counts, human agreement, gold and final evaluation labels. Do not tune on these held-out judgments. No other annotator labels or gold answers were consulted; retrieval-source names were visible. Judgments came from an interactive Codex session, so there is no deterministic regeneration command. Fetch the exact committed artifact with the commands below; it can also be obtained from P3 after merge.
-
-```bash
-git fetch origin p2/ai-annotation-review-08-10
-git restore --source=origin/p2/ai-annotation-review-08-10 -- data/processed/p2_ai_annotation_review_08_10
-```
-
-Run in a clean working copy. Each batch includes Markdown labels, `ai-review.md` ambiguity notes and `ai-review.json` record-level reasons. `manifest.json` records source commit and hashes. Retrieve original blank templates using its `source_commit` and `template_path`. The table covers manifest, review JSON and Markdown fields; review JSON shares the meanings of `annotation_origin`, `purpose` and `human_annotation` with the manifest.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema_version` | `string` | Proposed artifact schema version. |
-| `annotation_origin` | `string` | Codex (AI), the label producer. |
-| `human_annotation` | `boolean` | Always false; not an independent human annotation. |
-| `purpose` | `string` | Review-only usage and exclusion from gold/human agreement. |
-| `source_commit` | `string` | Git commit identifying the exact source templates. |
-| `labeling_date` | `string` | Date of AI judgments, YYYY-MM-DD. |
-| `label_count` | `integer` | Total judgments (563). |
-| `files` | `array<object>` | Per-batch inventory. |
-| `files[].batch / files[].file` | `string` | Batch number / Markdown filename. |
-| `files[].label_count` | `integer` | 191, 177 or 195 judgments. |
-| `files[].sha256` | `string` | SHA-256 of the labeled Markdown bytes. |
-| `files[].template_path / files[].template_sha256` | `string` | Original template path / byte hash at source_commit. |
-| `date / scope` | `string` | Review JSON: judgment date / batch filename. |
-| `input_sha256 / output_sha256` | `string` | Review JSON: original local input / AI-labeled output hashes. Input includes original working-copy owner name. |
-| `other_annotator_labels_consulted / gold_answers_consulted` | `boolean` | False: neither was consulted during labeling. |
-| `rule` | `string` | Visible-text relevance policy; partial evidence counts. |
-| `records` | `array<object>` | Review JSON: one judgment per displayed relevance record. |
-| `records[].question_number` | `string` | Export display number, not stable question ID. |
-| `records[].record_number` | `integer` | Export relevance number, not stable passage ID. |
-| `records[].label` | `integer` | 0 or 1: no useful evidence / useful answer evidence. |
-| `records[].reason` | `string` | AI rationale; not an adjudicated explanation. |
-| `records[].review_note` | `string or null` | Specific ambiguity requiring review, if flagged. |
-| `Annotator / Question / Passage / Relevance / Label` | `Markdown fields` | Codex attribution; original numbered question/passages; 0/1 label. All source text and numbering are retained. |
-
-## Held-out gold evaluation dataset
-
-The held-out gold is the set of human relevance judgments used to score retrieval on questions kept away from tuning. It covers the 200 questions in `data/processed/qa_for_held_out_v2.jsonl`, which are also `annotation_common_v3/questions.jsonl`, and the 1,853 question-passage pairs pooled from BM25, Dense, Hybrid RRF and Hybrid RRF with BGE reranking. Each pair was labelled by two annotators, with 89.85% raw agreement and 188 disagreements. Labels are `1` if the passage helps answer the question, including useful partial evidence. Passages outside the pool are unjudged, so `relevance_complete` is `false`.
-
-No final held-out gold exists yet. The current sets are drafts, and all three manifests have `project_role: development`, so they can only be scored with `--role development`.
-
-| Version | Questions | Judged pairs | Disagreements | Status |
-| --- | --- | --- | --- | --- |
-| `data/gold/p6/draft-v1/` | 200 | 1,665 | Dropped pairs | Draft; agreed-only comparison |
-| `data/gold/p6/draft-v2/` | 91 | 814 | Dropped all 109 affected questions | Draft; sensitivity check |
-| `data/gold/p6/draft-v3/` | 200 | 1,853 | Resolved by review, with disclosure | Draft; see `resolve_188_final_labels.csv` below |
-
-`data/gold/` is ignored on `p3-qasper-foundation`. `draft-v1` and `draft-v2` are tracked on `P6/evaluation`; this branch holds `draft-v3` as a local file until it is added there.
-
-### Inputs
-
-| Input | Used for | If missing |
-| --- | --- | --- |
-| `data/processed/qa_for_held_out_v2.jsonl` and its manifest | Frozen question list | Restore from the P3 branch; do not redraw it |
-| `data/processed/annotation_common_v3/` | Pairs, questions, rankings and frozen settings | Restore from the P3 branch; rebuild steps are in its sections above |
-| `data/processed/annotation_common_v3_markdown/annotator_{A,B}/` | Original labels from both annotators | Restore from Git; human labels cannot be regenerated |
-| `data/processed/passages_all_paper_text.jsonl` | Corpus; SHA-256 starts `8eeef0119e32` and is checked by the evaluator | Restore from the P3 branch |
-| `results/p6/annotation-review.json` | Team confirmation of independence, usage, freeze, role and source commit | Write it only after the team confirms; never use placeholders |
-| `{folder}/resolve_188_review_workbook.xlsx` | Decisions on the 188 disagreements (`draft-v3` only) | Restore from Git once committed; otherwise repeat the review |
-| `data/gold/p6/draft-v1/` | Base for `draft-v3` | Restore from `P6/evaluation`, or rebuild with step 3 |
-
-Here `{folder}` is `data/processed/annotation_common_v4_markdown_resolve_188_disagreements`.
-
-### Construction
-
-Steps 1 and 2 are complete. Run them again only if their files cannot be restored, because a new question list or pool would need new human labels.
-
-1. **Freeze questions:** build `qa_for_held_out_v2.jsonl` as described in its section above.
-2. **Pool and annotate:** build `annotation_common_v3/`, then have two people label the markdown batches independently.
-3. **Audit and build agreed-only gold:** on `P6/evaluation`, run the commands below after the team has confirmed the review file. Set `project_role` to `held_out` only if the team confirms it.
-
-```bash
-export P3_COMMIT=1a1dc15b824590a39c80ea11a568fbe5814a926e
-export P6_CORPUS=data/processed/passages_all_paper_text.jsonl
-python -m scripts.run_p6_evaluation audit-labels --ref "$P3_COMMIT" --output results/p6/annotation-audit-<date>
-python -m scripts.run_p6_evaluation finalize-labels --ref "$P3_COMMIT" --disagreements drop \
-  --review results/p6/annotation-review.json --corpus "$P6_CORPUS" --output results/p6/final-gold
-python -m scripts.run_p6_evaluation finalize-labels --ref "$P3_COMMIT" --disagreements drop-questions \
-  --review results/p6/annotation-review.json --corpus "$P6_CORPUS" --output results/p6/final-gold-91
-```
-
-4. **Add the resolved labels:** run the `build_resolved_gold_draft.py` command in the next section, using the step 3 output as `--base-gold` and `--base-manifest`.
-5. **Check the result:** expect 200 questions and 1,853 judged pairs, with 820 relevant in `draft-v3`. The manifest's `labels_sha256` and `corpus_sha256` must match the files.
-6. **Publish:** copy the labels and manifest to `data/gold/p6/` on `P6/evaluation`. `finalize-labels` writes to `results/p6/`, which Git ignores.
-
-## `data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_final_labels.csv`
-
-One row for each of the 188 annotator disagreements, generated from `resolve_188_review_workbook.xlsx`. This is a draft and not third-person adjudication: the reviewer was one of the two annotators on 73 records, and 66 labels are unchecked AI suggestions. These labels were accepted with disclosure, pending team sign-off, so any report using them must state these limits. `resolve_188_suggested_labels.{csv,xlsx}` hold the AI suggestions, and the workbook has the passages and AI justifications. The command below also writes `data/gold/p6/draft-v3/`, a 200-question, 1,853-pair draft gold set that adds these labels to `draft-v1`. Its files use the same fields as `draft-v1`; its manifest adds `draft_status` and `resolution`, and sets `disagreement_policy` to `reviewed-draft`.
-
-Obtain the files from the P3 branch with `git fetch origin p3-qasper-foundation` and `git restore --source=origin/p3-qasper-foundation -- data/processed/annotation_common_v4_markdown_resolve_188_disagreements`. To reproduce them locally, install `openpyxl` and run:
-
-```bash
-mkdir -p /tmp/p6-base
-git show P6/evaluation:data/gold/p6/draft-v1/final_labels.jsonl > /tmp/p6-base/final_labels.jsonl
-git show P6/evaluation:data/gold/p6/draft-v1/final_labels_manifest.json > /tmp/p6-base/final_labels_manifest.json
-python scripts/build_resolved_gold_draft.py \
-  --workbook data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_review_workbook.xlsx \
-  --pairs data/processed/annotation_common_v3/pairs.jsonl \
-  --base-gold /tmp/p6-base/final_labels.jsonl \
-  --base-manifest /tmp/p6-base/final_labels_manifest.json \
-  --audit-csv data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_final_labels.csv \
-  --output data/gold/p6/draft-v3
-```
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `record_number` | `integer` | Pool record; same as `Relevance #`. |
-| `batch` | `integer` | Annotation batch. |
-| `question_id` | `string` | Question ID. |
-| `passage_id` | `string` | Passage ID. |
-| `annotator_A` | `string` | Annotator A name. |
-| `label_A` | `integer` | Annotator A label. |
-| `annotator_B` | `string` | Annotator B name. |
-| `label_B` | `integer` | Annotator B label. |
-| `final_label` | `integer` | Resolved 0/1 label. |
-| `label_source` | `string` | `human_reviewed`, `human_spot_checked` or `ai_suggestion_unchecked`. |
-| `reviewer` | `string` | Reviewer name. |
-| `reviewer_note` | `string` | Reviewer note; may be empty. |
-| `reviewer_is_annotator` | `boolean` | Whether the reviewer was one of this pair's two annotators. |
+The check should match the repository rule for `/data/*`. Keep `data/raw/`, downloaded archives, Hugging Face cache files, staging directories, and other generated data local; remove them when they are no longer needed, subject to any local experiment-retention requirements.
