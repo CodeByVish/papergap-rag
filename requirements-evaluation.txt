@@ -1,0 +1,3 @@
+# Optional live RAGAS environment. Keep separate from the school inference environment.
+ragas==0.2.15
+langchain-openai>=0.3,<0.4

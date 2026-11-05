@@ -1,0 +1,2 @@
+{"question_id": "synthetic-q1", "paper_id": "synthetic-paper1", "question": "Which model was used?", "references": ["BERT base model"], "unanswerable": false}
+{"question_id": "synthetic-q2", "paper_id": "synthetic-paper2", "question": "What is the undisclosed private seed?", "references": [], "unanswerable": true}
