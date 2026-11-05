@@ -689,7 +689,13 @@ available as the default option. 60 tests pass in the P6/P1/P2 evaluation suites
 
 Superseded: the 188 disagreements now have final labels from a disclosed review,
 and the drop policies have been removed. `finalize-labels --disagreements resolved`
-builds the 200-question, 1,853-pair draft in `data/gold/p6/draft-v3/`.
+builds the 200-question, 1,853-pair gold.
+
+Formal gold on P6/formal-gold: `data/gold/p6/final/` (role `held_out`, labels
+unchanged from the draft, `902dab4c`) replaces `draft-v3`. It assumes P3 agrees
+with every checklist item; P3's written confirmation and team sign-off are
+required on the PR before merge. Retrieval scoring is ready; other runs wait for
+the P4 freeze.
 
 ## P2 configuration and annotation audit — 5 November 2026
 
