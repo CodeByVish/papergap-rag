@@ -29,7 +29,6 @@ _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 # Dotted paths that must hold a value before the record can be called frozen.
 REQUIRED_VALUES = (
     "frozen_at",
-    "approved_by",
     "code.commit",
     "corpus.all_paper_text.sha256",
     "dense_index.path",

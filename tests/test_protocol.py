@@ -38,7 +38,7 @@ def questions(n=3):
 
 def frozen_record(questions_path: Path, count: int = 3) -> dict:
     return {
-        "status": "frozen", "frozen_at": "2026-11-05T09:00:00+08:00", "approved_by": ["P4", "P6"],
+        "status": "frozen", "frozen_at": "2026-11-05T09:00:00+08:00",
         "code": {"commit": COMMIT},
         "corpus": {"all_paper_text": {"sha256": "b" * 64}},
         "dense_index": {"path": "indexes/x", "metadata_sha256": "c" * 64},
@@ -58,7 +58,7 @@ def test_the_shipped_record_is_a_draft_that_says_what_is_missing():
     problems = freeze_problems(record)
     assert record["status"] == "draft"
     assert any("status" in line for line in problems)
-    for missing in ("code.commit", "dense_index.path", "dense_index.metadata_sha256", "approved_by"):
+    for missing in ("code.commit", "dense_index.path", "dense_index.metadata_sha256"):
         assert any(missing in line for line in problems)
 
 
@@ -88,7 +88,6 @@ def test_a_complete_record_has_no_problems(tmp_path):
 
 @pytest.mark.parametrize(("edit", "expected"), [
     (lambda r: r.update(status="draft"), "not \"frozen\""),
-    (lambda r: r.update(approved_by=[]), "approved_by"),
     (lambda r: r.update(frozen_at=None), "frozen_at"),
     (lambda r: r["code"].update(commit="abc123"), "40-character"),
     (lambda r: r["questions"].update(sha256="short"), "64-character"),

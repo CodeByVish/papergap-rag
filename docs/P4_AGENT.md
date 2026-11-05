@@ -167,13 +167,40 @@ unsatisfied after the last round", was priced on three runs:
 | --- | ---: | ---: |
 | job 50701, original critic | 8/8 | 12/32 |
 | job 50977, calibrated critic | 4/8 | 5/32 (15.6%) |
+| job 51172, generator view, handles, quote check | 6/8 | 9/32 (28.1%) |
 
-Proposed gate, to be agreed by the team and fixed before any held-out run: the rule is enabled only if,
+Gate, put to the team on 5 November (no objection) and fixed before any held-out run: the rule is enabled only if,
 on development questions, it refuses at least 50% of the unanswerable ones and at most 5% of the
 answerable ones (`PROPOSED_REFUSAL_MIN_CORRECT`, `PROPOSED_REFUSAL_MAX_FALSE`). `metrics.md` and
 `metrics.json` report `meets_proposed_gate` for every run. Until it holds, refusal stays with P5's
 generator, which refuses on its own evidence. Tune only on development questions; once the rule and
 thresholds are frozen they must not change after the held-out labels are read.
+
+**Decision (5 November): the gate is not met in any run, so the rule stays off.** Job 51172 refuses 6 of 8
+unanswerable questions but also 9 of 32 answerable ones; the limit allows 1. P5 may add the rule as an
+option that is off by default, under its own refusal code, keyed on `stop_reason == "max_rounds"` and
+`max_rounds > 1` (the static arm also ends on its round budget).
+
+What the answers run (job 51175, `ANSWERS=p5`, same items) adds, adaptive arm: the generator refuses 3 of 8
+unanswerable questions on its own (the static arm refuses the same 3) and answers all 9 answerable
+questions that the critic left unsatisfied. Switching the rule on would add 3 refusals of unanswerable
+questions and replace those 9 answers with refusals. Whether the 9 answers are correct has not been
+checked (the development items carry no gold answer text).
+
+Critic audit, job 51172 against job 50977 (adaptive arm, verdicts with gold or unanswerable known):
+
+| verdict / situation | job 50977 | job 51172 |
+| --- | ---: | ---: |
+| insufficient, all gold in view (over-strict) | 9 | 19 (8 questions; 5 before) |
+| insufficient, gold not yet retrieved (correct) | 13 | 12 |
+| sufficient, all gold in view (correct) | 21 | 16 |
+| sufficient, gold missing (false accept) | 6 | 7 |
+| insufficient, unanswerable (correct) | 8 | 12 |
+| sufficient, unanswerable (false accept) | 4 | 2 |
+
+Truncation does not explain the over-strict verdicts: the gold passage is longer than 1200 characters in 65%
+of them and in 75% of the correct "sufficient" verdicts. Two verdicts fell back to the rules (one failed
+quote check, one reply with an invalid `\%` escape in a LaTeX quote): 2.9% of verdicts.
 
 ## What the results support
 
@@ -186,6 +213,10 @@ Job 50977, 40 development questions (32 with gold), Qwen3-8B critic, adaptive ag
 | Adaptive beats a well-set static baseline | **No** | plain top-8 0.885, top-10 0.974, against 0.802 |
 | The calibrated critic wastes fewer retries | Yes | retries 41 to 27, unnecessary 55.6% to 38.9%, model calls fewer |
 | The loop reliably refuses unanswerable questions | **No** | 1 of 8 refused by the critic; the unsatisfied rule fails the gate |
+
+Job 51172 (generator view, handles, quote check; 4 November) gives the same picture: adaptive recall 0.771 at
+5.95 passages, against 0.740 for plain top-5, 0.885 for top-8 and 0.974 for top-10; the loop still does not
+beat plain retrieval, and the refusal rule still fails the gate (above).
 
 Write the results as: the critic and loop spend fewer passages and model calls than before and match
 plain retrieval at equal budget, but on this slice reading more passages up front is better than retrying.
