@@ -1,0 +1,36 @@
+\section{Retrieval design and experiments (Q3)}
+\subsection{Sparse, dense and hybrid retrieval}
+BM25 provides lexical matching, useful for exact terminology and model names. Dense retrieval uses \texttt{BAAI/bge-small-en-v1.5}, pinned to revision {\small\texttt{5c38ec7c405ec4b44b94cc5a9bb96e735b38267a}}. Queries receive BGE's retrieval instruction; passages retain their original text. Embeddings are L2-normalized, and per-paper FAISS \texttt{IndexFlatIP} indexes provide exact cosine-similarity search.
+
+Each retriever returns up to 20 candidates. We deduplicate by passage ID and combine rankings using reciprocal rank fusion \citep{cormack2009rrf}:
+\begin{equation}
+\operatorname{RRF}(p)=\sum_{s:p\in L_s}\frac{1}{60+\operatorname{rank}_s(p)}.
+\end{equation}
+Ranks start at one; a missing passage contributes nothing for that source. Fusion avoids treating BM25 and cosine scores as comparable quantities. Original ranks and scores are retained for diagnosis. Short candidate lists are returned without padding.
+
+We also tested \texttt{BAAI/bge-reranker-base} on the unique candidate union, using raw cross-encoder logits, maximum length 512 and batch size eight in the documented CPU setup. The current agent configuration omits reranking and returns eight RRF passages. This supersedes historical top-five reranked configurations; the saved annotation rankings still evaluate top five.
+
+Figure~\ref{fig:hybrid} shows the retrieval branches, fusion, evidence pool and retry path.
+\input{figures/hybrid-retrieval}
+
+\subsection{Draft relevance-pool evaluation}
+\input{tables/retrieval}
+The frozen ranking pool contains four methods for 200 questions, evaluated against draft binary question--passage labels. Precision@5 measures relevant results among the five returned slots; MRR@5 rewards an early first relevant passage. Pool-relative recall measures recovery of the relevant passages that were judged, not every relevant passage in the paper. Binary nDCG discounts relevant passages by rank and normalizes against the ideal ranking within the judged pool.
+
+All scored top-five results are judged. Precision and MRR average over 200 questions; pool recall and nDCG exclude one question with no positive labels, leaving 199. These denominators must accompany the scores. The pool is not exhaustive: relevance outside it remains unknown.
+
+RRF has the highest point estimates in Table~\ref{tab:retrieval}. Its MRR@5 exceeds BM25 by 0.0748 and dense retrieval by 0.0052. These point differences alone do not establish statistical significance. Reranking lowers all four metrics relative to RRF, supporting its removal from the current configuration. Possible causes include truncation and domain mismatch, but neither has been established experimentally.
+\begin{review}{Gold status and uncertainty}
+This table is recomputed from the local development summary, not a final held-out result. The draft label manifest explicitly says its confirmation flags are placeholders. Obtain genuine team sign-off and preserve the revised-label provenance. Insert paired confidence intervals from a verified comparison output before claiming a clear difference between methods.
+\end{review}
+
+\subsection{Chunk size and retrieval depth}
+The workbook reports a final chunk-size comparison on 200 new development questions. At 365 words, evidence hit@5 is 147/200 and complete evidence@5 is 125/200; at 375 words these are 145/200 and 123/200. However, under the primary 1,000-word budget, complete evidence is 106/200 for 365 words and 108/200 for 375 words. Thus 365 words is a practical compromise, not a demonstrated optimum.
+
+A separate agent development slice contains 40 questions, of which 32 have mapped evidence. Static RRF evidence recall rises from 0.740 at top five to 0.885 at top eight and 0.974 at top ten. Complete evidence is recovered for 22, 26 and 30 of the 32 questions, respectively. These are mapped-evidence metrics, distinct from relevance-pool recall in Table~\ref{tab:retrieval}. Top eight matches the generator's passage-count limit; top ten is a retrieval diagnostic and exceeds that limit.
+\assetplaceholder{Reserved retrieval figure}{Insert a verified recall-versus-depth plot, with reranked and RRF curves, denominators and development-run provenance.}
+\begin{review}{Examples and chunking evidence}
+Attach the original chunk-size experiment output; these counts currently rely on the workbook. Add a reviewed before/after query showing the exact relevant passage recovered by fusion or deeper retrieval. Aggregate depth gains do not establish an individual improvement example. Do not infer that a recovered full chunk was visible after prompt truncation.
+\end{review}
+
+\input{review-checks/q3}
