@@ -700,3 +700,15 @@ results, retaining BGE and the frozen top-5 pool for comparison. Runtime needs
 `DEMO_AGENT_TOP_K=8` as well as server `--top-k 8`. Corpus-wide pinned reranker
 tokenization finds 27.08% of passages over 512 tokens before adding a question.
 See P2_REPORT_CONTRIBUTION.md for evidence boundaries and final-label dependencies.
+
+## P6 saved demo defaults — 5 November 2026
+
+The local preset and cluster launcher now default to eight passages per round
+with the optional BGE reranker disabled; BGE dense retrieval remains enabled.
+The local Agent hook receives its depth explicitly. Local setup selects P5's
+all-paper 365/40 corpus with a separate matching-index directory instead of
+reusing the smaller development index. Corpus/hash and index consistency checks
+remain active. Existing explicit deployment overrides are preserved. Verification:
+24 local/demo tests passed and the cluster shell syntax check passed. Preparing
+the larger local index and restarting/live-checking an actual service remain
+runtime actions; no new semantic-quality or final-evaluation claim is made.

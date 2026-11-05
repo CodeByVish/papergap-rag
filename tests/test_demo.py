@@ -255,4 +255,4 @@ def test_factory_reads_the_depth_from_the_environment(monkeypatch):
     f.factory(pipeline)("What accuracy did it get?", "p")
     monkeypatch.delenv("DEMO_AGENT_TOP_K")
     f.factory(pipeline)("What accuracy did it get?", "p")
-    assert built == [10, 5]  # the variable sets the depth; without it the default is 5
+    assert built == [10, 8]  # explicit override or persistent demo default

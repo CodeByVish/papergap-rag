@@ -94,7 +94,14 @@ def test_saved_config_resolves_paths_and_clears_old_auth(monkeypatch, tmp_path):
         == Path(p6_local.os.environ["PAPERGAP_CORPUS"]).parents[2]
     )
     assert p6_local.os.environ["P5_API_TOKEN"] == ""
-    assert p6_local.os.environ["DEMO_AGENT_BGE"] == "1"
+    assert p6_local.os.environ["DEMO_AGENT_BGE"] == "0"
+    assert p6_local.os.environ["P6_TOP_K"] == "8"
+    assert p6_local.os.environ["DEMO_AGENT_TOP_K"] == "8"
+    assert (
+        Path(p6_local.os.environ["PAPERGAP_CORPUS"]).name
+        == "passages_all_paper_text.jsonl"
+    )
+    assert Path(p6_local.os.environ["PAPERGAP_DENSE_INDEX"]).name == "p6-365-40-bge"
 
 
 def test_truncated_critic_can_escalate_but_answer_cannot_succeed(monkeypatch):
