@@ -79,6 +79,8 @@ def make_retrieve_node(
             "query": query,
             "triggered_by": state.gap_label.value,
             "passage_ids": [hit.passage.passage_id for hit in hits],
+            "paper_ids": sorted({hit.passage.paper_id for hit in hits}),
+            "search_scope": "corpus" if state.paper_id is None else "paper",
             "section": section,
             "scope_fallback": scope_fallback,
             "scoped_retrieval_ms": scoped_ms,

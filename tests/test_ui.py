@@ -1,214 +1,266 @@
+"""Question-first UI behavior and the unchanged P5 HTTP boundary."""
 import json
 from pathlib import Path
-from types import SimpleNamespace
 from unittest.mock import Mock
-
 import pytest
 from streamlit.testing.v1 import AppTest
+from src.ui.api_client import ApiError
+from tests.test_ui_view_models import answer
 
-from src.generation.prompting import build_messages, citation_warnings
-from src.retrieval.indexed_retriever import load_chunks
+APP = Path(__file__).resolve().parents[1] / 'src/ui/app.py'
 
-APP = Path(__file__).resolve().parents[1] / "src/ui/app.py"
-PASSAGES = [
-    {
-        "chunk_id": "paper__1",
-        "paper_id": "paper",
-        "title": "Test paper",
-        "section_path": ["Results"],
-        "page_start": 2,
-        "text": "The method improved recall.",
-        "source_url": "https://aclanthology.org/",
-        "rrf_score": 0.03,
+
+def button(app, label):
+    return next(b for b in app.button if b.label == label)
+
+
+def widget(elements, label):
+    return next(element for element in elements if element.label == label)
+
+
+def setup_app(monkeypatch, tmp_path, retrieval=True, passage_text=True, payload=None, corpus=True):
+    api = Mock()
+    api.health.return_value = {'retrieval': retrieval, 'passage_text': passage_text, 'mode': 'mock', 'corpus_search': corpus}
+    api.papers.return_value = [{'paper_id': 'p', 'title': 'Synthetic paper'}, {'paper_id': 'other', 'title': 'Other paper'}]
+    api.answer_question.return_value = payload or answer()
+    api.answer_record.return_value = payload or answer()
+    api.passages.return_value = {'passages': {'p1': {'text': 'Synthetic evidence', 'title': 'Synthetic paper', 'paper_id': 'p'}}, 'missing': ['p2']}
+    monkeypatch.setattr('src.ui.api_client.P5ApiClient', lambda config: api)
+    path = tmp_path / 'records.json'
+    path.write_text(json.dumps([{'question': 'Synthetic record question', 'paper_id': 'p'}]))
+    monkeypatch.setenv('P5_RECORDS_PATH', str(path))
+    app = AppTest.from_file(str(APP)).run()
+    assert not app.exception
+    return app, api
+
+
+def ask(app, question):
+    widget(app.text_area, 'Your question').set_value(question).run()
+    button(app, 'Ask question').click().run()
+    assert not app.exception
+
+
+def all_runs(app):
+    return [run for context in app.session_state['workspace_state']['conversations'].values()
+            for run in context['runs'].values()]
+
+
+def test_question_first_default_scope_history_export_and_clear(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path)
+    assert app.sidebar.title[0].value == 'NLP Scientific Paper RAG'
+    assert not app.main.title
+    assert [h.value for h in app.sidebar.header] == ['Connection', 'Search scope', 'History']
+    assert widget(app.radio, 'Search scope').value == 'All papers'
+    ask(app, 'What improved?')
+    api.answer_question.assert_called_once_with('What improved?', None)
+    assert any('Synthetic answer' in m.value for m in app.markdown)
+    assert any('Passage text unavailable' in m.value for m in app.info)
+    # Input and submit precede the submitted question and clearly labelled answer.
+    labels = [(e.type, getattr(e, 'label', None), getattr(e, 'value', None)) for e in app.main]
+    composer = next(i for i, row in enumerate(labels) if row[0] == 'text_area')
+    submitted = next(i for i, row in enumerate(labels) if row[0] == 'caption' and row[2] == 'Your submitted question')
+    final = next(i for i, row in enumerate(labels) if row[0] == 'subheader' and row[2] == 'Answer')
+    assert composer < submitted < final
+    button(app, 'Refresh service').click().run()
+    api.answer_question.assert_called_once()
+    export = widget(app.multiselect, 'Select runs to export (choose five for report)')
+    export.set_value(export.options).run()
+    assert not app.exception
+    button(app, 'Clear history').click().run()
+    assert not app.exception and not all_runs(app)
+    assert not app.subheader
+
+
+def test_record_mode_without_retrieval_or_passage_capability(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path, retrieval=False, passage_text=False)
+    widget(app.radio, 'Input mode').set_value('Demo record').run()
+    button(app, 'Ask question').click().run()
+    assert not app.exception
+    api.answer_record.assert_called_once_with({'question': 'Synthetic record question', 'paper_id': 'p'})
+    api.answer_question.assert_not_called()
+    api.passages.assert_not_called()
+    assert any('not rerun' in message.value for message in app.info)
+
+
+@pytest.mark.parametrize('payload, expected', [
+    (answer('INSUFFICIENT'), 'Model refusal'),
+    (answer('INSUFFICIENT', downgraded=True), 'Validator blocked answer'),
+    (answer(violations=[{'code': 'PROVENANCE_DERIVED', 'severity': 'WARNING', 'message': 'Claim mapping was derived.'}]), 'Evidence needs review'),
+    (answer(violations=[{'severity': 'ERROR'}]), 'Inconsistent response'),
+])
+def test_answer_states_explain_issues_without_replacing_final_result(monkeypatch, tmp_path, payload, expected):
+    app, api = setup_app(monkeypatch, tmp_path, payload=payload)
+    ask(app, 'Question')
+    assert any(expected in x.value for x in list(app.warning) + list(app.error))
+    assert any(m.value == 'Synthetic answer' for m in app.markdown)
+    if payload['validation']['downgraded']:
+        assert any(e.label.startswith('Rejected model answer') for e in app.expander)
+    if payload['validation']['violations']:
+        assert any(e.label == 'What was flagged?' for e in app.expander)
+
+
+def test_history_shows_one_answer_and_error_retains_prior_success(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path)
+    ask(app, 'First question')
+    first = all_runs(app)[0]['client_run_id']
+    api.answer_question.side_effect = ApiError('outcome_unknown', 'Outcome unknown; may still be processing.')
+    ask(app, 'Second question')
+    assert any('Outcome unknown' in m.value for m in app.error)
+    assert not any('Synthetic answer' in m.value for m in app.markdown)
+    assert [r['outcome'] for r in all_runs(app)] == ['completed', 'outcome_unknown']
+    history = widget(app.selectbox, 'Previous questions')
+    history.select_index(next(i for i, option in enumerate(history.options) if first[:8] in option)).run()
+    assert not app.exception
+    assert sum('Synthetic answer' in m.value for m in app.markdown) == 1
+    assert not app.error
+    assert api.answer_question.call_count == 2
+    button(app, '+ New question').click().run()
+    assert not app.subheader and widget(app.text_area, 'Your question').value == ''
+    assert len(all_runs(app)) == 2
+
+
+def test_offline_disables_inference_but_keeps_history(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path)
+    ask(app, 'Question')
+    api.health.side_effect = ApiError('failed', 'Offline')
+    button(app, 'Refresh service').click().run()
+    assert not app.exception and app.error
+    assert button(app, 'Ask question').disabled
+    assert any('Synthetic answer' in m.value for m in app.markdown)
+
+
+def test_passage_failure_and_explicit_manual_retry(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path)
+    api.passages.side_effect = ApiError('rejected', 'Corpus unavailable', 503)
+    ask(app, 'Question')
+    assert any('answer retained' in x.value for x in app.info)
+    app.checkbox[0].check().run()
+    button(app, 'Ask question').click().run()
+    runs = all_runs(app)
+    assert runs[1]['retry_of_client_run_id'] == runs[0]['client_run_id']
+    assert runs[1]['message_id'] == runs[0]['message_id']
+
+
+def test_scope_applies_to_next_request_without_workspace_setup(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path)
+    ask(app, 'Across the corpus')
+    api.answer_question.assert_called_with('Across the corpus', None)
+    widget(app.radio, 'Search scope').set_value('One paper').run()
+    widget(app.selectbox, 'Paper title and ID').select_index(1).run()
+    selected = widget(app.selectbox, 'Paper title and ID').value
+    ask(app, 'Which method is used?')
+    api.answer_question.assert_called_with('Which method is used?', selected)
+    widget(app.radio, 'Search scope').set_value('All papers').run()
+    ask(app, 'Another corpus query')
+    assert len(all_runs(app)) == 3
+    assert len(app.session_state['workspace_state']['conversations']) == 2
+    assert not any(b.label in ('New workspace', 'Remove workspace', 'Submit') for b in app.button)
+
+
+def test_legacy_service_requires_paper_and_missing_catalogue_disables_question(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path, corpus=False)
+    assert not any(r.label == 'Search scope' for r in app.radio)
+    ask(app, 'Question')
+    assert api.answer_question.call_args.args[1] is not None
+    api.papers.return_value = []
+    button(app, 'Refresh service').click().run()
+    assert not app.exception
+    assert button(app, 'Ask question').disabled and app.text_area[0].disabled
+
+
+def test_library_displays_title_and_id_and_only_fills_draft(monkeypatch, tmp_path):
+    samples = tmp_path / 'samples.jsonl'
+    samples.write_text(json.dumps({'paper_id': 'p', 'question': 'Which method was used?'}) + '\n')
+    monkeypatch.setenv('P6_SAMPLES_PATH', str(samples))
+    app, api = setup_app(monkeypatch, tmp_path)
+    widget(app.radio, 'Example category').set_value('About a specific paper').run()
+    assert 'Synthetic paper · Paper ID: p' in widget(app.selectbox, 'Example question').options[0]
+    assert any(c.value == 'Paper ID: p' for c in app.caption)
+    button(app, 'Use this question').click().run()
+    assert not app.exception
+    assert 'Synthetic paper (paper ID: p)' in app.text_area[0].value
+    assert widget(app.radio, 'Search scope').value == 'All papers'
+    api.answer_question.assert_not_called()
+    button(app, 'Ask question').click().run()
+    assert api.answer_question.call_args.args[1] is None
+    widget(app.radio, 'Search scope').set_value('One paper').run()
+    # The sample paper is sorted first; filtering keeps the original QASPER wording.
+    assert widget(app.selectbox, 'Paper title and ID').value == 'p'
+    button(app, 'Use this question').click().run()
+    assert app.text_area[0].value == 'Which method was used?'
+    button(app, 'Ask question').click().run()
+    api.answer_question.assert_called_with('Which method was used?', 'p')
+
+
+def test_help_tooltips_and_trace_do_not_resubmit(monkeypatch, tmp_path):
+    payload = answer()
+    payload['agent'] = {
+        'retrieval_log': [{'round': 1, 'query': 'What improved?', 'passage_ids': ['p1'], 'retrieval_ms': 12.5}],
+        'critic_log': [{'round': 1, 'source': 'llm', 'sufficient': True, 'gap_label': 'NONE', 'errors': []}],
+        'rewritten_query': 'What improved? method',
     }
-]
-
-
-def configured_app(monkeypatch, passages=None, answer="Recall improved [E1].", provider="qwen"):
-    retriever = Mock()
-    retriever.retrieve.return_value = PASSAGES if passages is None else passages
-    generate = Mock(return_value=answer)
-    monkeypatch.setattr("src.ui.services.missing_artifacts", lambda cfg: [])
-    monkeypatch.setattr("src.ui.services.get_retriever", lambda cfg: retriever)
-    monkeypatch.setattr("src.generation.llm_client.generate", generate)
-    app = AppTest.from_file(str(APP))
-    app.secrets["llm"] = {
-        provider: {
-            "api_key": "test-secret",
-            "base_url": "https://example.com/v1",
-            "model": "test",
-        }
-    }
+    app, api = setup_app(monkeypatch, tmp_path, payload=payload)
+    assert any('Ask a question' in m.value for m in app.sidebar.markdown)
+    for label in ('Refresh service', '+ New question', 'Clear history'):
+        assert button(app, label).proto.help
+    button(app, 'Use this question').click().run()
+    api.answer_question.assert_not_called()
+    ask(app, 'What improved?')
+    assert any(e.label == 'Pipeline details' for e in app.expander)
+    assert app.dataframe[0].value.iloc[0]['Query'] == 'What improved?'
+    assert app.dataframe[1].value.iloc[0]['Source'] == 'llm'
+    assert any('Separate BM25/dense' in c.value for c in app.caption)
     app.run()
-    if provider != "qwen":
-        app.selectbox[0].select(provider).run()
-    assert not app.exception
-    return app, retriever, generate
+    api.answer_question.assert_called_once()
 
 
-def test_missing_configuration_opens_without_loading_models():
-    app = AppTest.from_file(str(APP))
-    app.secrets["llm"] = {}
-    app.run()
-    assert not app.exception
-    assert not app.chat_input[0].disabled
-    assert any("setup" in item.value.lower() for item in app.info)
+def test_invalid_response_and_bad_samples_do_not_crash(monkeypatch, tmp_path):
+    samples = tmp_path / 'samples.jsonl'
+    samples.write_text('[1, 2]\n')
+    monkeypatch.setenv('P6_SAMPLES_PATH', str(samples))
+    app, api = setup_app(monkeypatch, tmp_path)
+    assert any('sample questions are unavailable' in w.value for w in app.warning)
+    api.answer_question.return_value = {'bad': 'payload'}
+    ask(app, 'Question')
+    assert app.error and all_runs(app)[0]['outcome'] == 'failed'
 
 
-def test_answer_sources_survive_rerun_without_second_api_call(monkeypatch):
-    app, retriever, generate = configured_app(monkeypatch)
-    app.chat_input[0].set_value("What improved?").run()
-    assert not app.exception
-    assert any("Recall improved [E1]" in item.value for item in app.markdown)
-    assert any("Test paper" in item.value for item in app.subheader)
-    app.toggle[0].set_value(True).run()
-    assert not app.exception
-    assert app.json
-    generate.assert_called_once()
-    retriever.retrieve.assert_called_once_with("What improved?", top_k=5)
-    app.button[0].click().run()
-    assert not app.chat_message
+def test_controls_are_disabled_before_answer_http_starts(monkeypatch, tmp_path):
+    import streamlit as st
+
+    app, api = setup_app(monkeypatch, tmp_path)
+    rendered_buttons = Mock(wraps=st.button)
+    monkeypatch.setattr(st, 'button', rendered_buttons)
+
+    def answer_while_loading(question, paper_id):
+        calls = rendered_buttons.call_args_list
+        for label in ('Ask question', 'Refresh service', '+ New question', 'Clear history'):
+            latest = next(call for call in reversed(calls) if call.args[0] == label)
+            assert latest.kwargs['disabled'], f'{label} remained enabled during inference'
+        assert st.session_state.workspace_state['pending_client_run_id']
+        return answer()
+
+    api.answer_question.side_effect = answer_while_loading
+    ask(app, 'Question')
+    api.answer_question.assert_called_once()
+    assert all_runs(app)[0]['outcome'] == 'completed'
+    assert not button(app, 'Ask question').disabled
 
 
-def test_empty_retrieval_skips_provider(monkeypatch):
-    app, _, generate = configured_app(monkeypatch, passages=[])
-    app.chat_input[0].set_value("Unknown?").run()
-    assert not app.exception
-    assert "No evidence" in app.error[0].value
-    generate.assert_not_called()
-
-
-def test_api_failure_is_redacted_and_evidence_retained(monkeypatch):
-    app, _, generate = configured_app(monkeypatch)
-    generate.side_effect = RuntimeError("test-secret private stack trace")
-    app.chat_input[0].set_value("What improved?").run()
-    assert not app.exception
-    assert "test-secret" not in app.error[0].value
-    assert app.subheader
-
-
-def test_invalid_citation_and_empty_response(monkeypatch):
-    app, _, generate = configured_app(monkeypatch, answer="Claim [E99].")
-    app.chat_input[0].set_value("Question").run()
-    assert "[E99]" in app.warning[0].value
-    generate.return_value = ""
-    app.chat_input[0].set_value("Again").run()
-    assert "empty answer" in app.error[0].value
-
-
-def test_prompt_does_not_mutate_passages():
-    system, user, evidence = build_messages("Question", PASSAGES)
-    assert "evidence_id" not in PASSAGES[0]
-    assert evidence[0]["evidence_id"] == "E1"
-    assert "untrusted" in system and "The method improved recall" in user
-    assert not citation_warnings("Claim [E1].", evidence)
-    assert citation_warnings("No citations.", evidence)
-
-
-def test_duplicate_chunk_ids_fail(tmp_path):
-    path = tmp_path / "chunks.jsonl"
-    path.write_text("\n".join(json.dumps(PASSAGES[0]) for _ in range(2)))
-    with pytest.raises(ValueError, match="unique"):
-        load_chunks(path)
-
-
-def test_index_adapter_fuses_real_scores_and_preserves_metadata():
-    from threading import Lock
-
-    import numpy as np
-
-    from src.retrieval.indexed_retriever import IndexedRetriever
-
-    retriever = IndexedRetriever.__new__(IndexedRetriever)
-    first = PASSAGES[0]
-    second = dict(first, chunk_id="paper__2", text="A second passage.")
-    retriever.chunks = {row["chunk_id"]: row for row in (first, second)}
-    retriever.row_ids = [first["chunk_id"], second["chunk_id"]]
-    retriever.lock = Lock()
-    retriever.sparse = Mock()
-    retriever.sparse.search.return_value = [
-        SimpleNamespace(docid="paper__2", score=7.0)
-    ]
-    retriever.encoder = Mock()
-    retriever.encoder.encode.return_value = np.array([[1.0, 0.0]])
-    retriever.dense = Mock()
-    retriever.dense.search.return_value = (np.array([[0.9, 0.8]]), np.array([[0, 1]]))
-    result = retriever.retrieve("question", top_k=2)
-    assert result[0]["chunk_id"] == "paper__2"
-    assert result[0]["rrf_score"] == pytest.approx(1 / 61 + 1 / 62)
-    assert result[0]["page_start"] == 2
-    assert result[0]["source_url"] == first["source_url"]
-
-
-def test_missing_artifacts_disable_submission(monkeypatch):
-    app, _, generate = configured_app(monkeypatch)
-    monkeypatch.setattr(
-        "src.ui.services.missing_artifacts", lambda cfg: ["indexes/dense/chunks.faiss"]
-    )
-    app.run()
-    assert not app.chat_input[0].disabled
-    app.radio[0].set_value("Paper RAG").run()
-    assert "indexes/dense/chunks.faiss" in app.code[0].value
-    app.chat_input[0].set_value("Question").run()
-    assert "requires the missing artifacts" in app.error[0].value
-    generate.assert_not_called()
-
-
-@pytest.mark.parametrize("provider", ["qwen", "grok", "groq"])
-def test_provider_adapter_routes_requests(monkeypatch, provider):
-    from src.generation.llm_client import generate
-
-    client = Mock()
-    client.chat.completions.create.return_value = SimpleNamespace(
-        choices=[SimpleNamespace(message=SimpleNamespace(content="answer"))]
-    )
-    client.responses.create.return_value = SimpleNamespace(output_text="answer")
-    monkeypatch.setattr("src.generation.llm_client.OpenAI", Mock(return_value=client))
-    assert (
-        generate(
-            provider,
-            {"api_key": "test", "base_url": "https://example.com", "model": "test"},
-            "system",
-            "question",
-        )
-        == "answer"
-    )
-    method = (
-        client.chat.completions.create
-        if provider in ("qwen", "groq")
-        else client.responses.create
-    )
-    method.assert_called_once()
-
-
-def test_groq_selection_sends_configured_provider(monkeypatch):
-    app, _, generate = configured_app(monkeypatch, provider="groq")
-    assert not app.chat_input[0].disabled
-    app.chat_input[0].set_value("What improved?").run()
-    assert not app.exception
-    generate.assert_called_once()
-    assert generate.call_args.args[0] == "groq"
-    assert generate.call_args.args[1]["api_key"] == "test-secret"
-    assert any("Recall improved [E1]" in item.value for item in app.markdown)
-
-
-def test_direct_chat_without_indexes(monkeypatch):
-    app, retriever, generate = configured_app(monkeypatch, provider="groq")
-    monkeypatch.setattr("src.ui.services.missing_artifacts", lambda cfg: ["data/chunks.jsonl"])
-    app.run()
-    app.radio[0].set_value("Direct chat").run()
-    app.chat_input[0].set_value("Explain attention").run()
-    assert not app.exception
-    generate.assert_called_once()
-    retriever.retrieve.assert_not_called()
-    assert generate.call_args.args[0] == "groq"
-    assert not app.warning
-
-
-def test_missing_credentials_submission_is_actionable(monkeypatch):
-    app, _, generate = configured_app(monkeypatch)
-    app.selectbox[0].select("grok").run()
-    app.chat_input[0].set_value("Hello").run()
-    assert not app.exception
-    assert "Configure the API key" in app.error[0].value
-    generate.assert_not_called()
+def test_scope_heading_and_library_without_quick_buttons(monkeypatch, tmp_path):
+    app, api = setup_app(monkeypatch, tmp_path)
+    assert any(h.value == 'Ask the paper collection' for h in app.main.header)
+    assert any(e.label == 'Browse all examples' for e in app.expander)
+    assert not any(b.label in ('Low-resource languages', 'Character + word representations') for b in app.button)
+    widget(app.radio, 'Search scope').set_value('One paper').run()
+    paper_id = widget(app.selectbox, 'Paper title and ID').value
+    title = next(p['title'] for p in api.papers.return_value if p['paper_id'] == paper_id)
+    assert any(h.value == f"Ask Paper '{title}'" for h in app.main.header)
+    assert not any(h.value == 'Ask the paper collection' for h in app.main.header)
+    assert any(e.label == 'Browse all examples' for e in app.expander)
+    assert any('No prepared examples' in message.value for message in app.info)
+    widget(app.radio, 'Input mode').set_value('Demo record').run()
+    assert any(e.label == 'Browse all examples' for e in app.expander)
+    assert any(h.value == 'Generate from prepared evidence' for h in app.main.header)
+    api.answer_question.assert_not_called()
+    api.answer_record.assert_not_called()

@@ -109,6 +109,54 @@ class BM25Retriever:
             for rank, (passage, score) in enumerate(ordered[:top_k], start=1)
         ]
 
+    def retrieve_corpus(
+        self, query: str, top_k: int, *, section: str | None = None
+    ) -> list[RetrievalHit]:
+        """Rank the entire corpus using corpus-wide document frequencies."""
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError("query must be nonempty")
+        if isinstance(top_k, bool) or not isinstance(top_k, int) or top_k < 1:
+            raise ValueError("top_k must be positive")
+        if section is not None and (
+            not isinstance(section, str) or not section.strip()
+        ):
+            raise ValueError("section must be nonempty or None")
+        if not hasattr(self, "_corpus_passages"):
+            self._corpus_passages = sorted(
+                (p for rows in self._passages.values() for p in rows),
+                key=lambda p: p.passage_id,
+            )
+            tokens = [_tokenize(p.text) for p in self._corpus_passages]
+            self._corpus_bm25 = (
+                BM25Okapi(
+                    tokens,
+                    k1=_INDEX_SETTINGS["k1"],
+                    b=_INDEX_SETTINGS["b"],
+                    epsilon=_INDEX_SETTINGS["epsilon"],
+                )
+                if any(tokens)
+                else None
+            )
+        scores = (
+            self._corpus_bm25.get_scores(_tokenize(query))
+            if self._corpus_bm25 is not None
+            else [0.0] * len(self._corpus_passages)
+        )
+        if not all(math.isfinite(float(score)) for score in scores):
+            raise ValueError("BM25 must return finite scores")
+        ranked = sorted(
+            (
+                (p, float(score))
+                for p, score in zip(self._corpus_passages, scores)
+                if section is None or p.section == section
+            ),
+            key=lambda item: (-item[1], item[0].passage_id),
+        )
+        return [
+            RetrievalHit(passage=p, rank=i, score=score)
+            for i, (p, score) in enumerate(ranked[:top_k], 1)
+        ]
+
     def save(self, directory: str | Path) -> None:
         """Save complete passages and reproducible BM25 settings as JSON.
 
