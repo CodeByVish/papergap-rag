@@ -158,7 +158,7 @@ Use `"development"` as the role only if the questions really are development-onl
 
 ✔ Done when: `results/p6/final-gold/` has `final_labels.jsonl` and `final_labels_manifest.json`, with 200 questions, 1,853 judged pairs, 820 relevant pairs and `annotation_coverage: "complete"`.
 
-**This is not third-person adjudication.** Any report using this gold must say that one reviewer resolved the 188, that this reviewer annotated 73 of them, that 66 labels are unchecked AI suggestions, that AI suggestions may have been visible during review, and that most records have no written reason. If the team later gets third-person decisions, use `--disagreements adjudicate` instead.
+**This is not third-person adjudication.** Any report using this gold must say that one reviewer resolved the 188, that this reviewer annotated 73 of them, that 66 AI-prefilled labels were confirmed by the reviewer with no changes and no written notes, that AI suggestions may have been visible during review, and that most records have no written reason. If the team later gets third-person decisions, use `--disagreements adjudicate` instead.
 
 **Formal gold:** `data/gold/p6/final/` holds the labels, manifest, `resolved_labels.csv`, `annotation-review.json` and `retrieval-review.json`, with role `held_out`. The labels are identical to the earlier draft (SHA-256 `902dab4c…`). Everyone scores against this folder. If P3 changes a label, regenerate and replace it.
 

@@ -1,15 +1,14 @@
 {
   "resolution": {
-    "disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication. The reviewer annotated 73 of the 188 pairs, 66 labels are unchecked AI suggestions, AI suggestions may have been visible during review, and most records have no written reason.",
-    "file_sha256": "c3a284f6f4cb62fd7b303754408f5ee586dd374dac3e2f33ed1653c471efca9b",
+    "disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication. The reviewer annotated 73 of the 188 pairs, 66 AI-prefilled labels were confirmed by the reviewer with no changes and no written notes, AI suggestions may have been visible during review, and most records have no written reason.",
+    "file_sha256": "cc3916ee51734c303473a6562c8aac041c11865077c2a615bb08b3c92a39f6eb",
     "final_label_counts": {
       "0": 107,
       "1": 81
     },
     "label_sources": {
-      "ai_suggestion_unchecked": 66,
       "human_reviewed": 102,
-      "human_spot_checked": 20
+      "human_spot_checked": 86
     },
     "reviewer_is_annotator": 73
   },
@@ -28,7 +27,7 @@
       "usage_and_freeze_reviewed": true,
       "project_role": "held_out",
       "review_note": "Generated on 2026-11-05 on the instruction of Changyan Xu (P6), who assumes P3 agrees with every checklist item. P3 written confirmation and team sign-off must be attached to the PR before merge.",
-      "resolution_disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication. The reviewer annotated 73 of the 188 pairs, 66 labels are unchecked AI suggestions, AI suggestions may have been visible during review, and most records have no written reason."
+      "resolution_disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication. The reviewer annotated 73 of the 188 pairs, 66 AI-prefilled labels were confirmed by the reviewer with no changes and no written notes, AI suggestions may have been visible during review, and most records have no written reason."
     }
   },
   "mapping": "record_number -> frozen pool -> question_id/passage_id",

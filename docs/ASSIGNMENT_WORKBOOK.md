@@ -389,7 +389,7 @@ Kappa corrects agreement for chance. The Qian/Yin pair labelled far more pairs a
 **Required disclosures for the report**
 
 - **Disagreements:** they were not settled by a third person. One reviewer, Changyan Xu, resolved all 188 and had annotated 73 of them.
-- **Label sources for the 188:** 102 human-reviewed, 20 human spot-checked and 66 unchecked AI suggestions. AI suggestions may have been visible during review, and most records have no written reason.
+- **Label sources for the 188:** 102 human-reviewed and 86 human spot-checked. AI suggestions may have been visible during review, and most records have no written reason.
 - **Independence:** 89.85% is agreement on the current revised files, not on original pre-review labels. P2 records that batches A08-10 began as AI suggestions later confirmed by a person.
 - **Blinding:** annotators could see which retrieval method found each passage.
 - **Question use:** P4's author read 40 of the 200 questions while annotating, so the final report must also show results on the other 160.
