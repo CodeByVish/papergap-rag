@@ -1,5 +1,36 @@
 # P6 local end-to-end UI guide
 
+## Saved demo settings — 5 November 2026
+
+The permanent defaults now use **top-8 per retrieval round**, **BGE reranker off**,
+and **BM25 + BGE dense + RRF**. BGE embeddings remain enabled. Both the local
+Agent hook and the cluster factory receive the same depth; changing only server
+`--top-k` is insufficient.
+
+Local setup now obtains `data/processed/passages_all_paper_text.jsonl` and its
+manifest from P3, matching P5's all-paper 365/40 package. It uses the separate
+`indexes/p6-365-40-bge/` directory and validates corpus/index identity. The old
+`p6-development-bge` index is not reused for the larger corpus.
+
+```bash
+./scripts/p6-local.sh setup
+./scripts/p6-local.sh start
+```
+
+Run setup once for the new corpus/index before starting. Setup can take time to
+encode the corpus; it does not load held-out QA annotations. Alternatively point
+`PAPERGAP_CORPUS` and `PAPERGAP_DENSE_INDEX` in ignored `.env.p6.local` to P5's
+already prepared matching corpus and index. Review/remove stale overrides for
+`P6_TOP_K`, `DEMO_AGENT_TOP_K` and `DEMO_AGENT_BGE`; explicit overrides still win.
+Restart an existing service to apply saved settings. Cluster defaults use
+`TOP_K=8`, `DEMO_AGENT_TOP_K=8`, `DEMO_AGENT_BGE=0` and the existing P5 365/40 paths.
+
+This update changes demo defaults only. Earlier real-run evidence below used
+the older development corpus/reranked configuration and does not verify the new
+runtime. No model/index rebuild or live service restart was performed as part
+of this saved-configuration change. Final evaluation freezes remain separate.
+
+
 Updated 2026-11-02 (Singapore). Target: Apple M5, 24 GB unified memory, no school
 GPU access yet. Use the existing `P6/UI-port-integration` checkout. No branch
 creation, commit or push is needed. Reviewed source baseline: P6 `e772384`,
@@ -203,6 +234,7 @@ or merging its data/code into the current branch. It copies only the published
 development corpus, companion manifest and five pilot questions into ignored
 local directories. Existing differing local artifacts are refused, not overwritten.
 
+Historical development-only setup (superseded by the saved defaults above):
 Reviewed P3 commit: `ee9a2df22d1e2b76ab400a37cf6e0df00bc7c44a`.
 Corpus SHA-256:
 `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403`.
@@ -244,7 +276,8 @@ This prints effective paths/settings and hides a configured token.
 | `P6_API_PORT` | Local API listen port, 8000 |
 | `P6_UI_PORT` | Streamlit browser port, 8501 |
 | `P6_PIPELINE` | `adaptive` runs P4; `static` performs one hybrid retrieval followed by P5 generation |
-| `P6_TOP_K` | Final passages per retrieval call, 5 |
+| `P6_TOP_K` | Passages per retrieval round, 8; passed explicitly to the local Agent hook |
+| `DEMO_AGENT_TOP_K` | Cluster/factory retrieval depth, 8 |
 | `P6_INDEX_DEVICE` | `mps` uses the Apple GPU for the one-time dense index build; set `cpu` on machines without MPS |
 | `P6_P3_REF` | P3 Git reference used only by `setup` |
 | `PAPERGAP_CORPUS` | P3 passage JSONL backing retrieval and citation lookup |
@@ -253,7 +286,7 @@ This prints effective paths/settings and hides a configured token.
 | `DEMO_AGENT_CACHE_FOLDER` | Actual pinned retrieval-model cache directory |
 | `DEMO_AGENT_DEVICE` | `cpu` for BGE encoder/reranker |
 | `DEMO_AGENT_OFFLINE` | `1` loads prepared pinned BGE snapshots without network access at runtime; setup may download missing snapshots |
-| `DEMO_AGENT_BGE` | `1` enables BGE reranking; `0` changes the tested pipeline |
+| `DEMO_AGENT_BGE` | `0`: optional reranker disabled; BGE dense embeddings retained |
 | `DEMO_AGENT_SCOPED` | `1` enables P4's section-scoped retry selection |
 | `DEMO_AGENT_MAX_RETRIES` | Maximum additional retrieval attempts, 2 |
 | `DEMO_AGENT_CANDIDATE_K` | Candidate depth per BM25/dense source, 20; hybrid RRF uses implementation default 60 |

@@ -68,16 +68,20 @@ def git_blob(revision, name, target):
 
 
 def setup():
-    """Use P3's published development artifacts, never its held-out questions."""
+    """Use P5-matching inference text with existing development-only demo questions."""
     from scripts.build_indexes import build_indexes, load_passages
 
     ref = os.environ["P6_P3_REF"]
     revision = subprocess.check_output(["git", "rev-parse", ref], text=True).strip()
     corpus = Path(os.environ["PAPERGAP_CORPUS"])
-    manifest = corpus.with_name("passages.manifest.json")
-    digest = git_blob(revision, "data/processed/passages.jsonl", corpus)
-    git_blob(revision, "data/processed/passages.manifest.json", manifest)
-    expected = json.loads(manifest.read_text())["output"]
+    manifest = corpus.with_suffix(".manifest.json")
+    digest = git_blob(revision, os.environ["P6_P3_CORPUS_PATH"], corpus)
+    git_blob(revision, os.environ["P6_P3_MANIFEST_PATH"], manifest)
+    source_manifest = json.loads(manifest.read_text())
+    chunking = source_manifest["chunking"]
+    if (chunking["chunk_size_words"], chunking["chunk_overlap_words"]) != (365, 40):
+        raise RuntimeError("Demo requires the reviewed 365/40 corpus")
+    expected = source_manifest["output"]
     if digest != expected["sha256"]:
         raise RuntimeError("P3 corpus SHA-256 does not match its manifest")
     passages = load_passages(corpus)
@@ -118,7 +122,7 @@ def setup():
     )
     index = Path(os.environ["PAPERGAP_DENSE_INDEX"])
     if not (index / "metadata.json").exists():
-        print("Building full development dense index (first run only)...", flush=True)
+        print("Building matching 365/40 dense index (first run only)...", flush=True)
         build_indexes(
             corpus,
             index,
@@ -129,7 +133,12 @@ def setup():
         from scripts.demo_p1 import _check_same_passages
 
         _check_same_passages(index, passages)
-    print("Preparing BGE reranker and five real-retrieval demo inputs...", flush=True)
+    print(
+        "Preparing five hybrid-retrieval demo inputs (reranker="
+        + os.environ["DEMO_AGENT_BGE"]
+        + ")...",
+        flush=True,
+    )
     retriever = make_retriever(passages, offline=False)
     records = []
     for q in questions:
@@ -250,6 +259,7 @@ def serve():
             retriever,
             GeneratorChatClient(generator),
             max_retries=int(os.environ["DEMO_AGENT_MAX_RETRIES"]),
+            default_top_k=int(os.environ["P6_TOP_K"]),
             section_selector=make_section_selector(passages)
             if os.environ["DEMO_AGENT_SCOPED"] == "1"
             else None,

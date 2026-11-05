@@ -72,7 +72,11 @@ DEMO_HOST="${DEMO_HOST:-127.0.0.1}"
 # network, and /answer must not be open to it.
 DEMO_TOKEN="${DEMO_TOKEN:-}"
 DEMO_RECORD_FN="${DEMO_RECORD_FN:-}"
-TOP_K="${TOP_K:-5}"
+TOP_K="${TOP_K:-8}"
+# The hook does not receive the server --top-k; persist its matching depth too.
+export DEMO_AGENT_TOP_K="${DEMO_AGENT_TOP_K:-$TOP_K}"
+# Disable the optional reranker, retaining BGE dense retrieval and RRF.
+export DEMO_AGENT_BGE="${DEMO_AGENT_BGE:-0}"
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-1024}"
 SERVER_MODULE="${SERVER_MODULE:-}"
 # If PAPERGAP_CORPUS is overridden (e.g. the 365/40 package), the server's

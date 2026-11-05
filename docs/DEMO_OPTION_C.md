@@ -1,5 +1,12 @@
 # Demo architecture — Option C: live service on the cluster, UI on the laptop
 
+> Saved demo defaults (5 November 2026): top-8, BGE reranker disabled, BGE dense
+> retrieval retained, P5's all-paper 365/40 corpus and matching index. The cluster
+> launcher sets both `TOP_K` and `DEMO_AGENT_TOP_K` to 8 by default and
+> `DEMO_AGENT_BGE=0`. Explicit deployment overrides still apply; restart the job
+> to use changed settings. Local setup details are in the
+> [P6 guide](P6/P6_REAL_ENV_E2E_GUIDE.md).
+
 **Status (2026-10-29): decided.** The demo runs `answer_record` behind a small
 FastAPI service on the compute node, and the UI on the laptop reaches it through
 an SSH tunnel. Option A+ (precompute the pool, replay the answer JSONL) is the
