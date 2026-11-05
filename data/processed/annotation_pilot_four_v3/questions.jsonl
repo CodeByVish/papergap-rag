@@ -1,5 +1,0 @@
-{"paper_id": "1912.10167", "question": "Are any experiments performed to try this approach to word embeddings?", "question_id": "30c6d34b878630736f819fd898319ac4e71ee50b", "source_split": "train"}
-{"paper_id": "1911.07555", "question": "What evaluation metric is used?", "question_id": "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50", "source_split": "validation"}
-{"paper_id": "1904.10503", "question": "What results do they achieve using their proposed approach?", "question_id": "729694a9fe1e05d329b7a4078a596fe606bc5a95", "source_split": "validation"}
-{"paper_id": "1904.05584", "question": "Which model architecture do they use to obtain representations?", "question_id": "65ad17f614b7345f0077424c04c94971c831585b", "source_split": "train"}
-{"paper_id": "1912.01046", "question": "What evaluation metrics were used in the experiment?", "question_id": "5bcc12680cf2eda2dd13ab763c42314a26f2d993", "source_split": "train"}

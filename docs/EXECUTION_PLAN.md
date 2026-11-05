@@ -6,8 +6,6 @@
 
 ### Mandatory components
 
-Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fresh BM25, Dense, Hybrid RRF and Hybrid RRF followed by BGE reranking for the unchanged $200$ held-out questions: $1000$ native hits per method, $800$ ranking rows and $1853$ unique pairs ($6$–$14$ per question). The original three methods' $600$ native passage-ID/rank lists match v2; all $600$ score lists also match. Two independent blank English sets are in `data/processed/annotation_common_v3_markdown/`, each with $10$ batches of $20$ complete questions; batch pair counts are $179,185,187,188,174,187,190,191,177,195$. Step $4$ must use only this verified four-method version and collect $3706$ initial judgments from two distinct independent people. Human labels, agreement and adjudication remain pending. The v2 pool/templates retain their bytes as history. See [evaluation protocol](EVALUATION.md) and [data guide](../data/README.md) for commands, fields and eligibility boundaries.
-
 * QASPER knowledge base with at least 10,000 passage documents
 * BM25 sparse retrieval
 * BGE dense retrieval with FAISS
@@ -20,7 +18,7 @@ Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fre
 * Programmatic citation validation
 * Simplified provenance trace
 * Streamlit interface
-* At least $1000$ manually labelled query–passage records; current union: $1532$ pairs awaiting labels
+* 1,000 manually labelled query–passage records
 * Retrieval, QA and RAGAS evaluation
 
 ### Optional experiments
@@ -47,7 +45,7 @@ Week 4 Step $3$ is complete. `data/processed/annotation_common_v3/` contains fre
 
 All six members also complete:
 
-* a share of the current $3064$ initial annotation judgments, assigned so each pair has two distinct annotators;
+* approximately 333 annotation judgments;
 * one report section;
 * unit tests for their module;
 * one module-specific experiment;
@@ -802,11 +800,12 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 
 ## P3
 
-* Consume the frozen $200$ questions in `qa_for_held_out_v2.jsonl`; do not redraw or stratify using content/results.
-* Use the verified four-method native top-$5$ lists and $1853$-pair union in `annotation_common_v3/`; retain v2 as history.
-* Deduplicate by `(question_id, passage_id)` and preserve stable record mappings and all original ranks/scores.
-* Keep gold evidence in separate verification/reference data; never insert it into retrieval results or annotation views.
-* Step $3$ is complete: retain `annotation_common_v3_markdown/` pristine templates; verify with `python -m src.data.export_common_annotations verify --pool data/processed/annotation_common_v3 --output data/processed/annotation_common_v3_markdown`. Assign separate copies in Step $4$; each slot has $10$ batches of $20$ questions with variable record counts and no HTML or notes field.
+* Select 100 held-out QASPER questions.
+* Stratify across question and answerability types where practical.
+* Generate ten candidate passages per question from pooled retrieval systems.
+* Include gold QASPER evidence where it can be mapped correctly.
+* Remove duplicates.
+* Export exactly 1,000 annotation records.
 
 ## P4
 
@@ -832,7 +831,7 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 ## P6
 
 * Finalize the annotation sheet or form.
-* Use eligible development records for any guideline-adjustment pilot; never change rules using held-out content or judgments.
+* Run a 30–50-record annotation pilot involving all six members.
 * Calculate preliminary percentage agreement and Cohen’s kappa.
 * Coordinate a discussion about disagreements.
 * Update annotation instructions before full annotation.
@@ -841,7 +840,7 @@ The output quality may still be imperfect, but the entire pipeline must execute.
 
 After the annotation pool is created:
 
-* Do not change the frozen $200$ held-out questions.
+* Do not change the 100 held-out questions.
 * Do not tune retrieval parameters using their final labels.
 * Keep the held-out records separate from development experiments.
 * Record the Git commit and configuration used to create the pool.
@@ -854,9 +853,20 @@ After the annotation pool is created:
 
 ## Shared annotation work
 
-Each of the $1853$ unique pairs must receive two independent judgments from different people: $3706$ initial judgments in total. Assignment remains pending; do not use the former fixed-$1000$ allocation. Keep all pairs for a question in one batch, and coordinate workload using actual union counts.
+Each of the 1,000 records receives two independent judgments.
 
-Views disclose algorithm sources and annotator names or agreed identifiers. Annotators must not see the other person's label or negotiate judgments before submitting their own. Preserve returned originals, both raw labels and a separate adjudicated label. Check agreement before adjudication against the assignment's $80\%$ threshold. All methods share each pair's final label, evaluated in native rank order; unpooled passages remain unjudged.
+| Member | First-label batch | Second-label batch |
+| ------ | ----------------: | -----------------: |
+| P1     |             1–167 |            501–667 |
+| P2     |           168–334 |            668–834 |
+| P3     |           335–500 |          835–1,000 |
+| P4     |           501–667 |              1–167 |
+| P5     |           668–834 |            168–334 |
+| P6     |         835–1,000 |            335–500 |
+
+Each member completes approximately 333 judgments.
+
+Annotators must not see the other person’s answer before submitting their own.
 
 ## P1
 
