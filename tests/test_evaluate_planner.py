@@ -72,3 +72,12 @@ def test_matched_set_has_as_many_lookalikes_as_gold_units():
     _, _, by_type = ep.evaluate([two])
     n, gold, hard, matched = by_type["result"]
     assert n == 1 and matched <= hard
+
+
+def test_excluded_question_ids_are_left_out_entirely():
+    one = paper([PARA_A])
+    one["qas"][0]["question_id"] = "held-out-1"
+    total, types, by_type = ep.evaluate([one], exclude=frozenset({"held-out-1"}))
+    assert total == 0 and not types and not by_type
+    total, _, by_type = ep.evaluate([one], exclude=frozenset({"someone-else"}))
+    assert total == 1 and by_type["result"][0] == 1
