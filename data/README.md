@@ -1423,3 +1423,88 @@ Run in a clean working copy. Each batch includes Markdown labels, `ai-review.md`
 | `records[].reason` | `string` | AI rationale; not an adjudicated explanation. |
 | `records[].review_note` | `string or null` | Specific ambiguity requiring review, if flagged. |
 | `Annotator / Question / Passage / Relevance / Label` | `Markdown fields` | Codex attribution; original numbered question/passages; 0/1 label. All source text and numbering are retained. |
+
+## Held-out gold evaluation dataset
+
+The held-out gold is the set of human relevance judgments used to score retrieval on questions kept away from tuning. It covers the 200 questions in `data/processed/qa_for_held_out_v2.jsonl`, which are also `annotation_common_v3/questions.jsonl`, and the 1,853 question-passage pairs pooled from BM25, Dense, Hybrid RRF and Hybrid RRF with BGE reranking. Each pair was labelled by two annotators, with 89.85% raw agreement and 188 disagreements. Labels are `1` if the passage helps answer the question, including useful partial evidence. Passages outside the pool are unjudged, so `relevance_complete` is `false`.
+
+No final held-out gold exists yet. The current sets are drafts, and all three manifests have `project_role: development`, so they can only be scored with `--role development`.
+
+| Version | Questions | Judged pairs | Disagreements | Status |
+| --- | --- | --- | --- | --- |
+| `data/gold/p6/draft-v1/` | 200 | 1,665 | Dropped pairs | Draft; agreed-only comparison |
+| `data/gold/p6/draft-v2/` | 91 | 814 | Dropped all 109 affected questions | Draft; sensitivity check |
+| `data/gold/p6/draft-v3/` | 200 | 1,853 | Resolved by review, with disclosure | Draft; see `resolve_188_final_labels.csv` below |
+
+`data/gold/` is ignored on `p3-qasper-foundation`. `draft-v1` and `draft-v2` are tracked on `P6/evaluation`; this branch holds `draft-v3` as a local file until it is added there.
+
+### Inputs
+
+| Input | Used for | If missing |
+| --- | --- | --- |
+| `data/processed/qa_for_held_out_v2.jsonl` and its manifest | Frozen question list | Restore from the P3 branch; do not redraw it |
+| `data/processed/annotation_common_v3/` | Pairs, questions, rankings and frozen settings | Restore from the P3 branch; rebuild steps are in its sections above |
+| `data/processed/annotation_common_v3_markdown/annotator_{A,B}/` | Original labels from both annotators | Restore from Git; human labels cannot be regenerated |
+| `data/processed/passages_all_paper_text.jsonl` | Corpus; SHA-256 starts `8eeef0119e32` and is checked by the evaluator | Restore from the P3 branch |
+| `results/p6/annotation-review.json` | Team confirmation of independence, usage, freeze, role and source commit | Write it only after the team confirms; never use placeholders |
+| `{folder}/resolve_188_review_workbook.xlsx` | Decisions on the 188 disagreements (`draft-v3` only) | Restore from Git once committed; otherwise repeat the review |
+| `data/gold/p6/draft-v1/` | Base for `draft-v3` | Restore from `P6/evaluation`, or rebuild with step 3 |
+
+Here `{folder}` is `data/processed/annotation_common_v4_markdown_resolve_188_disagreements`.
+
+### Construction
+
+Steps 1 and 2 are complete. Run them again only if their files cannot be restored, because a new question list or pool would need new human labels.
+
+1. **Freeze questions:** build `qa_for_held_out_v2.jsonl` as described in its section above.
+2. **Pool and annotate:** build `annotation_common_v3/`, then have two people label the markdown batches independently.
+3. **Audit and build agreed-only gold:** on `P6/evaluation`, run the commands below after the team has confirmed the review file. Set `project_role` to `held_out` only if the team confirms it.
+
+```bash
+export P3_COMMIT=1a1dc15b824590a39c80ea11a568fbe5814a926e
+export P6_CORPUS=data/processed/passages_all_paper_text.jsonl
+python -m scripts.run_p6_evaluation audit-labels --ref "$P3_COMMIT" --output results/p6/annotation-audit-<date>
+python -m scripts.run_p6_evaluation finalize-labels --ref "$P3_COMMIT" --disagreements drop \
+  --review results/p6/annotation-review.json --corpus "$P6_CORPUS" --output results/p6/final-gold
+python -m scripts.run_p6_evaluation finalize-labels --ref "$P3_COMMIT" --disagreements drop-questions \
+  --review results/p6/annotation-review.json --corpus "$P6_CORPUS" --output results/p6/final-gold-91
+```
+
+4. **Add the resolved labels:** run the `build_resolved_gold_draft.py` command in the next section, using the step 3 output as `--base-gold` and `--base-manifest`.
+5. **Check the result:** expect 200 questions and 1,853 judged pairs, with 820 relevant in `draft-v3`. The manifest's `labels_sha256` and `corpus_sha256` must match the files.
+6. **Publish:** copy the labels and manifest to `data/gold/p6/` on `P6/evaluation`. `finalize-labels` writes to `results/p6/`, which Git ignores.
+
+## `data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_final_labels.csv`
+
+One row for each of the 188 annotator disagreements, generated from `resolve_188_review_workbook.xlsx`. This is a draft and not third-person adjudication: the reviewer was one of the two annotators on 73 records, and 66 labels are unchecked AI suggestions. These labels were accepted with disclosure, pending team sign-off, so any report using them must state these limits. `resolve_188_suggested_labels.{csv,xlsx}` hold the AI suggestions, and the workbook has the passages and AI justifications. The command below also writes `data/gold/p6/draft-v3/`, a 200-question, 1,853-pair draft gold set that adds these labels to `draft-v1`. Its files use the same fields as `draft-v1`; its manifest adds `draft_status` and `resolution`, and sets `disagreement_policy` to `reviewed-draft`.
+
+Obtain the files from the P3 branch with `git fetch origin p3-qasper-foundation` and `git restore --source=origin/p3-qasper-foundation -- data/processed/annotation_common_v4_markdown_resolve_188_disagreements`. To reproduce them locally, install `openpyxl` and run:
+
+```bash
+mkdir -p /tmp/p6-base
+git show P6/evaluation:data/gold/p6/draft-v1/final_labels.jsonl > /tmp/p6-base/final_labels.jsonl
+git show P6/evaluation:data/gold/p6/draft-v1/final_labels_manifest.json > /tmp/p6-base/final_labels_manifest.json
+python scripts/build_resolved_gold_draft.py \
+  --workbook data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_review_workbook.xlsx \
+  --pairs data/processed/annotation_common_v3/pairs.jsonl \
+  --base-gold /tmp/p6-base/final_labels.jsonl \
+  --base-manifest /tmp/p6-base/final_labels_manifest.json \
+  --audit-csv data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_final_labels.csv \
+  --output data/gold/p6/draft-v3
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `record_number` | `integer` | Pool record; same as `Relevance #`. |
+| `batch` | `integer` | Annotation batch. |
+| `question_id` | `string` | Question ID. |
+| `passage_id` | `string` | Passage ID. |
+| `annotator_A` | `string` | Annotator A name. |
+| `label_A` | `integer` | Annotator A label. |
+| `annotator_B` | `string` | Annotator B name. |
+| `label_B` | `integer` | Annotator B label. |
+| `final_label` | `integer` | Resolved 0/1 label. |
+| `label_source` | `string` | `human_reviewed`, `human_spot_checked` or `ai_suggestion_unchecked`. |
+| `reviewer` | `string` | Reviewer name. |
+| `reviewer_note` | `string` | Reviewer note; may be empty. |
+| `reviewer_is_annotator` | `boolean` | Whether the reviewer was one of this pair's two annotators. |
