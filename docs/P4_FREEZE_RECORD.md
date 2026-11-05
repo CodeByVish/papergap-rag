@@ -22,7 +22,7 @@ author already knew. The scripts below enforce the order.
 | `corpus` | the development corpus (21,360 passages) and the all-paper-text corpus the run needs (28,617 passages, 1,584 papers, SHA-256 `8eeef011...`, byte-identical to P3's pinned build) |
 | `dense_index` | the pinned `bge-small-en-v1.5` revision and, once built, the index path and the SHA-256 of its `metadata.json` |
 | `questions` | P3's frozen list: 200 questions, 174 papers, SHA-256 `d509010b...` (the hash in P3's own manifest) |
-| `retrieval`, `agent` | candidate pool 20, RRF 60, top 5, no reranker, section-scoped retries, at most 2 retries, Qwen3-8B critic reading the generator's view (8 passages x 1200 characters), refusal rule off |
+| `retrieval`, `agent` | candidate pool 20, RRF 60, top 8, no reranker, section-scoped retries, at most 2 retries, Qwen3-8B critic reading the generator's view (8 passages x 1200 characters), refusal rule off |
 | `arms`, `baseline_depths` | static, adaptive, and the 15-passage run from which the plain ranking at depth 3, 5, 8, 10 and 15 is read |
 | `metrics`, `reporting` | what is reported whatever the outcome, and the subsets |
 | `disclosures` | what the author already knew (below) |
@@ -63,7 +63,7 @@ questions in the same way while annotating; the rule forbids tuning on them.
    The file holds `question_id`, `question` and `paper_id` only.
 5. **P5 runs the job** at the frozen commit, with the corpus, index and items above
    (`PASSAGES`, `DENSE_INDEX`, `ITEMS`, `ARMS="static adaptive static-wide"`, `ANSWERS` as recorded,
-   `SCOPED=1`, `OFFLINE=1`). The run has no gold.
+   `SCOPED=1`, `OFFLINE=1`, `TOP_K=8`). The run has no gold.
 6. **Score after the run**, when the gold may be read. Refused unless the run's manifest matches the
    record (commit, corpus hash, critic view, prompt budget, retrieval settings, arms) and every arm holds
    exactly the 200 questions:

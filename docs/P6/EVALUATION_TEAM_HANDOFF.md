@@ -74,7 +74,7 @@ Use `passages_all_paper_text.jsonl`, **not** `passages.jsonl`. All 1,853 pool pa
 
 Put these in `results/p4-final/`, as one JSONL row per question, covering every question in `p3-snapshot-20261105/questions.jsonl`:
 
-- [ ] `static.jsonl` and `adaptive.jsonl`: agent records from `scripts/run_agent_experiment.py`. Each row needs `question_id`, an answer `status`, `retrieval_log`, and timings `elapsed_s` + `answer_s`.
+- [ ] `static.jsonl` and `adaptive.jsonl`: agent records from `scripts/run_agent_experiment.py`, run with `--top-k 8`, the frozen depth in `configs/p4_freeze.json`. The script defaults to 5, so set it explicitly. Each row needs `question_id`, an answer `status`, `retrieval_log`, and timings `elapsed_s` + `answer_s`.
 - [ ] `static-top10.jsonl`: a static run whose saved ranking is at least 10 deep (for evidence recall @5/@8/@10).
 - [ ] `static-contexts.jsonl` / `adaptive-contexts.jsonl`: the exact text shown to the generator (format in step 7a), **or** the original `PromptConfig` JSON so the evaluation lead can rebuild it.
 - [ ] `run-notes.md`: generator model, prompt version, hardware, concurrency, total batch wall-clock seconds, and token usage per call if available.
@@ -174,7 +174,7 @@ Once the team has frozen the model, prompts, index and settings, set `usage_and_
 
 ## 4. Score retrieval
 
-Scores the saved top-5 rankings of all four methods. No model is rerun.
+Scores the saved top-5 rankings of all four methods. No model is rerun. This stops at 5 because only those rankings were labelled, even though the system is frozen at top-8. Top-8 is measured by evidence recall in step 6.
 
 ```bash
 "$P6_PY" -m scripts.run_p6_evaluation retrieval \

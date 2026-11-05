@@ -43,7 +43,7 @@
     "method": "per-paper hybrid: BM25 and dense, fused with reciprocal rank fusion",
     "candidate_k": 20,
     "rrf_k": 60,
-    "top_k": 5,
+    "top_k": 8,
     "reranker": false,
     "scoped": true,
     "reranker_note": "P5's paired run on the development items found the BGE reranker below plain RRF at every depth (top-5 0.724 against 0.740; top-10 0.885 against 0.974)."
