@@ -82,10 +82,17 @@ questions in the same way while annotating; the rule forbids tuning on them.
 
 ## Still to settle before step 3
 
-- whether the run also generates answers (needs P5's compute and a decision on the 8-passage,
-  1200-character budget, which P5 keeps frozen);
-- P3's confirmation, with P6, that the agent's held-out run uses this 200-question list (the plan names
-  100 questions; 200 fits one job).
+Filled in on 6 November (record still `draft`): `code.commit` (`ad02d51`, main after PR #50), the
+all-paper-text index path and `metadata.json` SHA-256 (built by P5), and `answers.generate` (true:
+ANSWERS=p5, prompt frozen at v7, 8 passages x 1200 characters). Open:
+
+- P5's development check of adaptive at top 8 (the 40 development items, the inputs of job 51172,
+  ANSWERS=none). If it is sensible, record the job and figures as a decision and freeze at 8; if not,
+  go back to the team before freezing. Development tuning was at top 5 (disclosure
+  `depth-5-tuning-8-run`);
+- P3's written confirmation that the 200-question list is the final held-out list (the plan names 100
+  questions; the 200 ids already equal P6's gold ids);
+- then set `frozen_at` and `status`, and commit.
 
 ## Tests
 

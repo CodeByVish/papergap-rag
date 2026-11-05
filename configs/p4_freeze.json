@@ -4,8 +4,8 @@
   "purpose": "Freeze record for P4's end-to-end run on P3's frozen held-out question list. Procedure and field meanings: docs/P4_FREEZE_RECORD.md.",
   "frozen_at": null,
   "code": {
-    "commit": null,
-    "note": "Full 40-character hash of the main commit the run is made at. Set when freezing; scripts/make_held_out_items.py checks that it exists."
+    "commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "note": "Full 40-character hash of the main commit the run is made at (main after PR #50, which contains the stop_reason change of PR #40 and the top-8 default of PR #49). The record commit that follows is not the run commit. scripts/make_held_out_items.py checks that the hash exists."
   },
   "corpus": {
     "development": {
@@ -28,9 +28,9 @@
     "model": "BAAI/bge-small-en-v1.5",
     "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
     "built_on": "all_paper_text",
-    "path": null,
-    "metadata_sha256": null,
-    "note": "Only 65 of the 174 held-out papers are in the development corpus, so the run needs an index over the all-paper-text corpus. Record the index directory and the SHA-256 of its metadata.json when it is built."
+    "path": "~/p5/data/365-40/indexes/dense-bge-small/",
+    "metadata_sha256": "a14070a74a041accb93064f893a560a5dacc94eb85391896d2f8d548222ba7ef",
+    "note": "Built and verified by P5 on the cluster (path is on P5's cluster home). Only 65 of the 174 held-out papers are in the development corpus, so the run uses this index over the all-paper-text corpus: 1,584 papers, 28,617 passages, corpus SHA-256 8eeef011... as above. P5 reports that all 174 held-out papers are in it, that its passage set equals the corpus exactly, and that it was loaded offline and queried. The encoder truncates passages at 512 tokens (14.3% of these passages); BM25 reads the full text."
   },
   "questions": {
     "source": "data/processed/qa_for_held_out_v2.jsonl on origin/p3-qasper-foundation (status frozen, schema v0-proposed)",
@@ -61,8 +61,8 @@
   "static_wide_k": 15,
   "baseline_depths": [3, 5, 8, 10, 15],
   "answers": {
-    "generate": null,
-    "note": "Decide with P5 before freezing whether the held-out run also generates answers (ANSWERS=p5)."
+    "generate": true,
+    "note": "ANSWERS=p5, agreed with P5 on 5 November: one job covers retrieval and answers (about 2 h 36 min for 200 questions at 31 min per 40; 4 h limit, RESUME=1 as fallback). The prompt stays frozen at p5-grounded-qa-v7, 8 passages x 1200 characters, max_new_tokens 1024, and is not changed after the freeze."
   },
   "metrics": [
     "mean gold recall and full-recall questions, per arm",
@@ -99,6 +99,10 @@
       "text": "The held-out list contains 78 validation-split questions and 122 test-split ones. P4 evaluated its rule-based mapper on the validation split but tuned nothing on it, and the mapper figures reported exclude the held-out ids."
     },
     {
+      "id": "depth-5-tuning-8-run",
+      "text": "All development tuning and the development jobs 50701, 50977 and 51172 ran at top_k 5 (plain retrieval on the development items: recall 0.740 at top 5, 0.885 at top 8, 0.974 at top 10). The held-out run is at top_k 8, the depth the team froze on 5 November (PR #49) because plain retrieval is better there and the generator reads 8 passages. Adaptive at depth 8 was checked once on the 40 development items before the freeze (P5's job, see 'depth-8-dev-check'); nothing was tuned on it."
+    },
+    {
       "id": "unvalidated-changes",
       "text": "The generator-view alignment, passage handles and quote requirement (PR #34) were run on the real model once, in development job 51172 (commit 37cb0c6, 4 November). Against job 50977 the critic accepted fewer unanswerable questions (2 of 8, was 4) and was stricter on answerable ones (9 of 32 left unsatisfied, was 5). Nothing was changed afterwards."
     }
@@ -116,9 +120,8 @@
     }
   ],
   "unresolved_before_freezing": [
-    "build the all-paper-text dense index and record dense_index.path and metadata_sha256",
-    "decide with P5 whether the run generates answers",
-    "confirm with P3 and P6 that the agent's held-out run uses this 200-question list",
-    "set code.commit and frozen_at, then set status to frozen (the commit must include the stop_reason change, PR p4/stop-reason)"
+    "P5's development check of adaptive at top_k 8 (40 development items, job inputs of 51172, ANSWERS=none): if it is sensible, add the decision 'depth-8-dev-check' with the job number and figures; if not, return to the team before freezing",
+    "confirm in writing with P3 that the 200-question list is the final held-out list (the plan's 100 is superseded); the question ids already equal P6's 200 gold ids",
+    "set frozen_at and set status to frozen; code.commit stays ad02d51 unless the code changes before then"
   ]
 }
