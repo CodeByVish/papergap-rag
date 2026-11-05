@@ -58,6 +58,7 @@ SPLIT="${SPLIT:-validation}"
 LIMIT="${LIMIT:-100}"
 
 ARMS="${ARMS:-static adaptive}"
+TOP_K="${TOP_K:-8}"  # Frozen depth in configs/p4_freeze.json
 CRITIC="${CRITIC:-generator}"                     # generator | rules
 ANSWERS="${ANSWERS:-p5}"                          # p5 | none
 SCOPED="${SCOPED:-0}"                             # 1 = per-paper section-scoped retries
@@ -128,7 +129,7 @@ if [ -n "$FAILED" ]; then
 fi
 
 section "RUN"
-ARGS=(--passages "$PASSAGES" --dense-index-dir "$DENSE_INDEX" --out-dir "$OUT_DIR"
+ARGS=(--top-k "$TOP_K" --passages "$PASSAGES" --dense-index-dir "$DENSE_INDEX" --out-dir "$OUT_DIR"
       --arms $ARMS --critic "$CRITIC" --answers "$ANSWERS"
       --generator vllm --model-id "$MODEL_DIR" --cache-folder "$HF_HOME/hub")
 if [ "$OFFLINE" = "1" ]; then
