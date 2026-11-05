@@ -653,3 +653,13 @@ adapter/generation/Qwen regression: 34 passed. See
 [P5 UI handoff](P6/P6_UI_handoff.md). Actual P5 mock/live integration is pending
 its formal contract, service and input artifacts; no team freeze or real E2E
 completion is implied.
+
+## P2 configuration and annotation audit — 5 November 2026
+
+All A/B entries are now populated on P3 `1a1dc15`; 188 pairs disagree. The
+current-file agreement is 89.85%, not a replacement for original independent
+agreement. P2 recommends RRF-only top-8 for the agent run based on development
+results, retaining BGE and the frozen top-5 pool for comparison. Runtime needs
+`DEMO_AGENT_TOP_K=8` as well as server `--top-k 8`. Corpus-wide pinned reranker
+tokenization finds 27.08% of passages over 512 tokens before adding a question.
+See P2_REPORT_CONTRIBUTION.md for evidence boundaries and final-label dependencies.

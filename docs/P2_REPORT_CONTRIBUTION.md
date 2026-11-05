@@ -153,3 +153,39 @@ The output records the exact source commit, file hashes, per-batch completion,
 and disagreement IDs. Generated data remain local. Final metric tables and
 error-analysis examples remain pending the accepted scoring labels. No new
 latency measurement or final demo rehearsal is claimed by this audit.
+
+## Current decision and handoff — 5 November 2026
+
+Use RRF-only retrieval for the final agent/generation configuration, with 20
+candidates per source, RRF k=60 and eight returned passages. Keep BGE as an
+experimental comparison. This supersedes the earlier reranked top-five inference
+recommendation; it does not change the frozen top-five annotation rankings.
+P4/P5's reported paired development results show RRF recall@8 of 0.885 versus
+0.854 with BGE (32 questions with mapped gold out of 40). These are development
+evidence-recall results, not adjudicated annotation-pool metrics; raw cluster
+outputs were not independently recomputed in this P2 update.
+
+The pinned BGE reranker tokenizer was measured on all 28,617 corpus passages:
+7,750 (27.08%) exceed 512 tokens before adding the question. Pair formatting adds
+four tokens; a hypothetical 20-token question raises the affected count to
+8,725 (30.49%). This is a corpus-wide scenario, not a measurement of the actual
+40-question candidate pairs, and does not establish the cause of the recall loss.
+The dense encoder uses a different tokenizer; its truncation rate must be reported
+separately. Preserve the frozen corpus and indexes.
+
+For P5/P6's live dry run, set `DEMO_AGENT_BGE=0`,
+`DEMO_AGENT_CANDIDATE_K=20`, and **`DEMO_AGENT_TOP_K=8`**, plus server `--top-k 8`.
+The latest factory reads its own top-K environment variable; changing only YAML
+or the server flag is insufficient. Keep corpus and dense-index paths paired.
+Verify the generator's effective eight-passage budget and text clipping, and
+confirm citations resolve in the UI. Local hook tests are not a live cluster
+rehearsal. P2 does not have access to P5's personal cluster job.
+
+At P3 commit `1a1dc15b824590a39c80ea11a568fbe5814a926e`, all 3,706 A/B entries
+are present: 1,665/1,853 paired labels agree (89.85%), with 188 disagreements.
+This supersedes the incomplete 3 November snapshot. It is agreement on the
+current revised files, not the original pre-review independent agreement rate.
+Preserve original submissions and AI-assisted provenance separately. P3/P6 must
+publish accepted scoring labels and the question/configuration freeze before
+final retrieval quality claims. Report gold-evidence recall separately from
+pool-relative relevance recall. No final scores or held-out approval are invented.
