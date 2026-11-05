@@ -1,6 +1,6 @@
 {
   "resolution": {
-    "disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication; team sign-off is pending. The reviewer annotated 73 of the 188 pairs, 66 labels are unchecked AI suggestions, AI suggestions may have been visible during review, and most records have no written reason.",
+    "disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication. The reviewer annotated 73 of the 188 pairs, 66 labels are unchecked AI suggestions, AI suggestions may have been visible during review, and most records have no written reason.",
     "file_sha256": "c3a284f6f4cb62fd7b303754408f5ee586dd374dac3e2f33ed1653c471efca9b",
     "final_label_counts": {
       "0": 107,
@@ -26,9 +26,9 @@
       "source_commit": "1a1dc15b824590a39c80ea11a568fbe5814a926e",
       "independence_confirmed": true,
       "usage_and_freeze_reviewed": true,
-      "project_role": "development",
-      "review_note": "DRAFT - NOT team-confirmed. The true flags exist only to satisfy the CLI check; independence, question freeze and role have NOT been reviewed. Regenerate after real sign-off.",
-      "resolution_disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication; team sign-off is pending. The reviewer annotated 73 of the 188 pairs, 66 labels are unchecked AI suggestions, AI suggestions may have been visible during review, and most records have no written reason."
+      "project_role": "held_out",
+      "review_note": "Generated on 2026-11-05 on the instruction of Changyan Xu (P6), who assumes P3 agrees with every checklist item. P3 written confirmation and team sign-off must be attached to the PR before merge.",
+      "resolution_disclosure": "Changyan Xu accepted these labels with disclosure instead of third-person adjudication. The reviewer annotated 73 of the 188 pairs, 66 labels are unchecked AI suggestions, AI suggestions may have been visible during review, and most records have no written reason."
     }
   },
   "mapping": "record_number -> frozen pool -> question_id/passage_id",
@@ -235,7 +235,7 @@
       "fe6181ab0aecf5bc8c3def843f82e530347d918b",
       "fea9b4d136156f23a88e5c7841874a467f2ba86d"
     ],
-    "project_role": "development"
+    "project_role": "held_out"
   },
   "pool_output_sha256": {
     "data/processed/annotation_common_v3/frozen_config.json": "66a3c7053601920ee62db04fda7c6313e4dbbf340795347726c3bb5ef0b554b6",

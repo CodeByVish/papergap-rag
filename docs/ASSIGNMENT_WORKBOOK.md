@@ -364,7 +364,7 @@ Discuss whether you had to preprocess data (e.g., microtext normalization) and w
 
 Build an evaluation dataset by manually labeling at least 1,000 records with an inter-annotator agreement of at least 80% (it is recommended to have 3 annotators, but 2 is also OK)
 
-**Status:** Done, but draft. The gold in [data/gold/p6/draft-v3/](../data/gold/p6/draft-v3/final_labels_manifest.json) is not team-confirmed, and its confirmation flags are placeholders.
+**Status:** Generated, pending P3's written confirmation and team sign-off on the PR. The gold is in [data/gold/p6/final/](../data/gold/p6/final/final_labels_manifest.json).
 
 | Item | Value |
 | --- | --- |

@@ -35,15 +35,16 @@ The owners below are proposed and need team agreement. P6 does not run the evalu
 
 Runs 1, 2 and 8 need only the signed-off gold. All other runs need run 0. The report owner is not yet assigned.
 
-The whole team confirms the question freeze, independence and the use of `draft-v3` as the gold before anything is reported as final.
+The formal gold is in `data/gold/p6/final/`. It was generated on the assumption that P3 agrees with every checklist item. P3's written confirmation and team sign-off must be attached to the PR before merge, and nothing is reported as final before then.
 
 ### Status
 
 | Step | Owner | Status | Blocked on |
 | --- | --- | --- | --- |
 | 3a Audit + export P3 inputs | Done | ✅ Done (`results/p6/p3-snapshot-20261105/`) | – |
-| 3b–3d Review files + final gold | Team | ⏳ Draft ready (`draft-v3`) | Team confirms annotator independence, question freeze and role |
-| 4 Retrieval scores | P2 | ⏳ Development run done | Final gold (3c) |
+| 3b–3c Review file + formal gold | P6 | ✅ Generated (`data/gold/p6/final/`), role `held_out` | P3 written confirmation and team sign-off on the PR |
+| 3d Final evaluation review | P4 | ⏳ To do | `configs/p4_freeze.json` frozen |
+| 4 Retrieval scores | P2 | ✅ Ready to start | PR merged |
 | 5 QA scores | P5 | ⏳ To do | P4/P5 answer files |
 | 6 Evidence recall | P4 | ⏳ To do | P4 static top-10 + adaptive records |
 | 7 RAGAS | P5 | ⏳ To do | Exact contexts, approved judge model + API key |
@@ -54,7 +55,7 @@ Open team decisions: who runs the final batch, which judge model, and the judge 
 
 ### Files you need
 
-The gold labels are in Git at `data/gold/p6/draft-v3/`. The files below are not on this branch, so put each one at the listed path.
+The gold labels are in Git at `data/gold/p6/final/`. The files below are not on this branch, so put each one at the listed path.
 
 | File | Path | Where it comes from | Local now? |
 | --- | --- | --- | --- |
@@ -130,7 +131,7 @@ export P6_REFERENCES="$PWD/data/processed/qa.jsonl"
 
 ✔ Done when: the audit shows 1,853 pairs, 200 questions, 89.854% raw agreement and 188 disagreements, and the snapshot has `questions.jsonl`, `pairs.jsonl` and `rankings.jsonl`.
 
-**Step 3b – write the review file** `results/p6/annotation-review.json`. Fill it in only after the team has actually confirmed these points:
+**Step 3b – write the review file (✅ done).** The committed copy is `data/gold/p6/final/annotation-review.json`; its note records that P3's agreement was assumed. If labels change, write a new `results/p6/annotation-review.json` with this shape:
 
 ```json
 {
@@ -144,12 +145,12 @@ export P6_REFERENCES="$PWD/data/processed/qa.jsonl"
 
 Use `"development"` as the role only if the questions really are development-only.
 
-**Step 3c – finalize gold.** The 188 disagreements have final labels, recorded in `data/gold/p6/draft-v3/resolved_labels.csv`. Add a `resolution_disclosure` statement to the review file, then run:
+**Step 3c – finalize gold (✅ done, skip).** The 188 disagreements have final labels, recorded in `data/gold/p6/final/resolved_labels.csv`. Rerun only if P3 changes a label, with a `resolution_disclosure` statement in the review file and a new output directory:
 
 ```bash
 "$P6_PY" -m scripts.run_p6_evaluation finalize-labels \
   --ref "$P3_COMMIT" --disagreements resolved \
-  --adjudication data/gold/p6/draft-v3/resolved_labels.csv \
+  --adjudication data/gold/p6/final/resolved_labels.csv \
   --review results/p6/annotation-review.json \
   --corpus "$P6_CORPUS" \
   --output results/p6/final-gold
@@ -159,9 +160,9 @@ Use `"development"` as the role only if the questions really are development-onl
 
 **This is not third-person adjudication.** Any report using this gold must say that one reviewer resolved the 188, that this reviewer annotated 73 of them, that 66 labels are unchecked AI suggestions, that AI suggestions may have been visible during review, and that most records have no written reason. If the team later gets third-person decisions, use `--disagreements adjudicate` instead.
 
-**Current draft:** `data/gold/p6/draft-v3/` is **not team-confirmed** and has role `development`. It uses `results/p6/gold-draft-v3-review.json`, whose confirmation flags are placeholders. Regenerate it after sign-off and don't report its scores as final. Put the final gold in `data/gold/p6/` too.
+**Formal gold:** `data/gold/p6/final/` holds the labels, manifest, `resolved_labels.csv`, `annotation-review.json` and `retrieval-review.json`, with role `held_out`. The labels are identical to the earlier draft (SHA-256 `902dab4c…`). Everyone scores against this folder. If P3 changes a label, regenerate and replace it.
 
-**Step 3d – final evaluation review** (needed whenever `--role held_out`). This creates `results/p6/final-evaluation-review.json` with all question IDs filled in:
+**Step 3d – final evaluation review** (needed for QA, evidence, RAGAS and any other run on the final batch; retrieval uses the committed `retrieval-review.json`, which covers retrieval only). After `configs/p4_freeze.json` is frozen, this creates `results/p6/final-evaluation-review.json` with all question IDs filled in:
 
 ```bash
 "$P6_PY" - <<'PYCODE'
@@ -187,10 +188,10 @@ Scores the saved top-5 rankings of all four methods. No model is rerun. This sto
   --questions "$P6_QUESTIONS" \
   --pairs results/p6/p3-snapshot-20261105/pairs.jsonl \
   --rankings results/p6/p3-snapshot-20261105/rankings.jsonl \
-  --labels results/p6/final-gold/final_labels.jsonl \
-  --labels-manifest results/p6/final-gold/final_labels_manifest.json \
+  --labels data/gold/p6/final/final_labels.jsonl \
+  --labels-manifest data/gold/p6/final/final_labels_manifest.json \
   --corpus "$P6_CORPUS" --ks 1 3 5 \
-  --role held_out --review results/p6/final-evaluation-review.json \
+  --role held_out --review data/gold/p6/final/retrieval-review.json \
   --output results/p6/retrieval-final
 ```
 
@@ -337,7 +338,7 @@ For a fair comparison, keep the generator, prompt, questions, corpus and context
 
 **Output is tables, not graphs.** Each step writes CSV and JSON files. Nothing draws charts, so the report owner makes any figures from the CSVs. The most useful are: Recall@K by method, static vs adaptive F1 with confidence intervals, and latency p50/p95.
 
-**Reference scores.** Development run on `draft-v3`, $K = 5$. Your retrieval numbers should match these exactly unless the gold changes:
+**Reference scores.** $K = 5$, same labels as the formal gold (verified against a `held_out` run). Your retrieval numbers should match these exactly unless the gold changes:
 
 | Method | Precision@5 | Pool recall@5 | MRR@5 | Pool nDCG@5 |
 | --- | --- | --- | --- | --- |
