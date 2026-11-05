@@ -1419,3 +1419,88 @@ git restore --source=origin/p2/ai-annotation-review-08-10 -- data/processed/p2_a
 | `records[].reason` | `string` | AI 判断理由，未经人工裁定。 |
 | `records[].review_note` | `string or null` | 若有，则为需要复核的具体歧义。 |
 | `Annotator / Question / Passage / Relevance / Label` | `Markdown fields` | Codex 署名；原编号问题和段落；0/1 标签。保留原文与编号。 |
+
+## 留出集黄金评测数据
+
+留出集黄金数据是人工相关性判断，用于在未参与调参的问题上评估检索效果。它覆盖 `data/processed/qa_for_held_out_v2.jsonl` 中的 200 个问题（与 `annotation_common_v3/questions.jsonl` 相同），以及由 BM25、Dense、Hybrid RRF 和带 BGE 重排序的 Hybrid RRF 汇集的 1,853 个问题-段落对。每个数据对由两名标注者标注，原始一致率为 89.85%，共有 188 条分歧。如果段落有助于回答问题（包括有用的部分证据），标签为 `1`。池外段落未被判断，因此 `relevance_complete` 为 `false`。
+
+最终留出集黄金数据尚不存在。现有版本均为草稿，三个 manifest 的 `project_role` 都是 `development`，因此只能使用 `--role development` 评分。
+
+| 版本 | 问题数 | 已判断数据对 | 分歧处理 | 状态 |
+| --- | --- | --- | --- | --- |
+| `data/gold/p6/draft-v1/` | 200 | 1,665 | 删除分歧数据对 | 草稿；仅一致标签对照 |
+| `data/gold/p6/draft-v2/` | 91 | 814 | 删除全部 109 个受影响问题 | 草稿；敏感性检查 |
+| `data/gold/p6/draft-v3/` | 200 | 1,853 | 经复核解决并予以披露 | 草稿；见下文 `resolve_188_final_labels.csv` |
+
+`data/gold/` 在 `p3-qasper-foundation` 上被 Git 忽略。`draft-v1` 和 `draft-v2` 跟踪在 `P6/evaluation` 上；`draft-v3` 在加入该分支之前仅为本地文件。
+
+### 输入
+
+| 输入 | 用途 | 缺失时 |
+| --- | --- | --- |
+| `data/processed/qa_for_held_out_v2.jsonl` 及其 manifest | 冻结的问题列表 | 从 P3 分支恢复，不要重新抽样 |
+| `data/processed/annotation_common_v3/` | 数据对、问题、排序结果和冻结设置 | 从 P3 分支恢复；重建步骤见上文对应章节 |
+| `data/processed/annotation_common_v3_markdown/annotator_{A,B}/` | 两名标注者的原始标签 | 从 Git 恢复；人工标签无法重新生成 |
+| `data/processed/passages_all_paper_text.jsonl` | 语料；SHA-256 以 `8eeef0119e32` 开头，由评测程序校验 | 从 P3 分支恢复 |
+| `results/p6/annotation-review.json` | 团队对独立性、使用情况、冻结、角色和源提交的确认 | 仅在团队确认后填写，不得使用占位内容 |
+| `{folder}/resolve_188_review_workbook.xlsx` | 188 条分歧的决定（仅 `draft-v3` 需要） | 提交后从 Git 恢复，否则需重新复核 |
+| `data/gold/p6/draft-v1/` | `draft-v3` 的基础 | 从 `P6/evaluation` 恢复，或按步骤 3 重建 |
+
+其中 `{folder}` 指 `data/processed/annotation_common_v4_markdown_resolve_188_disagreements`。
+
+### 构建
+
+步骤 1 和 2 已完成。仅当文件无法恢复时才重新执行，因为新的问题列表或数据池需要重新人工标注。
+
+1. **冻结问题：** 按上文对应章节构建 `qa_for_held_out_v2.jsonl`。
+2. **汇集并标注：** 构建 `annotation_common_v3/`，然后由两人独立标注 markdown 批次。
+3. **审计并构建仅一致标签版本：** 团队确认 review 文件后，在 `P6/evaluation` 上运行下列命令。只有团队确认后才可将 `project_role` 设为 `held_out`。
+
+```bash
+export P3_COMMIT=1a1dc15b824590a39c80ea11a568fbe5814a926e
+export P6_CORPUS=data/processed/passages_all_paper_text.jsonl
+python -m scripts.run_p6_evaluation audit-labels --ref "$P3_COMMIT" --output results/p6/annotation-audit-<date>
+python -m scripts.run_p6_evaluation finalize-labels --ref "$P3_COMMIT" --disagreements drop \
+  --review results/p6/annotation-review.json --corpus "$P6_CORPUS" --output results/p6/final-gold
+python -m scripts.run_p6_evaluation finalize-labels --ref "$P3_COMMIT" --disagreements drop-questions \
+  --review results/p6/annotation-review.json --corpus "$P6_CORPUS" --output results/p6/final-gold-91
+```
+
+4. **加入已解决标签：** 运行下一节的 `build_resolved_gold_draft.py` 命令，并将步骤 3 的输出用作 `--base-gold` 和 `--base-manifest`。
+5. **检查结果：** 应有 200 个问题和 1,853 个已判断数据对，`draft-v3` 中有 820 个相关对。manifest 的 `labels_sha256` 和 `corpus_sha256` 必须与文件一致。
+6. **发布：** 将标签和 manifest 复制到 `P6/evaluation` 的 `data/gold/p6/`。`finalize-labels` 写入被 Git 忽略的 `results/p6/`。
+
+## `data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_final_labels.csv`
+
+188 条标注分歧各占一行，由 `resolve_188_review_workbook.xlsx` 生成。这是草稿，并非第三方裁定：其中 73 条的复核者是该数据对的两名标注者之一，另有 66 个标签是未经核查的 AI 建议。这些标签已在披露前提下接受，尚待团队确认，任何使用它们的报告都必须说明上述限制。`resolve_188_suggested_labels.{csv,xlsx}` 保存 AI 建议，工作簿包含段落和 AI 理由。下方命令还会生成 `data/gold/p6/draft-v3/`，即在 `draft-v1` 上加入这些标签后的 200 问题、1,853 数据对黄金集草稿。其文件字段与 `draft-v1` 相同；manifest 增加 `draft_status` 和 `resolution`，并将 `disagreement_policy` 设为 `reviewed-draft`。
+
+可通过 `git fetch origin p3-qasper-foundation` 和 `git restore --source=origin/p3-qasper-foundation -- data/processed/annotation_common_v4_markdown_resolve_188_disagreements` 从 P3 分支获取文件。如需本地复现，请安装 `openpyxl` 并运行：
+
+```bash
+mkdir -p /tmp/p6-base
+git show P6/evaluation:data/gold/p6/draft-v1/final_labels.jsonl > /tmp/p6-base/final_labels.jsonl
+git show P6/evaluation:data/gold/p6/draft-v1/final_labels_manifest.json > /tmp/p6-base/final_labels_manifest.json
+python scripts/build_resolved_gold_draft.py \
+  --workbook data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_review_workbook.xlsx \
+  --pairs data/processed/annotation_common_v3/pairs.jsonl \
+  --base-gold /tmp/p6-base/final_labels.jsonl \
+  --base-manifest /tmp/p6-base/final_labels_manifest.json \
+  --audit-csv data/processed/annotation_common_v4_markdown_resolve_188_disagreements/resolve_188_final_labels.csv \
+  --output data/gold/p6/draft-v3
+```
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `record_number` | `integer` | 池记录编号，与 `Relevance #` 相同。 |
+| `batch` | `integer` | 标注批次。 |
+| `question_id` | `string` | 问题 ID。 |
+| `passage_id` | `string` | 段落 ID。 |
+| `annotator_A` | `string` | 标注者 A 姓名。 |
+| `label_A` | `integer` | 标注者 A 标签。 |
+| `annotator_B` | `string` | 标注者 B 姓名。 |
+| `label_B` | `integer` | 标注者 B 标签。 |
+| `final_label` | `integer` | 裁定后的 0/1 标签。 |
+| `label_source` | `string` | `human_reviewed`、`human_spot_checked` 或 `ai_suggestion_unchecked`。 |
+| `reviewer` | `string` | 复核者姓名。 |
+| `reviewer_note` | `string` | 复核备注，可为空。 |
+| `reviewer_is_annotator` | `boolean` | 复核者是否为该数据对的两名标注者之一。 |
