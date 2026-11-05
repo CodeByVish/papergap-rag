@@ -2,7 +2,7 @@
 
 Editable LaTeX review draft for AI6127, **Group 24**. The report title is **Evidence-grounded question answering over NLP research papers**. It uses no product name or running headers; the due date, **7 November 2026**, appears on the title page. The handout specifies 11:59 pm SGT.
 
-This is a review draft, not a submission-ready report. Available results are development findings; final QA/RAG scores and controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
+This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA/RAG scores and controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
 
 ## Files and report structure
 
@@ -17,6 +17,7 @@ Paths in this section are relative to `report/`.
 | `sections/04-discussion.tex` | Q5: innovations and ablations; conclusions, limitations and future work |
 | `sections/05-ai-disclosure.tex` | Final numbered section before References; AI-use statement awaiting confirmation |
 | `review-checks/` | 13 highlighted question-level assessments and lead/support review assignments |
+| `review-checks/p1-evidence.md` | P1 method/result sources, exact qualitative-case identifiers and scoped owner approval |
 | `tables/` | Available retrieval, agreement and five-query tables |
 | `figures/` | Pipeline figure wrappers and the development UI screenshot |
 | `images/` | Supplied offline/online pipeline PNGs and companion PDFs |
@@ -44,7 +45,7 @@ tectonic --outdir build --keep-logs main.tex
 
 The draft has been built with Tectonic 0.17.0. A temporary compiler at `/tmp/tectonic` was used during authoring; a fresh environment needs its own compiler installation. No custom fonts are required. For Overleaf, upload the source, bibliography, tables, review checks, figures and images, select `main.tex`, and use pdfLaTeX. Local raw results are not needed to compile the existing report assets.
 
-Rebuild after edits and inspect affected PDF pages, figure readability, captions, page breaks, citations and cross-references. The latest verified build has **19 pages**, no unresolved references and no overfull/underfull box warnings. Pagination will change as draft material is resolved.
+Rebuild after edits and inspect affected PDF pages, figure readability, captions, page breaks, citations and cross-references. The P1 sign-off build on 6 November 2026 has **22 pages**, no unresolved references and no overfull/underfull box warnings. Its affected pages were rendered and visually checked; see `review-checks/p1-evidence.md` for the build boundary and non-blocking environment messages. The extra page follows the addition of the scoped review-completion markers; technical content is unchanged. Pagination will change as draft material is resolved.
 
 Once the report is ready, the required submission filename is **`24.pdf`**. Keep `build/main.pdf` as the working preview until then.
 
@@ -56,7 +57,7 @@ Once the report is ready, the required submission filename is **`24.pdf`**. Keep
 | Q2.1: user interface | `figures/ui-answer.png` | Included directly in `sections/01-system.tex` |
 | Q3: hybrid retrieval | `images/online-hybrid-retrieval.png` | `figures/hybrid-retrieval.tex` |
 
-The supplied pipeline images replace the earlier simplified TikZ diagrams. They are included unchanged, with captions and cross-references. Their companion PDFs are available but are not used by the current build. The system overview in Q2.1 remains an inline TikZ diagram. Reserved visuals remain for retrieval depth, final performance and a reviewed qualitative example.
+The pipeline images replace the earlier simplified TikZ diagrams and are maintained by the chart-generation script below, with captions and cross-references. The reviewed versions disclose the Dense 512-token input limit and show the critic retry path from the clipped generator view; the online caption distinguishes the agent's top-eight setting from the reported retrieval comparison at $K=5$. Their companion PDFs are available but are not used by the current build. The system overview in Q2.1 remains an inline TikZ diagram. Reserved visuals remain for retrieval depth, final performance and a reviewed qualitative example.
 
 To regenerate both pipeline PNGs and companion PDFs, run from the repository root using a Python environment with Matplotlib:
 
@@ -97,6 +98,8 @@ Each handout item has its own highlighted five-star assessment: **Q1.1–Q1.3, Q
 
 Assignments follow the repository README and evaluation handoff. The handoff proposes P5 for QA/RAGAS runs and P4 for agent performance/cost; confirm run ownership with the team. P6 coordinates review and cross-checks results without taking over each experiment. All annotators must confirm their label provenance, independence and prior question exposure for Q4.3.
 
+Junlin Yin approved the current P1 report content on **6 November 2026**. The highlighted **DONE FOR DRAFT - P1** markers cover indexing-diagram consistency (Q1.1), BM25/Dense methods, comparison and cases (Q3), lexical/Dense preprocessing (Q4.2), and the sources and wording of historical retrieval measurements (Q4.6). Other owners' reviews remain open; this does not approve the whole Q3 section or the team report, rerun timing measurements, or confirm final GPU performance. Individual annotation-process statements, the group AI-use disclosure and missing member information retain their existing confirmation requirements. The approved baseline and scope are recorded in `review-checks/p1-evidence.md` and `source-audit.json`.
+
 To hide temporary P1–P6 assignments, change `\draftreviewerstrue` to `\draftreviewersfalse` in `main.tex`. The switch controls only `\draftreview{lead}{support}{scope}` text. It does **not** hide AI ratings, other review boxes, missing-result markers or TODOs. Resolve those items, then remove the editorial notes from the submission copy. Keep substantive limitations and annotation disclosures in the final prose.
 
 Search for `\todo`, `\begin{review}`, `\pending`, `\assetplaceholder` and `\draftreview` to locate unfinished material. Internal P1–P6 labels appear only in the temporary review assignments, not the explanatory prose. These assignments are not an individual contribution/grading declaration. The handout makes individual contribution attribution optional and recommends the shared project-grade option.
@@ -111,7 +114,7 @@ python3 report/scripts/refresh_tables.py
 
 This script uses the Python standard library and existing local inputs. It overwrites the three available tables, copies `output/playwright/p6-local-answer.png` to `report/figures/ui-answer.png`, and refreshes `source-audit.json`. It does not run evaluation, generate labels, update the prose or modify the supplied pipeline images.
 
-The script requires its listed ignored result files, the local UI screenshot and the original handout. Do not run it merely to rebuild the PDF. If switching experiments, update the script's sources, output summaries, surrounding prose and provenance together. Saved five-query answer summaries are fixed text in the script and need review if the input questions change.
+The script requires its listed ignored result files, the local UI screenshot and the original handout. Do not run it merely to rebuild the PDF. If switching experiments, update the script's sources, output summaries, surrounding prose and provenance together. Saved five-query answer summaries are fixed text in the script and need review if the input questions change. The separately maintained `tables/bm25-dense-comparison.tex` uses the verified P1 comparison bundle; the generic refresh script does not regenerate that table. Its sources and exact checks are recorded in `review-checks/p1-evidence.md` and the `p1_review_update` entry in `source-audit.json`.
 
 ## Evidence and provenance
 
@@ -122,9 +125,11 @@ Paths below are relative to the **repository root**, unless stated otherwise. Th
 | Assignment requirements | Original handout; takes precedence over older planning notes |
 | Corpus design, counts and chunk comparison | `docs/ASSIGNMENT_WORKBOOK.md`, `configs/p4_freeze.json` and retrieval manifest; original word/type and chunk-tuning outputs were unavailable in the inspected inputs |
 | Retrieval implementation | Repository README, `docs/P2_REPORT_CONTRIBUTION.md` and retrieval source |
-| Development top-five retrieval table | `results/p6/retrieval-draft-v3/summary.json` and its run manifest; summary matched `retrieval-draft-v3-rebuild/summary.json` |
+| Accepted-label top-five retrieval table | `results/p2-final-retrieval-handoff/scored/summary.json` and its run manifest; accepted label commit `f70bf95593a6b9f705674770b8c3e833ca76290c`, frozen ranking commit `1a1dc15b824590a39c80ea11a568fbe5814a926e` |
+| Paired BM25--Dense comparison | `results/p1-bm25-vs-dense-verification-20261105/comparison/ablation.csv`; one independent comparison execution reproduced the P2 CSV exactly, without rerunning retrieval or initial scoring |
+| Contrasting BM25/Dense examples | Saved questions, rankings, passage text and final labels in `results/p2-final-retrieval-handoff/inputs/`; exact identifiers in `review-checks/p1-evidence.md`; Junlin Yin approved the P1 final wording on 6 November 2026 |
 | Revised-label agreement and pairwise kappa | `results/p6/annotation-audit-verified-20261105/agreement.json` |
-| Label balance and resolution provenance | `data/gold/p6/draft-v3/final_labels_manifest.json`; its review note says confirmation flags are placeholders, not team sign-off |
+| Label balance and resolution provenance | `data/gold/p6/final/final_labels_manifest.json`; 102 human-reviewed and 86 human-spot-checked resolutions. Read its historical pre-merge review note alongside subsequent P3 confirmation and PR #50 acceptance; acceptance does not independently establish annotation independence |
 | Five-query outputs, warnings and timing | `results/p6-local/five-queries-20261105.json`; output summaries are not verified factual answers |
 | Development UI capture | `output/playwright/p6-local-answer.png`; not proof of a final GPU rehearsal |
 | Adaptive/depth results, retry rates and intervals | `docs/P4_REPORT_CONTRIBUTION.md`; reported cluster findings, with raw cluster records unavailable locally during drafting |
@@ -138,8 +143,8 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 
 ## Outstanding checks before submission
 
-1. Confirm official member spellings/order and add five missing matriculation numbers. Group 24 and Changyan Xu / G2607680G are already entered. Names are alphabetical by displayed full name.
-2. Resolve annotation validity, including 66 unchecked AI suggestions, revised-label agreement, independence, method visibility and single-reviewer disagreement resolution. Preserve the disclosures; placeholder flags are not approval.
+1. Confirm official member spellings/order and add four missing matriculation numbers. Group 24, Changyan Xu / G2607680G and Junlin Yin / G2604768B are already entered. Names are alphabetical by displayed full name.
+2. Confirm annotation validity and preserve revised-label agreement, independence, method visibility and single-reviewer resolution disclosures. The accepted manifest records 102 human-reviewed and 86 human-spot-checked resolutions; the latter include the 66 previously unchecked suggestions. Their updated status does not demonstrate independent third-person adjudication or recover original independent submissions.
 3. Confirm the evaluation freeze, accepted gold, prior question exposure and all-200/remaining-160 reporting. Keep passage schemas and split mappings `v0-proposed` until team confirmation.
 4. Insert verified final QA/RAGAS scores, denominators, failures, uncertainty, controlled ablations and final performance/cost results. Record model revisions, prompts, decoding, hardware and timing policy.
 5. Obtain the raw cluster evidence and corpus/chunk-tuning outputs supporting the transcribed findings. Reviewers should verify claims against those records.
