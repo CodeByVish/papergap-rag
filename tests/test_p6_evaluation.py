@@ -700,7 +700,7 @@ def test_evidence_cli_hash_guards_and_static_adaptive_comparison(tmp_path):
         )
 
 
-def test_dropped_disagreements_are_unjudged_and_scored_condensed(tmp_path):
+def test_resolved_policy_requires_disclosure_and_applies_final_labels(tmp_path):
     pairs = [
         {
             "record_number": i,
@@ -710,11 +710,9 @@ def test_dropped_disagreements_are_unjudged_and_scored_condensed(tmp_path):
             "passage_id": f"p{i}",
             "passage": f"Text {i}",
         }
-        for i in range(1, 6)
+        for i in (1, 2)
     ]
-    judgments = {
-        (s, i): {"annotator": s, "label": int(i < 3)} for s in "AB" for i in range(1, 6)
-    }
+    judgments = {(s, i): {"annotator": s, "label": 1} for s in "AB" for i in (1, 2)}
     judgments["B", 2] = {"annotator": "B", "label": 0}
     corpus = dump(
         tmp_path / "corpus.jsonl",
@@ -731,89 +729,32 @@ def test_dropped_disagreements_are_unjudged_and_scored_condensed(tmp_path):
         "project_role": "development",
     }
     report = {"commit": "synthetic", "threshold_pass": True, "pool_output_sha256": {}}
-    disputes = [{"record_number": 2}]
-    adj = tmp_path / "adj.csv"
-    adj.write_text("record_number,adjudicator,final_label,reason\n")
-    with pytest.raises(ValueError):
-        finalize_gold(
-            tmp_path, report, pairs, judgments, disputes, adj, review, corpus, "drop"
-        )
+    disputes = [
+        {
+            "record_number": 2,
+            "question_id": "q1",
+            "passage_id": "p2",
+            "label_A": 1,
+            "label_B": 0,
+        }
+    ]
+    resolved = tmp_path / "resolved.csv"
+    head = "record_number,question_id,passage_id,label_A,label_B,final_label,"
+    head += "label_source,reviewer,reviewer_is_annotator\n"
+    resolved.write_text(head + "2,q1,p2,1,0,0,human_reviewed,B,True\n")
+    args = (report, pairs, judgments, disputes, resolved)
+    with pytest.raises(ValueError, match="resolution_disclosure"):
+        finalize_gold(tmp_path, *args, review, corpus, "resolved")
+    review["resolution_disclosure"] = "Reviewer also annotated this pair."
     gold_dir = tmp_path / "gold"
     gold_dir.mkdir()
-    finalize_gold(
-        gold_dir, report, pairs, judgments, disputes, None, review, corpus, "drop"
-    )
-    labels = read_jsonl(gold_dir / "final_labels.jsonl")
-    assert labels[0]["relevant_passage_ids"] == ["p1"]
-    assert labels[0]["judged_passage_ids"] == ["p1", "p3", "p4", "p5"]
+    finalize_gold(gold_dir, *args, review, corpus, "resolved")
+    label = read_jsonl(gold_dir / "final_labels.jsonl")[0]
+    assert label["relevant_passage_ids"] == ["p1"]
+    assert label["judged_passage_ids"] == ["p1", "p2"]
     manifest = json.loads((gold_dir / "final_labels_manifest.json").read_text())
-    assert manifest["annotation_coverage"] == "agreed_only"
-    assert manifest["dropped_disagreement_pairs"] == 1
-    provenance = read_jsonl(gold_dir / "original_and_final_judgments.jsonl")
-    assert (
-        provenance[1]["dropped_disagreement"] and provenance[1]["final_label"] is None
-    )
-    ranking = [
-        {
-            "question_id": "q1",
-            "method": "bm25",
-            "hits": [
-                {"passage_id": p["passage_id"], "rank": i, "record_number": i}
-                for i, p in enumerate(pairs, 1)
-            ],
-        }
-    ]
-    with pytest.raises(ValueError):
-        score_p3(Q, pairs, ranking, labels, [3])
-    rows, summary = score_p3(Q, pairs, ranking, labels, [3], "agreed_only")
-    # Condensed top 3 is p1, p3, p4: the unjudged p2 is skipped, not counted wrong.
-    assert rows[0]["precision_at_k"] == pytest.approx(1 / 3)
-    assert rows[0]["pool_recall_at_k"] == 1 and rows[0]["mrr_at_k"] == 1
-    assert rows[0]["judged_coverage"] == pytest.approx(2 / 3)
-    assert summary[0]["judged_coverage"] == pytest.approx(2 / 3)
-
-
-def test_drop_questions_removes_every_question_with_a_disagreement(tmp_path):
-    pairs = [
-        {
-            "record_number": i,
-            "question_id": qid,
-            "paper_id": "p1",
-            "question": f"Question {qid}?",
-            "passage_id": f"p{i}",
-            "passage": f"Text {i}",
-        }
-        for i, qid in enumerate(["q1", "q1", "q2", "q2"], 1)
-    ]
-    judgments = {(s, i): {"annotator": s, "label": 1} for s in "AB" for i in range(1, 5)}
-    judgments["B", 2] = {"annotator": "B", "label": 0}
-    corpus = dump(
-        tmp_path / "corpus.jsonl",
-        [
-            {"passage_id": p["passage_id"], "paper_id": "p1", "text": p["passage"]}
-            for p in pairs
-        ],
-    )
-    review = {
-        "source_commit": "synthetic",
-        "independence_confirmed": True,
-        "usage_and_freeze_reviewed": True,
-        "review_note": "synthetic fixture only",
-        "project_role": "development",
-    }
-    report = {"commit": "synthetic", "threshold_pass": True, "pool_output_sha256": {}}
-    disputes = [{"record_number": 2, "question_id": "q1"}]
-    finalize_gold(
-        tmp_path, report, pairs, judgments, disputes, None, review, corpus,
-        "drop-questions",
-    )
-    labels = read_jsonl(tmp_path / "final_labels.jsonl")
-    assert [row["question_id"] for row in labels] == ["q2"]
-    assert labels[0]["judged_passage_ids"] == ["p3", "p4"]
-    questions = read_jsonl(tmp_path / "questions.jsonl")
-    assert [row["question_id"] for row in questions] == ["q2"]
-    manifest = json.loads((tmp_path / "final_labels_manifest.json").read_text())
-    assert manifest["dropped_questions"] == 1
-    assert manifest["question_scope"]["question_ids"] == ["q2"]
-    provenance = read_jsonl(tmp_path / "original_and_final_judgments.jsonl")
-    assert provenance[0]["dropped_question"] and provenance[0]["final_label"] is None
+    assert manifest["annotation_coverage"] == "complete"
+    assert manifest["resolution"]["reviewer_is_annotator"] == 1
+    resolved.write_text(head + "2,q1,p2,1,1,0,human_reviewed,B,True\n")
+    with pytest.raises(ValueError, match="altered"):
+        finalize_gold(gold_dir, *args, review, corpus, "resolved")

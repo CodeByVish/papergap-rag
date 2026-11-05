@@ -2,39 +2,53 @@
 
 Updated: 5 November 2026.
 
-P6 is an **offline scoring package**. It does not run RAG. Each team owner runs their own system, saves the outputs, and P6 turns those saved files into report tables.
+This is an **offline scoring package**. It does not run RAG. Each team owner runs their own system and saves the outputs, then the evaluation lead turns those files into report tables. **The evaluation lead is not decided yet, and it won't be P6.**
 
 ```
 Owners run static / adaptive RAG → save answers, contexts, timings
-        → P6 scores them against gold → tables for the report
+        → evaluation lead scores them against gold → tables for the report
 ```
 
 Ground rules:
 
 - Run every command from the repository root.
-- Real data, outputs and results stay local (`results/` is ignored by Git). Never commit labels, model outputs, judge traces, credentials, corpora or indexes.
+- Raw outputs stay local (`results/` is ignored by Git). Commit only what section 11 lists. Never commit model outputs, judge traces, credentials, corpora or indexes.
 - Each command writes to a **new** output directory and refuses to overwrite. Pick a fresh name each run.
 - Schemas and split mappings are still `v0-proposed`.
 - Metric definitions are in [EVALUATION_METRICS_REFERENCE.md](EVALUATION_METRICS_REFERENCE.md).
 
-## 1. Status and owners
+## 1. Who does what
+
+These owners are unknown. P6 will not run the end-to-end evaluation. Fill this in before the final run; each role needs one named person.
+
+| Role | Name | Responsible for |
+| --- | --- | --- |
+| Evaluation lead | *unknown* | Runs steps 3–10, checks results, commits the summaries |
+| Batch operator | *unknown* | Runs the final static and adaptive batches and delivers the files in section 1 |
+| Judge owner | *unknown* | Gets the approved judge model, API key and budget, and runs step 7 |
+| Report owner | *unknown* | Puts the tables in the report with the required disclosures |
+| Module owners | *unknown* | Review any claim about their module before it goes in the report |
+
+The whole team confirms the question freeze, independence and the use of `draft-v3` as the gold before anything is reported as final.
+
+### Status
 
 | Step | Owner | Status | Blocked on |
 | --- | --- | --- | --- |
-| 3a Audit + export P3 inputs | P6 | ✅ Done (`results/p6/p3-snapshot-20261105/`) | – |
-| 3b–3d Review files + final gold | P6 | ⏳ To do | Team confirms annotator independence and question freeze |
-| 4 Retrieval scores | P6 | ⏳ To do | Final gold (3c) |
-| 5 QA scores | P6 | ⏳ To do | P4/P5 answer files |
-| 6 Evidence recall | P6 | ⏳ To do | P4 static top-10 + adaptive records |
-| 7 RAGAS | P6 | ⏳ To do | Exact contexts, approved judge model + API key |
-| 8 Performance/cost | P6 | ⏳ To do | P4/P5 timings, usage, batch wall time |
-| 9–10 Comparisons + report tables | P6 | ⏳ To do | Steps 4–8 |
+| 3a Audit + export P3 inputs | Done | ✅ Done (`results/p6/p3-snapshot-20261105/`) | – |
+| 3b–3d Review files + final gold | Unknown | ⏳ Draft ready (`draft-v3`) | Team confirms annotator independence, question freeze and role |
+| 4 Retrieval scores | Unknown | ⏳ Development run done | Final gold (3c) |
+| 5 QA scores | Unknown | ⏳ To do | P4/P5 answer files |
+| 6 Evidence recall | Unknown | ⏳ To do | P4 static top-10 + adaptive records |
+| 7 RAGAS | Unknown | ⏳ To do | Exact contexts, approved judge model + API key |
+| 8 Performance/cost | Unknown | ⏳ To do | P4/P5 timings, usage, batch wall time |
+| 9–12 Comparisons, saving, checks, report tables | Unknown | ⏳ To do | Steps 4–8 |
 
 Open team decisions: who runs the final batch, which judge model, and the judge budget.
 
 ### Files you need
 
-None of these are in Git. Put each one at the listed path.
+The gold labels are in Git at `data/gold/p6/draft-v3/`. The files below are not on this branch, so put each one at the listed path.
 
 | File | Path | Where it comes from | Local now? |
 | --- | --- | --- | --- |
@@ -62,7 +76,7 @@ Put these in `results/p4-final/`, as one JSONL row per question, covering every 
 
 - [ ] `static.jsonl` and `adaptive.jsonl`: agent records from `scripts/run_agent_experiment.py`. Each row needs `question_id`, an answer `status`, `retrieval_log`, and timings `elapsed_s` + `answer_s`.
 - [ ] `static-top10.jsonl`: a static run whose saved ranking is at least 10 deep (for evidence recall @5/@8/@10).
-- [ ] `static-contexts.jsonl` / `adaptive-contexts.jsonl`: the exact text shown to the generator (format in step 7a), **or** the original `PromptConfig` JSON so P6 can rebuild it.
+- [ ] `static-contexts.jsonl` / `adaptive-contexts.jsonl`: the exact text shown to the generator (format in step 7a), **or** the original `PromptConfig` JSON so the evaluation lead can rebuild it.
 - [ ] `run-notes.md`: generator model, prompt version, hardware, concurrency, total batch wall-clock seconds, and token usage per call if available.
 
 ## 2. Setup and a practice run
@@ -124,21 +138,22 @@ export P6_REFERENCES="$PWD/data/processed/qa.jsonl"
 
 Use `"development"` as the role only if the questions really are development-only.
 
-**Step 3c – finalize gold.** Policy: **drop disagreements**. Only pairs where both annotators agree are kept (1,665 of 1,853).
+**Step 3c – finalize gold.** The 188 disagreements have final labels, recorded in `data/gold/p6/draft-v3/resolved_labels.csv`. Add a `resolution_disclosure` statement to the review file, then run:
 
 ```bash
 "$P6_PY" -m scripts.run_p6_evaluation finalize-labels \
-  --ref "$P3_COMMIT" --disagreements drop \
+  --ref "$P3_COMMIT" --disagreements resolved \
+  --adjudication data/gold/p6/draft-v3/resolved_labels.csv \
   --review results/p6/annotation-review.json \
   --corpus "$P6_CORPUS" \
   --output results/p6/final-gold
 ```
 
-✔ Done when: `results/p6/final-gold/` has `final_labels.jsonl` and `final_labels_manifest.json`, and the manifest shows `annotation_coverage: "agreed_only"` with 188 `dropped_disagreement_pairs`. Say in the report that dropping borderline pairs probably inflates absolute scores. Method comparisons are still fair because every method is scored on the same gold.
+✔ Done when: `results/p6/final-gold/` has `final_labels.jsonl` and `final_labels_manifest.json`, with 200 questions, 1,853 judged pairs, 820 relevant pairs and `annotation_coverage: "complete"`.
 
-**Sensitivity version.** `--disagreements drop-questions` removes all 109 questions with any disagreement, leaving 91 questions and 814 pairs. It also writes a `questions.jsonl` for those 91. Use the 200-question gold as the primary result and this one as a check only, because the remaining questions may be easier.
+**This is not third-person adjudication.** Any report using this gold must say that one reviewer resolved the 188, that this reviewer annotated 73 of them, that 66 labels are unchecked AI suggestions, that AI suggestions may have been visible during review, and that most records have no written reason. If the team later gets third-person decisions, use `--disagreements adjudicate` instead.
 
-**Current drafts:** `results/p6/gold-draft-v1/` (200 questions) and `results/p6/gold-draft-v2/` (91 questions) are **not team-confirmed**. They use `results/p6/gold-draft-review.json`, role `development`. Regenerate both after sign-off and don't report their scores as final. Shareable copies (labels, manifest and V2 questions) are in `data/gold/p6/draft-v1/` and `data/gold/p6/draft-v2/`, the one Git-tracked gold location; put the final gold there too.
+**Current draft:** `data/gold/p6/draft-v3/` is **not team-confirmed** and has role `development`. It uses `results/p6/gold-draft-v3-review.json`, whose confirmation flags are placeholders. Regenerate it after sign-off and don't report its scores as final. Put the final gold in `data/gold/p6/` too.
 
 **Step 3d – final evaluation review** (needed whenever `--role held_out`). This creates `results/p6/final-evaluation-review.json` with all question IDs filled in:
 
@@ -173,7 +188,7 @@ Scores the saved top-5 rankings of all four methods. No model is rerun.
   --output results/p6/retrieval-final
 ```
 
-✔ Done when: `retrieval.csv` has one row per method (BM25, Dense, Hybrid RRF, Hybrid RRF + rerank) × K. Disagreement pairs were dropped, so unjudged passages are skipped before the cut at K. Call these **judged-only** scores in the report, and use `judged_coverage` to show how much of the top K was judged.
+✔ Done when: `retrieval.csv` has one row per method (BM25, Dense, Hybrid RRF, Hybrid RRF + rerank) $\times K$, $12$ rows in all, with 200 questions and `judged_coverage` of 1.0.
 
 ## 5. Score QA answers
 
@@ -195,7 +210,7 @@ Run it again for adaptive (`--arm adaptive`, new output directory). Missing pred
 
 ## 6. Mapped evidence recall (static @5/@8/@10 vs adaptive)
 
-This uses P3's evidence mapping, not the pool labels. Static needs a saved ranking at least as deep as the largest K. Adaptive takes the union of passages over all of its rounds.
+This uses P3's evidence mapping, not the pool labels. Static needs a saved ranking at least as deep as the largest $K$. Adaptive takes the union of passages over all of its rounds.
 
 ```bash
 export P6_MAPPING="$PWD/data/processed/gold_evidence_mapping_all_splits.jsonl"
@@ -216,7 +231,7 @@ export P6_MAPPING_MANIFEST="$PWD/data/processed/gold_evidence_mapping_all_splits
   --output results/p6/adaptive-evidence
 ```
 
-✔ Done when: `evidence_recall.csv` exists for both arms, and static has rows for K = 5, 8 and 10. To match P4's own numbers, use `successful_only_mapped_recall`. Never show mapping rows to the model.
+✔ Done when: `evidence_recall.csv` exists for both arms, and static has rows for $K = 5, 8, 10$. To match P4's own numbers, use `successful_only_mapped_recall`. Never show mapping rows to the model.
 
 ## 7. RAGAS (LLM judge)
 
@@ -312,7 +327,66 @@ Put the key in the `P6_JUDGE_API_KEY` environment variable, never in a file.
 
 For a fair comparison, keep the generator, prompt, questions, corpus and context budget the same on both sides.
 
-## 10. What goes into the report
+## 10. What to expect and how to read it
+
+**Output is tables, not graphs.** Each step writes CSV and JSON files. Nothing draws charts, so the report owner makes any figures from the CSVs. The most useful are: Recall@K by method, static vs adaptive F1 with confidence intervals, and latency p50/p95.
+
+**Reference scores.** Development run on `draft-v3`, $K = 5$. Your retrieval numbers should match these exactly unless the gold changes:
+
+| Method | Precision@5 | Pool recall@5 | MRR@5 | Pool nDCG@5 |
+| --- | --- | --- | --- | --- |
+| Hybrid RRF | 0.539 | 0.713 | 0.804 | 0.731 |
+| Dense | 0.527 | 0.697 | 0.799 | 0.718 |
+| Hybrid RRF + rerank | 0.509 | 0.658 | 0.717 | 0.663 |
+| BM25 | 0.482 | 0.606 | 0.729 | 0.635 |
+
+There are no reference scores for QA, RAGAS or performance yet. The bundled F1 values of 0.8 and 1.0 are synthetic and aren't targets.
+
+**Reading the metrics:**
+
+| Metric | Plain meaning | Watch out for |
+| --- | --- | --- |
+| Precision@K | Share of the top $K$ that is relevant | Limited by how many relevant passages a question has |
+| Pool recall@K | Share of known relevant passages found in the top $K$ | "Known" means found by these four methods, so it overstates true recall |
+| MRR@K | How high the first relevant passage ranks | Only looks at the first hit |
+| Pool nDCG@K | Ranking quality, rewarding relevant passages near the top | Also limited to the pool |
+| Answerable EM / F1 | Exact and word-overlap match with the reference answer | Report separately from unanswerable correctness |
+| Evidence recall | Share of mapped evidence that was retrieved | Static uses a fixed $K$; adaptive uses all rounds, so it can see more passages |
+| Faithfulness | Whether the answer is supported by its contexts | LLM judgment; report valid-score counts |
+| Latency / cost | Speed and spend | Only comparable with the same hardware, concurrency and caching |
+
+**Comparing two systems.** In `ablation.csv`, differences are right minus left. If the confidence interval includes 0, say there is no clear difference, even if one mean is higher. If two systems differ only slightly, treat them as tied.
+
+**Reporting rules:**
+- Never change a model, prompt or setting because of held-out results. That would stop them being held-out.
+- Report surprising results as they are. For example, reranking currently scores below plain Hybrid RRF, and that needs an explanation rather than a rerun.
+- Always give question counts, refusals, errors and missing predictions next to the means.
+- Include the gold disclosure from step 3c.
+
+## 11. Save, commit and check results
+
+> Proposed storage rule; the team should confirm it before the final run.
+
+| What | Where | In Git? |
+| --- | --- | --- |
+| Full output folders, including `scores.jsonl` | `results/p6/<run-name>/` | No; share through team storage |
+| Final gold labels, manifest and `resolved_labels.csv` | `data/gold/p6/` | Yes |
+| Summary tables (`retrieval.csv`, `qa.csv`, `evidence_recall.csv`, `ragas.csv`, `performance.csv`, `ablation.csv`) and each `run_manifest.json` | `docs/P6/results/<date>-<run-name>/` | Yes |
+| Predictions, contexts, judge traces, API keys | Local only | Never |
+
+Commit on your own task branch and open a pull request, following `CONTRIBUTING.md`. Name the commit after the run and say whether it is development or held-out.
+
+**Check before committing:**
+- [ ] `"$P6_PY" -m pytest tests/test_p6_evaluation.py -q` passes.
+- [ ] Each step's ✔ condition is met.
+- [ ] Question counts are 200, or missing questions are explained.
+- [ ] Retrieval scores match section 10, unless the gold changed.
+- [ ] `run_manifest.json` shows the commit you expected, and final runs use `--role held_out`.
+- [ ] Rerunning `compare` with the same seed gives the same `ablation.csv`.
+- [ ] Both arms used the same questions, corpus, generator and context budget.
+- [ ] A second person has read the tables, and module owners have reviewed claims about their modules.
+
+## 12. What goes into the report
 
 | Output | Report section |
 | --- | --- |
@@ -323,9 +397,7 @@ For a fair comparison, keep the generator, prompt, questions, corpus and context
 | `performance.csv` + cost | Q2.2 / Q4.6 |
 | `ablation.csv` | Q5 |
 
-Share result files through the team's agreed storage, not Git.
-
-## 11. Common errors
+## 13. Common errors
 
 | Error | Fix |
 | --- | --- |

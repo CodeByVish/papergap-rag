@@ -686,6 +686,11 @@ gold instead of adjudicated. `finalize-labels --disagreements drop` keeps the
 scores condensed rankings that skip unjudged passages and reports judged
 coverage. Initial agreement (89.854%) is unchanged. Adjudication remains
 available as the default option. 60 tests pass in the P6/P1/P2 evaluation suites.
+
+Superseded: the 188 disagreements now have final labels from a disclosed review,
+and the drop policies have been removed. `finalize-labels --disagreements resolved`
+builds the 200-question, 1,853-pair draft in `data/gold/p6/draft-v3/`.
+
 ## P2 configuration and annotation audit — 5 November 2026
 
 All A/B entries are now populated on P3 `1a1dc15`; 188 pairs disagree. The

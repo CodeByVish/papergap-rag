@@ -140,16 +140,12 @@ def run(args, output):
         manifest = json.loads(args.labels_manifest.read_text())
         scope = set(manifest.get("question_scope", {}).get("question_ids", []))
         question_ids = {q["question_id"] for q in questions}
-        whole_questions_dropped = manifest.get("disagreement_policy") == "drop-questions"
-        scope_matches = (
-            scope <= question_ids if whole_questions_dropped else scope == question_ids
-        )
         if (
             manifest.get("labels_sha256") != sha256(args.labels)
             or manifest.get("corpus_sha256") != sha256(args.corpus)
-            or manifest.get("annotation_coverage") not in {"complete", "agreed_only"}
+            or manifest.get("annotation_coverage") != "complete"
             or manifest.get("question_scope", {}).get("project_role") != args.role
-            or not scope_matches
+            or scope != question_ids
             or not manifest.get("source")
             or not manifest.get("mapping")
         ):
@@ -168,14 +164,7 @@ def run(args, output):
             c = catalog.get(p["passage_id"])
             if not c or c["paper_id"] != p["paper_id"] or c["text"] != p["passage"]:
                 raise ValueError("Corpus differs from frozen pool")
-        if whole_questions_dropped:
-            # Hashes above cover the full pool; narrow to gold's scope only after them.
-            questions = [q for q in questions if q["question_id"] in scope]
-            pairs = [p for p in pairs if p["question_id"] in scope]
-            rankings = [r for r in rankings if r["question_id"] in scope]
-        rows, summary = score_p3(
-            questions, pairs, rankings, labels, args.ks, manifest["annotation_coverage"]
-        )
+        rows, summary = score_p3(questions, pairs, rankings, labels, args.ks)
         write_jsonl(output / "scores.jsonl", rows)
         write_csv(output / "retrieval.csv", summary)
         write_json(output / "summary.json", summary)
@@ -324,15 +313,15 @@ def parser():
                 sub.add_argument("--" + field, type=Path, required=True)
             sub.add_argument(
                 "--disagreements",
-                choices=["adjudicate", "drop", "drop-questions"],
+                choices=["adjudicate", "resolved"],
                 default="adjudicate",
-                help="drop: keep only agreed pairs; drop-questions: remove every "
-                "question with a disagreement",
+                help="adjudicate: third-person decisions; resolved: a disclosed review",
             )
             sub.add_argument(
                 "--adjudication",
                 type=Path,
-                help="Completed third-person CSV; required with --disagreements adjudicate",
+                required=True,
+                help="Completed CSV with a final label for every disagreement",
             )
         if name in {"retrieval", "evidence", "qa", "ragas"}:
             sub.add_argument("--questions", type=Path, required=True)

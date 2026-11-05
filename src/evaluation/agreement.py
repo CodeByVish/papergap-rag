@@ -14,6 +14,11 @@ from src.evaluation.common import sha256, write_csv, write_json, write_jsonl
 
 BASE = "data/processed/annotation_common_v3"
 VIEWS = BASE + "_markdown"
+RESOLUTION_SOURCES = {
+    "human_reviewed",
+    "human_spot_checked",
+    "ai_suggestion_unchecked",
+}
 
 
 def agreement(rows):
@@ -212,20 +217,16 @@ def finalize_gold(
     corpus,
     disagreements="adjudicate",
 ):
-    """Export gold labels. `disagreements="drop"` keeps only agreed pairs.
+    """Export gold labels with a final label for every disagreement.
 
-    Dropped pairs are left unjudged, not relabelled; initial agreement is unchanged.
-    `disagreements="drop-questions"` instead removes every question with a disagreement.
+    `disagreements="adjudicate"` requires third-person decisions.
+    `disagreements="resolved"` applies a disclosed review that is not third-person
+    adjudication; the review must state that decision in `resolution_disclosure`.
     """
-    if disagreements not in {"adjudicate", "drop", "drop-questions"}:
-        raise ValueError(
-            "Disagreement policy must be adjudicate, drop or drop-questions"
-        )
-    dropping = disagreements != "adjudicate"
-    if dropping != (adjudication_path is None):
-        raise ValueError(
-            "Supply an adjudication file only when disagreements are adjudicated"
-        )
+    if disagreements not in {"adjudicate", "resolved"}:
+        raise ValueError("Disagreement policy must be adjudicate or resolved")
+    if adjudication_path is None:
+        raise ValueError("A resolution file is required")
     required = ("independence_confirmed", "usage_and_freeze_reviewed")
     if (
         not all(review.get(k) is True for k in required)
@@ -244,25 +245,35 @@ def finalize_gold(
             "Raw agreement below 80%; preserve this round and review the protocol"
         )
     expected = {int(r["record_number"]): r for r in disputes}
-    removed_questions = (
-        {r["question_id"] for r in disputes}
-        if disagreements == "drop-questions"
-        else set()
-    )
-    if dropping:
-        rows = []
-    else:
-        with Path(adjudication_path).open(newline="") as f:
-            rows = list(csv.DictReader(f))
-    if disagreements == "adjudicate" and (
+    with Path(adjudication_path).open(newline="") as f:
+        rows = list(csv.DictReader(f))
+    if (
         len(rows) != len(expected)
         or {int(r["record_number"]) for r in rows} != set(expected)
     ):
         raise ValueError("Adjudication must cover each disagreement exactly once")
+    if disagreements == "resolved" and not review.get(
+        "resolution_disclosure", ""
+    ).strip():
+        raise ValueError("Resolved labels require resolution_disclosure in the review")
     final = {}
     for row in rows:
         number = int(row["record_number"])
         original = expected[number]
+        if disagreements == "resolved":
+            if any(
+                row.get(k) != str(original[k])
+                for k in ("question_id", "passage_id", "label_A", "label_B")
+            ):
+                raise ValueError("Resolved row altered original identity or labels")
+            if (
+                row.get("final_label") not in {"0", "1"}
+                or not row.get("reviewer", "").strip()
+                or row.get("label_source") not in RESOLUTION_SOURCES
+            ):
+                raise ValueError("Every disagreement needs label, reviewer and source")
+            final[number] = int(row["final_label"])
+            continue
         if any(
             row.get(k) != str(v)
             for k, v in original.items()
@@ -287,13 +298,8 @@ def finalize_gold(
         c = catalog.get(p["passage_id"])
         if not c or c["paper_id"] != p["paper_id"] or c["text"] != p["passage"]:
             raise ValueError("Corpus identity/text differs from the frozen pool")
-        dropped = dropping and n in expected
-        removed = p["question_id"] in removed_questions
-        label = (
-            None if dropped or removed else final.get(n, judgments["A", n]["label"])
-        )
-        if not removed:
-            grouped[p["question_id"]].append((p, label))
+        label = final.get(n, judgments["A", n]["label"])
+        grouped[p["question_id"]].append((p, label))
         provenance.append(
             {
                 "record_number": n,
@@ -302,8 +308,6 @@ def finalize_gold(
                 "A": judgments["A", n],
                 "B": judgments["B", n],
                 "final_label": label,
-                "dropped_disagreement": dropped,
-                "dropped_question": removed,
                 "adjudication": next(
                     (r for r in rows if int(r["record_number"]) == n), None
                 ),
@@ -318,37 +322,37 @@ def finalize_gold(
                 "status": "mapped",
                 "relevance_complete": False,
                 "relevant_passage_ids": [p["passage_id"] for p, l in records if l],
-                "judged_passage_ids": [
-                    p["passage_id"] for p, l in records if l is not None
-                ],
+                "judged_passage_ids": [p["passage_id"] for p, _ in records],
             }
         )
     write_jsonl(output / "final_labels.jsonl", labels)
-    if removed_questions:
-        write_jsonl(
-            output / "questions.jsonl",
-            [
-                {
-                    "question_id": qid,
-                    "paper_id": records[0][0]["paper_id"],
-                    "question": records[0][0]["question"],
-                }
-                for qid, records in sorted(grouped.items())
-            ],
-        )
     write_jsonl(output / "original_and_final_judgments.jsonl", provenance)
+    resolution = {}
+    if disagreements == "resolved":
+        resolution = {
+            "resolution": {
+                "disclosure": review["resolution_disclosure"],
+                "file_sha256": sha256(adjudication_path),
+                "final_label_counts": dict(
+                    sorted(Counter(r["final_label"] for r in rows).items())
+                ),
+                "label_sources": dict(
+                    sorted(Counter(r["label_source"] for r in rows).items())
+                ),
+                "reviewer_is_annotator": sum(
+                    r.get("reviewer_is_annotator") == "True" for r in rows
+                ),
+            }
+        }
     write_json(
         output / "final_labels_manifest.json",
         {
+            **resolution,
             "schema_version": "v0-proposed",
             "labels_sha256": sha256(output / "final_labels.jsonl"),
             "corpus_sha256": sha256(corpus),
-            "annotation_coverage": "complete"
-            if disagreements == "adjudicate"
-            else "agreed_only",
+            "annotation_coverage": "complete",
             "disagreement_policy": disagreements,
-            "dropped_disagreement_pairs": len(expected) if dropping else 0,
-            "dropped_questions": len(removed_questions),
             "questions_without_relevant": sum(
                 not row["relevant_passage_ids"] for row in labels
             ),
