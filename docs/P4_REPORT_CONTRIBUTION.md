@@ -82,26 +82,31 @@ questions and on validation questions without P3's held-out list.
 
 #### 3.1 The adaptive loop against plain retrieval
 
-Two cluster jobs on the same 40 questions (job 50701, then job 50977 after the critic was recalibrated).
+Three cluster jobs on the same 40 questions: job 50701, job 50977 after the critic was recalibrated, and job
+51172 after the critic was changed to read the generator's own view of the passages, cite them by handle and
+quote its evidence.
 
-| | static | adaptive, job 50701 | adaptive, job 50977 | static-wide (15) |
-| --- | ---: | ---: | ---: | ---: |
-| Mean gold recall | 0.740 | 0.802 | 0.802 | 0.974 |
-| Questions with full recall | 22/32 | 24/32 | 24/32 | 30/32 |
-| Mean passages read (all 40 questions) | 5.0 | 5.9 | 5.7 | 13.4 |
-| Mean rounds | 1.00 | 2.03 | 1.68 | 1.00 |
-| Retries | 0 | 41 | 27 | 0 |
-| Unnecessary retries (of retries with gold) | n/a | 55.6% | 38.9% | n/a |
-| Ineffective retries | n/a | 92.6% | 88.9% | n/a |
-| Redundant retries (nothing new) | n/a | 34.1% | 22.2% | n/a |
-| Agent time per question (s) | < 0.1 | 10.9 | 12.3 | < 0.1 |
+| | static | adaptive, job 50701 | adaptive, job 50977 | adaptive, job 51172 | static-wide (15) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Mean gold recall | 0.740 | 0.802 | 0.802 | 0.771 | 0.974 |
+| Questions with full recall | 22/32 | 24/32 | 24/32 | 23/32 | 30/32 |
+| Mean passages read (all 40 questions) | 5.0 | 5.9 | 5.7 | 5.95 | 13.4 |
+| Mean rounds | 1.00 | 2.03 | 1.68 | 1.90 | 1.00 |
+| Retries | 0 | 41 | 27 | 36 | 0 |
+| Unnecessary retries (of retries with gold) | n/a | 55.6% | 38.9% | 56.5% | n/a |
+| Ineffective retries | n/a | 92.6% | 88.9% | 95.7% | n/a |
+| Redundant retries (nothing new) | n/a | 34.1% | 22.2% | 22.2% | n/a |
+| Agent time per question (s) | < 0.1 | 10.9 | 12.3 | 6.1 | < 0.1 |
 
-- **Over static top-5**, the adaptive arm gains 0.0625 recall (95% CI 0.0 to 0.156) in both jobs. That
-  comes from two of the 32 questions.
+- **Over static top-5**, the adaptive arm gains 0.0625 recall (95% CI 0.0 to 0.156) in jobs 50701 and
+  50977, which comes from two of the 32 questions, and 0.031 (CI 0.0 to 0.094) in job 51172, one question.
 - **Against the same number of plain-retrieval passages**, the matched-budget gain is −0.042 (CI −0.115
-  to 0.0) in job 50701 and −0.010 (CI −0.094 to 0.083) in job 50977: no gain.
-- **The loop is cheaper than before**: recalibrating the critic cut retries from 41 to 27 and
-  unnecessary retries from 55.6% to 38.9% at unchanged recall.
+  to 0.0) in job 50701, −0.010 (CI −0.094 to 0.083) in job 50977 and −0.042 (CI −0.135 to 0.062) in job
+  51172, at 5.9 passages: no gain.
+- **Recalibrating the critic made the loop cheaper**: retries fell from 41 to 27 and unnecessary retries from
+  55.6% to 38.9% at unchanged recall. **The generator-view change gave that back**: job 51172 has 36
+  retries, 56.5% unnecessary, and slightly lower recall (0.771). Job 51172 also ran on an L40S, so its
+  agent time per question is not comparable with the earlier jobs.
 - The first cluster job (50550) showed the same recall change, 0.740 to 0.802, and 81 of 81 critic
   replies valid JSON, but its rewriter appended the critic's full sentences ("... not clearly described
   in the retrieved passages") to the search query; that defect was fixed before job 50701.
@@ -128,14 +133,14 @@ top-10: 0.885 against 0.974), so the final configuration uses RRF without rerank
 Each critic verdict compared with whether all gold passages had been retrieved at that point (verdicts
 asked of the model; reused verdicts excluded):
 
-| Verdict and situation | job 50701 | job 50977 |
-| --- | ---: | ---: |
-| "Insufficient" although all gold was already retrieved (over-strict) | 23 | 9 |
-| "Insufficient", gold still missing (correct) | 16 | 13 |
-| "Sufficient", all gold retrieved (correct) | 16 | 21 |
-| "Sufficient", gold missing (false accept) | 4 | 6 |
-| "Insufficient" on an unanswerable question | 22 | 8 |
-| "Sufficient" on an unanswerable question (false accept) | 0 | 4 |
+| Verdict and situation | job 50701 | job 50977 | job 51172 |
+| --- | ---: | ---: | ---: |
+| "Insufficient" although all gold was already retrieved (over-strict) | 23 | 9 | 19 |
+| "Insufficient", gold still missing (correct) | 16 | 13 | 12 |
+| "Sufficient", all gold retrieved (correct) | 16 | 21 | 16 |
+| "Sufficient", gold missing (false accept) | 4 | 6 | 7 |
+| "Insufficient" on an unanswerable question | 22 | 8 | 12 |
+| "Sufficient" on an unanswerable question (false accept) | 0 | 4 | 2 |
 
 Two defects explain the first job: the critic saw only the first 1,200 characters of each passage
 (71% of gold passages are longer, and it lost 28% of their text on average), and its prompt asked for
@@ -144,7 +149,18 @@ made the critic lenient: it now accepts 4 of 8 unanswerable questions, and 8 of 
 answerable questions cite no gold passage. Recall did not change, because one question was gained and one
 lost. How much of the question's wording a cited passage shares does not separate good verdicts from
 bad ones (gold-citing and lookalike-citing verdicts both range from 0.0 to 1.0), so no lexical guard was
-added; the later quote requirement targets this and has not yet been run on the model (see below).
+added.
+
+Job 51172 ran the critic on the generator's own view (8 passages of at most 1,200 characters), with
+passage handles and a quote that must occur in the cited passages. It accepted fewer unanswerable
+questions (2 of 8, from 4) and was stricter on answerable ones: 19 over-strict verdicts, which come from 8
+questions (5 in job 50977), because every retry of an unsatisfied question is judged again. Truncation does
+not explain this: the gold passage is longer than 1,200 characters in 65% of the over-strict verdicts and in
+75% of the correct "sufficient" ones. Of 68 verdicts asked of the model, 2 (2.9%) fell back to the rules:
+one failed the quote check and one reply contained a LaTeX `\%` that made the JSON invalid. Of the sufficient
+verdicts, 12 cite a gold passage and 9 cite none. Of the 9 answerable questions the critic left
+unsatisfied, 3 had the answer in view: for "Where did they get the data?", the gold passage says the
+dataset was built by distant supervision from Twitter, and the critic still asked for the source.
 
 #### 3.4 Rewriter
 
@@ -176,18 +192,27 @@ The critic returned `INSUFFICIENT_INFORMATION` rarely (1 of 67 verdicts in job 5
 8 unanswerable questions and 0 of 32 answerable ones. The alternative rule, "refuse if the critic is
 still unsatisfied after the last round", would refuse 8 of 8 unanswerable questions and 12 of 32
 answerable ones with the original critic, and 4 of 8 and 5 of 32 (15.6%) with the recalibrated one. A
-gate of at least 50% of unanswerable and at most 5% of answerable questions is proposed to the team; the
-rule is **not enabled**, and until it is, refusal stays with P5's generator.
+gate of at least 50% of unanswerable and at most 5% of answerable questions was put to the team on 5
+November, with no objection. With the generator-view critic (job 51172) the rule would refuse 6 of 8
+unanswerable and 9 of 32 answerable questions (28.1%), so the gate is not met in any of the three runs. The
+rule is **not enabled**, and refusal stays with P5's generator.
+
+With generated answers (job 51175, same questions), the generator refuses 3 of 8 unanswerable questions on
+its own in both the static and the adaptive arm, so the loop adds nothing there. It answers, with
+citations, all 9 answerable questions that the critic left unsatisfied. Switching the rule on would add 3
+refusals of unanswerable questions and replace those 9 answers with refusals. Whether the 9 answers are
+correct has not been checked: the development items carry no gold answer text.
 
 #### 3.7 What the evidence supports
 
 | Claim | Supported? | Evidence |
 | --- | --- | --- |
-| Adaptive recovers more gold than static top-5 | Weakly | 0.740 to 0.802; paired gain +0.0625, CI [0.0, 0.156]; two questions |
-| Adaptive beats plain retrieval reading the same number of passages | No | matched gain −0.010, CI [−0.094, 0.083], at 5.7 passages |
-| Adaptive beats a well-set static baseline | No | plain top-8: 0.885; top-10: 0.974; adaptive: 0.802 |
-| The recalibrated critic wastes fewer retries | Yes | retries 41 to 27; unnecessary 55.6% to 38.9% |
-| The loop reliably refuses unanswerable questions | No | the critic refuses 1 of 8; the unsatisfied-rule fails the proposed gate |
+| Adaptive recovers more gold than static top-5 | Weakly | 0.740 to 0.771 (job 51172; 0.802 in 50977); paired gain +0.031, CI [0.0, 0.094]; one question |
+| Adaptive beats plain retrieval reading the same number of passages | No | matched gain −0.042, CI [−0.135, 0.062], at 5.9 passages (job 51172) |
+| Adaptive beats a well-set static baseline | No | plain top-8: 0.885; top-10: 0.974; adaptive: 0.771 |
+| The recalibrated critic wastes fewer retries | Only in job 50977 | retries 41 to 27 in job 50977, 36 in job 51172 with the generator view |
+| The critic catches unanswerable questions better | Somewhat | 2 of 8 accepted in job 51172, 4 of 8 in job 50977; the generator refuses the same 3 of 8 in both arms |
+| The loop reliably refuses unanswerable questions | No | the unsatisfied rule refuses 6 of 8 and 9 of 32 answerable: it fails the gate |
 
 The honest summary is that the loop spends fewer passages and model calls than it first did and matches
 plain retrieval at an equal budget, but on this development slice reading more passages up front is
@@ -197,11 +222,11 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
 
 | Result | Status |
 | --- | --- |
-| Sections 3.1 to 3.6 | Development results, jobs 50701 and 50977, reproduced offline where stated |
-| Generator-view alignment, handles, quote requirement (#34) | Implemented and unit-tested; **not yet run on the real model** (the next cluster job, run by P5) |
-| Answer quality (EM, F1, faithfulness) for the arms | **Not yet measured**: all runs so far used retrieval and the critic only |
+| Sections 3.1 to 3.6 | Development results, jobs 50701, 50977 and 51172, reproduced offline where stated |
+| Generator-view alignment, handles, quote requirement (#34) | Run on the real model in job 51172 (commit 37cb0c6) |
+| Answers for the arms | Generated once (job 51175, 40 questions) and counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
 | Held-out run | **Not yet run**; the configuration, commit and thresholds are frozen first |
-| Live demo of the full agent | Implemented; waits for P5's `--record-fn` server option to be merged |
+| Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
 
 ### 5. Limitations
 
