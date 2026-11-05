@@ -1,5 +1,7 @@
 # PaperGap
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
 **Status:** P1/P2 real-data retrieval and evaluation tools, P4 agent components, P5 v7 generation with R4 reranked inputs, and the Streamlit UI are available. P5 reports Qwen generation measurements on training-integration examples; real-Qwen validation of P4's critic, final held-out evaluation and acceptance of the complete shared pipeline remain pending. See [P1 experiments](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md), [P5 Week 6](docs/P5_WEEK6.md) and the [29 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026).
@@ -12,6 +14,10 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
 - [P1 used-question inventory](docs/handoffs/P1_QUESTION_USAGE.md): prior development usage for the team held-out exclusion audit.
+- [Data guide](data/README.md) / [中文数据指南](data/README_zh-CN.md): versioned QASPER artifacts, fields and reproduction commands.
+- [Chunk-size experiments](experiments/chunk_size/README.md): selection evidence and reproducible retrieval comparisons.
+
+P3 has delivered the $365/40$ word corpus, gold mappings, paper catalog and four-method pool covering $200$ questions and $1853$ unique pairs. Both label sets are populated and handed over to P6. Completeness does not establish independent annotation, adjudication or final evaluation. See the [Week 3 report](weekly-work/week-3/week-3-report-en.md) and [Week 4 report](weekly-work/week-4/week-4-report-en.md); schemas remain `v0-proposed`.
 
 ## Team
 
@@ -88,7 +94,7 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending compatible gold mappings and the agreed P6 evaluation protocol; P1/P2 metric tooling is available. Keep real data, model weights, caches, indexes and generated results in ignored local directories; only small synthetic fixtures belong in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending compatible gold mappings and the agreed P6 evaluation protocol; P1/P2 metric tooling is available. Track the agreed QASPER raw/processed artifacts and manifests under `data/` following the bilingual data guides. Keep model weights, caches, indexes and large local outputs ignored; review shared results under `results/README.md`.
 
 ## P1 retrieval: Week 3 / Week 4
 
@@ -151,18 +157,22 @@ artifact records](docs/P1_WEEK3_WEEK4.md#separate-p1-and-p2-artifacts).
 ## Repository layout
 
 ```text
-docs/                 Plan, requirements, evaluation and team tracker
-configs/              Proposed shared configuration
-src/data/             P3: data preparation
-src/retrieval/        P1/P2: retrievers, fusion and reranking
-src/agent/            P4: planning and adaptive retrieval
-src/generation/       P5: generation and citation validation
-src/evaluation/       P6 + experiment owners: metrics and logging
-src/ui/               P6: Streamlit
-scripts/              Reproducible command-line entry points
-tests/                Module and integration tests
-data/                Local datasets (ignored except README)
-results/              Local experiment outputs (ignored except README)
+papergap-rag/
+├── docs/                    # Plan, requirements, evaluation and team tracker
+├── configs/                 # Proposed shared configuration
+├── src/
+│   ├── data/                # P3: data preparation
+│   ├── retrieval/           # P1/P2: retrievers, fusion and reranking
+│   ├── agent/               # P4: planning and adaptive retrieval
+│   ├── generation/          # P5: generation and citation validation
+│   ├── evaluation/          # P6 + experiment owners: metrics and logging
+│   └── ui/                  # P6: Streamlit
+├── scripts/                 # Reproducible command-line entry points
+├── tests/                   # Module and integration tests
+├── data/                    # Tracked QASPER data, manifests and bilingual guides
+├── results/                 # Reviewed chunk-size results; other outputs ignored
+├── experiments/chunk_size/  # Chunk selection and reproduction
+└── weekly-work/             # Published bilingual reports only
 ```
 
 ## Assignment delivery

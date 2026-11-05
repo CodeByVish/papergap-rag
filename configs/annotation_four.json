@@ -1,0 +1,22 @@
+{
+  "retrieval": {
+    "mode": "hybrid_rerank",
+    "candidate_k": 20,
+    "rrf_k": 60,
+    "dense": {
+      "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+      "device": "cpu",
+      "batch_size": 32,
+      "cache_folder": ".cache/huggingface",
+      "local_files_only": true
+    },
+    "reranker": {
+      "revision": "2cfc18c9415c912f9d8155881c133215df768a70",
+      "device": "cpu",
+      "batch_size": 8,
+      "max_length": 512,
+      "cache_folder": ".cache/huggingface",
+      "local_files_only": true
+    }
+  }
+}

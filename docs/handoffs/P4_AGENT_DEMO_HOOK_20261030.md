@@ -63,9 +63,9 @@ index baabba5..baec5d8 100644
 --- a/src/generation/server.py
 +++ b/src/generation/server.py
 @@ -63,6 +63,11 @@ from src.generation.prompts.grounded_qa import PROMPT_VERSION
- 
+
  LOGGER = logging.getLogger("src.generation.server")
- 
+
 +#: P4's agent hook: ``(question, paper_id, top_k, request_id) -> exported agent record``.
 +#: Runs the whole agent loop (retrieval rounds + critic) and returns the record
 +#: ``answer_record`` expects; takes precedence over a plain retriever.
@@ -76,8 +76,8 @@ index baabba5..baec5d8 100644
  #: adapter in :mod:`src.generation.adapters.retrieval` accepts both.
 @@ -136,6 +141,21 @@ def load_retriever(spec: str) -> RetrieverFn:
      return retriever
- 
- 
+
+
 +def load_record_fn(spec: str, pipeline: Any) -> RecordFn:
 +    """Resolve ``"module:factory"`` and call ``factory(pipeline)``.
 +
@@ -95,7 +95,7 @@ index baabba5..baec5d8 100644
 +
  def paper_ids_from(path: str | Path) -> list[str]:
      """Unique ``paper_id`` values in a retrieval dump, sorted.
- 
+
 @@ -319,6 +339,7 @@ def create_app(
      pipeline: GroundedQAPipeline,
      *,
@@ -149,7 +149,7 @@ index baabba5..baec5d8 100644
          default=None,
 @@ -618,7 +650,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
          )
- 
+
      pipeline = GroundedQAPipeline(generator)
 +    if args.retriever and args.record_fn:
 +        raise SystemExit("--retriever and --record-fn are alternatives; pass one")

@@ -1,0 +1,87 @@
+{
+  "dataset": {
+    "config": "qasper",
+    "id": "allenai/qasper",
+    "local_parser_version": 1,
+    "requested_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "resolved_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "source_dataset_version": "0.3.0"
+  },
+  "libraries": {
+    "huggingface_hub": "0.36.2",
+    "python": "3.11.16"
+  },
+  "licenses": {
+    "hub_card": [
+      "cc-by-4.0"
+    ],
+    "source_script": "CC BY 4.0"
+  },
+  "manifest_schema_version": 1,
+  "output": {
+    "aggregate_sha256": "5329221f43106a06e69060ceeeeff194e6de8bda4b8a6154346c96b4d19e2ade",
+    "encoding": "utf-8",
+    "format": "jsonl",
+    "hash_algorithm": "sha256-relative-path-and-file-digest-v1",
+    "newline": "lf"
+  },
+  "repository_files": [
+    {
+      "bytes": 5950,
+      "file": "qasper.py",
+      "sha256": "381d623d4992118738c0a17b9c8219136f493eda381125716ab32b814d0b3c0a"
+    },
+    {
+      "bytes": 8145,
+      "file": "dataset_infos.json",
+      "sha256": "c5a5b7abb6a0a91b2d9b173cdf1224d3d6e400b3d658d322acb67e12305dd5bf"
+    }
+  ],
+  "source_archives": [
+    {
+      "declared_bytes": 10835856,
+      "declared_sha256": "a28fdf966db827bcee3d873107d6b6669864fb7ca8fbf73a192f5e39191bdb5a",
+      "members": [
+        "qasper-train-v0.3.json",
+        "qasper-dev-v0.3.json"
+      ],
+      "observed_bytes": 10835856,
+      "observed_sha256": "a28fdf966db827bcee3d873107d6b6669864fb7ca8fbf73a192f5e39191bdb5a",
+      "url": "https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-train-dev-v0.3.tgz"
+    },
+    {
+      "declared_bytes": 3865061,
+      "declared_sha256": "72a52a41193e2838b8074f80ac074b94f956b84886c36a61c58a7df4171bdd72",
+      "members": [
+        "qasper-test-v0.3.json"
+      ],
+      "observed_bytes": 3865061,
+      "observed_sha256": "72a52a41193e2838b8074f80ac074b94f956b84886c36a61c58a7df4171bdd72",
+      "url": "https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-test-and-evaluator-v0.3.tgz"
+    }
+  ],
+  "source_verification": "sha256-and-required-members",
+  "splits": [
+    {
+      "bytes": 29564540,
+      "file": "train.jsonl",
+      "name": "train",
+      "rows": 888,
+      "sha256": "7a25389963d05d97de9462d4e46b2ef367f37b898de55f5833bae7aa4b6e8732"
+    },
+    {
+      "bytes": 10379828,
+      "file": "validation.jsonl",
+      "name": "validation",
+      "rows": 281,
+      "sha256": "f3e8f8072bbb42c6f770cdbc311672738683505eef401a7b75e0c08cfb7c5945"
+    },
+    {
+      "bytes": 16326418,
+      "file": "test.jsonl",
+      "name": "test",
+      "rows": 416,
+      "sha256": "308380c3da5287ac450582c457a9a75303b8361360dd88e727afd021c8320779"
+    }
+  ]
+}

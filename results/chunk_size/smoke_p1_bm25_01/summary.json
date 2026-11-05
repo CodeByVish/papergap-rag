@@ -1,0 +1,524 @@
+{
+  "run_id": "smoke_p1_bm25_01",
+  "schema_version": "v0-proposed",
+  "sizes": {
+    "150": {
+      "complete_evidence_rate_at_5": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.6666666666666666
+      },
+      "corpus_passage_count": 42145,
+      "corpus_sha256": "01b6219d064703422cc2ade0e892f086021ac5b827b74f6bbd0808efb53de46b",
+      "evidence_hit_at_5": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.6666666666666666
+      },
+      "index_seconds": 2.9792063999921083,
+      "questions": [
+        {
+          "complete_evidence_at_5": true,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [
+            "f7e4bad697dd285bffe16e2c1157052a3c4baace"
+          ],
+          "missing_by_annotation": {
+            "7eecbe1aed7f283bdd4ca6c207115dbfca91d57d": {
+              "paragraphs": {},
+              "unresolved_evidence": [
+                "$$L_{model} = \\hat{L}_{dec} + \\hat{L}_{refine}$$ (Eq. 23)"
+              ],
+              "usable": false
+            },
+            "f7e4bad697dd285bffe16e2c1157052a3c4baace": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": true
+            }
+          },
+          "question_id": "feafcc1c4026d7f55a2c8ce7850d7e12030b5c22",
+          "retrieval_seconds": 0.0003966999938711524,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-f08fefef04b0cf3aa30673d28ecbb5ceffe310ddf8108f337109a5289fcdbce3",
+              "score": 19.0866486138257
+            },
+            {
+              "passage_id": "qasper-passage-v1-58fdfc30738c40174fb885716afd87de96b4c858159cdedefc920b19e9f4c304",
+              "score": 10.006410036154566
+            },
+            {
+              "passage_id": "qasper-passage-v1-305877c23096f54fabf65c852c57d85268c0369eae056993867bdd8723cbd998",
+              "score": 9.956138109501765
+            },
+            {
+              "passage_id": "qasper-passage-v1-8b9ae461a6884555ab1b23362dc3db4d4418c31312a12cd6baa81617ebfbc2c0",
+              "score": 9.744836088680854
+            },
+            {
+              "passage_id": "qasper-passage-v1-c063bc4cf4f2e5a19e342dde0be577a92de419a7e3c6c54f9f7d155360e71167",
+              "score": 9.428142501719272
+            }
+          ],
+          "total_retrieved_words": 651
+        },
+        {
+          "complete_evidence_at_5": false,
+          "evidence_hit_at_5": false,
+          "fully_covered_annotations": [],
+          "missing_by_annotation": {
+            "3a93821ea58a02da7e9de8da480c74f443d0e908": {
+              "paragraphs": {
+                "1912.03804:1:2": [
+                  [
+                    1423,
+                    1526
+                  ]
+                ],
+                "1912.03804:2:0": [
+                  [
+                    0,
+                    708
+                  ]
+                ]
+              },
+              "unresolved_evidence": [],
+              "usable": true
+            },
+            "61b98560b9a7f63f0b2538f9f7238375ca446378": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": false
+            }
+          },
+          "question_id": "2ccc26e11df4eb26fcccdd1f446dc749aff5d572",
+          "retrieval_seconds": 0.00017949999892152846,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-2dfacbf30876e0fb6aacedcd31d4d7074d8a2a3aa77287415d90d46e8aa4c925",
+              "score": 6.686163307104533
+            },
+            {
+              "passage_id": "qasper-passage-v1-ef75d4d1d77696b70c1411f3d976cfa1b5502078cc1e50f2051f43bc443c5b10",
+              "score": 5.788652211773767
+            },
+            {
+              "passage_id": "qasper-passage-v1-5a4a457d3eede39f9f013632a682795d5a8948ef9ea0c876b9630aa2a7f25030",
+              "score": 4.468556553009455
+            },
+            {
+              "passage_id": "qasper-passage-v1-71547367f1d631d0e2c8cc6c120d5849cf1b6a67f844d722714d229d7c53187b",
+              "score": 4.318085998228249
+            },
+            {
+              "passage_id": "qasper-passage-v1-33267b32b888acf34167651390811e18259a8effa64e43e0e26974f5efd86a76",
+              "score": 4.304075344900628
+            }
+          ],
+          "total_retrieved_words": 744
+        },
+        {
+          "complete_evidence_at_5": true,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [
+            "8b5278bfc35cf0a1b43ceb3418c2c5d20f213a31"
+          ],
+          "missing_by_annotation": {
+            "8b5278bfc35cf0a1b43ceb3418c2c5d20f213a31": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": true
+            }
+          },
+          "question_id": "09f0dce416a1e40cc6a24a8b42a802747d2c9363",
+          "retrieval_seconds": 9.020001743920147e-05,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-f63461da7737d7bcec4fcf3c16217f21caee42e2debb86aa27d87303f01102ec",
+              "score": 3.597200797062566
+            },
+            {
+              "passage_id": "qasper-passage-v1-9b0b8e10d9040a80329020bb37cdac5ed8bd2486970ac3b2ee9d491e66ba6035",
+              "score": 1.3653105491086759
+            },
+            {
+              "passage_id": "qasper-passage-v1-241083aa2564d0c4205ffb0bfff57232d57c34aed69e79714e08ced58251acf5",
+              "score": 1.180954656788545
+            },
+            {
+              "passage_id": "qasper-passage-v1-24fdc51ad7ff10419652f52fe9e09710a825c63b984f6b1f815535c2445098bc",
+              "score": 0.9498003560444677
+            },
+            {
+              "passage_id": "qasper-passage-v1-a4c5a10a811de552faab646bbdaef89e8fb902596b95d2e04c86e4ead9d8ae47",
+              "score": 0.3562901769498883
+            }
+          ],
+          "total_retrieved_words": 706
+        }
+      ],
+      "readability_pass_rate": {
+        "denominator": 4,
+        "numerator": 0,
+        "pending": 4,
+        "value": null
+      },
+      "retrieved_word_count": {
+        "denominator": 3,
+        "numerator": 2101,
+        "value": 700.3333333333334
+      }
+    },
+    "200": {
+      "complete_evidence_rate_at_5": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.6666666666666666
+      },
+      "corpus_passage_count": 32073,
+      "corpus_sha256": "30a87e3f261ad4f726318eae36c0f178af683fcbb511b524fcc396b13f123988",
+      "evidence_hit_at_5": {
+        "denominator": 3,
+        "numerator": 3,
+        "value": 1.0
+      },
+      "index_seconds": 2.6281489999964833,
+      "questions": [
+        {
+          "complete_evidence_at_5": true,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [
+            "f7e4bad697dd285bffe16e2c1157052a3c4baace"
+          ],
+          "missing_by_annotation": {
+            "7eecbe1aed7f283bdd4ca6c207115dbfca91d57d": {
+              "paragraphs": {
+                "1902.09243:7:0": [
+                  [
+                    0,
+                    223
+                  ]
+                ],
+                "1902.09243:7:2": [
+                  [
+                    0,
+                    218
+                  ]
+                ]
+              },
+              "unresolved_evidence": [
+                "$$L_{model} = \\hat{L}_{dec} + \\hat{L}_{refine}$$ (Eq. 23)"
+              ],
+              "usable": false
+            },
+            "f7e4bad697dd285bffe16e2c1157052a3c4baace": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": true
+            }
+          },
+          "question_id": "feafcc1c4026d7f55a2c8ce7850d7e12030b5c22",
+          "retrieval_seconds": 0.0003175000019837171,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-3f249c49ed28101cb907c95f3140cf3511d1cc6b2b0f9c76b31611737b2a9300",
+              "score": 17.577429567060612
+            },
+            {
+              "passage_id": "qasper-passage-v1-4064a8790377cd2c90b2088efa419e1e21f7dc98e62583f10dcc5c414c49cbd3",
+              "score": 9.048580402981353
+            },
+            {
+              "passage_id": "qasper-passage-v1-8d2b5aaa1fb60b2d56a0b70de4cafcb717fb8f249d775fe22c67e140975f5ab1",
+              "score": 8.727756396042215
+            },
+            {
+              "passage_id": "qasper-passage-v1-4e1c6b990cc44b7d529ea4f3db32df65f12a721c242b6b6e7ecd2a4c1b9ef4ef",
+              "score": 8.726322199121247
+            },
+            {
+              "passage_id": "qasper-passage-v1-c6e17340f8b75f0c6a203986a805e37015c8926f62870056c5e4863d76cc0d05",
+              "score": 8.626318952686773
+            }
+          ],
+          "total_retrieved_words": 785
+        },
+        {
+          "complete_evidence_at_5": false,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [],
+          "missing_by_annotation": {
+            "3a93821ea58a02da7e9de8da480c74f443d0e908": {
+              "paragraphs": {
+                "1912.03804:2:0": [
+                  [
+                    0,
+                    708
+                  ]
+                ]
+              },
+              "unresolved_evidence": [],
+              "usable": true
+            },
+            "61b98560b9a7f63f0b2538f9f7238375ca446378": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": false
+            }
+          },
+          "question_id": "2ccc26e11df4eb26fcccdd1f446dc749aff5d572",
+          "retrieval_seconds": 0.0001464999804738909,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-002788a17368f34a888f35e93e3aff7f5c1001cdcdb68b21b0227762435dd44c",
+              "score": 6.284025327465458
+            },
+            {
+              "passage_id": "qasper-passage-v1-5ca8220ad01fa12518a0a8bfed46f9d450119c8d4260a3df3f09ccdda4c78b0e",
+              "score": 5.575947055512034
+            },
+            {
+              "passage_id": "qasper-passage-v1-0cc6f2cad014e37c04138fc8fb8c334b51e17f585001017a7b80b2ff5c56f175",
+              "score": 4.4251987271098
+            },
+            {
+              "passage_id": "qasper-passage-v1-2c2fc21eb6f486d51a7a7738ba386c297ff378e66b9cac7df00fbc61fa92c169",
+              "score": 4.180681664977439
+            },
+            {
+              "passage_id": "qasper-passage-v1-0c08e1b59999df19afb20286c646681a29c82b53c0f43601c1963a4c37189172",
+              "score": 4.069900145428864
+            }
+          ],
+          "total_retrieved_words": 1000
+        },
+        {
+          "complete_evidence_at_5": true,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [
+            "8b5278bfc35cf0a1b43ceb3418c2c5d20f213a31"
+          ],
+          "missing_by_annotation": {
+            "8b5278bfc35cf0a1b43ceb3418c2c5d20f213a31": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": true
+            }
+          },
+          "question_id": "09f0dce416a1e40cc6a24a8b42a802747d2c9363",
+          "retrieval_seconds": 9.549999958835542e-05,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-dd3509bb8d024c764cdf6370623f5e2c483e5d2de1775e53fed98eaf4e92ad14",
+              "score": 2.493509599930867
+            },
+            {
+              "passage_id": "qasper-passage-v1-8603c0788c7d1bcc0bb8f9f8ff74d5d7201fba803840b8ba7dd59a9a507ec69d",
+              "score": 1.6435571609255475
+            },
+            {
+              "passage_id": "qasper-passage-v1-f3a16c9bf56412933a0b7bc8e8df96a37ccec340a391f56f9470df38ac61533e",
+              "score": 1.2860613785763109
+            },
+            {
+              "passage_id": "qasper-passage-v1-3a7dde394bde798f235e0b91d4a9e27c3e72a95aa8f250d19eed9d9d72a33f93",
+              "score": 1.0423378019547613
+            },
+            {
+              "passage_id": "qasper-passage-v1-ceb95467c47064c7d17a4b20662a2fe9b653b4ee7303ff94124dd2963da6806e",
+              "score": 1.02831694893434
+            }
+          ],
+          "total_retrieved_words": 816
+        }
+      ],
+      "readability_pass_rate": {
+        "denominator": 3,
+        "numerator": 0,
+        "pending": 3,
+        "value": null
+      },
+      "retrieved_word_count": {
+        "denominator": 3,
+        "numerator": 2601,
+        "value": 867.0
+      }
+    },
+    "250": {
+      "complete_evidence_rate_at_5": {
+        "denominator": 3,
+        "numerator": 2,
+        "value": 0.6666666666666666
+      },
+      "corpus_passage_count": 26883,
+      "corpus_sha256": "9f6d2781d48f6420634daf51f8b4975d576176a47393d82eff509f910faf7cf1",
+      "evidence_hit_at_5": {
+        "denominator": 3,
+        "numerator": 3,
+        "value": 1.0
+      },
+      "index_seconds": 2.4802536999923177,
+      "questions": [
+        {
+          "complete_evidence_at_5": true,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [
+            "f7e4bad697dd285bffe16e2c1157052a3c4baace"
+          ],
+          "missing_by_annotation": {
+            "7eecbe1aed7f283bdd4ca6c207115dbfca91d57d": {
+              "paragraphs": {
+                "1902.09243:7:0": [
+                  [
+                    0,
+                    223
+                  ]
+                ],
+                "1902.09243:7:2": [
+                  [
+                    0,
+                    218
+                  ]
+                ]
+              },
+              "unresolved_evidence": [
+                "$$L_{model} = \\hat{L}_{dec} + \\hat{L}_{refine}$$ (Eq. 23)"
+              ],
+              "usable": false
+            },
+            "f7e4bad697dd285bffe16e2c1157052a3c4baace": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": true
+            }
+          },
+          "question_id": "feafcc1c4026d7f55a2c8ce7850d7e12030b5c22",
+          "retrieval_seconds": 0.0003245999978389591,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-a27ee7c6b50c2bd01cd40b08cbf51d9099e742ae8c4c35c58122abf5eff23775",
+              "score": 15.97571911227073
+            },
+            {
+              "passage_id": "qasper-passage-v1-662365e56d9e1d976cde6a0df4ad7ef3edd1e0bcd5ef768b8996c12f9d53d493",
+              "score": 9.073365518806916
+            },
+            {
+              "passage_id": "qasper-passage-v1-b23cb7032e31abbb6f2979505de4e5d2d1c69f940e93e690907b20053391bcc2",
+              "score": 8.611053527076743
+            },
+            {
+              "passage_id": "qasper-passage-v1-6d333f7207252345c24a28365050d48c692cf54f8b07d751ba086cda109161f1",
+              "score": 8.552920011878218
+            },
+            {
+              "passage_id": "qasper-passage-v1-d3d0231845717f3c95088fec32732b897d364071041c9708202533cbab274d31",
+              "score": 8.542472949944539
+            }
+          ],
+          "total_retrieved_words": 963
+        },
+        {
+          "complete_evidence_at_5": false,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [],
+          "missing_by_annotation": {
+            "3a93821ea58a02da7e9de8da480c74f443d0e908": {
+              "paragraphs": {
+                "1912.03804:2:0": [
+                  [
+                    0,
+                    708
+                  ]
+                ]
+              },
+              "unresolved_evidence": [],
+              "usable": true
+            },
+            "61b98560b9a7f63f0b2538f9f7238375ca446378": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": false
+            }
+          },
+          "question_id": "2ccc26e11df4eb26fcccdd1f446dc749aff5d572",
+          "retrieval_seconds": 0.00015460001304745674,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-698521bebc24e21a9b0b67b5bc0042d2c3332506729e4d00f6ef1fae2fbcc784",
+              "score": 6.05318529615304
+            },
+            {
+              "passage_id": "qasper-passage-v1-e060e03b4cd27f33ffe55978ecfb29b1028ea16e9b3832345e9f63dc268d4888",
+              "score": 5.576874452568402
+            },
+            {
+              "passage_id": "qasper-passage-v1-43f4f6274f0c40fb5b64111512d633f2e058364997eacfc5c2bdb91be7bff8a1",
+              "score": 4.698136994202313
+            },
+            {
+              "passage_id": "qasper-passage-v1-8ec1c23d982d379b52e5946a4ae484c1e372d987eeb57e1ffad6ef44c196d734",
+              "score": 4.367171060573711
+            },
+            {
+              "passage_id": "qasper-passage-v1-89219e00d5494ffab4ccf2ee8cd3b5800d5fce1f0650a29118a2f5e286b03703",
+              "score": 4.315976529509299
+            }
+          ],
+          "total_retrieved_words": 1113
+        },
+        {
+          "complete_evidence_at_5": true,
+          "evidence_hit_at_5": true,
+          "fully_covered_annotations": [
+            "8b5278bfc35cf0a1b43ceb3418c2c5d20f213a31"
+          ],
+          "missing_by_annotation": {
+            "8b5278bfc35cf0a1b43ceb3418c2c5d20f213a31": {
+              "paragraphs": {},
+              "unresolved_evidence": [],
+              "usable": true
+            }
+          },
+          "question_id": "09f0dce416a1e40cc6a24a8b42a802747d2c9363",
+          "retrieval_seconds": 8.250001701526344e-05,
+          "retrieved": [
+            {
+              "passage_id": "qasper-passage-v1-d362867d9466755f9ac1e392230cbf03c3d473e3b9f3df17467c4370d3b60978",
+              "score": 2.556259335830172
+            },
+            {
+              "passage_id": "qasper-passage-v1-9484bf9101d06174b12dd745ef5afca21820300f760c45bfe29ec0ffc94b4940",
+              "score": 1.8309608165525586
+            },
+            {
+              "passage_id": "qasper-passage-v1-3374b41be583319105e37cd567475c0d1aca7794de6923182993f0b345d5ac18",
+              "score": 1.7283348051501728
+            },
+            {
+              "passage_id": "qasper-passage-v1-f9a6f626c93d717fb2be0b1cd87bf5fa7a1154c8e79f1a820798c02d26c7c3fa",
+              "score": 1.032865335131535
+            },
+            {
+              "passage_id": "qasper-passage-v1-f8375e20467e5bb181106824edafd7fbd24a405d10306780c038140a94d40a69",
+              "score": 0.8584058104027673
+            }
+          ],
+          "total_retrieved_words": 958
+        }
+      ],
+      "readability_pass_rate": {
+        "denominator": 3,
+        "numerator": 0,
+        "pending": 3,
+        "value": null
+      },
+      "retrieved_word_count": {
+        "denominator": 3,
+        "numerator": 3034,
+        "value": 1011.3333333333334
+      }
+    }
+  }
+}

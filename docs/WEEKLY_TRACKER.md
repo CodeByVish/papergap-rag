@@ -8,8 +8,8 @@ Update this file after the weekly meeting. Link to concrete issues, PRs, artifac
 | --- | --- | --- | --- |
 | 1 | 14–20 Sep | Rubric interpretation, owners, compute, interfaces and split policy | Not recorded |
 | 2 | 21–27 Sep | Provisional corpus, independent retrieval, pilot candidates | Not recorded |
-| 3 | 28 Sep–4 Oct | Retrieval baselines, annotation pilot, final chunker/corpus freeze | Not recorded |
-| 4 | 5–11 Oct | One complete query in Streamlit | Not recorded |
+| 3 | 28 Sep–4 Oct | Retrieval baselines, annotation pilot, final chunker/corpus freeze | P3: 365/40 corpus delivered; see dated handover below. Other owners' checkpoints not confirmed here. |
+| 4 | 5–11 Oct | One complete query in Streamlit | P3: catalog, gold mappings, frozen four-method pool and populated labels handed over; see actual dates below. Team E2E checkpoint not confirmed here. |
 | 5 | 12–18 Oct | Frozen held-out pool and annotation guidelines | Not recorded |
 | 6 | 19–25 Oct | 2,000 blind judgments, agreement, adjudication, system freeze | Not recorded |
 | 7 | 26 Oct–1 Nov | Final comparisons and analysis | Not recorded |
@@ -663,3 +663,9 @@ results, retaining BGE and the frozen top-5 pool for comparison. Runtime needs
 `DEMO_AGENT_TOP_K=8` as well as server `--top-k 8`. Corpus-wide pinned reranker
 tokenization finds 27.08% of passages over 512 tokens before adding a question.
 See P2_REPORT_CONTRIBUTION.md for evidence boundaries and final-label dependencies.
+
+## P3 data and annotation handover — 2026/11/05
+
+Week 3 selected and delivered the $365/40$ word corpus; see the [English report](../weekly-work/week-3/week-3-report-en.md) and [Chinese report](../weekly-work/week-3/week-3-report-zn.md). Week 4 delivered the paper catalog, gold mappings, used-question exclusion audit and frozen $200$-question list; four-method pooling was completed on 2026/10/29 with $1853$ pairs. Label collection and P6 handover were reported complete as of 2026/11/04 in the [English Week 4 report](../weekly-work/week-4/week-4-report-en.md) and [Chinese Week 4 report](../weekly-work/week-4/week-4-report-zn-CN.md). These are actual completion dates, separate from the planned work weeks above.
+
+Both label sets are populated. Completeness does not certify independent human annotation, agreement acceptance, adjudication or final evaluation; those remain P3/P6 and team review responsibilities. The P2 audit above retains its original source commit and limitations and is not a new P3 agreement result. Use v3 for current annotation; v2 and the old BM25 artifacts are retired and retained through Git history only. Do not restore or regenerate historical outputs to match current source hashes. Commands and artifact contracts remain authoritative in the [English data guide](../data/README.md) and [Chinese data guide](../data/README_zh-CN.md). Other owners' checkpoints and team integration acceptance are not confirmed by this P3 update.

@@ -1,0 +1,200 @@
+{"paper_id": "1909.11687", "question": "Why are prior knowledge distillation techniques models are ineffective in producing student models with vocabularies different from the original teacher models?  ", "question_id": "d087539e6a38c42f0a521ff2173ef42c0733878e", "source_split": "validation"}
+{"paper_id": "2004.02929", "question": "Does the paper mention other works proposing methods to detect anglicisms in Spanish?", "question_id": "bbc58b193c08ccb2a1e8235a36273785a3b375fb", "source_split": "train"}
+{"paper_id": "1601.02403", "question": "What argument components do the ML methods aim to identify?", "question_id": "eac9dae3492e17bc49c842fb566f464ff18c049b", "source_split": "validation"}
+{"paper_id": "1911.10742", "question": "What are the baselines outperformed by this work?", "question_id": "f7662b11e87c1e051e13799413f3db459ac3e19c", "source_split": "test"}
+{"paper_id": "1910.00825", "question": "How does new evaluation metric considers critical informative entities?", "question_id": "c47e87efab11f661993a14cf2d7506be641375e4", "source_split": "train"}
+{"paper_id": "1906.01076", "question": "Do they compare against other models?", "question_id": "1002bd01372eba0f3078fb4a951505278ed45f2e", "source_split": "test"}
+{"paper_id": "1909.07512", "question": "How do they determine similarity between predicted word and topics?", "question_id": "c2432884287dca4af355698a543bc0db67a8c091", "source_split": "train"}
+{"paper_id": "1808.04614", "question": "Do they conduct a user study where they show an NL interface with and without their explanation?", "question_id": "e8647f9dc0986048694c34ab9ce763b3167c3deb", "source_split": "train"}
+{"paper_id": "1903.02930", "question": "what features were derived from the videos?", "question_id": "488e3c4fd1103c46e12815d1bf414a0356fb0d0e", "source_split": "test"}
+{"paper_id": "1808.06834", "question": "What classification models were used?", "question_id": "0cf5132ac7904b7b81e17938d5815f70926a5180", "source_split": "train"}
+{"paper_id": "1704.03279", "question": "Do they explore other language pairs?", "question_id": "a994cc18046912a8c9328dc572f4e4310736c0e2", "source_split": "test"}
+{"paper_id": "1908.04531", "question": "How large was the dataset of Danish comments?", "question_id": "b69f0438c1af4b9ed89e531c056d9812d4994016", "source_split": "train"}
+{"paper_id": "1906.08593", "question": "Which neural architecture do they use as a base for their attention conflict mechanisms?", "question_id": "31d695ba855d821d3e5cdb7bea638c7dbb7c87c7", "source_split": "validation"}
+{"paper_id": "2001.01589", "question": "How is morphology knowledge implemented in the method?", "question_id": "57388bf2693d71eb966d42fa58ab66d7f595e55f", "source_split": "train"}
+{"paper_id": "1906.11085", "question": "what shortcomings of previous datasets are mentioned?", "question_id": "018b81f810a39b3f437a85573d24531efccd835f", "source_split": "test"}
+{"paper_id": "1905.00472", "question": "Did they pre-train on existing sentiment corpora?", "question_id": "9c2cacf77041e02d38f92a4c490df1e04552f96f", "source_split": "test"}
+{"paper_id": "2001.07820", "question": "What are the benchmark attacking methods?", "question_id": "4ef11518b40cc55d86c485f14e24732123b0d907", "source_split": "validation"}
+{"paper_id": "1901.01010", "question": "Which languages do they use?", "question_id": "c9bc6f53b941863e801280343afa14248521ce43", "source_split": "validation"}
+{"paper_id": "1710.10609", "question": "Do they use the same distance metric for both the SimCluster and K-means algorithm?", "question_id": "49b38189b8336ce41d0f0b4c5c9459722736e15b", "source_split": "train"}
+{"paper_id": "1808.09180", "question": "Do the character-level models perform better than models with access to morphological analyses only?", "question_id": "c4b621f573bbb411bdaa84a7562c9c4795a7eb3a", "source_split": "test"}
+{"paper_id": "2003.12660", "question": "What baselines do they propose?", "question_id": "dd81f58c782169886235c48b8f9a08e0954dd3ae", "source_split": "test"}
+{"paper_id": "1703.05320", "question": "What contribute to improve the accuracy on legal question answering task?", "question_id": "fac273ecb3e72f2dc94cdbc797582d7225a8e070", "source_split": "test"}
+{"paper_id": "1803.07771", "question": "What are the other models they compare to?", "question_id": "0b9021cefca71081e617a362e7e3995c5f1d2a88", "source_split": "train"}
+{"paper_id": "1809.07629", "question": "What evaluation metrics are used?", "question_id": "c5171daf82107fce0f285fa18f19e91fbd1215c5", "source_split": "train"}
+{"paper_id": "1909.02764", "question": "What is the baseline method for the task?", "question_id": "00bcdffff7e055f99aaf1b05cf41c98e2748e948", "source_split": "train"}
+{"paper_id": "1607.06275", "question": "What was the inter-annotator agreement?", "question_id": "48c3e61b2ed7b3f97706e2a522172bf9b51ec467", "source_split": "train"}
+{"paper_id": "1902.09314", "question": "Do they use multi-attention heads?", "question_id": "9bffc9a9c527e938b2a95ba60c483a916dbd1f6b", "source_split": "train"}
+{"paper_id": "1908.05828", "question": "Which machine learning models do they explore?", "question_id": "8a7615fc6ff1de287d36ab21bf2c6a3b2914f73d", "source_split": "validation"}
+{"paper_id": "1908.11046", "question": "What are the baseline models?", "question_id": "77bbe1698e001c5889217be3164982ea36e85752", "source_split": "test"}
+{"paper_id": "1709.00387", "question": "Which are the four Arabic dialects?", "question_id": "e87f47a293e0b49ab8b15fc6633d9ca6dc9de071", "source_split": "train"}
+{"paper_id": "2004.03788", "question": "What features do they extract?", "question_id": "de4e180f49ff187abc519d01eff14ebcd8149cad", "source_split": "train"}
+{"paper_id": "1801.02073", "question": "How many question types do they find in the datasets analyzed?", "question_id": "45a5961a4e1d1c22874c4918e5c98bd3c0a670b3", "source_split": "validation"}
+{"paper_id": "1908.10084", "question": "What transfer learning tasks are evaluated?", "question_id": "4944cd597b836b62616a4e37c045ce48de8c82ca", "source_split": "validation"}
+{"paper_id": "1911.03842", "question": "How does counterfactual data augmentation aim to tackle bias?", "question_id": "9d9b11f86a96c6d3dd862453bf240d6e018e75af", "source_split": "train"}
+{"paper_id": "1912.07940", "question": "How many tweets are in the dataset?", "question_id": "1dc5bf9dca7de2ba21db10e9056d3906267ef5d5", "source_split": "test"}
+{"paper_id": "1708.09025", "question": "How do they obtain syntax from raw documents in hrLDA?", "question_id": "ce504a7ee2c1f068ef4dde8d435245b4e77bb0b5", "source_split": "test"}
+{"paper_id": "1811.01183", "question": "What is their binary classifier?", "question_id": "47b7bc232af7bf93338bd3926345e23e9e80c0c1", "source_split": "test"}
+{"paper_id": "1707.06939", "question": "What crowdsourcing platform was used?", "question_id": "0cf6d52d7eafd43ff961377572bccefc29caf612", "source_split": "train"}
+{"paper_id": "1705.02394", "question": "What are the tasks in the multitask learning setup?", "question_id": "e75685ef5f58027be44f42f30cb3988b509b2768", "source_split": "train"}
+{"paper_id": "1801.07887", "question": "What is active learning?", "question_id": "1cfed6b0c9b5a079a51166209649a987e7553e4e", "source_split": "validation"}
+{"paper_id": "1908.06379", "question": "How is dependency parsing empirically verified?", "question_id": "42be49b883eba268e3dbc5c3ff4631442657dcbb", "source_split": "train"}
+{"paper_id": "1706.01678", "question": "Which other methods do they compare with?", "question_id": "a6a48de63c1928238b37c2a01c924b852fe752f8", "source_split": "validation"}
+{"paper_id": "1706.08032", "question": "Which three Twitter sentiment classification datasets are used for experiments?", "question_id": "12d77ac09c659d2e04b5e3955a283101c3ad1058", "source_split": "train"}
+{"paper_id": "1808.10006", "question": "What methods are used to correct the brevity problem?", "question_id": "dce27c49b9bf1919ca545e04663507d83bb42dbe", "source_split": "test"}
+{"paper_id": "2003.09244", "question": "What concrete software is planned to be developed by the end of the programme?", "question_id": "b59f3a58939f7ac007d3263a459c56ebefc4b49a", "source_split": "test"}
+{"paper_id": "1905.00840", "question": "What was their accuracy score?", "question_id": "756a8a9125e6984e0ca768b653c6c760efa3db66", "source_split": "test"}
+{"paper_id": "1610.00879", "question": "Is the data acquired under distant supervision verified by humans at any stage?", "question_id": "368317b4fd049511e00b441c2e9550ded6607c37", "source_split": "train"}
+{"paper_id": "1803.03786", "question": "what types of features were used?", "question_id": "363ddc06db5720786ed440927d7fbb7d0a8078ae", "source_split": "train"}
+{"paper_id": "1910.03891", "question": "What are recent works on knowedge graph embeddings authors mention?", "question_id": "31b20a4bab09450267dfa42884227103743e3426", "source_split": "train"}
+{"paper_id": "1909.08824", "question": "How does the context-aware variational autoencoder learn event background information?", "question_id": "fb76e994e2e3fa129f1e94f1b043b274af8fb84c", "source_split": "train"}
+{"paper_id": "1912.04961", "question": "Is the data de-identified?", "question_id": "861187338c5ad445b9acddba8f2c7688785667b1", "source_split": "validation"}
+{"paper_id": "1605.05166", "question": "what elements of each profile did they use?", "question_id": "f264612db9096caf938bd8ee4085848143b34f81", "source_split": "test"}
+{"paper_id": "1707.06519", "question": "Which pairs of languages do they consider similar enough to capture phonetic structure?", "question_id": "3cc0d773085dc175b85955e95911a2cfaab2cdc4", "source_split": "test"}
+{"paper_id": "1910.13215", "question": "What dataset was used in this work?", "question_id": "537a786794604ecc473fb3ef6222e0c3cb81f772", "source_split": "train"}
+{"paper_id": "1711.03438", "question": "Can the model add new relations to the knowledge graph, or just new entities?", "question_id": "a81941f933907e4eb848f8aa896c78c1157bff20", "source_split": "train"}
+{"paper_id": "1912.10806", "question": "What is the dataset used in the paper?", "question_id": "3b391cd58cf6a61fe8c8eff2095e33794e80f0e3", "source_split": "train"}
+{"paper_id": "1904.08386", "question": "How do they model a city description using embeddings?", "question_id": "508580af51483b5fb0df2630e8ea726ff08d537b", "source_split": "train"}
+{"paper_id": "1911.09247", "question": "What characterizes the 303 domains? e.g. is this different subject tags?", "question_id": "627ce8a1db08a732d5a8f7e1f8a72e3de89847e6", "source_split": "test"}
+{"paper_id": "1909.10012", "question": "What are the organic and inorganic ways to show political affiliation through profile changes?", "question_id": "82595ca5d11e541ed0c3353b41e8698af40a479b", "source_split": "validation"}
+{"paper_id": "1612.05202", "question": "Do they compare against manually-created lexicons?", "question_id": "d5c393df758dec6ea6827ae5b887eb6c303a4f4d", "source_split": "test"}
+{"paper_id": "1912.13337", "question": "After how many hops does accuracy decrease?", "question_id": "8de9f14c7c4f37ab103bc8a639d6d80ade1bc27b", "source_split": "validation"}
+{"paper_id": "2001.05284", "question": "Which ASR system(s) is used in this work?", "question_id": "67131c15aceeb51ae1d3b2b8241c8750a19cca8e", "source_split": "train"}
+{"paper_id": "1807.03674", "question": "How long is the dataset?", "question_id": "ead7704a64447dccd504951618d3be463eba86bf", "source_split": "test"}
+{"paper_id": "1908.10322", "question": "How many characters are accepted as input of the language model?", "question_id": "7c45c6e5db6cfca2d6de8751e28403b35420ae38", "source_split": "train"}
+{"paper_id": "2002.07306", "question": "What metrics are used for evaluation?", "question_id": "37f8c034a14c7b4d0ab2e0ed1b827cc0eaa71ac6", "source_split": "validation"}
+{"paper_id": "1708.01464", "question": "what datasets did they use?", "question_id": "4eaf9787f51cd7cdc45eb85cf223d752328c6ee4", "source_split": "validation"}
+{"paper_id": "1911.09886", "question": "Which one of two proposed approaches performed better in experiments?", "question_id": "710fa8b3e74ee63d2acc20af19f95f7702b7ce5e", "source_split": "train"}
+{"paper_id": "1909.07512", "question": "What is the language model pre-trained on?", "question_id": "226ae469a65611f041de3ae545be0e386dba7d19", "source_split": "train"}
+{"paper_id": "1610.09722", "question": "what are the baselines?", "question_id": "726c5c1b6951287f4bae22978f9a91d22d9bef61", "source_split": "test"}
+{"paper_id": "1710.11027", "question": "Does this model perform better than the state of the art?", "question_id": "a5df7361ae37b9512fb57cb93efbece9ded8cab1", "source_split": "test"}
+{"paper_id": "1909.11706", "question": "which had better results, the svm or the random forest model?", "question_id": "ff36168caf48161db7039e3bd4732cef31d4de99", "source_split": "test"}
+{"paper_id": "1601.02543", "question": "what bottlenecks were identified?", "question_id": "8d793bda51a53a4605c1c33e7fd20ba35581a518", "source_split": "train"}
+{"paper_id": "2002.10361", "question": "Which document classifiers do they experiment with?", "question_id": "ff307b10e56f75de6a32e68e25a69899478a13e4", "source_split": "train"}
+{"paper_id": "1611.02378", "question": "Is manual annotation performed?", "question_id": "283d358606341c399e369f2ba7952cd955326f73", "source_split": "test"}
+{"paper_id": "1908.07816", "question": "What two baseline models are used?", "question_id": "180047e1ccfc7c98f093b8d1e1d0479a4cca99cc", "source_split": "train"}
+{"paper_id": "1910.02001", "question": "How large is the dataset?", "question_id": "a837dcbd339e27a974e28944178c790a5b0b37c0", "source_split": "test"}
+{"paper_id": "1909.08211", "question": "How do they split the dataset when training and evaluating their models?", "question_id": "a9d5f83f4b32c52105f2ae1c570f1c590ac52487", "source_split": "test"}
+{"paper_id": "1803.05223", "question": "what dataset statistics are provided?", "question_id": "ad1be65c4f0655ac5c902d17f05454c0d4c4a15d", "source_split": "validation"}
+{"paper_id": "2002.08902", "question": "which was the worst performing model?", "question_id": "6683008e0a8c4583058d38e185e2e2e18ac6cf50", "source_split": "test"}
+{"paper_id": "1909.06937", "question": "What is the source of the CAIS dataset?", "question_id": "d71772bfbc27ff1682e552484bc7c71818be50cf", "source_split": "train"}
+{"paper_id": "1904.09535", "question": "What neural network modules are included in NeuronBlocks?", "question_id": "2ea4347f1992b0b3958c4844681ff0fe4d0dd1dd", "source_split": "validation"}
+{"paper_id": "1603.09381", "question": "What dataset did they use to evaluate?", "question_id": "11f9c207476af75a9272105e646df02594059c3f", "source_split": "test"}
+{"paper_id": "1912.07976", "question": "In what four Chinese review datasets does LCF-ATEPC achieves state of the art?", "question_id": "d39c911bf2479fdb7af339b59acb32073242fab3", "source_split": "train"}
+{"paper_id": "1703.02507", "question": "Do they report results only on English data?", "question_id": "09a993756d2781a89f7ec5d7992f812d60e24232", "source_split": "train"}
+{"paper_id": "2001.02214", "question": "What dataset is used?", "question_id": "64b65687b82ddb17c3d068381aaee56eb7fc02cd", "source_split": "train"}
+{"paper_id": "1911.00202", "question": "What is the training objective in the method introduced in this paper?", "question_id": "3f8a42eb0e904ce84c3fded2103f674e9cbc893d", "source_split": "test"}
+{"paper_id": "2004.04498", "question": "What three languages are used in the translation experiments?", "question_id": "b1fe6a39b474933038b44b6d45e5ca32af7c3e36", "source_split": "test"}
+{"paper_id": "1908.08717", "question": "How big is imbalance in analyzed corpora?", "question_id": "777bb3dcdbc32e925df0f7ec3adb96f15dd3dc47", "source_split": "validation"}
+{"paper_id": "1703.10344", "question": "What baseline model is used?", "question_id": "2ee715c7c6289669f11a79743a6b2b696073805d", "source_split": "validation"}
+{"paper_id": "1910.13793", "question": "What corpus did they use?", "question_id": "647f6e6b168ec38fcdb737d3b276f78402282f9d", "source_split": "test"}
+{"paper_id": "1906.11085", "question": "what boosting techniques were used?", "question_id": "04796aaa59eeb2176339c0651838670fd916074d", "source_split": "test"}
+{"paper_id": "2004.02083", "question": "What system is used as baseline?", "question_id": "25b24ab1248f14a621686a57555189acc1afd49c", "source_split": "train"}
+{"paper_id": "1909.12016", "question": "Which data-selection algorithms do they use?", "question_id": "568466c62dd73a025bfd9643417cdb7a611f23a1", "source_split": "test"}
+{"paper_id": "1911.12237", "question": "Do authors propose some better metric than ROUGE for measurement of abstractive dialogue summarization?", "question_id": "894bbb1e42540894deb31c04cba0e6cfb10ea912", "source_split": "test"}
+{"paper_id": "1906.04571", "question": "Why does not the approach from English work on other languages?", "question_id": "f7817b949605fb04b1e4fec9dd9ca8804fb92ae9", "source_split": "train"}
+{"paper_id": "2002.08899", "question": "Does having constrained neural units imply word meanings are fixed across different context?", "question_id": "8ec94313ea908b6462e1f5ee809a977a7b6bdf01", "source_split": "train"}
+{"paper_id": "2003.07758", "question": "What ASR system do they use?", "question_id": "7011b26ffc54769897e4859e4932aeddfab82c9f", "source_split": "train"}
+{"paper_id": "1611.02988", "question": "What was their performance on emotion detection?", "question_id": "fa30a938b58fc05131c3854f12efe376cbad887f", "source_split": "validation"}
+{"paper_id": "1705.00571", "question": "Which evaluation metrics do they use?", "question_id": "bd3562d2b3c162e9d27404d56b77e15f707d8b0f", "source_split": "test"}
+{"paper_id": "1806.04511", "question": "what dataset was used for training?", "question_id": "fbaf060004f196a286fef67593d2d76826f0304e", "source_split": "validation"}
+{"paper_id": "1908.08917", "question": "What is the reason this research was not adopted in the 1960s?", "question_id": "faffcc6ef27c1441e6528f924e320368430d8da3", "source_split": "test"}
+{"paper_id": "1811.00942", "question": "What is a commonly used evaluation metric for language models?", "question_id": "e07df8f613dbd567a35318cd6f6f4cb959f5c82d", "source_split": "train"}
+{"paper_id": "1911.12893", "question": "Which repositories did they collect from?", "question_id": "811b67460e65232b8f363dc3f329ffecdfcc4ab2", "source_split": "test"}
+{"paper_id": "1805.09960", "question": "by how much did their system improve?", "question_id": "b79ff0a50bf9f361c5e5fed68525283856662076", "source_split": "test"}
+{"paper_id": "1805.07513", "question": "Do they compare with the MAML algorithm?", "question_id": "5c4a2a3d6e02bcbeae784e439441524535916e85", "source_split": "train"}
+{"paper_id": "1604.02201", "question": "How did they constrain training using the parameters?", "question_id": "d0dc6729b689561370b6700b892c9de8871bb44d", "source_split": "test"}
+{"paper_id": "1704.04452", "question": "How do the authors define a concept map?", "question_id": "ffeb67a61ecd09542b1c53c3e4c3abd4da0496a8", "source_split": "validation"}
+{"paper_id": "1911.09845", "question": "How does discrete latent variable has an explicit semantic meaning to improve the CVAE on short-text conversation?", "question_id": "4bdad5a20750c878d1a891ef255621f6172b6a79", "source_split": "train"}
+{"paper_id": "1604.00727", "question": "What word level and character level model baselines are used?", "question_id": "7705dd04acedaefee30d8b2c9978537afb2040dc", "source_split": "validation"}
+{"paper_id": "1611.03599", "question": "What are the baselines?", "question_id": "d3093062aebff475b4deab90815004051e802aa6", "source_split": "validation"}
+{"paper_id": "1911.10401", "question": "How are the three different forms defined in this work?", "question_id": "35e0e6f89b010f34cfb69309b85db524a419c862", "source_split": "test"}
+{"paper_id": "1912.09713", "question": "What three machine architectures are analyzed?", "question_id": "0427ca83d6bf4ec113bc6fec484b2578714ae8ec", "source_split": "train"}
+{"paper_id": "1805.05581", "question": "How large is the dataset?", "question_id": "77e57d19a0d48f46de8cbf857f5e5284bca0df2b", "source_split": "train"}
+{"paper_id": "1809.03695", "question": "What is the size of the dataset?", "question_id": "35f48b8f73728fbdeb271b170804190b5448485a", "source_split": "test"}
+{"paper_id": "2003.12738", "question": "What three conversational datasets are used for evaluation?", "question_id": "8740c3000e740ac5c0bc8f329d908309f7ffeff6", "source_split": "train"}
+{"paper_id": "1908.10322", "question": "How many parameters does the model have?", "question_id": "fb427239c8d44f524a6c1bf1ce5c3383d5c33e52", "source_split": "train"}
+{"paper_id": "1710.10380", "question": "Which downstream tasks are considered?", "question_id": "99f898eb91538cb82bc9a00892d54ae2a740961e", "source_split": "test"}
+{"paper_id": "1911.09419", "question": "How are entities mapped onto polar coordinate system?", "question_id": "2a058f8f6bd6f8e80e8452e1dba9f8db5e3c7de8", "source_split": "train"}
+{"paper_id": "1805.09960", "question": "what datasets did they use?", "question_id": "6656a9472499331f4eda45182ea697a4d63e943c", "source_split": "test"}
+{"paper_id": "1711.05345", "question": "How different is the dataset size of source and target?", "question_id": "c77d6061d260f627f2a29a63718243bab5a6ed5a", "source_split": "train"}
+{"paper_id": "1909.13184", "question": "How can an existing bot detection system by customized for health-related research?", "question_id": "138ad61b43c85d5db166ea9bd3d3b19bb2e2bbfb", "source_split": "test"}
+{"paper_id": "1901.10619", "question": "Is this an English language corpus?", "question_id": "e12166fa9d6f63c4e92252c95c6a7bc96977ebf4", "source_split": "test"}
+{"paper_id": "2003.01006", "question": "How large is the dataset?", "question_id": "252677c93feb2cb0379009b680f0b4562b064270", "source_split": "train"}
+{"paper_id": "1809.00530", "question": "What is the architecture of the model?", "question_id": "b46c0015a122ee5fb95c2a45691cb97f80de1bb6", "source_split": "validation"}
+{"paper_id": "1908.08788", "question": "What pretrained language representations are used?", "question_id": "15aeda407ae3912419fd89211cdb98989d9cde58", "source_split": "test"}
+{"paper_id": "1812.03593", "question": "Is the model evaluated on other datasets?", "question_id": "40a45d59a2ef7a67c8ab0f2b2d5b43fc85b85498", "source_split": "train"}
+{"paper_id": "2001.02284", "question": "How does the IPA label data after interacting with users?", "question_id": "ca5a82b54cb707c9b947aa8445aac51ea218b23a", "source_split": "validation"}
+{"paper_id": "1611.03599", "question": "What topics are included in the debate data?", "question_id": "e44a6bf67ce3fde0c6608b150030e44d87eb25e3", "source_split": "validation"}
+{"paper_id": "1907.04072", "question": "What blackmarket services do they look at?", "question_id": "46d051b8924ad0ef8cfba9c7b5b84707ee72f26a", "source_split": "test"}
+{"paper_id": "1909.02560", "question": "What is discriminator in this generative adversarial setup?", "question_id": "78102422a5dc99812739b8dd2541e4fdb5fe3c7a", "source_split": "train"}
+{"paper_id": "1906.07662", "question": "Which approaches have been applied to solve word segmentation in Vietnamese?", "question_id": "d3ca5f1814860a88ff30761fec3d860d35e39167", "source_split": "validation"}
+{"paper_id": "1911.00841", "question": "Were other baselines tested to compare with the neural baseline?", "question_id": "f0848e7a339da0828278f6803ed7990366c975f0", "source_split": "validation"}
+{"paper_id": "1902.09666", "question": "In what language are the tweets?", "question_id": "5daeb8d4d6f3b8543ec6309a7a35523e160437eb", "source_split": "validation"}
+{"paper_id": "1805.11937", "question": "What type of morphological features are used?", "question_id": "887d7f3edf37ccc6bf2e755dae418b04d2309686", "source_split": "test"}
+{"paper_id": "1808.07231", "question": "What pre-trained word embeddings are used?", "question_id": "5d93245832d90b31aee42ea2bf1e7704c22ebeca", "source_split": "test"}
+{"paper_id": "1910.02334", "question": "How is each instance of the dataset annotated?", "question_id": "98daaa9eaa1e1e574be336b8933b861bfd242e5e", "source_split": "train"}
+{"paper_id": "1906.01183", "question": "Which translation system do they use to translate to English?", "question_id": "c45feda62f23245f53e855706e2d8ea733b7fd03", "source_split": "train"}
+{"paper_id": "1909.09986", "question": "How is fluency of generated text evaluated?", "question_id": "56a3c9bd74c6573abce3805177cdebf941db0b71", "source_split": "train"}
+{"paper_id": "1611.04234", "question": "What is the state-of-the-art?", "question_id": "2e4688205c8e344cded7a053b6014cce04ef1bd5", "source_split": "test"}
+{"paper_id": "1908.08917", "question": "What were the usual logical approaches of the time period?", "question_id": "baaa6ad7148b785429a20f38786cd03ab9a2646e", "source_split": "test"}
+{"paper_id": "1901.04899", "question": "What intents does the paper explore?", "question_id": "8383e52b2adbbfb533fbe8179bc8dae11b3ed6da", "source_split": "train"}
+{"paper_id": "1911.00473", "question": "How big is dataset used for fine-tuning BERT?", "question_id": "504a069ccda21580ccbf18c34f5eefc0088fa105", "source_split": "train"}
+{"paper_id": "1911.06919", "question": "What datasets are used for this tasks?", "question_id": "4999da863ecbd40378505bfb1f4e395061a3f559", "source_split": "test"}
+{"paper_id": "1911.08829", "question": "What compleentary PIE extraction methods are used to increase reliability further?", "question_id": "2480dfe2d996afef840a81bd920aeb9c26e5b31d", "source_split": "train"}
+{"paper_id": "1811.02076", "question": "Will these findings be robust through different datasets and different question answering algorithms?", "question_id": "4bae74eb707ed71d5f438ddb3d9c2192ac490f66", "source_split": "train"}
+{"paper_id": "1911.02821", "question": "What pre-trained models did they compare to?", "question_id": "6b4de7fef3a543215f16042ce6a29186bf84fea4", "source_split": "train"}
+{"paper_id": "1909.00578", "question": "What dataset do they use?", "question_id": "ae8354e67978b7c333094c36bf9d561ca0c2d286", "source_split": "train"}
+{"paper_id": "1903.11437", "question": "what language pairs are explored?", "question_id": "b6f7fadaa1bb828530c2d6780289f12740229d84", "source_split": "validation"}
+{"paper_id": "2001.06888", "question": "Which social media platform is explored?", "question_id": "0106bd9d54e2f343cc5f30bb09a5dbdd171e964b", "source_split": "train"}
+{"paper_id": "1908.08593", "question": "In which certain heads was attention disabled in experiments?", "question_id": "da4d25dd9de09d16168788bb02ad600f5b0b3ba4", "source_split": "train"}
+{"paper_id": "1808.03986", "question": "How do the authors define a differential network?", "question_id": "82c4863293a179fe5c0d9a1ff17d224bde952f54", "source_split": "train"}
+{"paper_id": "1712.05608", "question": "Which models/frameworks do they compare to?", "question_id": "218bc82796eb8d91611996979a4a42500131a936", "source_split": "validation"}
+{"paper_id": "1704.03279", "question": "What dataset is used?", "question_id": "643645e02ffe8fde45918615ec92013a035d1b92", "source_split": "test"}
+{"paper_id": "1909.00105", "question": "What are the baseline models?", "question_id": "34dc0838632d643f33c8dbfe7bd4b656586582a2", "source_split": "validation"}
+{"paper_id": "1806.04535", "question": "What are the categories of code-mixed puns?", "question_id": "479fc9e6d6d80e69f425d9e82e618e6b7cd12764", "source_split": "train"}
+{"paper_id": "1607.03542", "question": "How big is their dataset?", "question_id": "1c4cd22d6eaefffd47b93c2124f6779a06d2d9e1", "source_split": "train"}
+{"paper_id": "1910.03634", "question": "What limitations do the authors demnostrate of their model?", "question_id": "58ee0cbf1d8e3711c617b1cd3d7aca8620e26187", "source_split": "validation"}
+{"paper_id": "1912.04961", "question": "What is the baseline?", "question_id": "99e78c390932594bd833be0f5c890af5c605d808", "source_split": "validation"}
+{"paper_id": "1809.10644", "question": "how much was the parameter difference between their model and previous methods?", "question_id": "f37026f518ab56c859f6b80b646d7f19a7b684fa", "source_split": "train"}
+{"paper_id": "1801.05617", "question": "What are their baselines?", "question_id": "458e5ed506883bfec6623102ec9f43c071f0616f", "source_split": "test"}
+{"paper_id": "1908.06606", "question": "Is all text in this dataset a question, or are there unrelated sentences in between questions?", "question_id": "06095a4dee77e9a570837b35fc38e77228664f91", "source_split": "train"}
+{"paper_id": "1909.09534", "question": "Which datasets are used?", "question_id": "fc77d70c305fa80447b191248aba93da63ac3704", "source_split": "validation"}
+{"paper_id": "1804.08186", "question": "what are the off-the-shelf systems discussed in the paper?", "question_id": "b3a09d2e3156c51bd5fdc110a2a00a67bb8c0e42", "source_split": "train"}
+{"paper_id": "1711.03759", "question": "how many sentences did they annotate?", "question_id": "bab4ae97afd598a11d1fc7c05c6fdb98c30cafe0", "source_split": "test"}
+{"paper_id": "1904.07342", "question": "What methodology is used to compensate for limited labelled data?", "question_id": "00ef9cc1d1d60f875969094bb246be529373cb1d", "source_split": "train"}
+{"paper_id": "1910.03814", "question": "How many tweats does MMHS150k contains, 150000?", "question_id": "21a9f1cddd7cb65d5d48ec4f33fe2221b2a8f62e", "source_split": "train"}
+{"paper_id": "1906.02715", "question": "How were the feature representations evaluated?", "question_id": "2ba0c7576eb5b84463a59ff190d4793b67f40ccc", "source_split": "train"}
+{"paper_id": "1912.08084", "question": "What models are trained?", "question_id": "56d788af4694c1cd1eebee0b83c585836d1f5f99", "source_split": "test"}
+{"paper_id": "1906.06448", "question": "What NLI models do they analyze?", "question_id": "dfc393ba10ec4af5a17e5957fcbafdffdb1a6443", "source_split": "train"}
+{"paper_id": "1909.11189", "question": "What is the corpus used in the study?", "question_id": "ee87608419e4807b9b566681631a8cd72197a71a", "source_split": "train"}
+{"paper_id": "1601.02403", "question": "Do they report results only on English data?", "question_id": "2cd37743bcc7ea3bd405ce6d91e79e5339d7642e", "source_split": "validation"}
+{"paper_id": "1907.00937", "question": "What dataset is used for training?", "question_id": "c47312f2ca834ee75fa9bfbf912ea04239064117", "source_split": "test"}
+{"paper_id": "1912.06927", "question": "Do the tweets come from a specific region?", "question_id": "a4422019d19f9c3d95ce8dc1d529bf3da5edcfb1", "source_split": "train"}
+{"paper_id": "1709.00947", "question": "What new metrics are suggested to track progress?", "question_id": "982979cb3c71770d8d7d2d1be8f92b66223dec85", "source_split": "train"}
+{"paper_id": "1611.04887", "question": "In what way does each classifier evaluate one of the syntactic or social properties which are salient for a tweet?", "question_id": "c3befe7006ca81ce64397df654c31c11482dafbe", "source_split": "test"}
+{"paper_id": "1812.07023", "question": "Do they train a different training method except from scheduled sampling?", "question_id": "6472f9d0a385be81e0970be91795b1b97aa5a9cf", "source_split": "train"}
+{"paper_id": "1910.06061", "question": "Did they evaluate against baseline?", "question_id": "b6a6bdca6dee70f8fe6dd1cfe3bb2c5ff03b1605", "source_split": "train"}
+{"paper_id": "1902.10246", "question": "How much lower is the computational cost of the proposed model?", "question_id": "d622564b250cffbb9ebbe6636326b15ec3c622d9", "source_split": "test"}
+{"paper_id": "2001.02380", "question": "How is the delta-softmax calculated?", "question_id": "4059c6f395640a6acf20a0ed451d0ad8681bc59b", "source_split": "train"}
+{"paper_id": "1709.04491", "question": "what domain do the opinions fall under?", "question_id": "e6bc11bd6cfd4b2138c29602b9b56fc5378a4293", "source_split": "test"}
+{"paper_id": "1906.00424", "question": "How big is the dataset?", "question_id": "4e106b03cc2f54373e73d5922e97f7e5e9bf03e4", "source_split": "test"}
+{"paper_id": "1604.05781", "question": "What is the source of the \"control\" corpus?", "question_id": "1baf87437b70cc0375b8b7dc2cfc2830279bc8b5", "source_split": "train"}
+{"paper_id": "1909.05855", "question": "How did they gather the data?", "question_id": "3ee721c3531bf1b9a1356a40205d088c9a7a44fc", "source_split": "train"}
+{"paper_id": "1710.09753", "question": "What is the task of slot filling?", "question_id": "b8ffb81e74c1c1ad552051aca8741b0141ae6e97", "source_split": "train"}
+{"paper_id": "1706.07179", "question": "How is knowledge stored in the memory?", "question_id": "74091e10f596428135b0ab06008608e09c051565", "source_split": "train"}
+{"paper_id": "1905.06906", "question": "Does the fact that GCNs can perform well on this tell us that the task is simpler than previously thought?", "question_id": "df510c85c277afc67799abcb503caa248c448ad2", "source_split": "train"}
+{"paper_id": "1903.03467", "question": "What type of syntactic analysis is performed?", "question_id": "faa4f28a2f2968cecb770d9379ab2cfcaaf5cfab", "source_split": "train"}
+{"paper_id": "1907.11062", "question": "Is there any ethical consideration in the research?", "question_id": "e8e6986365f899dead0768ecf7b1eca8a2699f2f", "source_split": "train"}
+{"paper_id": "2004.03762", "question": "What baselines are used?", "question_id": "b03e8e9a0cd2a44a215082773c7338f2f3be412a", "source_split": "train"}
+{"paper_id": "1802.05322", "question": "how many movie genres do they explore?", "question_id": "980568848cc8e7c43f767da616cf1e176f406b05", "source_split": "train"}
+{"paper_id": "1907.01339", "question": "Which dataset do they use?", "question_id": "9d963d385bd495a7e193f8a498d64c1612e6c20c", "source_split": "test"}
+{"paper_id": "1912.06262", "question": "where did they obtain the annotated clinical notes from?", "question_id": "4477bb513d56e57732fba126944073d414d1f75f", "source_split": "validation"}
+{"paper_id": "1911.07555", "question": "What is the approach of previous work?", "question_id": "012b8a89aea27485797373adbcda32f16f9d7b54", "source_split": "validation"}
+{"paper_id": "1805.12070", "question": "What languages are explored in the work?", "question_id": "d7d41a1b8bbb1baece89b28962d23ee4457b9c3a", "source_split": "train"}
+{"paper_id": "1810.08732", "question": "What data was used to build the word embeddings?", "question_id": "369b0a481a4b75439ade0ec4f12b44414c4e5164", "source_split": "train"}
+{"paper_id": "1911.03243", "question": "How much more coverage is in the new dataset?", "question_id": "04f72eddb1fc73dd11135a80ca1cf31e9db75578", "source_split": "train"}
+{"paper_id": "1908.06264", "question": "what datasets were used?", "question_id": "78a4ec72d76f0a736a4a01369a42b092922203b6", "source_split": "validation"}
+{"paper_id": "1608.08738", "question": "how did they ask if a tweet was racist?", "question_id": "a71ebd8dc907d470f6bd3829fa949b15b29a0631", "source_split": "train"}
+{"paper_id": "1909.03553", "question": "How many general qualitative statements are in dataset?", "question_id": "f1a50f88898556ecdba8e9cac13ae54c11835945", "source_split": "test"}
+{"paper_id": "1808.10006", "question": "Why does wider beam search hurt NMT?", "question_id": "991ea04072b3412928be5e6e903cfa54eeac3951", "source_split": "test"}

@@ -1,4 +1,4 @@
-# Proposal only: no application currently consumes this file.
+# Shared configuration remains v0-proposed; passage builders require explicit CLI parameters.
 seed: 42
 data:
   dataset: allenai/qasper
@@ -6,7 +6,7 @@ data:
   qa_path: data/processed/qa.jsonl
   qasper_export_manifest: data/processed/qasper_export.manifest.json
   passages_path: data/processed/passages.jsonl
-  chunk_words: 200
+  chunk_words: 365
   overlap_words: 40
   normalization_version: text-normalization-v1
   chunking_version: word-chunking-v1
@@ -43,4 +43,6 @@ generation:
   abstain_on_insufficient_evidence: true
 evaluation:
   judge_model: null
-  held_out_manifest: null  # Final held-out question pool is not frozen or created.
+  held_out_manifest: null  # Legacy official-split workflow; not the Week 4 pool.
+  annotation_pool_manifest: data/processed/qa_for_held_out_v2.manifest.json
+  annotation_pool_isolation: question  # Shared papers allowed; actual use controls eligibility.

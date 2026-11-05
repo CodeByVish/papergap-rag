@@ -1,0 +1,75 @@
+{
+  "artifact": "development_corpus",
+  "chunking": {
+    "chunk_overlap_words": 40,
+    "chunk_size_words": 365,
+    "chunking_version": "word-chunking-v1",
+    "normalization_version": "text-normalization-v1",
+    "source_kinds": [
+      "full_text"
+    ],
+    "type_rule": "casefolded non-whitespace runs from passage text",
+    "word_rule": "Unicode-aware non-whitespace runs (str.split)"
+  },
+  "manifest_schema_version": 1,
+  "output": {
+    "file": "passages.jsonl",
+    "indexed_paper_count": 1168,
+    "minimum_passages": 10000,
+    "minimum_words": 100000,
+    "passage_count": 21360,
+    "passage_word_count": 4469326,
+    "passage_word_type_count": 174636,
+    "purpose": "development",
+    "rubric_minimum_met": true,
+    "scope": "development",
+    "sha256": "ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403",
+    "source_paper_count": 1169,
+    "source_word_count": 4262446,
+    "unique_passage_count": 21360
+  },
+  "purpose": "development",
+  "scope": "development",
+  "source": {
+    "dataset_id": "allenai/qasper",
+    "export_papers_file": "papers.jsonl",
+    "export_papers_sha256": "905866c186f63dab38979601a0121412d44588cacfa84520242ffcf2f5b198f9",
+    "local_parser_version": 1,
+    "resolved_revision": "fdc9d8214fbab5dd782958601db4d678e6934a54",
+    "source_splits": {
+      "test": {
+        "rows": 416,
+        "sha256": "308380c3da5287ac450582c457a9a75303b8361360dd88e727afd021c8320779"
+      },
+      "train": {
+        "rows": 888,
+        "sha256": "7a25389963d05d97de9462d4e46b2ef367f37b898de55f5833bae7aa4b6e8732"
+      },
+      "validation": {
+        "rows": 281,
+        "sha256": "f3e8f8072bbb42c6f770cdbc311672738683505eef401a7b75e0c08cfb7c5945"
+      }
+    },
+    "split_counts": {
+      "test": {
+        "included_in_scope": false,
+        "passage_count": 0,
+        "project_role": "held_out",
+        "source_paper_count": 416
+      },
+      "train": {
+        "included_in_scope": true,
+        "passage_count": 16457,
+        "project_role": "development",
+        "source_paper_count": 888
+      },
+      "validation": {
+        "included_in_scope": true,
+        "passage_count": 4903,
+        "project_role": "validation",
+        "source_paper_count": 281
+      }
+    },
+    "split_policy_version": "qasper-official-paper-disjoint-v0-proposed"
+  }
+}

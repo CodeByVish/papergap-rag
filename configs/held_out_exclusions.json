@@ -1,0 +1,38 @@
+{
+  "schema_version": "v0-proposed",
+  "owner_inventories": [
+    {
+      "source_id": "P1",
+      "branch": "p1/week3-week4",
+      "commit": "3bb545c967efe63197cb99a799628162f5c2b512",
+      "path": "docs/handoffs/p1_used_question_ids.jsonl",
+      "snapshot": "data/processed/held_out_exclusion_sources/p1_used_question_ids.jsonl",
+      "sha256": "89be5063f405a3a63718567b793580a2bac0e2e41f7a60ac5e8c89ddc9746744",
+      "question_count": 2593,
+      "owner_statement": "I’ve uploaded my P1 used-question inventory to p1/week3-week4. It contains 2,593 unique training-question IDs, including the original 100-question handoff, with paper IDs and usage provenance. Please include this list in the team-wide exclusion audit for the final held-out set."
+    },
+    {
+      "source_id": "P2",
+      "branch": "p2/question-usage-inventory",
+      "commit": "3b13f22fe6df29d15babea529cf2fc8f13c18f68",
+      "path": "docs/handoffs/p2_used_question_ids.jsonl",
+      "snapshot": "data/processed/held_out_exclusion_sources/p2_used_question_ids.jsonl",
+      "sha256": "7a4609198cf508448f2da1f2995d3a810d45a34b88ff57373ab9320e68475278",
+      "question_count": 106,
+      "owner_statement": "I’ve uploaded my consolidated usage inventory to branch p2/question-usage-inventory, under docs/handoffs/p2_used_question_ids.jsonl. It includes 106 training-question IDs; the original 100 were also in the Drive ZIP. Please include these in the team-wide exclusion audit."
+    }
+  ],
+  "selection_questions": "data/processed/qa_for_choosing_chunk_size.jsonl",
+  "preparation_manifest": "data/processed/annotation_preparation.manifest.json",
+  "functional_runs": ["results/chunk_size/smoke_p1_bm25_01/manifest.json"],
+  "functional_evidence": {
+    "path": "weekly-work/week-3/TODO.md",
+    "item": "2.3",
+    "quote": "试运行确保代码能正常工作（已验证默认 `bm25`，运行 `smoke_p1_bm25_01`；其他模式尚未验证）",
+    "availability": "local personal note; relevant statement preserved here, not a reproduction dependency"
+  },
+  "development_pilots": ["annotation_pilot", "annotation_pilot_multi_v1", "annotation_pilot_multi_v2"],
+  "frozen_evaluation_manifest": "data/processed/annotation_held_out/manifest.json",
+  "scope": "P1/P2 owner-designated inventories plus persisted P3 selection and usage records; no claim about unrecorded external use or a complete P4-P6 inventory",
+  "exclusion_rule": "Exclude owner-designated IDs without reduction absent explicit owner correction, and questions used to select or adjust models, parameters, algorithms, prompts or evidence handling. Pure functional checks, raw export, gold mapping and normal frozen-configuration evaluation do not automatically require exclusion. Judge failed or void runs by actual purpose. Add newly evidenced use in a later version."
+}
