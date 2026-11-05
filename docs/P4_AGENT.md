@@ -36,7 +36,12 @@ Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
   thinking off, one retry with 512 tokens if the reply is cut off.
 - **Record out:** `export_record(state)` / `to_jsonl_line(state)` in `export.py`: the full
   terminal state, `retrieved_passages` with text, `question_id`, `evidence_map`, `gap_label`,
-  `sufficient`, `retrieval_round`, `retrieval_log` and `critic_log` (with raw model replies).
+  `sufficient`, `retrieval_round`, `retrieval_log` and `critic_log` (with raw model replies),
+  and, since the last node was added, `stop_reason` (`sufficient`, `insufficient_information` or
+  `max_rounds`) with `max_rounds` (the round budget, `max_retries + 1`). A static run (`max_rounds`
+  1) that is not satisfied also stops with `max_rounds`, so a rule meant for the adaptive loop
+  must test `stop_reason == "max_rounds"` and `max_rounds > 1`. Both fields are additive and
+  `None` in records written before this change.
 - **Answer step in:** `answer_fn(record) -> dict`, P5's `make_answer_fn(pipeline)`.
   Refusal rule (agreed with P5): refuse without a model call only for
   `INSUFFICIENT_INFORMATION` or no passages; `sufficient=False` still generates and is
@@ -44,7 +49,9 @@ Gap labels: `MISSING_METHOD`, `MISSING_EXPERIMENT_CONTEXT`, `MISSING_RESULT`,
 
 ## Running
 
-Local, rule-based critic, no generation (needs the P2 corpus and index, see `P2_WEEK2.md`):
+Local smoke test, rule-based critic, no generation. The pilot sample below is small and comes from the
+old 200/40 build, which is fine for checking wiring but not for any result; a real run needs the 365/40
+corpus and a dense index built on it (see "Corpus" below):
 
 ```bash
 OMP_NUM_THREADS=1 python -m scripts.run_agent_experiment \
@@ -80,11 +87,39 @@ at load. The corpus and dense index are not on the cluster yet; copy them from P
 Outputs in `--out-dir`: `static.jsonl`, `adaptive.jsonl`, `metrics.json`, `metrics.md`,
 `run_manifest.json` (arguments, git commit, package versions, file hashes, critic call counts).
 
+## Corpus
+
+Every result in this repository's P4 work uses the **365/40-word development corpus**: 21,360 passages from
+1,168 papers, SHA-256 `ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403`. It is built with
+
+```bash
+python -m scripts.build_corpus --papers data/processed/papers.jsonl \
+  --export-manifest data/processed/qasper_export.manifest.json --scope development \
+  --chunk-size-words 365 --chunk-overlap-words 40 --output ... --manifest-output ...
+```
+
+The builder's own defaults are still the old 200/40 (32,073 passages), so the two flags are not optional.
+Passage ids are content hashes, so ids from one corpus do not exist in the other. The runner stops when
+an items file names gold passages the corpus lacks, and the dense index must be built on the same file.
+
 ## Live demo
 
 P5's Option C server needs a hook to run the agent per typed question: `src/agent/demo.py`
 (`make_record_fn`) and `scripts/demo_agent_factory.py`. The server change and the open checks are in
-`docs/handoffs/P4_AGENT_DEMO_HOOK_20261030.md`.
+`docs/handoffs/P4_AGENT_DEMO_HOOK_20261030.md`. `PAPERGAP_CORPUS`, the dense index and the server's
+`--passages-from` must all be the 365/40 corpus: the agent returns 365/40 passage ids, which a `/passages`
+index built on the old 32,073-passage file (still named in P5's 29 Oct handoff) cannot resolve.
+
+Checked locally on 4 November: P5's `origin/p5/demo-service` server merged with `main` in a scratch tree
+(merges cleanly), the mock generator, the 40-paper development corpus and index, `fastapi` and `uvicorn`
+installed outside the project. `/health` reports `"agent": true`. A question sent with
+`scripts/demo_client.py` returns 200 with a cited answer, and all 3 cited passage ids resolve through
+`/passages` (365/40 corpus). The log line `agent <id>: rounds=1 retrieved=10 critic=[(1, 'fallback', 8)]`
+shows the critic reading the generator's 8 of 10 retrieved passages; with `DEMO_AGENT_CRITIC_VIEW=pool` it
+shows 10. **P5's server calls the hook as `record_fn(question, paper_id)`, so its `--top-k` never reaches the
+agent**: set the depth with `DEMO_AGENT_TOP_K` (default 5). Not verified: the Qwen critic through vLLM, GPU
+memory with the retrieval models beside the engine, latency with the real critic (about 7 s per question
+here, mock critic), the SSH tunnel. `--record-fn` is still only on P5's branch.
 
 ## Measures (`src/agent/experiments.py`)
 
@@ -156,13 +191,40 @@ unsatisfied after the last round", was priced on three runs:
 | --- | ---: | ---: |
 | job 50701, original critic | 8/8 | 12/32 |
 | job 50977, calibrated critic | 4/8 | 5/32 (15.6%) |
+| job 51172, generator view, handles, quote check | 6/8 | 9/32 (28.1%) |
 
-Proposed gate, to be agreed by the team and fixed before any held-out run: the rule is enabled only if,
+Gate, put to the team on 5 November (no objection) and fixed before any held-out run: the rule is enabled only if,
 on development questions, it refuses at least 50% of the unanswerable ones and at most 5% of the
 answerable ones (`PROPOSED_REFUSAL_MIN_CORRECT`, `PROPOSED_REFUSAL_MAX_FALSE`). `metrics.md` and
 `metrics.json` report `meets_proposed_gate` for every run. Until it holds, refusal stays with P5's
 generator, which refuses on its own evidence. Tune only on development questions; once the rule and
 thresholds are frozen they must not change after the held-out labels are read.
+
+**Decision (5 November): the gate is not met in any run, so the rule stays off.** Job 51172 refuses 6 of 8
+unanswerable questions but also 9 of 32 answerable ones; the limit allows 1. P5 may add the rule as an
+option that is off by default, under its own refusal code, keyed on `stop_reason == "max_rounds"` and
+`max_rounds > 1` (the static arm also ends on its round budget).
+
+What the answers run (job 51175, `ANSWERS=p5`, same items) adds, adaptive arm: the generator refuses 3 of 8
+unanswerable questions on its own (the static arm refuses the same 3) and answers all 9 answerable
+questions that the critic left unsatisfied. Switching the rule on would add 3 refusals of unanswerable
+questions and replace those 9 answers with refusals. Whether the 9 answers are correct has not been
+checked (the development items carry no gold answer text).
+
+Critic audit, job 51172 against job 50977 (adaptive arm, verdicts with gold or unanswerable known):
+
+| verdict / situation | job 50977 | job 51172 |
+| --- | ---: | ---: |
+| insufficient, all gold in view (over-strict) | 9 | 19 (8 questions; 5 before) |
+| insufficient, gold not yet retrieved (correct) | 13 | 12 |
+| sufficient, all gold in view (correct) | 21 | 16 |
+| sufficient, gold missing (false accept) | 6 | 7 |
+| insufficient, unanswerable (correct) | 8 | 12 |
+| sufficient, unanswerable (false accept) | 4 | 2 |
+
+Truncation does not explain the over-strict verdicts: the gold passage is longer than 1200 characters in 65%
+of them and in 75% of the correct "sufficient" verdicts. Two verdicts fell back to the rules (one failed
+quote check, one reply with an invalid `\%` escape in a LaTeX quote): 2.9% of verdicts.
 
 ## What the results support
 
@@ -175,6 +237,10 @@ Job 50977, 40 development questions (32 with gold), Qwen3-8B critic, adaptive ag
 | Adaptive beats a well-set static baseline | **No** | plain top-8 0.885, top-10 0.974, against 0.802 |
 | The calibrated critic wastes fewer retries | Yes | retries 41 to 27, unnecessary 55.6% to 38.9%, model calls fewer |
 | The loop reliably refuses unanswerable questions | **No** | 1 of 8 refused by the critic; the unsatisfied rule fails the gate |
+
+Job 51172 (generator view, handles, quote check; 4 November) gives the same picture: adaptive recall 0.771 at
+5.95 passages, against 0.740 for plain top-5, 0.885 for top-8 and 0.974 for top-10; the loop still does not
+beat plain retrieval, and the refusal rule still fails the gate (above).
 
 Write the results as: the critic and loop spend fewer passages and model calls than before and match
 plain retrieval at equal budget, but on this slice reading more passages up front is better than retrying.
@@ -203,8 +269,8 @@ not at 5 alone. Dev results of 32 questions have wide intervals; the held-out se
 - The rule-based mapper carries no usable signal. `scripts/evaluate_planner.py` checks whether a plan is
   satisfied by gold evidence more often than by lexical lookalikes of the same paper. Compared with as many
   lookalikes as there are gold units (the fair comparison; "any of five" overstates the gap), on the 365/40
-  chunks the agent actually maps: train 67.4% for gold against 69.6% for lookalikes, validation 70.7% against
-  71.6%. On raw paragraphs gold is 54.9% against 60.9% (train, n=2,095). Per type there is some signal for
+  chunks the agent actually maps: train 67.4% for gold against 69.6% for lookalikes, validation (P3's 200 held-out questions left
+  out with `--exclude-ids`, n=810) 70.5% against 72.0%. On raw paragraphs gold is 54.9% against 60.9% (train, n=2,095). Per type there is some signal for
   result (81.0% against 70.7%) and comparison (72.8% against 63.6%) questions, none for factual ones (65.2%
   against 73.9%), the largest class. `evidence_map` is advisory, and the rule-based critic accepts most
   questions in round 1. Chunk level uses `--passages`; a chunk is gold if it contains a whole evidence

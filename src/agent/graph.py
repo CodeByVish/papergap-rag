@@ -24,6 +24,7 @@ from src.agent.nodes import (
     MAX_RETRIES,
     Retriever,
     SectionSelector,
+    make_finish_node,
     make_retrieve_node,
     map_evidence,
     plan_question,
@@ -66,14 +67,16 @@ def build_agent_graph(
     graph.add_node("map_evidence", map_evidence)
     graph.add_node("critic", make_critic_node(critic_client, critic_attempts, critic_view))
     graph.add_node("rewrite_query", rewrite_query)
+    graph.add_node("finish", make_finish_node(max_rounds))
 
     graph.add_edge(START, "plan_question")
     graph.add_edge("plan_question", "retrieve")
     graph.add_edge("retrieve", "map_evidence")
     graph.add_edge("map_evidence", "critic")
     graph.add_conditional_edges(
-        "critic", route, {"retry": "rewrite_query", "stop": END}
+        "critic", route, {"retry": "rewrite_query", "stop": "finish"}
     )
     graph.add_edge("rewrite_query", "retrieve")
+    graph.add_edge("finish", END)
 
     return graph.compile()

@@ -76,6 +76,9 @@ class AgentState(BaseModel):
     (`round`, `query`, `triggered_by`, `passage_ids`) so passages stay traceable.
     `critic_log` has one entry per critic call (`round`, `source` = llm / rules /
     fallback, `sufficient`, `gap_label`, `errors`, `raw_replies`).
+    `stop_reason` and `max_rounds` are set by the last node: why the loop ended and the
+    round budget it ran under. `max_rounds == 1` means no retries were allowed (the static
+    arm), where an unsatisfied stop is also "max_rounds".
     """
 
     question: str
@@ -94,3 +97,5 @@ class AgentState(BaseModel):
     critic_reason: str = ""
     critic_log: list[dict[str, Any]] = Field(default_factory=list)
     retrieval_log: list[dict[str, Any]] = Field(default_factory=list)
+    stop_reason: str | None = None  # sufficient | insufficient_information | max_rounds
+    max_rounds: int | None = None  # retrieval rounds allowed: max_retries + 1 (1 = static)

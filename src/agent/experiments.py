@@ -17,6 +17,7 @@ Systems:
 
 from __future__ import annotations
 
+import collections
 import random
 import time
 from collections.abc import Callable, Iterable, Sequence
@@ -267,6 +268,78 @@ DEPTHS = (3, 5, 8, 10, 15)
 # of the unanswerable questions and at most this share of the answerable ones.
 PROPOSED_REFUSAL_MIN_CORRECT = 0.5
 PROPOSED_REFUSAL_MAX_FALSE = 0.05
+
+
+def audit_critic(records: Iterable[dict[str, Any]], items: Iterable[ExperimentItem]) -> dict[str, Any]:
+    """Every critic verdict set against whether the gold passages were within its reach.
+
+    A verdict asked of the model is "insufficient" or "sufficient", and for a question with gold
+    the gold is *complete* (all in what the critic was shown), *hidden* (all retrieved, but
+    some outside its view) or *missing* (not all retrieved yet). Verdicts reused from the
+    round before are counted apart, since the model was not asked. What the critic was shown
+    is the verdict's logged `passage_ids`; logs written before that was recorded fall back
+    to everything retrieved so far. Sufficient verdicts on answerable questions are also split
+    by whether the passages they cite include a gold passage.
+    """
+    by_id = {item.question_id: item for item in items}
+    situations: collections.Counter[str] = collections.Counter()
+    sources: collections.Counter[str] = collections.Counter()
+    cited: collections.Counter[str] = collections.Counter()
+    for record in records:
+        item = by_id.get(record.get("question_id"))
+        if item is None or "error" in record:
+            continue
+        gold = item.gold_passage_ids
+        retrieved: set[str] = set()
+        for number, entry in enumerate(record["critic_log"]):
+            if number < len(record["retrieval_log"]):
+                retrieved |= set(record["retrieval_log"][number]["passage_ids"])
+            sources[entry["source"]] += 1
+            if entry["source"] == "reused":
+                continue
+            shown = set(entry["passage_ids"]) if "passage_ids" in entry else retrieved
+            verdict = "sufficient" if entry["sufficient"] else "insufficient"
+            if gold:
+                where = ("complete" if gold <= shown else "hidden" if gold <= retrieved else "missing")
+                situations[f"{verdict}/gold {where}"] += 1
+                if entry["sufficient"] and entry["source"] == "llm":
+                    ids = entry.get("supporting_passage_ids")
+                    cited["not logged" if ids is None else "a gold passage" if gold & set(ids)
+                          else "no gold passage"] += 1
+            elif item.answerable is False:
+                situations[f"{verdict}/unanswerable"] += 1
+    return {
+        "verdicts": dict(situations),
+        "model_verdicts": sum(situations.values()),
+        "sources": dict(sources),
+        "sufficient_cites": dict(cited),
+    }
+
+
+def format_audit(audit: dict[str, Any]) -> str:
+    """Markdown for `audit_critic`."""
+    order = ("insufficient/gold complete", "insufficient/gold hidden", "insufficient/gold missing",
+             "sufficient/gold complete", "sufficient/gold hidden", "sufficient/gold missing",
+             "insufficient/unanswerable", "sufficient/unanswerable")
+    meaning = {
+        "insufficient/gold complete": "over-strict: all gold was in view",
+        "insufficient/gold hidden": "gold retrieved but outside the critic's view",
+        "insufficient/gold missing": "correct: gold not retrieved yet",
+        "sufficient/gold complete": "correct",
+        "sufficient/gold hidden": "accepted although gold was outside its view",
+        "sufficient/gold missing": "false accept: gold not retrieved",
+        "insufficient/unanswerable": "correct",
+        "sufficient/unanswerable": "false accept: the paper cannot answer",
+    }
+    verdicts = audit["verdicts"]
+    lines = ["| critic verdict / situation | count | reading |", "| --- | ---: | --- |"]
+    lines += [f"| {key} | {verdicts[key]} | {meaning[key]} |" for key in order if key in verdicts]
+    lines.append(f"\nverdicts asked of the model, with gold or unanswerable: {audit['model_verdicts']}")
+    lines.append("verdict sources: " + ", ".join(f"{k} {v}" for k, v in sorted(audit["sources"].items())))
+    if audit["sufficient_cites"]:
+        lines.append("sufficient verdicts by what they cite: "
+                     + ", ".join(f"{k} {v}" for k, v in sorted(audit["sufficient_cites"].items())))
+    return "\n".join(lines)
 
 
 def depth_recall(

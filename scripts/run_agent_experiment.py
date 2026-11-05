@@ -1,11 +1,16 @@
 """Run the static and adaptive agent arms on real retrieval and write the records.
 
+The passages must be the 365/40-word development corpus (`python -m scripts.build_corpus
+--scope development --chunk-size-words 365 --chunk-overlap-words 40`; the builder's own defaults
+are the old 200/40) and the dense index must be built on that same file. Gold passage ids in an
+items file only exist in that corpus, so the run stops if they are missing.
+
 One process owns one generator (a single A40 fits one Qwen3-8B), shared by the
 adaptive arm's critic and by P5's answer step:
 
     python -m scripts.run_agent_experiment \\
         --passages data/processed/passages.jsonl \\
-        --dense-index-dir indexes/p2-qasper-development \\
+        --dense-index-dir indexes/<dense index built on the same corpus> \\
         --from-qa data/processed/qa.jsonl --split validation --limit 100 \\
         --critic generator --generator vllm --model-id "$P5_ROOT/models/Qwen3-8B" \\
         --answers p5 --out-dir runs/p4/dev-001
@@ -94,6 +99,24 @@ def load_items_jsonl(path: Path) -> list[ExperimentItem]:
     if not items:
         raise ValueError(f"{path}: no items")
     return items
+
+
+def check_gold_in_corpus(items: Sequence[ExperimentItem], passages: Sequence[Any]) -> None:
+    """Stop if the items name gold passages the corpus does not contain.
+
+    Passage ids are content hashes, so ids built on the 365/40-word corpus are absent from
+    the old 200/40 corpus. Without this check such a run completes with recall 0 and reads
+    as a failed method instead of a wrong input.
+    """
+    known = {passage.passage_id for passage in passages}
+    wanted = {pid for item in items for pid in (item.gold_passage_ids or ())}
+    missing = wanted - known
+    if missing:
+        raise SystemExit(
+            f"{len(missing)} of {len(wanted)} gold passage ids in the items are not in the corpus "
+            f"({len(passages)} passages), so recall would be wrong. Gold ids come from P3's mapping on "
+            "the 365/40-word corpus; pass that corpus and a dense index built on it."
+        )
 
 
 def load_qa_items(qa_path: Path, passages: Sequence[Any], split: str, limit: int | None
@@ -390,6 +413,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     passages = load_passages(args.passages)
     items = (load_items_jsonl(args.items) if args.items
              else load_qa_items(args.from_qa, passages, args.split, args.limit))
+    check_gold_in_corpus(items, passages)
     print(f"{len(passages)} passages, {len(items)} questions, "
           f"{sum(1 for i in items if i.gold_passage_ids)} with gold passages")
 

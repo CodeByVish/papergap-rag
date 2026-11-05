@@ -472,7 +472,7 @@ Owner: Ananya. Merged: [#6](https://github.com/CodeByVish/papergap-rag/pull/6) L
 | --- | --- | --- |
 | Loop and stopping | Implemented | Plan, retrieve, map, critic, rewrite; at most 2 retries (3 rounds); stops early on `INSUFFICIENT_INFORMATION`; every round logged. |
 | Planner | Rule-based | Five question types and structured evidence requirements. `unanswerable` is never predicted from the question text. |
-| Evidence mapper | Rule-based, no usable signal | `scripts/evaluate_planner.py --passages` on the 365/40 chunks the agent maps (QASPER train, n=2,095 answerable questions with gold chunks): the plan is satisfied by gold evidence 67.4% of the time and by as many lexical lookalikes as there are gold chunks 69.6% (validation: 70.7% vs 71.6%); the old paragraph-level figures (55.6% vs 79.2%) compared against five lookalikes, which overstates the gap. It cannot separate real evidence from lookalikes, so `evidence_map` is advisory. |
+| Evidence mapper | Rule-based, no usable signal | `scripts/evaluate_planner.py --passages` on the 365/40 chunks the agent maps (QASPER train, n=2,095 answerable questions with gold chunks): the plan is satisfied by gold evidence 67.4% of the time and by as many lexical lookalikes as there are gold chunks 69.6% (validation without the 200 frozen held-out questions, n=810: 70.5% vs 72.0%); the old paragraph-level figures (55.6% vs 79.2%) compared against five lookalikes, which overstates the gap. It cannot separate real evidence from lookalikes, so `evidence_map` is advisory. |
 | Critic | Implemented; Qwen prompt unvalidated | System/user prompt, tolerant JSON scan, deterministic validation, rule-based fallback, and `GeneratorChatClient` for P5's shared generator (greedy, thinking off, one larger-budget retry on truncation). `critic_log` records `llm`/`rules`/`fallback` and the raw replies per round. |
 | Query rewriter | Implemented | One action per gap label; reuses the paper's own terms and the LLM critic's missing components; never repeats an earlier query. `src/agent/sections.py` picks this paper's own section whose name matches the gap (a result-like section exists in about 86% of papers, against 19.5% for the exact name "Results"), and a retry that finds nothing repeats the round over the whole paper. |
 | Experiment harness | Implemented | `src/agent/experiments.py`: static (no retries) vs adaptive arms; evidence recall before/after retries, rounds, gap recovery, unnecessary/ineffective/redundant retries, refusals, paired bootstrap gain. Optional `answer_fn(record) -> dict` runs P5's generation identically on both arms. Needs P3's gold-evidence-to-passage mapping for recall. |
@@ -635,6 +635,14 @@ PR mergeability, CI status and another member's review must be checked
 separately after pushing. This branch synchronization does not record a
 review approval or a merge of PR #8 into main.
 
+## P2 final evaluation preparation — 3 November 2026
+
+Added a reproducible read-only audit of P3's committed annotation batches and
+updated the P2 report for the 365/40 inference corpus. At P3 `c612ef3`, B09–10
+still lack 372 labels; 344 of 1,481 paired records disagree. These are preliminary
+counts, not final independent-human agreement or retrieval scores. P3/P6 must
+resolve label provenance and adjudication before final scoring. See
+[P2 report](P2_REPORT_CONTRIBUTION.md) for the command and limitations.
 ## P6 Option C UI port — 29 October 2026
 
 On `P6/UI-port-integration`, the Streamlit entry point now calls P5's HTTP API,
@@ -678,3 +686,12 @@ gold instead of adjudicated. `finalize-labels --disagreements drop` keeps the
 scores condensed rankings that skip unjudged passages and reports judged
 coverage. Initial agreement (89.854%) is unchanged. Adjudication remains
 available as the default option. 60 tests pass in the P6/P1/P2 evaluation suites.
+## P2 configuration and annotation audit — 5 November 2026
+
+All A/B entries are now populated on P3 `1a1dc15`; 188 pairs disagree. The
+current-file agreement is 89.85%, not a replacement for original independent
+agreement. P2 recommends RRF-only top-8 for the agent run based on development
+results, retaining BGE and the frozen top-5 pool for comparison. Runtime needs
+`DEMO_AGENT_TOP_K=8` as well as server `--top-k 8`. Corpus-wide pinned reranker
+tokenization finds 27.08% of passages over 512 tokens before adding a question.
+See P2_REPORT_CONTRIBUTION.md for evidence boundaries and final-label dependencies.
