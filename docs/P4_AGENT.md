@@ -249,7 +249,10 @@ beat plain retrieval, and the refusal rule still fails the gate (above).
 Write the results as: the critic and loop spend fewer passages and model calls than before and match
 plain retrieval at equal budget, but on this slice reading more passages up front is better than retrying.
 Do not write that adaptive retrieval improves recall unless a later run clears the matched-budget
-comparison. Report the static baseline at depth 5, 8 (the generator takes at most 8 passages) and 10,
+comparison. The held-out run (job 51585, 200 questions, top 8) did not: mean recall 0.858 static, 0.871
+adaptive, 0.953 for 15 passages; matched-budget gain +0.001 (95% CI -0.014 to 0.016); 88 retries, 95.5% of them
+ineffective; no unanswerable question in the set. Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md`,
+Section 3.8. Report the static baseline at depth 5, 8 (the generator takes at most 8 passages) and 10,
 not at 5 alone. Dev results of 32 questions have wide intervals; the held-out set decides.
 
 ## Known limits
