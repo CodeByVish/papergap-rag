@@ -230,7 +230,7 @@ def _fake_p5(monkeypatch, prompt_version="p5-grounded-qa-v7"):
     seen = {}
     package = types.ModuleType("src.generation")
     package.PROMPT_VERSION = prompt_version
-    package.GroundedQAPipeline = lambda generator: ("pipeline", generator)
+    package.GroundedQAPipeline = lambda generator, config=None: ("pipeline", generator, config)
     package.make_answer_fn = lambda pipeline: "answer_fn"
     generators = types.ModuleType("src.generation.generators")
 
@@ -240,8 +240,30 @@ def _fake_p5(monkeypatch, prompt_version="p5-grounded-qa-v7"):
 
     generators.get_generator = get_generator
     package.generators = generators
+
+    class FakePromptConfig:
+        def __init__(self):
+            self.max_passages = 8
+            self.max_chars_per_passage = 2500
+
+        def model_copy(self, update=None):
+            clone = FakePromptConfig()
+            for key, value in (update or {}).items():
+                setattr(clone, key, value)
+            return clone
+
+    prompts = types.ModuleType("src.generation.prompts")
+    grounded = types.ModuleType("src.generation.prompts.grounded_qa")
+    grounded.PromptConfig = FakePromptConfig
+    prompts.grounded_qa = grounded
+    pipeline_module = types.ModuleType("src.generation.pipeline")
+    pipeline_module.PipelineConfig = lambda prompt=None: types.SimpleNamespace(prompt=prompt)
+
     monkeypatch.setitem(sys.modules, "src.generation", package)
     monkeypatch.setitem(sys.modules, "src.generation.generators", generators)
+    monkeypatch.setitem(sys.modules, "src.generation.prompts", prompts)
+    monkeypatch.setitem(sys.modules, "src.generation.prompts.grounded_qa", grounded)
+    monkeypatch.setitem(sys.modules, "src.generation.pipeline", pipeline_module)
     return seen
 
 
@@ -281,7 +303,13 @@ def test_critic_view_defaults_to_the_generators_and_pool_is_opt_in():
 
 
 def test_manifest_budget_records_the_generators_rendering_limits():
-    assert runner.prompt_budget() == {"max_passages": 8, "max_chars_per_passage": 1200}
+    assert runner.prompt_budget() == {"max_passages": 8, "max_chars_per_passage": 2500}
+
+
+def test_budget_override_is_explicit_and_recorded():
+    """A run at another budget must say so, not rely on editing the default."""
+    assert runner.prompt_budget(args(max_chars_per_passage=1200)) == {
+        "max_passages": 8, "max_chars_per_passage": 1200}
 
 
 def test_summary_and_files_carry_the_depth_baseline_and_refusal_check(tmp_path):

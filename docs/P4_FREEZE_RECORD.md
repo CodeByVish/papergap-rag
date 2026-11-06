@@ -88,8 +88,22 @@ The record was frozen with `code.commit` `ad02d51` (main after PR #50), the all-
 P5 (path and `metadata.json` SHA-256 in the record), `answers.generate` true (ANSWERS=p5, prompt v7,
 8 passages x 1200 characters) and `top_k` 8. P5's development check of adaptive at depth 8 (job 51521,
 decision `depth-8-dev-check`) came first; development tuning was at depth 5 (disclosure
-`depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation is not
-attached to the record (`open_at_freezing`).
+`depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation was not
+attached to the record at freezing (`open_at_freezing`). It was given afterwards: on 6 November, in the team chat, P3 confirmed that the
+200-question list is final, P5 confirmed that the prompt, model, index and settings of job 51585 were fixed before the run and not changed
+afterwards, and every member replied that none of the 200 questions was used to tune or develop anything beyond reading them while annotating (P4 read 40,
+see the disclosure above). The held-out scoring outputs were then rerun with the `held_out` label (`results/final/p4/held-out/review/`).
+
+## After the freeze: context-budget sensitivity (6 November)
+
+The frozen configuration renders 8 passages of at most 1,200 characters, and the primary held-out run
+(job 51585) used exactly that. After the primary run had finished, P5 ran the same configuration with 2,500
+characters per passage: on the 40 development items (job 51691) and on the same 200 held-out questions
+(job 51705). Neither run was in the record. They are **post-hoc sensitivity analyses**, were decided with the
+primary result already known, and carry no gold at generation time (P6's scripts score them afterwards).
+They do not replace or re-score job 51585; the report states 1,200 as the pre-declared primary result and shows
+2,500 next to it, with this timing. No recorded setting in `configs/p4_freeze.json` was changed for them. After the run, PR 72 (P5) added decision entries to the record (`context-budget-2500` and a note on the live demo) and raised the shared code default to 2,500 characters; nothing recorded was removed or changed, but the file's SHA-256 changed from `280957f0...` (as frozen, commit `29694bf`, used for scoring) to `1df6277e...`. The primary result is at 1,200 characters: reproduce it at commit `ad02d51`, or with `MAX_CHARS_PER_PASSAGE=1200` on a later commit.
+Results: `docs/P4_REPORT_CONTRIBUTION.md`, Section 3.9.
 
 ## Held-out run (6 November)
 

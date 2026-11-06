@@ -1,0 +1,4 @@
+metric,paired_questions,papers,mean_right_minus_left,ci_low,ci_high,resamples,seed,left_only_questions,right_only_questions,left_arm,right_arm,left_k,right_k
+f1,160,142,0.00010916036700662482,-0.007376831248537084,0.008003424847979454,1000,42,0,0,static,adaptive,,
+task_score,160,142,0.00010916036700662482,-0.007376831248537084,0.008003424847979454,1000,42,0,0,static,adaptive,,
+em,160,142,0.0,0.0,0.0,1000,42,0,0,static,adaptive,,

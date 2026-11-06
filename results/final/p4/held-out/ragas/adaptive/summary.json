@@ -1,0 +1,28 @@
+{
+  "questions": 200,
+  "mode": "live",
+  "faithfulness": 0.9069392503947478,
+  "faithfulness_n": 191,
+  "faithfulness_statuses": {
+    "error": 2,
+    "ok": 191,
+    "refused": 7
+  },
+  "answer_relevance": 0.8540187503931305,
+  "answer_relevance_n": 189,
+  "answer_relevance_statuses": {
+    "error": 2,
+    "invalid_judge_score": 2,
+    "ok": 189,
+    "refused": 7
+  },
+  "context_precision": 0.5774285298389664,
+  "context_precision_n": 191,
+  "context_precision_statuses": {
+    "error": 2,
+    "ok": 191,
+    "refused": 7
+  },
+  "usage_note": "Raw judge usage is in judge_trace.json where provider supplies it; embedding usage may be unavailable. No cost inferred.",
+  "arm": "adaptive"
+}

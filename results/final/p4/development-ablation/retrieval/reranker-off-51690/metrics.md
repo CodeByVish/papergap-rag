@@ -1,0 +1,47 @@
+Scored: 51690 (40 questions, development)
+
+| metric | static | adaptive |
+| --- | ---: | ---: |
+| questions | 40 | 40 |
+| errors | 0 | 0 |
+| answer_errors | 0 | 0 |
+| mean_rounds | 1.000 | 1.800 |
+| mean_passages | 7.850 | 8.550 |
+| questions_with_gold | 32 | 32 |
+| recall_before_retries | 0.885 | 0.885 |
+| recall_after_retries | 0.885 | 0.927 |
+| full_recall_recovery_rate | 0.000 | 0.333 |
+| gap_detected | 6 | 18 |
+| critic_gap_recovery_rate | 0.000 | 0.167 |
+| retries | 0 | 32 |
+| unnecessary_retry_rate | n/a | 0.619 |
+| ineffective_retry_rate | n/a | 0.905 |
+| redundant_retry_rate | n/a | 0.406 |
+| refusal_rate | 0.000 | 0.025 |
+| correct_refusal_rate | 0.000 | 0.125 |
+| false_refusal_rate | 0.000 | 0.000 |
+| unsatisfied_rate_unanswerable | 0.250 | 0.750 |
+| unsatisfied_rate_answerable | 0.125 | 0.281 |
+| critic_reused_rate | 0.000 | 0.194 |
+| critic_llm_rate | 0.000 | 0.931 |
+| critic_fallback_rate | 0.000 | 0.069 |
+| critic_thinking_drift_rate | 0.000 | 0.000 |
+| mean_elapsed_s | 0.022 | 4.895 |
+Refuse if the critic is still unsatisfied after the last round (not enabled): refuses 0.750 of unanswerable and 0.281 of answerable questions; meets the proposed gate (>= 0.5, <= 0.05): False.
+
+Critic audit (adaptive arm):
+
+| critic verdict / situation | count | reading |
+| --- | ---: | --- |
+| insufficient/gold complete | 14 | over-strict: all gold was in view |
+| insufficient/gold hidden | 1 | gold retrieved but outside the critic's view |
+| insufficient/gold missing | 9 | correct: gold not retrieved yet |
+| sufficient/gold complete | 20 | correct |
+| sufficient/gold hidden | 1 | accepted although gold was outside its view |
+| sufficient/gold missing | 2 | false accept: gold not retrieved |
+| insufficient/unanswerable | 9 | correct |
+| sufficient/unanswerable | 2 | false accept: the paper cannot answer |
+
+verdicts asked of the model, with gold or unanswerable: 58
+verdict sources: fallback 4, llm 54, reused 14
+sufficient verdicts by what they cite: a gold passage 14, no gold passage 5

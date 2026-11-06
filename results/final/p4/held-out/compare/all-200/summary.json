@@ -1,0 +1,50 @@
+[
+  {
+    "metric": "f1",
+    "paired_questions": 200,
+    "papers": 174,
+    "mean_right_minus_left": -0.0024989812302042237,
+    "ci_low": -0.010859702403150324,
+    "ci_high": 0.005624963680876187,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static",
+    "right_arm": "adaptive",
+    "left_k": null,
+    "right_k": null
+  },
+  {
+    "metric": "task_score",
+    "paired_questions": 200,
+    "papers": 174,
+    "mean_right_minus_left": -0.0024989812302042237,
+    "ci_low": -0.010859702403150324,
+    "ci_high": 0.005624963680876187,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static",
+    "right_arm": "adaptive",
+    "left_k": null,
+    "right_k": null
+  },
+  {
+    "metric": "em",
+    "paired_questions": 200,
+    "papers": 174,
+    "mean_right_minus_left": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.0,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static",
+    "right_arm": "adaptive",
+    "left_k": null,
+    "right_k": null
+  }
+]

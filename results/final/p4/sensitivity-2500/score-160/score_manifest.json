@@ -1,0 +1,13 @@
+{
+  "role": "development",
+  "label": "160 not annotated, 2500",
+  "questions": 160,
+  "run_dir": "/private/tmp/claude-501/-Users-ananyaredhu-PycharmProjects-papergap-rag/810d0a8d-02a0-4182-98b9-12007d578225/scratchpad/h2500/p4-heldout-wide2500-51705-20261106/runs/p4/held-out-200-wide2500",
+  "scored_with_commit": "34137cf99f191add9a625709ad9966bdc53607b1",
+  "freeze": null,
+  "inputs": {
+    "questions": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48",
+    "mapping": "6bfd323ac4ed86d1e33afbffefb681d3d07821070af479fdfba3001ebfb9eaf4",
+    "qa": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e"
+  }
+}

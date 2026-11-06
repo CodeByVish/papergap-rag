@@ -1,0 +1,16 @@
+[
+  {
+    "arm": "adaptive",
+    "mode": "adaptive",
+    "k": null,
+    "questions": 200,
+    "mapped_recall": 0.871,
+    "mapped_recall_n": 200,
+    "successful_only_mapped_recall": 0.871,
+    "successful_only_n": 200,
+    "mapping_exclusions": 0,
+    "retrieval_failures": 0,
+    "mean_retrieved_count": 8.28,
+    "definition": "mapped gold passage ID overlap; not pool recall or paragraph coverage"
+  }
+]
