@@ -363,7 +363,7 @@ def create_app(
     allow_corpus: bool = False,
     papers: Sequence[str] = (),
     passages: Optional[Mapping[str, Mapping[str, Any]]] = None,
-    top_k: int = 5,
+    top_k: int = 8,
     token: Optional[str] = None,
     prompt_version: str = PROMPT_VERSION,
 ) -> Any:
@@ -710,7 +710,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-model-len", type=int, default=32768)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument("--top-k", type=int, default=8)
     hooks = parser.add_mutually_exclusive_group()
     hooks.add_argument(
         "--retriever",
