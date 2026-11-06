@@ -53,13 +53,21 @@ def frozen_record(questions_path: Path, count: int = 3) -> dict:
 
 # --- the record in the repository -----------------------------------------
 
-def test_the_shipped_record_is_a_draft_that_says_what_is_missing():
+def test_the_shipped_record_is_complete_once_frozen_and_says_what_is_missing_before():
     record = load_freeze(ROOT / "configs/p4_freeze.json")
     problems = freeze_problems(record)
-    assert record["status"] == "draft"
-    assert any("status" in line for line in problems)
-    for missing in ("code.commit", "dense_index.path", "dense_index.metadata_sha256"):
-        assert any(missing in line for line in problems)
+    if record["status"] == "frozen":
+        assert problems == []
+    else:
+        # a draft names exactly the freezing step that is left: the status and the date
+        assert record["status"] == "draft"
+        assert any("status" in line for line in problems)
+        assert any("frozen_at" in line for line in problems)
+    # the values filled in before the freeze are well formed whatever the status
+    assert len(record["code"]["commit"]) == 40
+    assert len(record["dense_index"]["metadata_sha256"]) == 64
+    assert record["dense_index"]["path"] and record["answers"]["generate"] is True
+    assert record["retrieval"]["top_k"] == 8
 
 
 def test_the_shipped_record_names_checkable_identifiers():
