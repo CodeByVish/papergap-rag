@@ -1,0 +1,411 @@
+{
+  "client_run_id": "d57283b4-8ec5-4a45-94aa-f72b8b9afef8",
+  "conversation_id": "766eb5ca-ce42-42db-915b-a4421eefa9e5",
+  "message_id": "cbf7d908-eb61-4f79-8093-d672f1f072ab",
+  "retry_of_client_run_id": null,
+  "submission": {
+    "question": "What results do they achieve using their proposed approach?",
+    "paper_id": "1904.10503"
+  },
+  "capabilities": {
+    "retrieval": true,
+    "passage_text": true,
+    "backend": "vllm",
+    "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+    "prompt_version": "p5-grounded-qa-v7",
+    "agent": true
+  },
+  "service_mode": "vllm",
+  "submitted_at": "2026-11-06T18:13:52.519326+00:00",
+  "outcome": "completed",
+  "answer_record": {
+    "request_id": "ui-1793988832694",
+    "result": {
+      "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.",
+      "citations": [
+        "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+      ],
+      "evidence_status": "SUFFICIENT",
+      "retrieval_rounds": 1,
+      "provenance": [
+        {
+          "claim": "The total F-1 score on the OntoNotes dataset is 88%",
+          "passage_ids": [
+            "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+          ],
+          "support": "direct"
+        },
+        {
+          "claim": "The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%",
+          "passage_ids": [
+            "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+          ],
+          "support": "direct"
+        }
+      ]
+    },
+    "validation": {
+      "final_result": {
+        "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.",
+        "citations": [
+          "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "The total F-1 score on the OntoNotes dataset is 88%",
+            "passage_ids": [
+              "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+            ],
+            "support": "direct"
+          },
+          {
+            "claim": "The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%",
+            "passage_ids": [
+              "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "raw_result": {
+        "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.",
+        "citations": [
+          "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "The total F-1 score on the OntoNotes dataset is 88%",
+            "passage_ids": [
+              "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+            ],
+            "support": "direct"
+          },
+          {
+            "claim": "The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%",
+            "passage_ids": [
+              "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "violations": [],
+      "downgraded": false,
+      "downgrade_reason": null,
+      "checks_run": [
+        "R1_citation_reference",
+        "R1b_provenance_reference",
+        "R4_evidence_status",
+        "R3_numeric_grounding",
+        "R2_claim_coverage"
+      ],
+      "schema_version": "p5-answer-v1"
+    },
+    "generation": {
+      "backend": {
+        "backend": "vllm",
+        "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+        "loaded": true,
+        "options": {
+          "dtype": "bfloat16",
+          "gpu_memory_utilization": 0.85,
+          "max_model_len": 32768,
+          "tensor_parallel_size": 1,
+          "max_new_tokens": 1024,
+          "temperature": 0.0,
+          "top_p": 0.9,
+          "enable_thinking": false,
+          "enforce_eager": false
+        },
+        "last_generation_stats": {
+          "batch_size": 1,
+          "prompt_tokens": 5545,
+          "completion_tokens": 357,
+          "batch_seconds": 11.835304326028563
+        },
+        "kv_cache_budget_gb": 37.77
+      },
+      "prompt_version": "p5-grounded-qa-v7",
+      "diagnostics": {
+        "had_code_fence": false,
+        "had_thinking_block": false,
+        "unclosed_thinking_block": false,
+        "leading_text_chars": 0,
+        "trailing_text_chars": 0,
+        "candidate_index": 0,
+        "extra_fields": [],
+        "coerced": [],
+        "repaired_invalid_escapes": false,
+        "invalid_escape_repairs": 0
+      },
+      "raw_text_excerpt": "{\n  \"answer\": \"The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.\",\n  \"citations\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\"claim\": \"The total F-1 score on the OntoNotes dataset is 88%\", \"passage_ids\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"], \"support\": \"direct\"},\n    {\"claim\": \"The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%\", \"passage_ids\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"], \"support\": \"direct\"}\n  ]\n}",
+      "raw_text_chars": 756
+    },
+    "agent": {
+      "paper_id": "1904.10503",
+      "sufficient": true,
+      "gap_label": "NONE",
+      "rewritten_query": null,
+      "required_components": [
+        "result"
+      ],
+      "evidence_map": {
+        "result": [
+          "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce",
+          "qasper-passage-v1-3bcdbb0966d56598c586dc42c60b27d521155d2d9ea7bd7b406b9cc559b1a52d",
+          "qasper-passage-v1-6b0a68ec4f322ad329ee458e56a35f9c9a1a76b76d2d102d8b18c944d21a86c7",
+          "qasper-passage-v1-20ae128b849f6e2fcc9f8b962477258b54f648fb14b2606e088d6ef41f134057",
+          "qasper-passage-v1-be0393cfa7b4911a6bc2fd4779e28c65b16beebf6cf7c3cf95ed9ebe4cd474fa"
+        ]
+      },
+      "retrieval_log": [
+        {
+          "round": 1,
+          "query": "What results do they achieve using their proposed approach?",
+          "triggered_by": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce",
+            "qasper-passage-v1-3bcdbb0966d56598c586dc42c60b27d521155d2d9ea7bd7b406b9cc559b1a52d",
+            "qasper-passage-v1-6b0a68ec4f322ad329ee458e56a35f9c9a1a76b76d2d102d8b18c944d21a86c7",
+            "qasper-passage-v1-20ae128b849f6e2fcc9f8b962477258b54f648fb14b2606e088d6ef41f134057",
+            "qasper-passage-v1-15106e64917eff38ae6cb02f01bf58ae01949dad83d74a87c6c625cc35e0161d",
+            "qasper-passage-v1-27f0ea2ba49fb9316fdb129c97a11fcccf88b2f8e5600aae0eaf480517c24359",
+            "qasper-passage-v1-85720127b3b362a833ef794a871cd0f99c85d85b1aee9d867db2b75513f21dd9",
+            "qasper-passage-v1-be0393cfa7b4911a6bc2fd4779e28c65b16beebf6cf7c3cf95ed9ebe4cd474fa"
+          ],
+          "paper_ids": [
+            "1904.10503"
+          ],
+          "search_scope": "paper",
+          "section": null,
+          "scope_fallback": false,
+          "scoped_retrieval_ms": null,
+          "retrieval_ms": 101.11930896528065
+        }
+      ],
+      "critic_log": [
+        {
+          "round": 1,
+          "source": "llm",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce",
+            "qasper-passage-v1-3bcdbb0966d56598c586dc42c60b27d521155d2d9ea7bd7b406b9cc559b1a52d",
+            "qasper-passage-v1-6b0a68ec4f322ad329ee458e56a35f9c9a1a76b76d2d102d8b18c944d21a86c7",
+            "qasper-passage-v1-20ae128b849f6e2fcc9f8b962477258b54f648fb14b2606e088d6ef41f134057",
+            "qasper-passage-v1-15106e64917eff38ae6cb02f01bf58ae01949dad83d74a87c6c625cc35e0161d",
+            "qasper-passage-v1-27f0ea2ba49fb9316fdb129c97a11fcccf88b2f8e5600aae0eaf480517c24359",
+            "qasper-passage-v1-85720127b3b362a833ef794a871cd0f99c85d85b1aee9d867db2b75513f21dd9",
+            "qasper-passage-v1-be0393cfa7b4911a6bc2fd4779e28c65b16beebf6cf7c3cf95ed9ebe4cd474fa"
+          ],
+          "supporting_passage_ids": [
+            "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+          ],
+          "evidence_quote": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.",
+          "missing_components": [],
+          "reason": "The passage directly states the F-1 scores achieved on the OntoNotes and Wiki(gold) datasets using the proposed approach.",
+          "errors": [],
+          "raw_replies": [
+            "{\n  \"sufficient\": true,\n  \"gap_label\": \"NONE\",\n  \"supporting_passage_ids\": [\"p1\"],\n  \"evidence_quote\": \"The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.\",\n  \"missing_components\": [],\n  \"reason\": \"The passage directly states the F-1 scores achieved on the OntoNotes and Wiki(gold) datasets using the proposed approach.\"\n}"
+          ],
+          "thinking_drift": false
+        }
+      ]
+    },
+    "search": {
+      "scope": "paper",
+      "paper_id": "1904.10503",
+      "source_papers": [
+        "1904.10503"
+      ]
+    }
+  },
+  "error": null,
+  "evidence": {
+    "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce": {
+      "text": "The results for each class type are shown in Table TABREF19 , with some specific examples shown in Figure FIGREF18 . For the Wiki(gold) we quote the micro-averaged F-1 scores for the entire top level entity category. The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. It is worth noting that one could improve Wiki(gold) results by training directly using this dataset. However, the aim is not to tune our model specifically on this class hierarchy. We instead aim to present a framework which can be modified easily to any domain hierarchy and has acceptable out-of-the-box performances to any fine-grained dataset. The results in Table TABREF19 (OntoNotes) only show the main 7 categories in OntoNotes which map to Wiki(gold) for clarity. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%)",
+      "paper_id": "1904.10503",
+      "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+      "section": "Results",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "answer_http_elapsed_ms": 16188.625832961407,
+  "citation_http_elapsed_ms": 73.88445799006149,
+  "finished_at": "2026-11-06T18:14:08.717581+00:00",
+  "evidence_error": null,
+  "progress_log": [
+    {
+      "elapsed_s": 0.0,
+      "message": "Request received.",
+      "step": "plan",
+      "active": "plan"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Planned: result question, needs result. Searching...",
+      "step": "plan",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 0.1,
+      "message": "Hybrid search: BM25 11 + dense 11 candidates, 11 in both, RRF merged 11, no reranker, top 8 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Results",
+          "paper_id": "1904.10503",
+          "bm25_rank": 1,
+          "dense_rank": 2,
+          "rrf_score": 0.03252,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-3bcdbb0966d56598c586dc42c60b27d521155d2d9ea7bd7b406b9cc559b1a52d",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Evaluation Metrics",
+          "paper_id": "1904.10503",
+          "bm25_rank": 4,
+          "dense_rank": 1,
+          "rrf_score": 0.03202,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-6b0a68ec4f322ad329ee458e56a35f9c9a1a76b76d2d102d8b18c944d21a86c7",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Entity Linking using Wikidata",
+          "paper_id": "1904.10503",
+          "bm25_rank": 2,
+          "dense_rank": 4,
+          "rrf_score": 0.03175,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-20ae128b849f6e2fcc9f8b962477258b54f648fb14b2606e088d6ef41f134057",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Introduction",
+          "paper_id": "1904.10503",
+          "bm25_rank": 3,
+          "dense_rank": 5,
+          "rrf_score": 0.03126,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-15106e64917eff38ae6cb02f01bf58ae01949dad83d74a87c6c625cc35e0161d",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Datasets",
+          "paper_id": "1904.10503",
+          "bm25_rank": 9,
+          "dense_rank": 3,
+          "rrf_score": 0.03037,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-27f0ea2ba49fb9316fdb129c97a11fcccf88b2f8e5600aae0eaf480517c24359",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Introduction",
+          "paper_id": "1904.10503",
+          "bm25_rank": 5,
+          "dense_rank": 8,
+          "rrf_score": 0.03009,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-85720127b3b362a833ef794a871cd0f99c85d85b1aee9d867db2b75513f21dd9",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Method",
+          "paper_id": "1904.10503",
+          "bm25_rank": 7,
+          "dense_rank": 6,
+          "rrf_score": 0.03008,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-be0393cfa7b4911a6bc2fd4779e28c65b16beebf6cf7c3cf95ed9ebe4cd474fa",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "NER using ELMo",
+          "paper_id": "1904.10503",
+          "bm25_rank": 6,
+          "dense_rank": 9,
+          "rrf_score": 0.02964,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-4e76eeff01dc66e71bed1a5a073c81a7fa4af95befd0ee809ea7816299a4ae9b",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Entity Linking using Wikidata",
+          "paper_id": "1904.10503",
+          "bm25_rank": 10,
+          "dense_rank": 7,
+          "rrf_score": 0.02921,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-d4941ecb9f0d20a1b35abc195a223986e62647a46b91e77b6091f41b37e2af44",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Conclusion and Future Work",
+          "paper_id": "1904.10503",
+          "bm25_rank": 8,
+          "dense_rank": 10,
+          "rrf_score": 0.02899,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-3b3aebe5ee50bc90b29665240410ca96116634b3bc8881fe9908c3499c3465b2",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Entity Linking using Wikidata",
+          "paper_id": "1904.10503",
+          "bm25_rank": 11,
+          "dense_rank": 11,
+          "rrf_score": 0.02817,
+          "kept": false
+        }
+      ]
+    },
+    {
+      "elapsed_s": 0.1,
+      "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 0.1,
+      "message": "Keyword match: 1 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 4.2,
+      "message": "Evidence check (model, 8 passages): enough.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 4.2,
+      "message": "Stopped searching: sufficient, budget 3 rounds.",
+      "step": "check",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 4.2,
+      "message": "Writing the answer and checking its citations...",
+      "step": "write",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 16.0,
+      "message": "Answer ready: SUFFICIENT, 1 cited, 0 validation notes.",
+      "step": "write",
+      "active": "done"
+    }
+  ]
+}

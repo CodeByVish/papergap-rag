@@ -1,0 +1,489 @@
+{
+  "client_run_id": "ff875a29-37cf-42e2-91a2-da45175314d2",
+  "conversation_id": "57276df0-d830-422b-a0f3-e08bee1e2629",
+  "message_id": "5851ddc9-714d-423d-9641-ae16105b39ff",
+  "retry_of_client_run_id": null,
+  "submission": {
+    "question": "Which model architecture do they use to obtain representations?",
+    "paper_id": "1904.05584"
+  },
+  "capabilities": {
+    "retrieval": true,
+    "passage_text": true,
+    "backend": "ollama",
+    "model_id": "qwen3:14b",
+    "prompt_version": "p5-grounded-qa-v7",
+    "agent": true
+  },
+  "service_mode": "ollama",
+  "submitted_at": "2026-11-06T14:22:57.857097+00:00",
+  "outcome": "completed",
+  "answer_record": {
+    "request_id": "ui-1793974977868",
+    "result": {
+      "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+      "citations": [
+        "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+      ],
+      "evidence_status": "SUFFICIENT",
+      "retrieval_rounds": 1,
+      "provenance": [
+        {
+          "claim": "They use a BiLSTM with max pooling to obtain sentence representations.",
+          "passage_ids": [
+            "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+          ],
+          "support": "direct"
+        }
+      ]
+    },
+    "validation": {
+      "final_result": {
+        "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+        "citations": [
+          "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "They use a BiLSTM with max pooling to obtain sentence representations.",
+            "passage_ids": [
+              "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "raw_result": {
+        "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+        "citations": [
+          "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "They use a BiLSTM with max pooling to obtain sentence representations.",
+            "passage_ids": [
+              "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "violations": [
+        {
+          "code": "UNCOVERED_REQUIRED_COMPONENT",
+          "severity": "warning",
+          "message": "component 'method' maps to ['qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8', 'qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38'], but the answer cites none of them",
+          "subject": "method"
+        }
+      ],
+      "downgraded": false,
+      "downgrade_reason": null,
+      "checks_run": [
+        "R1_citation_reference",
+        "R1b_provenance_reference",
+        "R4_evidence_status",
+        "R3_numeric_grounding",
+        "R2_claim_coverage"
+      ],
+      "schema_version": "p5-answer-v1"
+    },
+    "generation": {
+      "backend": {
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "loaded": true,
+        "options": {
+          "base_url": "http://127.0.0.1:11434",
+          "num_ctx": 8192,
+          "max_new_tokens": 1024
+        },
+        "last_generation_stats": {
+          "batch_size": 1,
+          "prompt_tokens": 5295,
+          "completion_tokens": 226,
+          "batch_seconds": 62.311838917
+        },
+        "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+        "timing_policy": "Ollama total_duration; includes server load/evaluation"
+      },
+      "prompt_version": "p5-grounded-qa-v7",
+      "diagnostics": {
+        "had_code_fence": false,
+        "had_thinking_block": false,
+        "unclosed_thinking_block": false,
+        "leading_text_chars": 0,
+        "trailing_text_chars": 0,
+        "candidate_index": 0,
+        "extra_fields": [],
+        "coerced": [],
+        "repaired_invalid_escapes": false,
+        "invalid_escape_repairs": 0
+      },
+      "raw_text_excerpt": "{\n  \"answer\": \"They use a BiLSTM with max pooling to obtain sentence representations.\",\n  \"citations\": [\"qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"They use a BiLSTM with max pooling to obtain sentence representations.\",\n      \"passage_ids\": [\"qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+      "raw_text_chars": 510
+    },
+    "agent": {
+      "paper_id": "1904.05584",
+      "sufficient": true,
+      "gap_label": "NONE",
+      "rewritten_query": null,
+      "required_components": [
+        "method"
+      ],
+      "evidence_map": {
+        "method": [
+          "qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8",
+          "qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38"
+        ]
+      },
+      "retrieval_log": [
+        {
+          "round": 1,
+          "query": "Which model architecture do they use to obtain representations?",
+          "triggered_by": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-5572be45edeaec4f2871f204a69b7b659e1391a9b65fd33f2dbc4bc19d320ca4",
+            "qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8",
+            "qasper-passage-v1-c5fd724528a2d4668411a47cf8172721e6942c635fb766ba6ddfd8809ee32add",
+            "qasper-passage-v1-7ce128b42cbae8022b85bb6ecf91a1c85787a70555ecc920f81ded5c67f761f3",
+            "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1",
+            "qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38",
+            "qasper-passage-v1-3c3f5bb5dcad5571085dcd00ed309483ffe6a613f7799b84b18364b048826c91",
+            "qasper-passage-v1-f2039a29f78737d3857c407e7ecbeb8f06813bb4a929508c7e38cde3dd1f4189"
+          ],
+          "paper_ids": [
+            "1904.05584"
+          ],
+          "search_scope": "paper",
+          "section": null,
+          "scope_fallback": false,
+          "scoped_retrieval_ms": null,
+          "retrieval_ms": 263.631332985824
+        }
+      ],
+      "critic_log": [
+        {
+          "round": 1,
+          "source": "llm",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8",
+            "qasper-passage-v1-5572be45edeaec4f2871f204a69b7b659e1391a9b65fd33f2dbc4bc19d320ca4",
+            "qasper-passage-v1-c5fd724528a2d4668411a47cf8172721e6942c635fb766ba6ddfd8809ee32add",
+            "qasper-passage-v1-7ce128b42cbae8022b85bb6ecf91a1c85787a70555ecc920f81ded5c67f761f3",
+            "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1",
+            "qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38",
+            "qasper-passage-v1-3c3f5bb5dcad5571085dcd00ed309483ffe6a613f7799b84b18364b048826c91",
+            "qasper-passage-v1-f2039a29f78737d3857c407e7ecbeb8f06813bb4a929508c7e38cde3dd1f4189"
+          ],
+          "supporting_passage_ids": [
+            "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+          ],
+          "evidence_quote": "We achieved this by using a BiLSTM with max pooling, which was shown to be a good universal sentence encoding mechanism BIBREF13 .",
+          "missing_components": [],
+          "reason": "The passage explicitly states that a BiLSTM with max pooling is used to obtain sentence representations, which directly answers the question about the model architecture.",
+          "errors": [],
+          "raw_replies": [
+            "{\n  \"sufficient\": true,\n  \"gap_label\": \"NONE\",\n  \"supporting_passage_ids\": [\"p5\"],\n  \"evidence_quote\": \"We achieved this by using a BiLSTM with max pooling, which was shown to be a good universal sentence encoding mechanism BIBREF13 .\",\n  \"missing_components\": [],\n  \"reason\": \"The passage explicitly states that a BiLSTM with max pooling is used to obtain sentence representations, which directly answers the question about the model architecture.\"\n}"
+          ],
+          "thinking_drift": false
+        }
+      ]
+    },
+    "search": {
+      "scope": "paper",
+      "paper_id": "1904.05584",
+      "source_papers": [
+        "1904.05584"
+      ]
+    }
+  },
+  "error": null,
+  "evidence": {
+    "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1": {
+      "text": "To enable sentence-level classification we need to obtain a sentence representation from the word vectors INLINEFORM0 . We achieved this by using a BiLSTM with max pooling, which was shown to be a good universal sentence encoding mechanism BIBREF13 .\n\nLet INLINEFORM0 , be an input sentence and INLINEFORM1 its matrix representation, where each INLINEFORM2 was obtained by one of the methods described in subsec:methods. INLINEFORM3 is the context-enriched matrix representation of INLINEFORM4 obtained by feeding INLINEFORM5 to a BiLSTM of output dimension INLINEFORM6 . Lastly, INLINEFORM11 is the final sentence representation of INLINEFORM12 obtained by max-pooling INLINEFORM13 along the sequence dimension.\n\nFinally, we initialized the word representations INLINEFORM0 using GloVe embeddings BIBREF14 , and fine-tuned them during training. Refer to app:hyperparams for details on the other hyperparameters we used.",
+      "paper_id": "1904.05584",
+      "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+      "section": "Obtaining Sentence Representations",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "answer_http_elapsed_ms": 98413.90954199596,
+  "citation_http_elapsed_ms": 5.2892499952577055,
+  "finished_at": "2026-11-06T14:24:36.247235+00:00",
+  "evidence_error": null,
+  "progress_log": [
+    {
+      "elapsed_s": 0.0,
+      "message": "Request received.",
+      "step": "plan",
+      "active": "plan"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Planned: method question, needs method. Searching...",
+      "step": "plan",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 0.3,
+      "message": "Hybrid search: BM25 20 + dense 20 candidates, 19 in both, RRF merged 21, no reranker, top 8 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Sentence Representation Learning",
+          "paper_id": "1904.05584",
+          "bm25_rank": 2,
+          "dense_rank": 4,
+          "rrf_score": 0.03175,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-5572be45edeaec4f2871f204a69b7b659e1391a9b65fd33f2dbc4bc19d320ca4",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Introduction",
+          "paper_id": "1904.05584",
+          "bm25_rank": 4,
+          "dense_rank": 2,
+          "rrf_score": 0.03175,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-c5fd724528a2d4668411a47cf8172721e6942c635fb766ba6ddfd8809ee32add",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Gating Mechanisms for Combining Characters and Word Representations",
+          "paper_id": "1904.05584",
+          "bm25_rank": 1,
+          "dense_rank": 8,
+          "rrf_score": 0.0311,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-7ce128b42cbae8022b85bb6ecf91a1c85787a70555ecc920f81ded5c67f761f3",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Word Similarity",
+          "paper_id": "1904.05584",
+          "bm25_rank": 5,
+          "dense_rank": 6,
+          "rrf_score": 0.03054,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Obtaining Sentence Representations",
+          "paper_id": "1904.05584",
+          "bm25_rank": 3,
+          "dense_rank": 9,
+          "rrf_score": 0.03037,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Sentence-level Evaluation",
+          "paper_id": "1904.05584",
+          "bm25_rank": 12,
+          "dense_rank": 1,
+          "rrf_score": 0.03028,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-3c3f5bb5dcad5571085dcd00ed309483ffe6a613f7799b84b18364b048826c91",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "General Feature-wise Transformations",
+          "paper_id": "1904.05584",
+          "bm25_rank": 11,
+          "dense_rank": 3,
+          "rrf_score": 0.02996,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-f2039a29f78737d3857c407e7ecbeb8f06813bb4a929508c7e38cde3dd1f4189",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Conclusions",
+          "paper_id": "1904.05584",
+          "bm25_rank": 9,
+          "dense_rank": 5,
+          "rrf_score": 0.02988,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-696e9505754254c789c826957b276bbe413eab2d947ffbe502436145ecc2a6d3",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Experimental Setup",
+          "paper_id": "1904.05584",
+          "bm25_rank": 10,
+          "dense_rank": 7,
+          "rrf_score": 0.02921,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-867668d084a247fee0a259d89110c570104089076a465b660520799cca3d3079",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Datasets",
+          "paper_id": "1904.05584",
+          "bm25_rank": 7,
+          "dense_rank": 12,
+          "rrf_score": 0.02881,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-00b6675e5188f597bad63786733b5d1e8bec4c717cc63ec6c0dcafdc4f02efef",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Mapping Characters to Character-level Word Representations",
+          "paper_id": "1904.05584",
+          "bm25_rank": 6,
+          "dense_rank": 15,
+          "rrf_score": 0.02848,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-250947ae2519dea9a60c7ac97cc652ec2d6ac1e59151d8e7b0e67f6ded533f21",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Word Similarity",
+          "paper_id": "1904.05584",
+          "bm25_rank": 8,
+          "dense_rank": 18,
+          "rrf_score": 0.02753,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-845a4566db9f6e0f3befb7039d244c02dd8f161750d45655dcd468f723d0ecec",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Introduction",
+          "paper_id": "1904.05584",
+          "bm25_rank": 16,
+          "dense_rank": 11,
+          "rrf_score": 0.02724,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-c2a21c0324de1eddef6198b05fc00786e12f851871e0e44cfa93de83aed34c0e",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Word Frequencies and Gating Values",
+          "paper_id": "1904.05584",
+          "bm25_rank": 13,
+          "dense_rank": 14,
+          "rrf_score": 0.02721,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-6610fdbac2f904efeba18a4a723921979fddea300f0bcfea42fad9969420862d",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Background",
+          "paper_id": "1904.05584",
+          "bm25_rank": 14,
+          "dense_rank": 13,
+          "rrf_score": 0.02721,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-ea54536fafd729382ccf265c10de8f76bfab832b1424c1012cbd02e978f44388",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Hyperparameters",
+          "paper_id": "1904.05584",
+          "bm25_rank": 18,
+          "dense_rank": 10,
+          "rrf_score": 0.02711,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-011d98eb3449bcbde50eac900aa49aacd8a9ea53c8021612a8e504b04fbae00c",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Sentence Evaluation Datasets",
+          "paper_id": "1904.05584",
+          "bm25_rank": 15,
+          "dense_rank": 17,
+          "rrf_score": 0.02632,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-0afcd54ee28a672ad8582e2edb2e1603273a59d4aecafd76388985b6b5ab8ec8",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Relationship Between Word- and Sentence-level Evaluation Tasks",
+          "paper_id": "1904.05584",
+          "bm25_rank": 19,
+          "dense_rank": 16,
+          "rrf_score": 0.02582,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-1910e4d92f0052df7ffd0b1713db728cc0367aaf27b241aa5bbf3679558db34f",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Combining Character and Word-level Representations",
+          "paper_id": "1904.05584",
+          "bm25_rank": 17,
+          "dense_rank": 19,
+          "rrf_score": 0.02565,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-98c06d3adec0f55e7e18eb492eef93d80f9a70431072176aaaf504fa5c24eb8c",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Word Similarity",
+          "paper_id": "1904.05584",
+          "bm25_rank": 20,
+          "dense_rank": null,
+          "rrf_score": 0.0125,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-3ba40847a0a5ff129b11252840608dccf590d7f90e5e4c556b4b764e6ed7eee9",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Acknowledgements",
+          "paper_id": "1904.05584",
+          "bm25_rank": null,
+          "dense_rank": 20,
+          "rrf_score": 0.0125,
+          "kept": false
+        }
+      ]
+    },
+    {
+      "elapsed_s": 0.3,
+      "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 0.3,
+      "message": "Keyword match: 1 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 36.1,
+      "message": "Evidence check (model, 8 passages): enough.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 36.1,
+      "message": "Stopped searching: sufficient, budget 3 rounds.",
+      "step": "check",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 36.1,
+      "message": "Writing the answer and checking its citations...",
+      "step": "write",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 98.4,
+      "message": "Answer ready: SUFFICIENT, 1 cited, 1 validation notes.",
+      "step": "write",
+      "active": "done"
+    }
+  ]
+}

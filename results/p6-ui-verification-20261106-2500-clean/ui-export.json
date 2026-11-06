@@ -1,0 +1,1954 @@
+{
+  "schema_version": "p6-ui-export-v1",
+  "exported_at": "2026-11-06T14:26:25.637738+00:00",
+  "timing_definition": "answer_http_elapsed_ms includes HTTP waiting/processing; excludes citations and rendering. Not model inference time.",
+  "runs": [
+    {
+      "client_run_id": "c4ad990b-febb-45a9-90b1-73076efca227",
+      "conversation_id": "4f6bbd81-84a3-4f3b-8567-5144189c0010",
+      "message_id": "209c6445-91f2-46c2-8eed-befd5fb82242",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "Are any experiments performed to try this approach to word embeddings?",
+        "paper_id": "1912.10167"
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "ollama",
+      "submitted_at": "2026-11-06T14:16:43.772119+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1793974603785",
+        "result": {
+          "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+          "citations": [
+            "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "Experiments were performed to try this approach to word embeddings.",
+              "passage_ids": [
+                "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+              "passage_ids": [
+                "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+            "citations": [
+              "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Experiments were performed to try this approach to word embeddings.",
+                "passage_ids": [
+                  "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+                "passage_ids": [
+                  "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+            "citations": [
+              "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Experiments were performed to try this approach to word embeddings.",
+                "passage_ids": [
+                  "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+                "passage_ids": [
+                  "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "UNCOVERED_REQUIRED_COMPONENT",
+              "severity": "warning",
+              "message": "component 'method' maps to ['qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0', 'qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7', 'qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958'], but the answer cites none of them",
+              "subject": "method"
+            },
+            {
+              "code": "PROVENANCE_OVERSTATED",
+              "severity": "warning",
+              "message": "claim is marked 'direct' but the text it names supports 'unsupported': 'Experiments were performed to try this approach to word embeddings.'",
+              "subject": "Experiments were performed to try this approach to word embeddings."
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "ollama",
+            "model_id": "qwen3:14b",
+            "loaded": true,
+            "options": {
+              "base_url": "http://127.0.0.1:11434",
+              "num_ctx": 8192
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 74.144624709
+            },
+            "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+            "timing_policy": "Ollama total_duration; includes server load/evaluation"
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.\",\n  \"citations\": [\"qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"Experiments were performed to try this approach to word embeddings.\",\n      \"passage_ids\": [\"qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9\"],\n      \"support\": \"direct\"\n    },\n    {\n      \"claim\": \"The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.\",\n      \"passage_ids\": [\"qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+          "raw_text_chars": 1139
+        },
+        "search": {
+          "scope": "paper",
+          "paper_id": "1912.10167",
+          "source_papers": [
+            "1912.10167"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9": {
+          "text": "The process for checking the accuracy of the model consisted of first taking a random subset of the corpus that was not used for training. This subset consists of slightly more common words because the more common words should have more accurate word embeddings. Infrequent words (like websites and serial numbers) would not necessarily have accurate word embeddings that were generated through the word2vec model. The English word embedding was multiplied by the transformation matrix to create the predicted translated word embedding. The cosine similarity was then generated with each translated word embedding stored in the corpus. The 20 words with the highest cosine similarity were then outputted. Then the English word was translated through Google Translate and compared to the 20 outputted translated words. It was considered a match if the translated word was found in this list of 20 similar words. The reason why the translated word was not just compared to the most similar embedding was because each word could have multiple semantic meanings or have different synonyms in the other language. After running this accuracy formulation, results for different languages and objective functions are reported in Table TABREF18. In the table you can see the different results we obtained across different languages. You can notice that we increased the number of languages from the first review of our paper. In addition, the table shows the comparison between our baseline method (Least Squares) and our final one (Normalized vectors, with cosine similarity), which shows a slight improvement with respect to the first one.",
+          "paper_id": "1912.10167",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Results ::: Accuracy",
+          "previous_passage_id": null,
+          "next_passage_id": null
+        }
+      },
+      "answer_http_elapsed_ms": 106850.01337499125,
+      "citation_http_elapsed_ms": 8.370374998776242,
+      "finished_at": "2026-11-06T14:18:30.633084+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: method question, needs method. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Hybrid search: BM25 14 + dense 14 candidates, 14 in both, RRF merged 14, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Introduction",
+              "paper_id": "1912.10167",
+              "bm25_rank": 2,
+              "dense_rank": 1,
+              "rrf_score": 0.03252,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-b10215d02a0843b4e6d6b8a94ac48a9e81313171d7c89dc7d438b0cef926849d",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Related Work",
+              "paper_id": "1912.10167",
+              "bm25_rank": 1,
+              "dense_rank": 4,
+              "rrf_score": 0.03202,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Methods ::: Skipgram",
+              "paper_id": "1912.10167",
+              "bm25_rank": 3,
+              "dense_rank": 3,
+              "rrf_score": 0.03175,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Results ::: Accuracy",
+              "paper_id": "1912.10167",
+              "bm25_rank": 8,
+              "dense_rank": 2,
+              "rrf_score": 0.03083,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-89a415eda96552b813a79d100519f15d1d0cf0738a21e62fb0c1858435bfed29",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Linear Mapping",
+              "paper_id": "1912.10167",
+              "bm25_rank": 4,
+              "dense_rank": 7,
+              "rrf_score": 0.03055,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Methods ::: Minimizing the loss function",
+              "paper_id": "1912.10167",
+              "bm25_rank": 5,
+              "dense_rank": 6,
+              "rrf_score": 0.03054,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-865d8c7333cd7160dab42b6831f8a720fa696b582cedd7b4d126721488ce946e",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Normalization",
+              "paper_id": "1912.10167",
+              "bm25_rank": 6,
+              "dense_rank": 5,
+              "rrf_score": 0.03054,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-416a79a79c9a45d7a3c9f81791bb590a50eaec036fb6f815e111929c01cdc812",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Error Analysis ::: Google Translate",
+              "paper_id": "1912.10167",
+              "bm25_rank": 7,
+              "dense_rank": 9,
+              "rrf_score": 0.02942,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-b162ed5137b08f720b5f6b2a239b754433279abfba9466fc3ba70d4edb1e7087",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Dataset",
+              "paper_id": "1912.10167",
+              "bm25_rank": 9,
+              "dense_rank": 8,
+              "rrf_score": 0.0292,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b7532766054cd6148b8dd8a732bbe7454b2331b9cfc74a3dffae9f6ab55cb4a4",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Setup Description",
+              "paper_id": "1912.10167",
+              "bm25_rank": 11,
+              "dense_rank": 10,
+              "rrf_score": 0.02837,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a192c018ee42289e4d0b6149afd524ed2aa402b8902f1c01c20e200ee1f1f1ca",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Error Analysis ::: Chinese Translations",
+              "paper_id": "1912.10167",
+              "bm25_rank": 10,
+              "dense_rank": 14,
+              "rrf_score": 0.0278,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-033bd6b73e7218fb71f335bf056824b12b788bc795e1f1b058851845a18a1c25",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "Objective Function",
+              "paper_id": "1912.10167",
+              "bm25_rank": 13,
+              "dense_rank": 11,
+              "rrf_score": 0.02778,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-59e75d69e553ed87aa82e0fa188d81816b4cecb1d6b2ff7718e4bfb9e24f7ded",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "The Code",
+              "paper_id": "1912.10167",
+              "bm25_rank": 12,
+              "dense_rank": 13,
+              "rrf_score": 0.02759,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c2603270eb84affb23fbb0237d7139ff1941d8b4b8248e21fc6b093e5aa435c0",
+              "title": "Machine Translation with Cross-lingual Word Embeddings",
+              "section": "References",
+              "paper_id": "1912.10167",
+              "bm25_rank": 14,
+              "dense_rank": 12,
+              "rrf_score": 0.0274,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.1,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 32.7,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 32.7,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 32.7,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 106.8,
+          "message": "Answer ready: SUFFICIENT, 1 cited, 2 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    },
+    {
+      "client_run_id": "bf52099a-0c3b-44d8-989f-0b4828620cc3",
+      "conversation_id": "50785cff-de8d-44b4-a4d4-5cfcc296c3fa",
+      "message_id": "aea40e98-f3ea-40c7-a0fa-a6b35f67a19a",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "What evaluation metric is used?",
+        "paper_id": "1911.07555"
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "ollama",
+      "submitted_at": "2026-11-06T14:18:31.703748+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1793974711721",
+        "result": {
+          "answer": "The evaluation metric used is average classification accuracy.",
+          "citations": [
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 3,
+          "provenance": [
+            {
+              "claim": "The evaluation metric used is average classification accuracy.",
+              "passage_ids": [
+                "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "The evaluation metric used is average classification accuracy.",
+            "citations": [
+              "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 3,
+            "provenance": [
+              {
+                "claim": "The evaluation metric used is average classification accuracy.",
+                "passage_ids": [
+                  "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "The evaluation metric used is average classification accuracy.",
+            "citations": [
+              "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 3,
+            "provenance": [
+              {
+                "claim": "The evaluation metric used is average classification accuracy.",
+                "passage_ids": [
+                  "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "GENERATED_WITH_INSUFFICIENT_EVIDENCE",
+              "severity": "warning",
+              "message": "the agent's critic judged the evidence insufficient, but the gap was not INSUFFICIENT_INFORMATION, so P5 generated from the available passages; the answer is kept",
+              "subject": null
+            },
+            {
+              "code": "PROVENANCE_OVERSTATED",
+              "severity": "warning",
+              "message": "claim is marked 'direct' but the text it names supports 'partial': 'The evaluation metric used is average classification accuracy.'",
+              "subject": "The evaluation metric used is average classification accuracy."
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "ollama",
+            "model_id": "qwen3:14b",
+            "loaded": true,
+            "options": {
+              "base_url": "http://127.0.0.1:11434",
+              "num_ctx": 8192
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 64.357460916
+            },
+            "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+            "timing_policy": "Ollama total_duration; includes server load/evaluation"
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"The evaluation metric used is average classification accuracy.\",\n  \"citations\": [\"qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 3,\n  \"provenance\": [\n    {\n      \"claim\": \"The evaluation metric used is average classification accuracy.\",\n      \"passage_ids\": [\"qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+          "raw_text_chars": 494
+        },
+        "search": {
+          "scope": "paper",
+          "paper_id": "1911.07555",
+          "source_papers": [
+            "1911.07555"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e": {
+          "text": "The average classification accuracy results are summarised in Table TABREF9. The accuracies reported are for classifying a piece of text by its specific language label. Classifying text only by language group or family is a much easier task as reported in BIBREF8.\n\nDifferent variations of the proposed classifier were evaluated. A single NB classifier (NB), a stack of two NB classifiers (NB+NB), a stack of a NB classifier and lexicon (NB+Lex) and a lexicon (Lex) by itself. A lexicon with a 50% training token dropout is also listed to show the impact of the lexicon support on the accuracy.\n\nFrom the results it seems that the DSL 2017 task might be harder than the DSL 2015 and NCHLT tasks. Also, the results for the implementation discussed in BIBREF23 might seem low, but the results reported in that paper is generated on longer pieces of text so lower scores on the shorter pieces of text derived from the NCHLT corpora is expected.\n\nThe accuracy of the proposed algorithm seems to be dependent on the support of the lexicon. Without a good lexicon a non-stacked naive Bayesian classifier might even perform better.\n\nThe execution performance of some of the LID implementations are shown in Table TABREF10. Results were generated on an early 2015 13-inch Retina MacBook Pro with a 2.9 GHz CPU (Turbo Boosted to 3.4 GHz) and 8GB RAM. The C++ implementation in BIBREF17 is the fastest. The implementation in BIBREF8 makes use of un-hashed feature representations which causes it to be slower than the proposed sklearn implementation. The execution performance of BIBREF23 might improve by a factor of five to ten when executed on a GPU.",
+          "paper_id": "1911.07555",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Results and Analysis",
+          "previous_passage_id": null,
+          "next_passage_id": null
+        }
+      },
+      "answer_http_elapsed_ms": 100200.13641598052,
+      "citation_http_elapsed_ms": 10.192874993663281,
+      "finished_at": "2026-11-06T14:20:11.919342+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: result question, needs result. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Hybrid search: BM25 7 + dense 7 candidates, 7 in both, RRF merged 7, no reranker, top 7 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Related Works",
+              "paper_id": "1911.07555",
+              "bm25_rank": 1,
+              "dense_rank": 3,
+              "rrf_score": 0.03227,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Conclusion",
+              "paper_id": "1911.07555",
+              "bm25_rank": 4,
+              "dense_rank": 1,
+              "rrf_score": 0.03202,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Methodology",
+              "paper_id": "1911.07555",
+              "bm25_rank": 2,
+              "dense_rank": 6,
+              "rrf_score": 0.03128,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Results and Analysis",
+              "paper_id": "1911.07555",
+              "bm25_rank": 6,
+              "dense_rank": 2,
+              "rrf_score": 0.03128,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Related Works",
+              "paper_id": "1911.07555",
+              "bm25_rank": 3,
+              "dense_rank": 5,
+              "rrf_score": 0.03126,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Methodology",
+              "paper_id": "1911.07555",
+              "bm25_rank": 7,
+              "dense_rank": 4,
+              "rrf_score": 0.03055,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Introduction",
+              "paper_id": "1911.07555",
+              "bm25_rank": 5,
+              "dense_rank": 7,
+              "rrf_score": 0.03031,
+              "kept": true
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Round 1: kept 7 passages, 7 new, 7 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.7,
+          "message": "Evidence check (model, 7 passages): not enough, MISSING_RESULT.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.7,
+          "message": "Rewrote the search query: What evaluation metric is used? results experimental findings accuracy score",
+          "step": "search",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Hybrid search: BM25 1 + dense 1 candidates, 1 in both, RRF merged 1, no reranker, top 1 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Results and Analysis",
+              "paper_id": "1911.07555",
+              "bm25_rank": 1,
+              "dense_rank": 1,
+              "rrf_score": 0.03279,
+              "kept": true
+            }
+          ]
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Round 2 in section 'Results and Analysis': kept 1 passages, 0 new, 7 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Evidence check (previous verdict reused, same passages, 7 passages): not enough, MISSING_RESULT.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Rewrote the search query: What evaluation metric is used? results experimental findings accuracy score language algorithm south tasks languages training bibref8 naive",
+          "step": "search",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Hybrid search: BM25 7 + dense 7 candidates, 7 in both, RRF merged 7, no reranker, top 7 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Related Works",
+              "paper_id": "1911.07555",
+              "bm25_rank": 2,
+              "dense_rank": 1,
+              "rrf_score": 0.03252,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Results and Analysis",
+              "paper_id": "1911.07555",
+              "bm25_rank": 1,
+              "dense_rank": 3,
+              "rrf_score": 0.03227,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Methodology",
+              "paper_id": "1911.07555",
+              "bm25_rank": 3,
+              "dense_rank": 4,
+              "rrf_score": 0.0315,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Related Works",
+              "paper_id": "1911.07555",
+              "bm25_rank": 6,
+              "dense_rank": 2,
+              "rrf_score": 0.03128,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Introduction",
+              "paper_id": "1911.07555",
+              "bm25_rank": 4,
+              "dense_rank": 5,
+              "rrf_score": 0.03101,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Conclusion",
+              "paper_id": "1911.07555",
+              "bm25_rank": 5,
+              "dense_rank": 6,
+              "rrf_score": 0.03054,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Methodology",
+              "paper_id": "1911.07555",
+              "bm25_rank": 7,
+              "dense_rank": 7,
+              "rrf_score": 0.02985,
+              "kept": true
+            }
+          ]
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Round 3: kept 7 passages, 0 new, 7 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Evidence check (previous verdict reused, same passages, 7 passages): not enough, MISSING_RESULT.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Stopped searching: max_rounds, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 35.8,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 100.2,
+          "message": "Answer ready: SUFFICIENT, 1 cited, 2 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    },
+    {
+      "client_run_id": "90fd703c-8fa4-4428-a6e5-9524a40024b2",
+      "conversation_id": "d5db0cb7-6f99-441f-bfb3-e18317e64486",
+      "message_id": "38243f36-f73f-4d31-b8e1-106500832325",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "What results do they achieve using their proposed approach?",
+        "paper_id": "1904.10503"
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "ollama",
+      "submitted_at": "2026-11-06T14:20:12.162201+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1793974812178",
+        "result": {
+          "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%).",
+          "citations": [
+            "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "The total F-1 score on the OntoNotes dataset is 88%",
+              "passage_ids": [
+                "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%",
+              "passage_ids": [
+                "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%)",
+              "passage_ids": [
+                "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%).",
+            "citations": [
+              "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The total F-1 score on the OntoNotes dataset is 88%",
+                "passage_ids": [
+                  "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%",
+                "passage_ids": [
+                  "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%)",
+                "passage_ids": [
+                  "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%).",
+            "citations": [
+              "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The total F-1 score on the OntoNotes dataset is 88%",
+                "passage_ids": [
+                  "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%",
+                "passage_ids": [
+                  "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%)",
+                "passage_ids": [
+                  "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "ollama",
+            "model_id": "qwen3:14b",
+            "loaded": true,
+            "options": {
+              "base_url": "http://127.0.0.1:11434",
+              "num_ctx": 8192
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 117.192620959
+            },
+            "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+            "timing_policy": "Ollama total_duration; includes server load/evaluation"
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%).\",\n  \"citations\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"The total F-1 score on the OntoNotes dataset is 88%\",\n      \"passage_ids\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"],\n      \"support\": \"direct\"\n    },\n    {\n      \"claim\": \"The total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%\",\n      \"passage_ids\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"],\n      \"support\": \"direct\"\n    },\n    {\n      \"claim\": \"The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%)\",\n      \"passage_ids\": [\"qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+          "raw_text_chars": 1301
+        },
+        "search": {
+          "scope": "paper",
+          "paper_id": "1904.10503",
+          "source_papers": [
+            "1904.10503"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce": {
+          "text": "The results for each class type are shown in Table TABREF19 , with some specific examples shown in Figure FIGREF18 . For the Wiki(gold) we quote the micro-averaged F-1 scores for the entire top level entity category. The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. It is worth noting that one could improve Wiki(gold) results by training directly using this dataset. However, the aim is not to tune our model specifically on this class hierarchy. We instead aim to present a framework which can be modified easily to any domain hierarchy and has acceptable out-of-the-box performances to any fine-grained dataset. The results in Table TABREF19 (OntoNotes) only show the main 7 categories in OntoNotes which map to Wiki(gold) for clarity. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%)",
+          "paper_id": "1904.10503",
+          "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+          "section": "Results",
+          "previous_passage_id": null,
+          "next_passage_id": null
+        }
+      },
+      "answer_http_elapsed_ms": 165523.33224998438,
+      "citation_http_elapsed_ms": 6.279084016568959,
+      "finished_at": "2026-11-06T14:22:57.699315+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: result question, needs result. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Hybrid search: BM25 11 + dense 11 candidates, 11 in both, RRF merged 11, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-f1c1a3f88d4e1e359ab13744bbc323b2d960e48ce6ca4493e858ed38e8156bce",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Results",
+              "paper_id": "1904.10503",
+              "bm25_rank": 1,
+              "dense_rank": 2,
+              "rrf_score": 0.03252,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-3bcdbb0966d56598c586dc42c60b27d521155d2d9ea7bd7b406b9cc559b1a52d",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Evaluation Metrics",
+              "paper_id": "1904.10503",
+              "bm25_rank": 4,
+              "dense_rank": 1,
+              "rrf_score": 0.03202,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-6b0a68ec4f322ad329ee458e56a35f9c9a1a76b76d2d102d8b18c944d21a86c7",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Entity Linking using Wikidata",
+              "paper_id": "1904.10503",
+              "bm25_rank": 2,
+              "dense_rank": 4,
+              "rrf_score": 0.03175,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-20ae128b849f6e2fcc9f8b962477258b54f648fb14b2606e088d6ef41f134057",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Introduction",
+              "paper_id": "1904.10503",
+              "bm25_rank": 3,
+              "dense_rank": 5,
+              "rrf_score": 0.03126,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-15106e64917eff38ae6cb02f01bf58ae01949dad83d74a87c6c625cc35e0161d",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Datasets",
+              "paper_id": "1904.10503",
+              "bm25_rank": 9,
+              "dense_rank": 3,
+              "rrf_score": 0.03037,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-27f0ea2ba49fb9316fdb129c97a11fcccf88b2f8e5600aae0eaf480517c24359",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Introduction",
+              "paper_id": "1904.10503",
+              "bm25_rank": 5,
+              "dense_rank": 8,
+              "rrf_score": 0.03009,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-85720127b3b362a833ef794a871cd0f99c85d85b1aee9d867db2b75513f21dd9",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Method",
+              "paper_id": "1904.10503",
+              "bm25_rank": 7,
+              "dense_rank": 6,
+              "rrf_score": 0.03008,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-be0393cfa7b4911a6bc2fd4779e28c65b16beebf6cf7c3cf95ed9ebe4cd474fa",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "NER using ELMo",
+              "paper_id": "1904.10503",
+              "bm25_rank": 6,
+              "dense_rank": 9,
+              "rrf_score": 0.02964,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-4e76eeff01dc66e71bed1a5a073c81a7fa4af95befd0ee809ea7816299a4ae9b",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Entity Linking using Wikidata",
+              "paper_id": "1904.10503",
+              "bm25_rank": 10,
+              "dense_rank": 7,
+              "rrf_score": 0.02921,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d4941ecb9f0d20a1b35abc195a223986e62647a46b91e77b6091f41b37e2af44",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Conclusion and Future Work",
+              "paper_id": "1904.10503",
+              "bm25_rank": 8,
+              "dense_rank": 10,
+              "rrf_score": 0.02899,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3b3aebe5ee50bc90b29665240410ca96116634b3bc8881fe9908c3499c3465b2",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Entity Linking using Wikidata",
+              "paper_id": "1904.10503",
+              "bm25_rank": 11,
+              "dense_rank": 11,
+              "rrf_score": 0.02817,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 48.3,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 48.3,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 48.3,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 165.5,
+          "message": "Answer ready: SUFFICIENT, 1 cited, 0 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    },
+    {
+      "client_run_id": "ff875a29-37cf-42e2-91a2-da45175314d2",
+      "conversation_id": "57276df0-d830-422b-a0f3-e08bee1e2629",
+      "message_id": "5851ddc9-714d-423d-9641-ae16105b39ff",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "Which model architecture do they use to obtain representations?",
+        "paper_id": "1904.05584"
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "ollama",
+      "submitted_at": "2026-11-06T14:22:57.857097+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1793974977868",
+        "result": {
+          "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+          "citations": [
+            "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "They use a BiLSTM with max pooling to obtain sentence representations.",
+              "passage_ids": [
+                "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+            "citations": [
+              "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "They use a BiLSTM with max pooling to obtain sentence representations.",
+                "passage_ids": [
+                  "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+            "citations": [
+              "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "They use a BiLSTM with max pooling to obtain sentence representations.",
+                "passage_ids": [
+                  "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "UNCOVERED_REQUIRED_COMPONENT",
+              "severity": "warning",
+              "message": "component 'method' maps to ['qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8', 'qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38'], but the answer cites none of them",
+              "subject": "method"
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "ollama",
+            "model_id": "qwen3:14b",
+            "loaded": true,
+            "options": {
+              "base_url": "http://127.0.0.1:11434",
+              "num_ctx": 8192
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 62.311838917
+            },
+            "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+            "timing_policy": "Ollama total_duration; includes server load/evaluation"
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"They use a BiLSTM with max pooling to obtain sentence representations.\",\n  \"citations\": [\"qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"They use a BiLSTM with max pooling to obtain sentence representations.\",\n      \"passage_ids\": [\"qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+          "raw_text_chars": 510
+        },
+        "search": {
+          "scope": "paper",
+          "paper_id": "1904.05584",
+          "source_papers": [
+            "1904.05584"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1": {
+          "text": "To enable sentence-level classification we need to obtain a sentence representation from the word vectors INLINEFORM0 . We achieved this by using a BiLSTM with max pooling, which was shown to be a good universal sentence encoding mechanism BIBREF13 .\n\nLet INLINEFORM0 , be an input sentence and INLINEFORM1 its matrix representation, where each INLINEFORM2 was obtained by one of the methods described in subsec:methods. INLINEFORM3 is the context-enriched matrix representation of INLINEFORM4 obtained by feeding INLINEFORM5 to a BiLSTM of output dimension INLINEFORM6 . Lastly, INLINEFORM11 is the final sentence representation of INLINEFORM12 obtained by max-pooling INLINEFORM13 along the sequence dimension.\n\nFinally, we initialized the word representations INLINEFORM0 using GloVe embeddings BIBREF14 , and fine-tuned them during training. Refer to app:hyperparams for details on the other hyperparameters we used.",
+          "paper_id": "1904.05584",
+          "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+          "section": "Obtaining Sentence Representations",
+          "previous_passage_id": null,
+          "next_passage_id": null
+        }
+      },
+      "answer_http_elapsed_ms": 98413.90954199596,
+      "citation_http_elapsed_ms": 5.2892499952577055,
+      "finished_at": "2026-11-06T14:24:36.247235+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: method question, needs method. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 19 in both, RRF merged 21, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-d3f54fc5bf5e8460b4313ab85d15ab24866b8c38b3994e75e5f1fee9497746e8",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Sentence Representation Learning",
+              "paper_id": "1904.05584",
+              "bm25_rank": 2,
+              "dense_rank": 4,
+              "rrf_score": 0.03175,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-5572be45edeaec4f2871f204a69b7b659e1391a9b65fd33f2dbc4bc19d320ca4",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Introduction",
+              "paper_id": "1904.05584",
+              "bm25_rank": 4,
+              "dense_rank": 2,
+              "rrf_score": 0.03175,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-c5fd724528a2d4668411a47cf8172721e6942c635fb766ba6ddfd8809ee32add",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Gating Mechanisms for Combining Characters and Word Representations",
+              "paper_id": "1904.05584",
+              "bm25_rank": 1,
+              "dense_rank": 8,
+              "rrf_score": 0.0311,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-7ce128b42cbae8022b85bb6ecf91a1c85787a70555ecc920f81ded5c67f761f3",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Word Similarity",
+              "paper_id": "1904.05584",
+              "bm25_rank": 5,
+              "dense_rank": 6,
+              "rrf_score": 0.03054,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Obtaining Sentence Representations",
+              "paper_id": "1904.05584",
+              "bm25_rank": 3,
+              "dense_rank": 9,
+              "rrf_score": 0.03037,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-dc6ac08ca371000d4a4f3a7828d9de83edbfa079248913406bca0a613fac6a38",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Sentence-level Evaluation",
+              "paper_id": "1904.05584",
+              "bm25_rank": 12,
+              "dense_rank": 1,
+              "rrf_score": 0.03028,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-3c3f5bb5dcad5571085dcd00ed309483ffe6a613f7799b84b18364b048826c91",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "General Feature-wise Transformations",
+              "paper_id": "1904.05584",
+              "bm25_rank": 11,
+              "dense_rank": 3,
+              "rrf_score": 0.02996,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-f2039a29f78737d3857c407e7ecbeb8f06813bb4a929508c7e38cde3dd1f4189",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Conclusions",
+              "paper_id": "1904.05584",
+              "bm25_rank": 9,
+              "dense_rank": 5,
+              "rrf_score": 0.02988,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-696e9505754254c789c826957b276bbe413eab2d947ffbe502436145ecc2a6d3",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Experimental Setup",
+              "paper_id": "1904.05584",
+              "bm25_rank": 10,
+              "dense_rank": 7,
+              "rrf_score": 0.02921,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-867668d084a247fee0a259d89110c570104089076a465b660520799cca3d3079",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Datasets",
+              "paper_id": "1904.05584",
+              "bm25_rank": 7,
+              "dense_rank": 12,
+              "rrf_score": 0.02881,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-00b6675e5188f597bad63786733b5d1e8bec4c717cc63ec6c0dcafdc4f02efef",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Mapping Characters to Character-level Word Representations",
+              "paper_id": "1904.05584",
+              "bm25_rank": 6,
+              "dense_rank": 15,
+              "rrf_score": 0.02848,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-250947ae2519dea9a60c7ac97cc652ec2d6ac1e59151d8e7b0e67f6ded533f21",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Word Similarity",
+              "paper_id": "1904.05584",
+              "bm25_rank": 8,
+              "dense_rank": 18,
+              "rrf_score": 0.02753,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-845a4566db9f6e0f3befb7039d244c02dd8f161750d45655dcd468f723d0ecec",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Introduction",
+              "paper_id": "1904.05584",
+              "bm25_rank": 16,
+              "dense_rank": 11,
+              "rrf_score": 0.02724,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c2a21c0324de1eddef6198b05fc00786e12f851871e0e44cfa93de83aed34c0e",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Word Frequencies and Gating Values",
+              "paper_id": "1904.05584",
+              "bm25_rank": 13,
+              "dense_rank": 14,
+              "rrf_score": 0.02721,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-6610fdbac2f904efeba18a4a723921979fddea300f0bcfea42fad9969420862d",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Background",
+              "paper_id": "1904.05584",
+              "bm25_rank": 14,
+              "dense_rank": 13,
+              "rrf_score": 0.02721,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ea54536fafd729382ccf265c10de8f76bfab832b1424c1012cbd02e978f44388",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Hyperparameters",
+              "paper_id": "1904.05584",
+              "bm25_rank": 18,
+              "dense_rank": 10,
+              "rrf_score": 0.02711,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-011d98eb3449bcbde50eac900aa49aacd8a9ea53c8021612a8e504b04fbae00c",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Sentence Evaluation Datasets",
+              "paper_id": "1904.05584",
+              "bm25_rank": 15,
+              "dense_rank": 17,
+              "rrf_score": 0.02632,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0afcd54ee28a672ad8582e2edb2e1603273a59d4aecafd76388985b6b5ab8ec8",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Relationship Between Word- and Sentence-level Evaluation Tasks",
+              "paper_id": "1904.05584",
+              "bm25_rank": 19,
+              "dense_rank": 16,
+              "rrf_score": 0.02582,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-1910e4d92f0052df7ffd0b1713db728cc0367aaf27b241aa5bbf3679558db34f",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Combining Character and Word-level Representations",
+              "paper_id": "1904.05584",
+              "bm25_rank": 17,
+              "dense_rank": 19,
+              "rrf_score": 0.02565,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-98c06d3adec0f55e7e18eb492eef93d80f9a70431072176aaaf504fa5c24eb8c",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Word Similarity",
+              "paper_id": "1904.05584",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3ba40847a0a5ff129b11252840608dccf590d7f90e5e4c556b4b764e6ed7eee9",
+              "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+              "section": "Acknowledgements",
+              "paper_id": "1904.05584",
+              "bm25_rank": null,
+              "dense_rank": 20,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 36.1,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 36.1,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 36.1,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 98.4,
+          "message": "Answer ready: SUFFICIENT, 1 cited, 1 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    },
+    {
+      "client_run_id": "15792c78-7c54-4c5f-9d4d-daf9c60803d7",
+      "conversation_id": "e50a6165-48b1-4589-ab0a-bdd7df5e9eb6",
+      "message_id": "217777fc-b2b0-4bd1-b64c-08b289b050a4",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "What evaluation metrics were used in the experiment?",
+        "paper_id": "1912.01046"
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "ollama",
+      "submitted_at": "2026-11-06T14:24:36.412848+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1793975076423",
+        "result": {
+          "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+          "citations": [
+            "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+              "passage_ids": [
+                "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+            "citations": [
+              "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+                "passage_ids": [
+                  "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+            "citations": [
+              "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+                "passage_ids": [
+                  "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "UNCOVERED_REQUIRED_COMPONENT",
+              "severity": "warning",
+              "message": "the agent required component 'direct_answer' but its evidence map contains no passage for it",
+              "subject": "direct_answer"
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "ollama",
+            "model_id": "qwen3:14b",
+            "loaded": true,
+            "options": {
+              "base_url": "http://127.0.0.1:11434",
+              "num_ctx": 8192
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 67.7953155
+            },
+            "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+            "timing_policy": "Ollama total_duration; includes server load/evaluation"
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).\",\n  \"citations\": [\"qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).\",\n      \"passage_ids\": [\"qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+          "raw_text_chars": 558
+        },
+        "search": {
+          "scope": "paper",
+          "paper_id": "1912.01046",
+          "source_papers": [
+            "1912.01046"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1": {
+          "text": "We also considered a simpler task by casting our problem as a retrieval task. Specifically, in addition to a plain transcript, we also provided the model with the segmentation information which was created during the data collection phrase (See Section. SECREF3). Note that each segments corresponds to a candidate answer. Then, the task is to pick the best segment for given a query. This task is easier than Baseline1's task in that the segmentation information is provided to the model. Unlike Baseline1, however, it is unable to return an answer span at various granularities. Baseline2 is based on the attentive LSTM BIBREF17, which has been developed for the InsuranceQA task. The right diagram in Fig. FIGREF15 illustrates the Baseline2 model.\n\nModel. The two inputs, $s$ and $q$ represent the segment text and a question. The model first encodes the two inputs.\n\n$h^s$ is then re-weighted using attention weights.\n\nwhere $\\odot $ denotes the element-wise multiplication operation. The final score is computed using a one-layer feed-forward network.\n\nDuring training, the model requires negative samples. For each positive example, (question, ground-truth segment), all the other segments in the same transcript are used as negative samples. Cross entropy is used as an objective function.\n\nMetrics. We used accuracy and MRR (Mean Reciprocal Ranking) as metrics. The accuracy is\n\nWe split the ground-truth dataset to train/dev/test into the ratio of 6/2/2. The resulting size is 3,718 (train), 1,238 (dev) and 1,239 qa pairs (test).",
+          "paper_id": "1912.01046",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Baselines ::: Baseline2: Segment retrieval",
+          "previous_passage_id": null,
+          "next_passage_id": null
+        }
+      },
+      "answer_http_elapsed_ms": 109147.28937498876,
+      "citation_http_elapsed_ms": 4.734582995297387,
+      "finished_at": "2026-11-06T14:26:25.563619+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: factual question, needs direct_answer. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Hybrid search: BM25 17 + dense 17 candidates, 17 in both, RRF merged 17, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-0a8c7571fb2e4519be74ea2d9b8ff244f054db8ef27b75f9b0b8987fb6c7c507",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "TutorialVQA Dataset ::: Data Collection",
+              "paper_id": "1912.01046",
+              "bm25_rank": 1,
+              "dense_rank": 2,
+              "rrf_score": 0.03252,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Baselines ::: Baseline2: Segment retrieval",
+              "paper_id": "1912.01046",
+              "bm25_rank": 4,
+              "dense_rank": 4,
+              "rrf_score": 0.03125,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-4e3b50eb4957785a942c2b186c172a0c0a6d6b029d40aff9354ce2face8f86b0",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "TutorialVQA Dataset ::: Data Collection",
+              "paper_id": "1912.01046",
+              "bm25_rank": 9,
+              "dense_rank": 1,
+              "rrf_score": 0.03089,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-6faec55cdabbeaaec3582456fb9b30106d0cd7c3ec73e92d2497bb3aa0ea9ac7",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "TutorialVQA Dataset ::: Dataset Details",
+              "paper_id": "1912.01046",
+              "bm25_rank": 2,
+              "dense_rank": 8,
+              "rrf_score": 0.03083,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-db33d651da316f094d3828867e758fff204dc242c17cc6501c98d9a731f4c38d",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "TutorialVQA Dataset ::: Overview",
+              "paper_id": "1912.01046",
+              "bm25_rank": 8,
+              "dense_rank": 3,
+              "rrf_score": 0.03058,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-2aeab82a64bb4bb72cb3c86aa5319add0e1c7a0df9aa237f32980462b1d812ac",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Baselines ::: Baseline3: Pipeline Segment retrieval",
+              "paper_id": "1912.01046",
+              "bm25_rank": 6,
+              "dense_rank": 6,
+              "rrf_score": 0.0303,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-9f09807a7876a61ae6731b042b6e319bd3b77ab4441aeda3e507e98613f83124",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Baselines ::: Baseline1: Sentence-level prediction",
+              "paper_id": "1912.01046",
+              "bm25_rank": 7,
+              "dense_rank": 7,
+              "rrf_score": 0.02985,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-0981391c4fef2d9de75789853dcf5a80137a472d3908fb62fa15b4c0cca29b57",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Introduction",
+              "paper_id": "1912.01046",
+              "bm25_rank": 3,
+              "dense_rank": 14,
+              "rrf_score": 0.02939,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-9e975499df7936320803acf2a4ab6595d34c2503268c373a659b10b6ae453ada",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Conclusion",
+              "paper_id": "1912.01046",
+              "bm25_rank": 16,
+              "dense_rank": 5,
+              "rrf_score": 0.02854,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-2e5374ef1504ba40dc22799b5a4e608159c4b811e32a94fff62e1a93a6ce881e",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Introduction",
+              "paper_id": "1912.01046",
+              "bm25_rank": 5,
+              "dense_rank": 17,
+              "rrf_score": 0.02837,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-4404ef14b9025ccf426c7ddb020a970abb8d5c5655a7aded5f3be7eddb8d1187",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Related Work",
+              "paper_id": "1912.01046",
+              "bm25_rank": 10,
+              "dense_rank": 12,
+              "rrf_score": 0.02817,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-98991dc2f5d0f46d8144eb6b58685da1c26e138634df7cb5260be28935b71109",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "TutorialVQA Dataset",
+              "paper_id": "1912.01046",
+              "bm25_rank": 15,
+              "dense_rank": 9,
+              "rrf_score": 0.02783,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3b458d0339b24a0db4e312bd89a04c857bce5213bfc9db9ae182ad0506377771",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Baselines ::: Results",
+              "paper_id": "1912.01046",
+              "bm25_rank": 14,
+              "dense_rank": 10,
+              "rrf_score": 0.0278,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a6b3c0f8a433526e89ea2c5bfe230b5b9fc81d5da8fa722179f64d6e30ea20e8",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Related Work",
+              "paper_id": "1912.01046",
+              "bm25_rank": 13,
+              "dense_rank": 11,
+              "rrf_score": 0.02778,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-dc516ff54881eb71d3f34acf3525e2221dd6711929d12f006f93d12b164a42cd",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "TutorialVQA Dataset ::: Basis",
+              "paper_id": "1912.01046",
+              "bm25_rank": 12,
+              "dense_rank": 13,
+              "rrf_score": 0.02759,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-498b1e5d09668ca7d64f9905c7985e0258b4a53f500fd2c4ba99bd4e8fe864c0",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Discussion and Future Work",
+              "paper_id": "1912.01046",
+              "bm25_rank": 11,
+              "dense_rank": 15,
+              "rrf_score": 0.02742,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-7f24fc12db85e4dad9a86739e3d790b0ace3dd198b7868e40053d337ee16ff74",
+              "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+              "section": "Baselines",
+              "paper_id": "1912.01046",
+              "bm25_rank": 17,
+              "dense_rank": 16,
+              "rrf_score": 0.02614,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Keyword match: 0 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 41.3,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 41.3,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 41.3,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 109.1,
+          "message": "Answer ready: SUFFICIENT, 1 cited, 1 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    }
+  ]
+}

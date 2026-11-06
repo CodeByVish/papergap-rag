@@ -1,0 +1,13 @@
+{
+  "passages": {
+    "qasper-passage-v1-da44828e990a2b47e356802ec2ea213ea7b9c9f01abf7e434246f37954cf58c1": {
+      "text": "To enable sentence-level classification we need to obtain a sentence representation from the word vectors INLINEFORM0 . We achieved this by using a BiLSTM with max pooling, which was shown to be a good universal sentence encoding mechanism BIBREF13 .\n\nLet INLINEFORM0 , be an input sentence and INLINEFORM1 its matrix representation, where each INLINEFORM2 was obtained by one of the methods described in subsec:methods. INLINEFORM3 is the context-enriched matrix representation of INLINEFORM4 obtained by feeding INLINEFORM5 to a BiLSTM of output dimension INLINEFORM6 . Lastly, INLINEFORM11 is the final sentence representation of INLINEFORM12 obtained by max-pooling INLINEFORM13 along the sequence dimension.\n\nFinally, we initialized the word representations INLINEFORM0 using GloVe embeddings BIBREF14 , and fine-tuned them during training. Refer to app:hyperparams for details on the other hyperparameters we used.",
+      "paper_id": "1904.05584",
+      "title": "Gating Mechanisms for Combining Character and Word-level Word Representations: An Empirical Study",
+      "section": "Obtaining Sentence Representations",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "missing": []
+}

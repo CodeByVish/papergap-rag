@@ -26,6 +26,8 @@ dist/
 /results/*
 !/results/README.md
 !/results/final/
+!/results/p6-ui-verification-20261107-gpu/
+!/results/p6-ui-verification-20261106-2500-clean/
 /models/
 /indexes/
 /cache/

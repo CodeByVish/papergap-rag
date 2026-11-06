@@ -137,14 +137,73 @@ All citation IDs resolved, matched the selected paper and appeared in the retrie
 log. No UI evidence errors occurred.
 
 Largest prompt: 5,549 tokens, within the 8,192-token context. Answer HTTP mean was
-126.0 s and median 113.8 s. Do not compare these timings with the runs above or
-attribute the difference to the budget: another local service was running and this
-API had just started.
+126.0 s and median 113.8 s. Do not use these timings: another local service was
+running and this API had just started. See the clean run below.
 
 This run used AppTest, not a browser, and five development questions do not
 establish an accuracy change. Its rendering configuration differs from the earlier evaluation settings, so
 label it accordingly. Repeat a short confirmation after P5's change is merged. The
 evidence ZIP below does not contain this run; share it separately.
+
+## Clean 2,500-character run
+
+Run on 6 November 2026 from clean commit `58a3aaa`, saved in
+`results/p6-ui-verification-20261106-2500-clean/`. Use these timings for Q2.2;
+they replace the pre-merge timings above.
+
+Setup: Local Apple M5, `qwen3:14b`,
+2,500 characters via local setting, warmed service, five development questions, serial.
+The API was restarted first and the old UI/API services were stopped. One separate
+warm-up question (151.2 s) is excluded. P5's 2,500 default was not yet merged.
+
+| # | Answer HTTP seconds | Final generation seconds | Critic rounds | Citations |
+| --- | ---: | ---: | ---: | ---: |
+| 1 | 106.9 | 74.1 | 1 | 1 |
+| 2 | 100.2 | 64.4 | 3 | 1 |
+| 3 | 165.5 | 117.2 | 1 | 1 |
+| 4 | 98.4 | 62.3 | 1 | 1 |
+| 5 | 109.1 | 67.8 | 1 | 1 |
+
+Mean 116.0 s, median 106.9 s, range 98.4-165.5 s, sum 580.1 s. The serial rate is
+0.0086 questions/s, not measured batch throughput. Seven retrieval calls had median
+39.3 ms and range 23.6-286.1 ms. Answers and warnings matched the pre-merge
+2,500 run, and all citations resolved to the selected paper.
+
+The machine was not otherwise idle (load about 2.5 before the run), and one pass
+does not establish a reliable p95. These are laptop figures, not GPU figures. 
+
+## School GPU run
+
+Run on 7 November 2026, saved in `results/p6-ui-verification-20261107-gpu/`.
+Use these figures for Q2.2. The laptop runs above stay separate.
+
+Setup: School GPU (job 51905, node TC2N01), `Qwen3-8B` via vLLM, 2,500 characters inferred, warmed service, five development questions, serial, through the SSH tunnel.
+`/health` reported `backend: vllm`. The UI code was `58a3aaa`; `source.json` shows
+two staged documentation files and no code changes. One warm-up question (31.7 s)
+is excluded.
+
+| # | Answer HTTP seconds | Final generation seconds | Critic rounds | Citations | Validator warnings |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 1 | 19.7 | 15.7 | 1 | 3 | `PROVENANCE_OVERSTATED` |
+| 2 | 17.1 | 12.3 | 3 | 2 | `GENERATED_WITH_INSUFFICIENT_EVIDENCE`, `PROVENANCE_OVERSTATED` |
+| 3 | 16.2 | 11.8 | 1 | 1 | None |
+| 4 | 11.5 | 7.7 | 1 | 1 | `UNCOVERED_REQUIRED_COMPONENT` |
+| 5 | 10.8 | 7.3 | 1 | 1 | `UNCOVERED_REQUIRED_COMPONENT` |
+
+Mean 15.1 s, median 16.2 s, range 10.8-19.7 s, sum 75.3 s. The serial rate is
+0.066 questions/s, not measured batch throughput. Seven retrieval calls had median
+111.5 ms and range 68.1-204.0 ms. All citations resolved to the selected paper.
+
+The budget is inferred, not read from the service: every prompt was exactly 4 tokens
+below the matching local 2,500 run, and query 5 answered. Confirm it from the job's
+`runtime.json` or log if the report states it as fact.
+
+Answers: query 1 gives "yes", matching the reference. Query 2 gives classification
+accuracy, consistent with the reference but dropping "average", and its critic still
+reports `MISSING_RESULT` in all three rounds. Queries 3 and 5 keep the supported
+values. Query 4 matches the reference.
+
+One pass does not establish a reliable p95, and other GPU use was not checked.
 
 ## Reproduce the live UI verification
 
@@ -184,8 +243,10 @@ browser call is a separate run and must not be mixed into the five-call timing.
 The script and this document are outside ignored directories and can be reviewed
 and committed normally. No `.gitignore` exception is necessary for them.
 
-Raw runs, exports, rendered text, citation text, environment records and the
-renderer reproduction remain under ignored `results/p6-ui-verification-20261106/`.
+The clean laptop and school GPU run folders are tracked in Git because they back the
+Q2.2 figures. Earlier raw runs, exports, rendered text, citation text, environment
+records and the renderer reproduction remain under ignored
+`results/p6-ui-verification-20261106/`.
 The local evidence ZIP is `results/p6-ui-verification-20261106.zip`. Share it via
 the team's approved data/results channel; do not commit it. A teammate must
 receive that ZIP separately to inspect the exact saved run evidence.
