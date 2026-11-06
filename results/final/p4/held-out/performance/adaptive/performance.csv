@@ -1,0 +1,2 @@
+latency_field,requests,latency_n,p50_seconds,p95_seconds,technical_errors,successful_requests,batch_seconds,successful_requests_per_second,completed_requests_per_second,arm,hardware,concurrency,cache_policy
+internal_pipeline_s,200,198,16.35673527000472,31.486782811206623,2,198,3583.0,0.055260954507396036,0.055819145967066705,adaptive,"1x NVIDIA A40 (node TC2N01); vLLM 0.11.0, Qwen3-8B bfloat16; retrieval on CPU",1,warm engine loaded once per job; fresh inference per question; no score cache (score_cache null); no reranker; run not resumed
