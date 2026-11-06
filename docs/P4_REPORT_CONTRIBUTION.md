@@ -446,6 +446,39 @@ post-hoc sensitivity analysis on the questions of the primary result, started af
 finished, and it is reported next to the primary result, never instead of it. **Status: running when this was written;
 no held-out 2,500 number is reported until it has been scored with the same frozen scripts.**
 
+#### 3.10 Reranker ablation (development slice, 2 x 2)
+
+The handout asks for rewriting and reranking alone and together. The held-out run has no reranker arm and the freeze
+record forbids adding arms after the result, so the full 2 x 2 was run on the 40 development items (32 answerable with gold,
+8 unanswerable), one run per cell, with the primary 1,200-character budget: BGE reranker off from job 51690 (P5, `fb303bc`
+with an explicit 1,200-character override, one L40S) and on from job 51802 (P5, `ad02d51`, one A40). Same items,
+development corpus and index. P4 rescored both from the records (retrieval with `score_agent_records`, answers with P6's `qa`
+step, paired with `compare`); the retrieval figures reproduce P5's and job 51521's.
+
+| Cell | Recall (32) | Token F1 (32) | Answered / refused | Unanswerable refused correctly | Agent time (s / question) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Neither (static, no reranker) | 0.885 | 0.2703 | 36 / 4 | 3 of 8 | 0.02 |
+| Rewriting only (adaptive) | 0.927 | 0.2771 | 36 / 4 | 3 of 8 | 4.9 |
+| Reranking only (static + BGE) | 0.854 | 0.2430 | 35 / 5 | 3 of 8 | 4.2 |
+| Both (adaptive + BGE) | 0.917 | 0.2569 | 35 / 5 | 3 of 8 | 11.3 |
+
+Paired differences over the 32 answerable questions (recall: bootstrap 2,000 resamples, seed 0; F1: P6's `compare`,
+1,000 resamples, seed 42): reranker on minus off, static: recall -0.031 [-0.156, 0.094], F1 -0.027 [-0.084, 0.024];
+adaptive: recall -0.010 [-0.094, 0.083], F1 -0.020 [-0.075, 0.024]. Loop on minus off: with the reranker off F1 +0.007
+[-0.002, 0.018]; with it on +0.014 [0.0005, 0.032]; both on versus neither -0.014 [-0.068, 0.039]. As counted by P5 for the
+answer step, gold citation recall falls from 0.694 to 0.550 (static) and 0.726 to 0.650 (adaptive), precision from 0.580 to
+0.461 and 0.577 to 0.522, and the gold-citation count is worse on 8 of 40 questions for static and 6 for adaptive (better on 1).
+
+- **Reading:** the reranker brings no benefit on this slice; every point estimate is lower, but none of the recall or F1
+  differences can be told from zero at 32 questions. The one interval that just excludes zero (the loop with the reranker on)
+  is one of five comparisons, and the held-out run found no F1 gain from the loop, so it is not read as an interaction.
+- **Cost:** agent time per question rises from 0.02 s to 4.2 s (static) and from 4.9 s to 11.3 s (adaptive), because the
+  cross-encoder runs on the CPU. **P5's whole-job wall times (15:21 against 31:12) are not a fair measure**: the two jobs ran on
+  different GPUs (L40S and A40) and the static arm's generation time alone differs 9.3 s against 19.5 s, which is not the reranker.
+- **Provenance:** the control job 51690 ran at `fb303bc`, not `ad02d51`; P5 reports the rendered prompt and the generation path
+  are the same and the only code difference is the explicit budget override. Faithfulness (RAGAS) was not judged for these cells.
+- **Strength:** the slice is the one the agent was tuned on, so the cells are descriptive, not confirmatory.
+
 ### 4. Status of the numbers
 
 | Result | Status |
@@ -455,6 +488,7 @@ no held-out 2,500 number is reported until it has been scored with the same froz
 | Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; held-out answers scored for EM and F1 (Section 3.8: F1 0.368 static, 0.366 adaptive); held-out answers also judged by RAGAS (faithfulness 0.892 and 0.907); **the development answers' correctness is not measured** |
 | Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
 | Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval and answer EM/F1 scored against P3's gold and the QASPER references after the run (Section 3.8). **RAGAS scored for static and adaptive (Section 3.8): no gain from the loop** |
+| Reranker ablation, development (2 x 2) | Jobs 51690 (reranker off) and 51802 (on), P5, 6 November, the 40 development items, one run per cell: Section 3.10. No reranker arm exists for the held-out run (the freeze record fixed the arms). Post-hoc in the sense that it was run after the primary result |
 | Context-budget check, development | Job 51691 (P5, 6 November, the 40 development items, 1,200 against 2,500 characters per passage, one run per cell): Section 3.9. Post-hoc; not part of the freeze record |
 | Context-budget sensitivity, held-out | Job 51705 (P5): the 200 held-out questions at 2,500 characters, **running, not yet scored**. Post-hoc; reported next to the 1,200-character primary result (Section 3.9), never instead of it |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
