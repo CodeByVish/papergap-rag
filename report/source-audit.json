@@ -179,5 +179,33 @@
       "new_experiment": false,
       "publication_performed": false
     }
+  },
+  "p5_review_update": {
+    "date": "2026-11-06",
+    "report_base_commit": "e43371c1de01e91b5af4e403a08c73dc7a313428",
+    "run_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "run_job": "51585",
+    "delivery_tarball_sha256": "96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f",
+    "run_manifest_sha256": "466e4a00d9cc9c671760cbc7e1b4e9bd9e467520d421d9cef84e15a351e34021",
+    "metrics_json_sha256": "d7237a3a907be103c0812fba5192d869686cc18ca887de915505801d901c5cb6",
+    "held_out_items_sha256": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48",
+    "human_review_status": "owner_approved_p5_scope",
+    "verification_scope": "Read the delivered 200-question held-out records and run manifest; recomputed answer/refusal counts and answer-only latency percentiles. No QA, RAGAS or model-revision run was performed.",
+    "scope": {
+      "Q1.2": "Answer/refusal behavior and canonical refusal wording",
+      "Q4.1": "Generation approach and final serving/decoding settings",
+      "Q4.2": "Prompt rendering and structured-output parsing",
+      "Q4.4": "Scorer policy and final answer/refusal records; EM/F1 pending references",
+      "Q4.5": "RAGAS runner description; no live-judge scores",
+      "Q4.6": "Model/GPU record and final generation timings"
+    },
+    "does_not_confirm": [
+      "Final EM/F1 or RAGAS scores",
+      "Qwen3-8B Hub revision",
+      "Whole Q4 section or team report completion",
+      "Annotation independence or group AI-use disclosure"
+    ],
+    "new_experiment": false,
+    "publication_performed": false
   }
 }

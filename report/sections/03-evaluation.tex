@@ -4,6 +4,8 @@ The intended GPU generator is \texttt{Qwen/Qwen3-8B} \citep{qwen2025}, served th
 
 The model returns structured JSON containing an answer, citations, evidence status, retrieval rounds and claim provenance. It receives a closed list of citable passage IDs and an explicit refusal instruction. Validation checks citation references, numerical grounding and provenance consistency. These checks expose some errors, but a valid citation does not prove that a passage entails a claim. Heuristic warnings are diagnostics, not faithfulness scores.
 
+Final settings. The final held-out run (job 51585, 6 November 2026) served the local Qwen3-8B snapshot through vLLM 0.11.0 in bfloat16 on one NVIDIA A40 (46\,GB), with Python 3.12.10, PyTorch 2.8.0 and transformers 4.57.6. Decoding used temperature 0 (greedy), top-$p$ 0.9, thinking disabled, a 32,768-token model limit and 1,024 new tokens per answer. The prompt was \texttt{p5-grounded-qa-v7}, rendering at most eight passages of 1,200 characters. The run manifest records the commit, package versions and input hashes; the model directory does not store a Hub revision, so that pin remains open.
+
 \begin{review}{Model and prompt provenance}
 Insert the final generator revision, precision, decoding settings, GPU model, dependency snapshot and run manifest. Do not transfer timings or quality observations from the local 14B model to the 8B GPU model.
 \end{review}
@@ -31,6 +33,8 @@ The Qian/Yin pair has substantially higher positive-label rates (83.3\% and 74.8
 The implemented scorer uses a proposed project policy, project QA policy, version 0 (proposed), rather than the official QASPER evaluator. It lowercases text, removes ASCII punctuation and English articles, and normalizes whitespace. Exact match compares normalized strings; token F1 uses multiset token overlap. Reference extraction supports yes/no, free-form and extractive-span annotations; mixed answerability uses available answerable references. Confirm aggregation and coverage policy before final scoring.
 
 For scientific generative answers, overlap scores can penalize correct paraphrases and reward incomplete wording. We therefore report them with refusal behavior, failures and RAG metrics rather than treating either as a complete quality measure. Relevance labels alone do not supply answer references; QA scoring also needs the linked QASPER reference answers.
+
+Final held-out records. Job 51585 produced 200 records for each arm with no generation or answer errors. Static answered 194 questions and refused 6; adaptive answered 191 and refused 9; static-wide answered 194 and refused 6. Two records per arm were downgraded to refusal after a response parse error. These are answer/refusal counts, not accuracy: EM and token F1 need the linked QASPER references and remain to be computed, so the table stays reserved.
 \begin{table}[htbp]\centering\small
 \caption{Reserved final QA table. No final answer scores are available in this draft.}
 \begin{tabularx}{\linewidth}{Ycccc}\toprule
@@ -67,6 +71,8 @@ Choose and record judge and embedding model IDs/revisions, budget, prompts, retr
 The local five-query measurements in Q2.2 are the directly inspected end-to-end timing evidence. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the current laptop timings or interpreted as a controlled final speedup.
 
 Per-paper exact search depends mainly on the selected paper's passages. All-papers exact vector search grows with the indexed corpus. The current service permits one active answer request and returns HTTP 429 when busy; serial demonstration throughput does not establish concurrent capacity. Local and university model serving avoids per-call API charges, but compute and energy are not free. Paid judge cost remains unmeasured.
+
+Final generation timing. In job 51585, answer generation on one A40 (warm engine, serial calls) had p50/p95 latency of 10.6/23.6\,s for static, 11.2/24.0\,s for adaptive and 10.6/22.2\,s for static-wide (200 questions per arm; generation only, excluding model load and, for adaptive, the agent loop). The agent loop added a mean 5.6\,s per adaptive question (p95 12.3\,s). The job completed 600 arm-question records in 2\,h\,23\,min. These are observed serial timings, not a controlled throughput benchmark; startup, concurrency and cache effects remain to be measured.
 \assetplaceholder{Reserved final performance figure}{Insert paired end-to-end p50/p95 latency and stage breakdowns from the final GPU run; report hardware, warm-up, errors, tokens and serial/concurrent policy.}
 \begin{review}{Final performance measurements}
 Populate elapsed wall time, processed-question count, successful answers, latency percentiles and judge cost from a single documented final setup. Separate startup, fresh inference and cache-hit timing. Historical cluster timings summarized in the workbook lack raw local records and are not used here as final benchmark results.
