@@ -51,7 +51,7 @@ all false refusals (1.5%). Two answers per arm were downgraded after a `PARSE_ER
 
 ## 4. Answer quality (overlap only)
 
-`qa/`, `compare/` (project scorer `p6-qa-v0-proposed`; best-matching QASPER reference):
+`qa/`, `compare/` (project scorer `p6-qa-v0-proposed`; best-matching QASPER reference; run with the `held_out` label after the team sign-off):
 
 | | static | adaptive | static-wide |
 | --- | ---: | ---: | ---: |
