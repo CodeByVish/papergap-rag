@@ -15,6 +15,7 @@ scores, the Qwen3-8B Hub revision, the Q4.3 annotation record, the Q5 ablations,
 | Dense index | `metadata.json`, SHA-256 `a14070a74a041accb93064f893a560a5dacc94eb85391896d2f8d548222ba7ef` |
 | Settings | `static adaptive static-wide`; critic `generator`; `SCOPED=1`, `OFFLINE=1`, `BGE=0`, `ANSWERS=p5`, `TOP_K=8`, `wide_k=15`; prompt `p5-grounded-qa-v7`, 8 x 1,200 characters, `max_new_tokens=1024` |
 | Delivery | `p4-heldout-51585-20261106.tar.gz`, SHA-256 `96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f` |
+| QA bundle | `p4-qa-51585-20261106.tar.gz`, SHA-256 `0b9f69920aaaa5938eeab43486fb2e6e47c948837c85ee9a700140bf7e657a04` |
 
 Hashes of the delivered files:
 
@@ -47,12 +48,22 @@ Hashes of the delivered files:
   `max_passages = 8` and `max_chars_per_passage = 1200`; the prompt lists the exact rendered citation
   ids and the parser performs limited repair of malformed escapes. The 71% clipping figure is P4's
   development analysis and was not recomputed here.
-- **Q4.4 (answer/refusal records).** 200 records per arm, 0 generation errors and 0 answer errors.
-  `evidence_status = SUFFICIENT`: static 194, adaptive 191, static-wide 194; `INSUFFICIENT`: 6, 9, 6.
-  Two records per arm were downgraded to refusal after a `PARSE_ERROR` (question ids
-  `de830c534c...` and `cbb3c1c1e6...`). The scorer policy is `p6-qa-v0-proposed` in
-  `src/evaluation/qa.py`; EM/F1 cannot be computed from the held-out items because they carry no
-  reference answers.
+- **Q4.4 (answer/refusal records and QA scores).** 200 records per arm, 0 generation errors and
+  0 answer errors. P5 `evidence_status`: `SUFFICIENT` 194/191/194 and `INSUFFICIENT` 6/9/6; two
+  records per arm were downgraded to refusal after a `PARSE_ERROR` (question ids
+  `de830c534c...` and `cbb3c1c1e6...`).
+  QA was scored with `python -m scripts.run_p6_evaluation qa` at commit `ad02d51`, using P3's
+  `data/processed/qa.jsonl` (SHA-256 `1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e`,
+  5,049 rows) and the delivered records. The held-out role gate requires a review file that is not
+  in the repository, so the runs used `--role development`; the reference set is identical and the
+  gate remains to be recorded.
+  Results (policy `p6-qa-v0-proposed`): static EM 0.005 / F1 0.368, answered 194, refused 4,
+  failed 2; adaptive EM 0.005 / F1 0.366, answered 191, refused 7, failed 2; static-wide EM 0.005 /
+  F1 0.368, answered 194, refused 4, failed 2. On the 160 questions P4 did not annotate, static F1
+  is 0.369 (155 answered) and adaptive F1 is 0.369 (152 answered). All 200 questions carry at least
+  one answerable QASPER annotation, so the unanswerable subset is empty and
+  `unanswerable_correctness` is not defined. The scorer classifies the two parse-error downgrades
+  per arm as failures rather than refusals, which is why the QA refused counts are 4/7/4.
 - **Q4.5 (RAGAS).** `requirements-evaluation.txt` pins `ragas==0.2.15`; no live-judge run was made,
   so the RAGAS table stays reserved.
 - **Q4.6 (model/GPU record and generation timing).** Answer-only latency from `answer_s`
@@ -64,5 +75,6 @@ Hashes of the delivered files:
 ## Method note
 
 Counts were computed directly from the delivered JSONL records; latency percentiles use the
-nearest-rank method over 200 values per arm. The report's Q4.4 prose now states the counts, and the
-EM/F1 table remains marked pending.
+nearest-rank method over 200 values per arm. The report's Q4.4 prose and table now state the QA
+counts and EM/F1 scores. Paired bootstrap intervals over questions or papers, and the held-out
+review-file sign-off, remain to be produced.

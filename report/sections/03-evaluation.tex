@@ -34,19 +34,19 @@ The implemented scorer uses a proposed project policy, project QA policy, versio
 
 For scientific generative answers, overlap scores can penalize correct paraphrases and reward incomplete wording. We therefore report them with refusal behavior, failures and RAG metrics rather than treating either as a complete quality measure. Relevance labels alone do not supply answer references; QA scoring also needs the linked QASPER reference answers.
 
-Final held-out records. Job 51585 produced 200 records for each arm with no generation or answer errors. Static answered 194 questions and refused 6; adaptive answered 191 and refused 9; static-wide answered 194 and refused 6. Two records per arm were downgraded to refusal after a response parse error. These are answer/refusal counts, not accuracy: EM and token F1 need the linked QASPER references and remain to be computed, so the table stays reserved.
+Final held-out records. Job 51585 produced 200 records for each arm. Under the project QA policy, static answered 194 questions, refused 4 and failed 2; adaptive answered 191, refused 7 and failed 2; static-wide answered 194, refused 4 and failed 2. The two failures per arm are responses downgraded after a parse error; the P5 status count records them as refusals. All 200 held-out questions have at least one answerable QASPER reference annotation, so the unanswerable subset is empty. Exact match is 0.005 for every arm; token F1 is 0.368 (static), 0.366 (adaptive) and 0.368 (static-wide). On the 160 questions P4 did not annotate, F1 is 0.369 for both static and adaptive. The point estimates show no adaptive answer-quality gain.
 \begin{table}[htbp]\centering\small
-\caption{Reserved final QA table. No final answer scores are available in this draft.}
+\caption{Final QA on the 200 held-out questions under the project policy \texttt{p6-qa-v0-proposed}. Coverage is answered questions over the subset; parse-error failures are not counted as answered.}
 \begin{tabularx}{\linewidth}{Ycccc}\toprule
 Arm / subset & EM & Token F1 & Unanswerable correct & Coverage\\\midrule
-Static / all 200 & \pending & \pending & \pending & \pending\\
-Adaptive / all 200 & \pending & \pending & \pending & \pending\\
-Static / remaining 160 & \pending & \pending & \pending & \pending\\
-Adaptive / remaining 160 & \pending & \pending & \pending & \pending\\\bottomrule
+Static / all 200 & 0.005 & 0.368 & n/a & 194/200 (0.970)\\
+Adaptive / all 200 & 0.005 & 0.366 & n/a & 191/200 (0.955)\\
+Static / remaining 160 & 0.006 & 0.369 & n/a & 155/160 (0.969)\\
+Adaptive / remaining 160 & 0.006 & 0.369 & n/a & 152/160 (0.950)\\\bottomrule
 \end{tabularx}
 \end{table}
 \begin{review}{Final QA run}
-Complete and verify the freeze record, then score paired arms on identical questions. Report answered, refused, failed and missing counts, the answerable/unanswerable denominators, reference policy and confidence intervals. The agent developer saw 40 evaluation questions while annotating: report both all 200 and the remaining 160, with exposure disclosed. Do not call the 160 independently held out until other members' prior question use is audited.
+Scores above use job 51585 and P3's \texttt{qa.jsonl} (SHA-256 \texttt{1515fc58...}). The scorer's held-out role requires a review file that is not in the repository, so the run used the development role; the references are the same, and the held-out gate remains to be recorded. Report paired uncertainty and the answerability denominators. The agent developer saw 40 evaluation questions while annotating: report both all 200 and the remaining 160, with exposure disclosed. Do not call the 160 independently held out until other members' prior question use is audited.
 \end{review}
 
 \input{review-checks/q4-4}
