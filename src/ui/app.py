@@ -7,6 +7,7 @@ import threading
 from pathlib import Path
 from time import monotonic, perf_counter
 import streamlit as st
+import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 from src.ui.api_client import ApiConfig, ApiError, P5ApiClient
 from src.ui.view_models import (add_sentence_context, clipped_passage, parse_answer_record, classify_answer, citation_ids, build_evidence_cards,
@@ -107,6 +108,92 @@ mark.flag {background: #FBEFCF; border-bottom: 2px solid #D9A93A; padding: 0 .1r
 .context {color: #8A93A0;}
 .mono {font-family: monospace; font-size: .75rem; color: #6B7080; overflow-wrap: anywhere;}
 </style>"""
+
+
+SCREENSHOT_SCRIPT = """<style>
+body {margin: 0; font: 14px -apple-system, BlinkMacSystemFont, sans-serif;}
+button {height: 40px; padding: 0 14px; border: 1px solid #fff; border-radius: 14px; background: rgba(255, 255, 255, .6);
+        color: #1F2430; font: inherit; cursor: pointer;}
+button:disabled {opacity: .6; cursor: progress;}
+</style>
+<button id="save">Save screenshot</button>
+<script>
+const LIBRARY = __LIBRARY__;
+const button = document.getElementById('save');
+button.onclick = async () => {
+  const page = window.parent, doc = page.document;
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Saving…';
+  try {
+    if (!page.htmlToImage) {  // Run in the page itself, so it reads the page's own styles.
+      const tag = doc.createElement('script');
+      tag.textContent = LIBRARY;
+      doc.head.append(tag);
+    }
+    const main = doc.querySelector('[data-testid="stMainBlockContainer"]');
+    const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+    const sideWidth = sidebar && sidebar.getAttribute('aria-expanded') !== 'false' ? sidebar.offsetWidth : 0;
+    // Popups sit outside the main content, fixed to the window, so they are added separately.
+    const popups = '[data-testid="stPopoverBody"], [data-baseweb="popover"]';
+    const origin = main.getBoundingClientRect();  // Scrolled and centred, unlike the image.
+    const overlays = [...doc.querySelectorAll(popups)]
+      .filter((item) => !item.parentElement.closest(popups))
+      .map((item) => {
+        const box = item.getBoundingClientRect();
+        return {item, box, left: box.left - origin.left + sideWidth, top: box.top - origin.top};
+      });
+    const height = Math.ceil(Math.max(main.scrollHeight, sideWidth ? sidebar.scrollHeight : 0,
+                                      ...overlays.map(({box, top}) => top + box.height)));
+    const width = Math.ceil(Math.max(sideWidth + main.offsetWidth, ...overlays.map(({box, left}) => left + box.width)));
+    const backdrop = page.getComputedStyle(doc.querySelector('[data-testid="stApp"]')).backgroundImage;
+    const part = (node, nodeWidth, style, nodeHeight = height) => page.htmlToImage.toCanvas(node, {
+      pixelRatio: 2, width: nodeWidth, height: nodeHeight, style,
+      filter: (item) => item.tagName !== 'IFRAME',
+    });
+    // One shared backdrop goes down first, then each part on top of it.
+    const sheet = doc.createElement('div');
+    sheet.style.cssText = 'position:fixed;left:0;top:0;z-index:-1;width:' + width + 'px;height:' + height
+      + 'px;background-image:' + backdrop;
+    doc.body.append(sheet);
+    const canvas = doc.createElement('canvas');
+    canvas.width = width * 2;
+    canvas.height = height * 2;
+    const paint = canvas.getContext('2d');
+    paint.fillStyle = '#EEF3F4';
+    paint.fillRect(0, 0, canvas.width, canvas.height);
+    try {
+      paint.drawImage(await part(sheet, width, {zIndex: 0}), 0, 0);
+    } finally {
+      sheet.remove();
+    }
+    if (sideWidth) {
+      paint.drawImage(await part(sidebar, sideWidth, {
+        backgroundImage: 'none', backgroundColor: 'rgba(255, 255, 255, .42)', boxShadow: 'none',
+        backdropFilter: 'none', webkitBackdropFilter: 'none', height: height + 'px',
+      }), 0, 0);
+    }
+    paint.drawImage(await part(main, main.offsetWidth, {backgroundImage: 'none', backgroundColor: 'transparent'}), sideWidth * 2, 0);
+    for (const {item, box, left, top} of overlays) {
+      const layer = await part(item, box.width, {
+        position: 'static', margin: '0', transform: 'none', backgroundColor: 'rgba(250, 252, 252, .98)',
+        backdropFilter: 'none', webkitBackdropFilter: 'none',
+      }, box.height);
+      paint.drawImage(layer, left * 2, top * 2);
+    }
+    const url = canvas.toDataURL('image/png');
+    const link = doc.createElement('a');
+    link.href = url;
+    link.download = 'paperrag-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.png';
+    link.click();
+    button.textContent = label;
+  } catch (error) {
+    console.error(error);
+    button.textContent = 'Screenshot failed';
+  }
+  button.disabled = false;
+};
+</script>"""
 
 
 def eyebrow(text):
@@ -364,6 +451,13 @@ def render_pipeline_trace(record, submission, titles=None):
         st.markdown('**Last rewritten query**')
         st.text(agent['rewritten_query'])
     st.caption('Candidate tables appear for free questions on servers with live progress. Reranker scores are not recorded.')
+
+
+def render_screenshot_button():
+    """Save the sidebar and main content at full height as a PNG, in the browser; nothing leaves the page."""
+    library = (Path(__file__).parent / 'vendor/html-to-image-1.11.11.js').read_text(encoding='utf-8')
+    script = SCREENSHOT_SCRIPT.replace('__LIBRARY__', json.dumps(library).replace('</', '<\\/'))
+    components.html(script, height=44)
 
 
 def render_usage_help():
@@ -797,7 +891,9 @@ def main():
             st.button('Clear history', on_click=clear_history, args=(state,), disabled=pending or not runs,
                       help='Delete all session history and drafts. Export first; this does not delete corpus files or cancel inference.')
             st.caption('History is session-only. Up to 10 search contexts and 50 attempts per context; export before clearing.')
-    _, help_column = st.columns([3, 1])
+    screenshot_column, help_column = st.columns([3, 1])
+    with screenshot_column:
+        render_screenshot_button()
     with help_column:
         render_usage_help()
     # The result area comes first, so an answer never lands below the fold. The composer
