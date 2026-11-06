@@ -174,7 +174,7 @@ Design a simple UI (you can design one from scratch or you can tap on an existin
 
 **Status:** Done. The UI is merged in [src/ui/app.py](../src/ui/app.py). A rehearsal of the final configuration is still needed (see Submission status).
 
-**NLP Scientific Paper RAG** is a Streamlit app that talks to a FastAPI service.
+**PaperRAG** is a Streamlit app that talks to a FastAPI service.
 
 | UI feature | Problem it solves |
 | --- | --- |

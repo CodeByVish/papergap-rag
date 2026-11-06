@@ -23,8 +23,86 @@ from src.agent.schemas import AgentState
 
 LOGGER = logging.getLogger(__name__)
 
+#: Receives one plain-language line per agent step, with the UI step it describes
+#: and the step that runs next, for a live progress view.
+ProgressFn = Callable[[str, str, str], None]
+
+#: node -> (step described, step active afterwards).
+NODE_STEPS = {
+    "plan_question": ("plan", "search"),
+    "retrieve": ("search", "check"),
+    "map_evidence": ("search", "check"),
+    "critic": ("check", "check"),
+    "rewrite_query": ("search", "search"),
+    "finish": ("check", "write"),
+}
+
 #: `record_fn(question, paper_id, top_k, request_id=None) -> exported agent record`.
 RecordFn = Callable[..., dict[str, Any]]
+
+
+CRITIC_SOURCES = {
+    "llm": "model",
+    "rules": "rules",
+    "fallback": "rules, after the model reply failed",
+    "reused": "previous verdict reused, same passages",
+}
+
+
+def describe_step(node: str, update: dict[str, Any], pool: int) -> str | None:
+    """One factual line for a finished step; None when the step has nothing to report.
+
+    `pool` is the evidence pool's size before this step. Lines report recorded values
+    only. The words after a full stop name the step that always follows.
+    """
+    if node == "plan_question":
+        kind = getattr(update.get("question_type"), "value", update.get("question_type"))
+        needs = ", ".join(update.get("required_components") or []) or "no listed components"
+        return f"Planned: {kind} question, needs {needs}. Searching..."
+    if node == "retrieve":
+        last = (update.get("retrieval_log") or [{}])[-1]
+        merged = len(update.get("retrieved_passages") or [])
+        where = f" in section '{last['section']}'" if last.get("section") else ""
+        fallback = " (section empty, searched everything instead)" if last.get("scope_fallback") else ""
+        return (
+            f"Round {last.get('round', '?')}{where}{fallback}: kept "
+            f"{len(last.get('passage_ids') or [])} passages, {merged - pool} new, "
+            f"{merged} in the evidence pool. Checking the evidence..."
+        )
+    if node == "map_evidence":
+        mapping = update.get("evidence_map") or {}
+        if not mapping:
+            return None
+        matched = sum(bool(ids) for ids in mapping.values())
+        return f"Keyword match: {matched} of {len(mapping)} required components found."
+    if node == "critic":
+        entry = (update.get("critic_log") or [{}])[-1]
+        source = CRITIC_SOURCES.get(entry.get("source"), entry.get("source"))
+        shown = len(entry.get("passage_ids") or [])
+        verdict = "enough" if entry.get("sufficient") else f"not enough, {entry.get('gap_label')}"
+        return f"Evidence check ({source}, {shown} passages): {verdict}."
+    if node == "rewrite_query":
+        return f"Rewrote the search query: {update.get('rewritten_query')}"
+    if node == "finish":
+        return f"Stopped searching: {update.get('stop_reason')}, budget {update.get('max_rounds')} rounds."
+    return None
+
+
+def run_graph(graph: Any, state: AgentState, on_progress: ProgressFn) -> Any:
+    """`graph.invoke`, reporting each finished step on the way."""
+    final = None
+    pool = 0
+    for mode, chunk in graph.stream(state, stream_mode=["updates", "values"]):
+        if mode == "values":
+            final = chunk
+            continue
+        for node, update in chunk.items():
+            update = update or {}
+            line = describe_step(node, update, pool)
+            pool = len(update.get("retrieved_passages") or []) or pool
+            if line:
+                on_progress(line, *NODE_STEPS[node])
+    return final
 
 
 def make_record_fn(
@@ -35,6 +113,7 @@ def make_record_fn(
     section_selector: SectionSelector | None = None,
     critic_view: PassageView = pool_view,
     default_top_k: int = 5,
+    on_progress: ProgressFn | None = None,
 ) -> RecordFn:
     """Build the server hook around `retriever(query, paper_id, top_k)`.
 
@@ -71,7 +150,9 @@ def make_record_fn(
             paper_id=paper_id,
             question_id=request_id or f"ui-{int(time.time() * 1000)}",
         )
-        record = export_record(graph_for(default_top_k if top_k is None else top_k).invoke(state))
+        graph = graph_for(default_top_k if top_k is None else top_k)
+        final = run_graph(graph, state, on_progress) if on_progress else graph.invoke(state)
+        record = export_record(final)
         record["elapsed_s"] = time.perf_counter() - started
         # The HTTP answer record carries no critic_log, so this line is how a live run shows
         # what the critic read: per round (round, verdict source, passages shown).

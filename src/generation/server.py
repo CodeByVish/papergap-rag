@@ -292,6 +292,8 @@ def load_passage_index(path: str | Path) -> dict[str, dict[str, Any]]:
                     "paper_id": _first_field(record, ("paper_id", "doc_id")),
                     "title": _first_field(record, ("title", "paper_title")),
                     "section": _first_field(record, ("section", "section_name")),
+                    "previous_passage_id": record.get("previous_passage_id"),
+                    "next_passage_id": record.get("next_passage_id"),
                 }
     return index
 
@@ -355,6 +357,48 @@ def _require_uvicorn() -> Any:
     return uvicorn
 
 
+class ProgressLog:
+    """Plain-language steps of the current request, for ``GET /progress``.
+
+    Purely observational: it never affects an answer, and nothing in the frozen
+    ``/answer`` record depends on it.
+    """
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._events: list[dict[str, Any]] = []
+        self._active = False
+        self._started = 0.0
+
+    def start(self) -> None:
+        with self._lock:
+            self._events, self._active, self._started = [], True, time.perf_counter()
+
+    def add(
+        self,
+        message: str,
+        step: Optional[str] = None,
+        active: Optional[str] = None,
+        details: Optional[list[dict[str, Any]]] = None,
+    ) -> None:
+        """Log a line. ``step`` is what it describes, ``active`` is what runs next."""
+        with self._lock:
+            elapsed = time.perf_counter() - self._started if self._active else 0.0
+            event = {"elapsed_s": round(elapsed, 1), "message": str(message),
+                     "step": step, "active": active}
+            if details:
+                event["details"] = details
+            self._events.append(event)
+
+    def finish(self) -> None:
+        with self._lock:
+            self._active = False
+
+    def snapshot(self) -> dict[str, Any]:
+        with self._lock:
+            return {"active": self._active, "events": list(self._events)}
+
+
 def create_app(
     pipeline: GroundedQAPipeline,
     *,
@@ -366,6 +410,7 @@ def create_app(
     top_k: int = 8,
     token: Optional[str] = None,
     prompt_version: str = PROMPT_VERSION,
+    progress: Optional[ProgressLog] = None,
 ) -> Any:
     """Build the FastAPI app around an already-loaded pipeline.
 
@@ -399,6 +444,7 @@ def create_app(
     #: request would hold a threadpool thread for up to ~20 s and hide the
     #: problem from the UI, while a 429 is visible and retryable.
     lock = threading.Lock()
+    progress = progress or ProgressLog()
     started_at = time.time()
     state: dict[str, Any] = {"warmup_seconds": None}
 
@@ -470,6 +516,16 @@ def create_app(
             }),
         }
 
+    def _report_answer(answer: Mapping[str, Any]) -> None:
+        result = answer.get("result", {})
+        notes = len(answer.get("validation", {}).get("violations", []))
+        progress.add(
+            f"Answer ready: {result.get('evidence_status')}, "
+            f"{len(result.get('citations', []))} cited, {notes} validation notes.",
+            "write",
+            "done",
+        )
+
     def _answer_from_record_fn(parsed: Mapping[str, Any]) -> dict[str, Any]:
         """Run the agent hook, then P5's answer step, exactly once.
 
@@ -521,6 +577,7 @@ def create_app(
             record["question_id"] = parsed.get("request_id") or (
                 f"ui-{int(time.time() * 1000)}"
             )
+        progress.add("Writing the answer and checking its citations...", "write", "write")
         try:
             answer = answer_record(pipeline, record)
         except BackendNotAvailable:
@@ -533,6 +590,7 @@ def create_app(
                     f"{type(exc).__name__}: {exc}"
                 ),
             ) from exc
+        _report_answer(answer)
         if isinstance(record.get("critic_log"), list):
             # Preserve fresh critic diagnostics for P6 without changing result's
             # canonical five keys or sending the full retrieved corpus back.
@@ -556,6 +614,8 @@ def create_app(
                     "wait for the current answer (p90 ~17 s) and retry"
                 ),
             )
+        progress.start()
+        progress.add("Request received.", "plan", "plan")
         try:
             if "record" in parsed:
                 record = dict(parsed["record"])
@@ -579,7 +639,9 @@ def create_app(
                     "retrieval_round": 1,
                     "retrieved_passages": list(hits),
                 }
+            progress.add("Writing the answer and checking its citations...", "write", "write")
             answer = answer_record(pipeline, record)
+            _report_answer(answer)
             answer["search"] = _search_block(record)
             return answer
         except (ValueError, TypeError) as exc:
@@ -590,7 +652,16 @@ def create_app(
         except BackendNotAvailable as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         finally:
+            progress.finish()
             lock.release()
+
+    @app.get("/progress")
+    def progress_view(
+        authorization: Optional[str] = Header(default=None),
+    ) -> dict[str, Any]:
+        """Steps of the current or latest request; safe to poll during ``/answer``."""
+        _check_token(authorization)
+        return progress.snapshot()
 
     @app.get("/health")
     def health() -> dict[str, Any]:
@@ -606,6 +677,7 @@ def create_app(
             "passage_text": bool(passages),
             "top_k": top_k,
             "papers": len(papers),
+            "passages": len(passages or {}),
             "warmup_seconds": state["warmup_seconds"],
             "uptime_seconds": round(time.time() - started_at, 1),
         }
