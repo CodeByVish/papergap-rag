@@ -26,6 +26,7 @@ dist/
 /results/*
 !/results/README.md
 !/results/final/
+!/results/chunk_size/
 /models/
 /indexes/
 /cache/
