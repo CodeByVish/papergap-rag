@@ -27,8 +27,17 @@ The judged pool is the deduplicated union of the four methods' saved top-five re
 
 RRF has the highest point estimates in Table~\ref{tab:retrieval}. Its MRR@5 exceeds BM25 by 0.0748 and dense retrieval by 0.0052. These point differences alone do not establish statistical significance. Reranking lowers all four metrics relative to RRF, supporting its removal from the current configuration. Possible causes include truncation and domain mismatch, but neither has been established experimentally.
 \begin{review}{Label provenance and remaining reviews}
-The accepted labels were delivered in PR~\#50; accepting the label file does not remove the revised-label provenance, reviewer overlap or question-exposure limitations described in Section~\ref{sec:annotation}. The BM25--Dense paired intervals below have been independently reproduced from saved scores. The fusion/reranking owner still needs to review and incorporate the other paired comparisons supplied with the final retrieval handoff. Do not treat point differences alone as evidence of a reliable method difference.
+The accepted labels were delivered in PR~\#50; accepting the label file does not remove the revised-label provenance, reviewer overlap or question-exposure limitations described in Section~\ref{sec:annotation}. The BM25--Dense paired intervals below have been independently reproduced from saved scores. The fusion/reranking comparisons from the P2 handoff are included in Table~\ref{tab:p2-paired}; their numerical provenance was checked against the saved per-question scores. Do not treat point differences alone as evidence of a reliable method difference.
 \end{review}
+
+\subsection{Fusion and reranking comparisons at $K=5$}
+\input{tables/p2-paired}
+Table~\ref{tab:p2-paired} uses the same per-question scores and paper-cluster bootstrap protocol as the BM25--Dense comparison. RRF improves on BM25 across all four metrics, with all intervals above zero. RRF has only small gains over Dense; intervals that include zero do not establish a reliable improvement. Adding BGE to RRF lowers precision by 3.00 percentage points and pool recall by 5.50 points; MRR falls by 0.0868 and pool nDCG by 0.0682. All four reranking intervals are below zero. These statements are conditional on this question pool and its accepted labels; the intervals do not account for annotation bias.
+
+The benchmark uses saved top-five rankings. Separately, the agent's top-eight RRF setting was selected using earlier development evidence-recall results. We do not claim that this benchmark establishes the ordering of all four methods at top eight or that improved retrieval recall guarantees improved generated answers.
+
+\subsection{A reranking failure under the accepted labels}
+For ``How effective is their NCEL approach overall?'' (paper \texttt{1811.08603}), RRF returns the three pool passages labelled relevant at ranks one, three and four. The rank-one passage describes NCEL outperforming baselines on both easy and hard entity-linking datasets; the rank-three passage gives a concrete disambiguation example, and rank four summarizes evaluation across five benchmarks. BGE retains only the last of these at rank four in its top five. RRF precision/pool recall are 0.6/1.0, versus 0.2/0.3333 after reranking. The relevant evidence excluded from BGE's top five is known from the saved outputs; its exact lower ranks are not available. This is a selected failure example under the accepted labels, not a new annotation, a frequency estimate, or proof that truncation caused the loss. Full record and passage IDs are in \texttt{review-checks/p2-evidence.md}.
 
 \subsection{Paired BM25--Dense comparison at \texorpdfstring{$K=5$}{K=5}}
 \input{tables/bm25-dense-comparison}

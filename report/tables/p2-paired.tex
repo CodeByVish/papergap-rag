@@ -1,0 +1,17 @@
+\begin{table}[htbp]\centering\small
+\caption{Fusion and reranking comparisons at $K=5$. Differences are the first method minus the second. Intervals use 1,000 paper-cluster bootstrap resamples, seed 42, over 174 papers.}\label{tab:p2-paired}
+\begin{tabularx}{\linewidth}{YYrrl}\toprule
+Comparison & Metric & Difference & $n$ & 95\% interval\\\midrule
+RRF -- BM25 & Precision & +0.0570 & 200 & [+0.0354, +0.0788]\\
+RRF -- BM25 & Pool recall & +0.1070 & 199 & [+0.0663, +0.1471]\\
+RRF -- BM25 & MRR & +0.0747 & 200 & [+0.0398, +0.1112]\\
+RRF -- BM25 & Pool nDCG & +0.0958 & 199 & [+0.0640, +0.1273]\\
+RRF -- Dense & Precision & +0.0120 & 200 & [-0.0063, +0.0318]\\
+RRF -- Dense & Pool recall & +0.0161 & 199 & [-0.0139, +0.0462]\\
+RRF -- Dense & MRR & +0.0052 & 200 & [-0.0330, +0.0434]\\
+RRF -- Dense & Pool nDCG & +0.0125 & 199 & [-0.0154, +0.0409]\\
+RRF+BGE -- RRF & Precision & -0.0300 & 200 & [-0.0555, -0.0051]\\
+RRF+BGE -- RRF & Pool recall & -0.0550 & 199 & [-0.1037, -0.0098]\\
+RRF+BGE -- RRF & MRR & -0.0868 & 200 & [-0.1377, -0.0350]\\
+RRF+BGE -- RRF & Pool nDCG & -0.0682 & 199 & [-0.1123, -0.0256]\\
+\bottomrule\end{tabularx}\end{table}
