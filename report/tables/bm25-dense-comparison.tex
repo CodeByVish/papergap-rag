@@ -1,0 +1,13 @@
+% Means: results/p2-final-retrieval-handoff/scored/retrieval.csv.
+% Paired differences and intervals: results/p1-bm25-vs-dense-verification-20261105/comparison/ablation.csv.
+% Differences use the unrounded per-question scores, not rounded table means.
+\begin{table}[htbp]\centering\small
+\caption{BM25 versus Dense at $K=5$ on the accepted relevance labels. Differences are Dense minus BM25. Percentile intervals use 1,000 paper-cluster bootstrap resamples, seed 42; all rows cover 174 papers. $n$ denotes questions.}\label{tab:bm25-dense-paired}
+\begin{tabularx}{\linewidth}{Yrrrrl}\toprule
+Metric & BM25 & Dense & Difference & $n$ & 95\% interval\\\midrule
+Precision & 0.4820 & 0.5270 & $+0.0450$ & 200 & [0.0171, 0.0728]\\
+Pool recall & 0.6067 & 0.6976 & $+0.0909$ & 199 & [0.0419, 0.1421]\\
+MRR & 0.7296 & 0.7992 & $+0.0696$ & 200 & [0.0168, 0.1222]\\
+Pool nDCG & 0.6355 & 0.7188 & $+0.0833$ & 199 & [0.0366, 0.1314]\\\bottomrule
+\end{tabularx}
+\end{table}

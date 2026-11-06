@@ -547,3 +547,13 @@ def test_warm_up_runs_the_real_path_and_returns_seconds():
 
     assert seconds > 0
     assert messages and messages[0].startswith("[warmup]")
+
+
+def test_progress_reports_steps_without_changing_the_answer():
+    app_client = client()
+    assert app_client.get("/progress").json() == {"active": False, "events": []}
+    response = app_client.post("/answer", json={"record": exported_record()})
+    assert response.status_code == 200
+    view = app_client.get("/progress").json()
+    assert view["active"] is False
+    assert view["events"][0]["message"] == "Request received."
