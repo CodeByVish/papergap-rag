@@ -213,7 +213,7 @@ Write five queries, get their results, and measure the speed of the querying
 - **Setup:** Apple M5, 24 GB, 8 passages, no reranker, development corpus, local Ollama `qwen3:14b`. The final system uses `Qwen3-8B` on a GPU, so these times describe the laptop, not the final system.
 - **Bottleneck:** almost all the time is LLM work; retrieval is under 1% of it.
 - **Warm-up:** one earlier query (203.9 s) loaded the models and is excluded.
-- **Not verified:** answers were not checked against QASPER references. Citation text lookup was not measured because the test script's request was rejected (HTTP 400).
+- **Follow-up verification (6 November):** the four generated answers were checked against cited passages and the five matching QASPER reference rows. Query 5 is answerable and its refusal is a missed answer. The original citation lookup requests failed with HTTP 400; a fresh five-run UI verification resolved all seven citations successfully. Keep the original timings above separate from the new run. See [verification and teammate handoff](P6/FIVE_DEMO_VERIFICATION.md).
 - **Warnings:** they are heuristic flags. For example, query 2 was answered although the critic still judged the evidence incomplete.
 
 ### Question 3
@@ -342,7 +342,7 @@ Motivate the choice of your generation or classification approach in relation wi
 | Explicit refusal | "Not enough evidence" beats a confident guess |
 | Rule-based validation after generation | Catches invalid citations, unsupported numbers and overstated provenance |
 
-**Limits.** The model reads at most 8 passages of 1,200 characters each. A 365-word chunk is usually longer: 71% of development gold passages are cut. A valid citation shows a passage was supplied, not that it proves the claim. We did not fine-tune the model or benchmark it against external systems, so we make no state-of-the-art performance claim.
+**Limits (historical measured configuration).** The model read at most 8 passages of 1,200 characters each. The user reports a newer 2,500-character budget; the following truncation statistic describes the earlier configuration. A 365-word chunk is usually longer: 71% of development gold passages are cut. A valid citation shows a passage was supplied, not that it proves the claim. We did not fine-tune the model or benchmark it against external systems, so we make no state-of-the-art performance claim.
 
 #### Q4.2
 
@@ -482,7 +482,7 @@ flowchart LR
 
 **Innovation 1: adaptive retrieval.** A critic names what is missing, such as `MISSING_RESULT`, and the rewriter searches for it, for up to 3 rounds. To make its verdict checkable, it must quote the evidence word for word, and code confirms the quote exists.
 
-**Innovation 2: grounded answers.** Closed citations, refusal and validation make unsupported output visible. In Q2.2, for example, query 5 refused instead of guessing.
+**Innovation 2: grounded answers.** Closed citations, refusal and validation make unsupported output visible. Q2.2 query 5 is a limitation: it refused an answerable question despite relevant retrieved evidence. The historical 1,200-character renderer reproduction clips the metric statements in three retrieved passages. They fit within the user-reported newer 2,500-character budget, so that clipping explanation does not apply to the updated setting. The exact original prompt was not captured, and the updated setting requires a fresh run. See [verification](P6/FIVE_DEMO_VERIFICATION.md).
 
 **Ablation so far** (40 development questions, 32 with gold; all static arms use RRF):
 

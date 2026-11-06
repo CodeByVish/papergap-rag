@@ -718,3 +718,19 @@ remain active. Existing explicit deployment overrides are preserved. Verificatio
 24 local/demo tests passed and the cluster shell syntax check passed. Preparing
 the larger local index and restarting/live-checking an actual service remain
 runtime actions; no new semantic-quality or final-evaluation claim is made.
+
+## P6 five-demo UI verification — 6 November 2026
+
+On `P6/UI-improvement` (`7bd2243` UI source), five fresh development-pilot
+questions completed through Streamlit AppTest against the live local Qwen API.
+All seven citations resolved with matching papers/retrieval IDs; answer text
+matched the original runs. Query 5 remains a missed answer in that run; the historical 1,200-character
+renderer reproduction clips the metric statements in three retrieved passages.
+The user subsequently reported a 2,500-character budget, which accommodates
+those passages; updated behavior needs a new run with verified settings. A separate browser
+call verified answer/source/warning/pipeline presentation and JSON download.
+Screenshot download remains unverified. UI regression suite: 51 passed.
+See [verification and teammate handoff](P6/FIVE_DEMO_VERIFICATION.md) for source
+provenance, timing boundaries, reproducible commands and remaining owner/GPU
+checks. Raw evidence stays ignored and is packaged for separate team sharing.
+These local changes have not been committed, reviewed or merged.
