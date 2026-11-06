@@ -25,6 +25,8 @@ dist/
 !/data/README.md
 /results/*
 !/results/README.md
+# The curated P5 final-result directory is integrated, unlike other run output.
+!/results/p5-final-result/
 /models/
 /indexes/
 /cache/
