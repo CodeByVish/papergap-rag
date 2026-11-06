@@ -330,7 +330,7 @@ frozen.
 the held-out set has none, so the held-out result neither meets nor fails the gate on that side; the other side
 is visible: the critic was unsatisfied after the last round on **22.0%** of the answerable questions (21.9% on
 the 160), against the 5% the gate allows. Had the rule been on, it would have refused about one question in five
-that is answerable. Generated answers were counted, not graded:
+that is answerable. Generated answers were counted first:
 
 | | static | adaptive | static-wide |
 | --- | ---: | ---: | ---: |
@@ -340,8 +340,28 @@ that is answerable. Generated answers were counted, not graded:
 
 The generator refuses the same 6 questions in every arm. The 3 extra refusals in the adaptive arm are the 3
 questions where the critic itself stopped with `INSUFFICIENT_INFORMATION`; since every held-out question is
-answerable, all 3 are false refusals (1.5%), caused by the loop. Whether the answers are correct has not been
-measured (no EM, F1 or faithfulness yet), so no claim is made about answer quality.
+answerable, all 3 are false refusals (1.5%), caused by the loop.
+
+**Answer quality (overlap).** P5 scored the answers against the QASPER references with P6's scorer (`qa` step,
+policy `p6-qa-v0-proposed`: normalized exact match and token F1 against the best-matching reference; not the
+official QASPER evaluator), and P4 reproduced the figures independently. Exact match is 0.005 in every arm (one
+question of 200), because the generator writes sentences and the references are mostly short spans, so F1 is the
+usable figure:
+
+| | static | adaptive | static-wide |
+| --- | ---: | ---: | ---: |
+| Token F1, all 200 questions | 0.3681 | 0.3656 | 0.3676 |
+| Token F1, the 160 not annotated by P4 | 0.3689 | 0.3690 | n/a |
+| Answered / refused / failed (scorer) | 194 / 4 / 2 | 191 / 7 / 2 | 194 / 4 / 2 |
+| Coverage (answered share), 200 / 160 | 0.970 / 0.969 | 0.955 / 0.950 | 0.970 / n/a |
+
+The paired difference, adaptive minus static, is −0.0025 (95% interval −0.011 to 0.006; 174 papers) on the 200
+questions and +0.0001 (−0.007 to 0.008; 142 papers) on the 160 (paper-level bootstrap, 1,000 resamples,
+seed 42, P6's `compare` step). The scorer counts the two `PARSE_ERROR` answers per arm as failures, which is
+why it reports 4, 7 and 4 refusals where the generator reports 6, 9 and 6. All 200 questions are answerable, so
+the unanswerable-correctness metric is not available. The scorer's output is labelled `development` because its
+`held_out` label needs a team sign-off that has not been given; the numbers do not depend on the label.
+Faithfulness and the other RAG metrics (RAGAS, P5) are not yet available.
 
 **What the held-out result supports.**
 
@@ -352,12 +372,13 @@ measured (no EM, F1 or faithfulness yet), so no claim is made about answer quali
 | Adaptive beats a well-set static baseline | **No** | plain top 10 0.897 and top 15 0.953, against 0.871 at 8.3 passages |
 | The critic's retries are worth their cost | **No** | 88 retries, 95.5% ineffective, 62.5% unnecessary, 4 gained a gold passage; about 5.6 s per question |
 | The loop reliably refuses unanswerable questions | **Not tested** | no unanswerable question in the set; the unsatisfied rule would refuse 22.0% of the answerable ones; the critic false-refused 3 (1.5%) |
+| Adaptive gives better answers than static | **No** | token F1 0.3656 against 0.3681, −0.0025 [−0.011, 0.006]; 160: +0.0001 [−0.007, 0.008] |
 | Deeper plain retrieval is better than retrying | Yes | recall 0.723 at 5, 0.858 at 8, 0.897 at 10, 0.953 at 15 |
 
 **Reading.** On unseen questions the agent's evidence-gap loop behaves as it did on the development slice. It
 finds a gold passage that plain top-8 retrieval missed on 4 of 200 questions (2%), at the price of 88 retries,
 five seconds of agent time per question and 3 false refusals, and it does no better than simply reading the
-same number of passages. The extra recall that reading more passages gives (0.953 at 15) is not usable by the
+same number of passages; the answers it produces score no better either (token F1 0.366 against 0.368). The extra recall that reading more passages gives (0.953 at 15) is not usable by the
 generator as configured, because P5's prompt renders at most 8 passages of 1,200 characters: the 15-passage
 arm shows the headroom for retrieval, not what the answer step would see. The held-out run therefore does
 **not** support the claim that evidence-gap-driven retrieval improves recall; it supports the narrower claims
@@ -409,9 +430,9 @@ no held-out 2,500 number is reported until it has been scored with the same froz
 | --- | --- |
 | Sections 3.1 to 3.6 | Development results, jobs 50701, 50977 and 51172, reproduced offline where stated |
 | Generator-view alignment, handles, quote requirement (#34) | Run on the real model in job 51172 (commit 37cb0c6) |
-| Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
+| Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; held-out answers scored for EM and F1 (Section 3.8: F1 0.368 static, 0.366 adaptive); **faithfulness (RAGAS) and the development answers' correctness not yet measured** |
 | Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
-| Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval scored against P3's gold after the run (Section 3.8). **Answer correctness not yet measured** |
+| Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval and answer EM/F1 scored against P3's gold and the QASPER references after the run (Section 3.8). **RAGAS faithfulness not yet available** |
 | Context-budget check, development | Job 51691 (P5, 6 November, the 40 development items, 1,200 against 2,500 characters per passage, one run per cell): Section 3.9. Post-hoc; not part of the freeze record |
 | Context-budget sensitivity, held-out | Job 51705 (P5): the 200 held-out questions at 2,500 characters, **running, not yet scored**. Post-hoc; reported next to the 1,200-character primary result (Section 3.9), never instead of it |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
@@ -439,8 +460,10 @@ no held-out 2,500 number is reported until it has been scored with the same froz
 - **Abstention is not available** (Section 3.6), and **the held-out set cannot test it**: all 200 questions are
   answerable, so the correct-refusal rate and the refusal gate could only be assessed on the development slice
   (8 unanswerable questions).
-- **Answer quality is not measured.** The held-out answers were generated and counted as answered or refused,
-  but not graded (EM, F1, faithfulness). The recall results do not say whether answers improved.
+- **Answer quality is measured by overlap only.** EM and token F1 come from a proposed project scorer, not the
+  official QASPER evaluator; EM is near zero because the generator writes sentences against short reference
+  spans, and F1 penalizes correct paraphrases. Faithfulness (RAGAS) is not yet available, so the results say
+  nothing about whether the answers are grounded.
 - **Part of the held-out set was read before the freeze.** P4's author annotated 40 of the 200 questions, so
   results are given for all 200 and for the 160 that were not; the figures agree. The disclosure is in the
   freeze record.

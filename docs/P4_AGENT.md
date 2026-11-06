@@ -254,7 +254,8 @@ plain retrieval at equal budget, but on this slice reading more passages up fron
 Do not write that adaptive retrieval improves recall unless a later run clears the matched-budget
 comparison. The held-out run (job 51585, 200 questions, top 8) did not: mean recall 0.858 static, 0.871
 adaptive, 0.953 for 15 passages; matched-budget gain +0.001 (95% CI -0.014 to 0.016); 88 retries, 95.5% of them
-ineffective; no unanswerable question in the set. Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md`,
+ineffective; answer token F1 0.366 against 0.368 for static (paired difference −0.0025, 95% CI −0.011 to 0.006);
+no unanswerable question in the set. Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md`,
 Section 3.8. Report the static baseline at depth 5, 8 (the generator takes at most 8 passages) and 10,
 not at 5 alone. Dev results of 32 questions have wide intervals; the held-out set decides.
 

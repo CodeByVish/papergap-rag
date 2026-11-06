@@ -730,5 +730,7 @@ top 8 0.858 / 0.881, adaptive 0.871 / 0.897 (8.3 passages, 1.44 rounds), static-
 passages). Adaptive against static: +0.013 (95% CI 0.001 to 0.028) and +0.016 (0.000 to 0.038). Adaptive
 against the plain ranking at equal passages: +0.001 (-0.014 to 0.016) and +0.009 (0.000 to 0.025). The
 adaptive arm made 88 retries, 95.5% of them ineffective; critic fallback 4.2%. All 200 questions are
-answerable, so abstention on unanswerable questions was not measured. Answer correctness is not yet scored.
+answerable, so abstention on unanswerable questions was not measured. Answer overlap (P5, scored the same day):
+token F1 0.368 static and 0.366 adaptive (paired difference -0.0025, 95% CI -0.011 to 0.006), EM 0.005 in every
+arm; RAGAS faithfulness is not yet available.
 Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md` Section 3.8; run record: `docs/P4_FREEZE_RECORD.md`.
