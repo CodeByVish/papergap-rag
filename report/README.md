@@ -2,7 +2,7 @@
 
 Editable LaTeX review draft for AI6127, **Group 24**. The report title is **Evidence-grounded question answering over NLP research papers**. It uses no product name or running headers; the due date, **7 November 2026**, appears on the title page. The handout specifies 11:59 pm SGT.
 
-This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA/RAG scores and controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
+This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA and RAGAS scores are inserted; controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
 
 ## Files and report structure
 
@@ -149,7 +149,7 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 1. Confirm official member spellings/order and add four missing matriculation numbers. Group 24, Changyan Xu / G2607680G and Junlin Yin / G2604768B are already entered. Names are alphabetical by displayed full name.
 2. Confirm annotation validity and preserve revised-label agreement, independence, method visibility and single-reviewer resolution disclosures. The accepted manifest records 102 human-reviewed and 86 human-spot-checked resolutions; the latter include the 66 previously unchecked suggestions. Their updated status does not demonstrate independent third-person adjudication or recover original independent submissions.
 3. Confirm the evaluation freeze, accepted gold, prior question exposure and all-200/remaining-160 reporting. Keep passage schemas and split mappings `v0-proposed` until team confirmation.
-4. Insert verified final QA/RAGAS scores, denominators, failures, uncertainty, controlled ablations and final performance/cost results. Record model revisions, prompts, decoding, hardware and timing policy.
+4. Final QA and RAGAS scores are inserted with denominators and failures. Add paired QA uncertainty, controlled ablations and final performance/cost results. Record model revisions, prompts, decoding, hardware and timing policy.
 5. Obtain the raw cluster evidence and corpus/chunk-tuning outputs supporting the transcribed findings. Reviewers should verify claims against those records.
 6. Check all five demonstration answers, the critic/refusal mismatch and citation lookup. Rehearse the final GPU UI. The report uses the raw agent-log retrieval median of 31.58 ms, rounded to 31.6 ms; the workbook's 31.4 ms comes from a separate timing record.
 7. Complete reserved figures and the qualitative example; confirm the supplied pipeline charts and screenshot still match the final system. Future-work proposals must remain distinct from tested improvements.
