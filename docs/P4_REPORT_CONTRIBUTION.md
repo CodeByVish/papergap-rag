@@ -441,10 +441,38 @@ answerable, 8 unanswerable; both the critic and the generator read the same budg
 - **Strength of the evidence.** One run per cell on 40 questions, with no intervals; the differences are a few
   citations. Treat them as suggestive.
 
-The same 2,500-character configuration was also run on the 200 held-out questions (job 51705). It is a
-post-hoc sensitivity analysis on the questions of the primary result, started after the primary run had
-finished, and it is reported next to the primary result, never instead of it. **Status: running when this was written;
-no held-out 2,500 number is reported until it has been scored with the same frozen scripts.**
+**Held-out at 2,500 characters (job 51705, P5; post-hoc).** The same configuration was run on the 200 held-out questions
+(L40S, a later commit `012ae82` that adds the budget override and a job-script option; same items, corpus and index). It is a
+sensitivity analysis on the questions of the primary result, started after the primary run had finished, and is reported next to
+the 1,200-character result, never instead of it. The frozen held-out script refuses it (its prompt budget differs from the record),
+so P4 scored it against the same gold and with the same scorers under the `development` label. RAGAS was not run for it.
+
+| 200 questions | static 1,200 | static 2,500 | adaptive 1,200 | adaptive 2,500 |
+| --- | ---: | ---: | ---: | ---: |
+| Mapped-evidence recall | 0.858 | 0.858 | 0.871 | 0.865 |
+| Retries | 0 | 0 | 88 | 72 |
+| Mean rounds | 1.00 | 1.00 | 1.44 | 1.36 |
+| Unnecessary / ineffective / redundant retries (%) | n/a | n/a | 62.5 / 95.5 / 46.6 | 58.3 / 95.8 / 38.9 |
+| Critic unsatisfied, answerable (%) | n/a | n/a | 22.0 | 16.5 |
+| Critic "insufficient" with all gold in view | n/a | n/a | 54 | 41 |
+| False refusals by the critic | n/a | n/a | 3 | 1 |
+| Answered (generator) | 194 | 193 | 191 | 192 |
+| Token F1 | 0.3681 | 0.3731 | 0.3656 | 0.3688 |
+| Mean citations per answered question | 1.75 | 1.88 | 1.81 | 1.89 |
+| Citation-provenance warnings | 23 | 15 | 24 | 19 |
+
+- **Static retrieval is identical** to the primary run in all 200 questions (checked passage by passage), as it must be: the
+  character limit acts only on the prompt.
+- **Recall:** the adaptive gain over static is +0.007 [0.000, 0.019] (it was +0.013); at the same number of passages the loop is
+  -0.008 [-0.022, 0.001] below the plain ranking (160 questions: +0.006 and -0.002); adaptive recall on the 160 not annotated by P4
+  is 0.888 (it was 0.897).
+- **Answers:** token F1 differs by +0.005 [-0.019, 0.029] (static) and +0.003 [-0.021, 0.028] (adaptive) between budgets; the loop
+  is still no better than static at 2,500 characters (-0.004 [-0.015, 0.005]); exact match falls from 0.005 to 0.000 (one question).
+  Validator: CITATION_PROVENANCE_MISMATCH 23 to 15 (static) and 24 to 19 (adaptive); one UNSUPPORTED_NUMERIC_CLAIM error appears in each
+  arm (0 to 1) and the adaptive arm has one more PARSE_ERROR (2 to 3). P5's counts, recounted by P4 from the records.
+- **Reading:** a larger budget gives better-cited answers and a cheaper, less over-strict critic (retries -18%, unsatisfied 22.0% to
+  16.5%) but does not change what the held-out result says about the loop; it was not adopted. The two jobs ran on different GPUs
+  (A40 and L40S, 2:23:09 and 1:49:19 whole-job), so their wall times are not comparable.
 
 #### 3.10 Reranker ablation (development slice, 2 x 2)
 
@@ -490,7 +518,7 @@ answer step, gold citation recall falls from 0.694 to 0.550 (static) and 0.726 t
 | Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval and answer EM/F1 scored against P3's gold and the QASPER references after the run (Section 3.8). **RAGAS scored for static and adaptive (Section 3.8): no gain from the loop** |
 | Reranker ablation, development (2 x 2) | Jobs 51690 (reranker off) and 51802 (on), P5, 6 November, the 40 development items, one run per cell: Section 3.10. No reranker arm exists for the held-out run (the freeze record fixed the arms). Post-hoc in the sense that it was run after the primary result |
 | Context-budget check, development | Job 51691 (P5, 6 November, the 40 development items, 1,200 against 2,500 characters per passage, one run per cell): Section 3.9. Post-hoc; not part of the freeze record |
-| Context-budget sensitivity, held-out | Job 51705 (P5): the 200 held-out questions at 2,500 characters, **running, not yet scored**. Post-hoc; reported next to the 1,200-character primary result (Section 3.9), never instead of it |
+| Context-budget sensitivity, held-out | Job 51705 (P5, L40S, `012ae82`): the 200 held-out questions at 2,500 characters, scored by P4 against the same gold (development label; the frozen script refuses a different budget). Post-hoc; reported next to the 1,200-character primary result (Section 3.9), never instead of it. RAGAS not run |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
 
 ### 5. Limitations
