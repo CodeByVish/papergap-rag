@@ -88,8 +88,11 @@ The record was frozen with `code.commit` `ad02d51` (main after PR #50), the all-
 P5 (path and `metadata.json` SHA-256 in the record), `answers.generate` true (ANSWERS=p5, prompt v7,
 8 passages x 1200 characters) and `top_k` 8. P5's development check of adaptive at depth 8 (job 51521,
 decision `depth-8-dev-check`) came first; development tuning was at depth 5 (disclosure
-`depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation is not
-attached to the record (`open_at_freezing`).
+`depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation was not
+attached to the record at freezing (`open_at_freezing`). It was given afterwards: on 6 November, in the team chat, P3 confirmed that the
+200-question list is final, P5 confirmed that the prompt, model, index and settings of job 51585 were fixed before the run and not changed
+afterwards, and every member replied that none of the 200 questions was used to tune or develop anything beyond reading them while annotating (P4 read 40,
+see the disclosure above). The held-out scoring outputs were then rerun with the `held_out` label (`results/final/p4/held-out/review/`).
 
 ## After the freeze: context-budget sensitivity (6 November)
 

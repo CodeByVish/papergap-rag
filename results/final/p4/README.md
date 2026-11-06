@@ -46,10 +46,7 @@ A second folder, `development-ablation/`, holds the 2 x 2 ablation of rewriting 
   prior use of the questions has not been audited, so the 160 are not claimed to be independent.
 - **Bootstrap intervals** in `score-*/` resample questions (2,000 resamples, seed 0); those in `compare/` resample papers
   (1,000 resamples, seed 42). They are not interchangeable with the paper-clustered retrieval intervals in `results/final/p2/`.
-- **Role label.** The `evidence/`, `qa/`, `compare/` and `performance/` outputs were produced with `--role development`
-  because the `held_out` label needs a team sign-off that has not been given. The numbers do not depend on the label; rerun
-  with `--role held_out --review <file>` after sign-off. The `qa/` copies are P4's reproduction of P5's scoring; P5's
-  own outputs give identical figures (static F1 0.3681, adaptive 0.3656).
+- **Role label.** After the team's sign-off on 6 November (question use, the frozen list and the freeze; the review file is `held-out/review/final-evaluation-review.json`), the `evidence/`, `qa/` and `compare/` outputs were rerun with `--role held_out` and carry that label; the numbers are identical to the earlier development-labelled runs. The retrieval scores in `score-*/` used `--role held-out` from the start. Still labelled `development`: the RAGAS outputs (they can be relabelled by rerunning with the review file), `sensitivity-2500/` (a post-hoc run whose prompt budget differs from the frozen record) and `development-ablation/` (development questions). `performance/` has no role. The `qa/` outputs reproduce P5's scoring; P5's own outputs give identical figures (static F1 0.3681, adaptive 0.3656).
 - **Scoring policy.** EM and F1 use the project's proposed scorer (`p6-qa-v0-proposed`, best-matching reference), not the
   official QASPER evaluator. EM is near zero because the generator writes sentences and the references are short spans.
 - **Timing** is one A40, one request at a time, warm engine, no score cache; the scorer counts the two validator-downgraded

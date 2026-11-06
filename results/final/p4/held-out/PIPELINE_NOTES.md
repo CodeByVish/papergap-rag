@@ -12,10 +12,7 @@ Produced on 6 November 2026 with `scripts/run_p6_evaluation.py` (main, PR #49) f
   handout's `static-top10.jsonl` (`--saved-depth 15 --ks 5 8 10`).
 
 ## Role label
-These were run with `--role development`, so their `run_manifest.json` says "development" although the
-questions are the held-out ones. `--role held_out` needs a review file with
-`usage_and_freeze_reviewed: true` (team sign-off), which nobody has given yet. The numbers do not depend on
-the role; rerun with `--role held_out --review <file>` once the team signs off.
+The first runs used `--role development` because the team sign-off was not yet given. After the sign-off of 6 November (`review/final-evaluation-review.json`: question use reviewed, the 200-question list and the freeze confirmed) the `evidence/`, `qa/` and `compare/` outputs here were rerun with `--role held_out`; the numbers are identical. The RAGAS outputs keep the `development` label until they are rerun with the review file.
 
 ## Evidence recall (run 3)
 Mapped gold recall, 200 questions: static 0.7233 / 0.8577 / 0.8972 at K = 5 / 8 / 10 (mean passages 5.0 /

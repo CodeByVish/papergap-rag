@@ -98,5 +98,10 @@
       "change": "decision entries only (context-budget-2500 and a live-demo note); no recorded setting changed"
     }
   },
-  "reproduction_note": "The code default for max_chars_per_passage is now 2,500 (PR 72). The held-out results here are at 1,200: use commit ad02d51, or set MAX_CHARS_PER_PASSAGE=1200."
+  "reproduction_note": "The code default for max_chars_per_passage is now 2,500 (PR 72). The held-out results here are at 1,200: use commit ad02d51, or set MAX_CHARS_PER_PASSAGE=1200.",
+  "held_out_review": {
+    "file": "held-out/review/final-evaluation-review.json",
+    "sha256": "ff076571981ab7963459cd25f4a70bd85eb768b6a453048a9cefc5a42b8a0c5a",
+    "meaning": "Team sign-off of 6 November 2026 (relayed by P4): question use reviewed, the 200-question list final, the job 51585 configuration fixed before the run. Needed by the P6 tooling for --role held_out."
+  }
 }
