@@ -719,6 +719,9 @@ remain active. Existing explicit deployment overrides are preserved. Verificatio
 the larger local index and restarting/live-checking an actual service remain
 runtime actions; no new semantic-quality or final-evaluation claim is made.
 
+## P2 approved-label scoring completed
+
+Scored PR #50 labels pinned to f70bf95 against the saved 200-question four-method pool. All 12 method/depth rows have complete judged coverage; paired top-five comparisons and reproduction instructions are in [P2 final retrieval results](P2_FINAL_RETRIEVAL_RESULTS.md). 25 P6/P2 evaluation tests passed. No model rerun, new latency measurement, or change to the frozen agent configuration.
 ## P4 held-out run — 6 November 2026
 
 The freeze record (`configs/p4_freeze.json`, commit `ad02d51`, top 8, three arms, answers on) was written at

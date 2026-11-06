@@ -189,3 +189,7 @@ Preserve original submissions and AI-assisted provenance separately. P3/P6 must
 publish accepted scoring labels and the question/configuration freeze before
 final retrieval quality claims. Report gold-evidence recall separately from
 pool-relative relevance recall. No final scores or held-out approval are invented.
+
+## Approved-label results now available
+
+The completed [four-method results and paired comparisons](P2_FINAL_RETRIEVAL_RESULTS.md) supersede the pending retrieval-quality entries above. RRF leads at K=1/3/5; at K=5 its precision/pool recall/MRR/pool nDCG are 0.5390/0.7137/0.8043/0.7313. BGE lowers all four on this pool. Preserve the linked metric denominators and annotation disclosures. Historical timing and development results remain separate.
