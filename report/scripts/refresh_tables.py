@@ -1,3 +1,9 @@
+"""Refresh report tables and source provenance from local evaluation artifacts.
+
+Run from the repository root. This script overwrites generated report tables,
+copies the recorded UI image, and updates the report source audit.
+"""
+
 import json, pathlib, shutil, hashlib
 r=pathlib.Path.cwd(); out=r/'report'
 sources=['results/p2-final-retrieval-handoff/scored/summary.json','results/p2-final-retrieval-handoff/scored/run_manifest.json','results/p6/annotation-audit-verified-20261105/agreement.json','results/p6-local/five-queries-20261105.json','data/gold/p6/final/final_labels_manifest.json','docs/ASSIGNMENT_WORKBOOK.md','docs/P4_REPORT_CONTRIBUTION.md','configs/p4_freeze.json']
@@ -17,7 +23,7 @@ a=json.loads((r/sources[2]).read_text())
 names={'Maheshwari Vishakha Praveen':'Maheshwari','Changyan Xu':'Xu','HU JUNYU':'Hu','Ananya Redhu':'Redhu','Jingshuai Qian':'Qian','Junlin Yin':'Yin'}
 rows=[' / '.join(names[n] for n in x['annotators'])+f" & {x['n']} & {100*x['agreement']:.2f}\\% & {x['kappa']:.3f}"+r'\\' for x in a['by_human_pair']]
 (out/'tables/agreement.tex').write_text(r'''\begin{table}[htbp]\centering
-\caption{Agreement on the current revised annotation files; independence is unconfirmed.}\label{tab:agreement}
+\caption{Agreement on submitted labels; includes human-verified AI suggestions (Section~\ref{sec:annotation}).}\label{tab:agreement}
 \begin{tabular}{lrrr}\toprule
 Annotator pair & Records & Agreement & Kappa\\\midrule
 '''+ '\n'.join(rows)+r'\bottomrule\end{tabular}\end{table}'+'\n')

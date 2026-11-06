@@ -2,6 +2,10 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
+## P3 report integration — 2026/11/07
+
+[PR #69](https://github.com/CodeByVish/papergap-rag/pull/69) integrates Jingshuai Qian's P3 report revisions into `P6/report-prep`. The conflict resolution preserves the complete P3 report tree from `8fba5fe`; the current P6 report baseline is byte-identical to the original review baseline `e43371c`. Integration follows the team's instruction to merge members' PRs. Experiment artifacts are delivered separately in [PR #70](https://github.com/CodeByVish/papergap-rag/pull/70).
+
 > Current P1 delivery: [29 October main sync after UI and generation merge](#p1-main-sync-after-ui-and-generation-merge-29-october-2026). Earlier PR states, integration limitations and test counts describe their original dated checkpoints; they are not current validation results.
 
 | Week | Dates | Exit checkpoint | Status |
