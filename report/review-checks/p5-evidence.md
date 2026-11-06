@@ -47,8 +47,8 @@ Hashes of the delivered files:
   directory, so the revision is not claimed in the report.
 - **Q4.2 (prompt rendering and output parsing).** `PromptConfig` defaults are
   `max_passages = 8` and `max_chars_per_passage = 1200`; the prompt lists the exact rendered citation
-  ids and the parser performs limited repair of malformed escapes. The 71% clipping figure is P4's
-  development analysis and was not recomputed here.
+  ids and the parser performs limited repair of malformed escapes. The clipping figures in the report (73.3%, 33 of 45 development gold passages over 1,200 characters; 66.9%,
+  232 of 347 held-out gold passages) were recomputed by P4 on the final 365/40 corpus; P5 did not recompute them.
 - **Q4.4 (answer/refusal records and QA scores).** 200 records per arm, 0 generation errors and
   0 answer errors. P5 `evidence_status`: `SUFFICIENT` 194/191/194 and `INSUFFICIENT` 6/9/6; two
   records per arm were downgraded to refusal after a `PARSE_ERROR` (question ids
