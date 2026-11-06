@@ -42,7 +42,7 @@ It does not send conversation history to generation or change P4's agent state.
 
 ```text
 LEFT DRAWER                         MAIN AREA
-NLP Scientific Paper RAG             Ask the paper collection
+PaperRAG             Ask the paper collection
 ⓘ How to use                        Your question [editable]
 Connection                          Ask question
 Search scope                        Browse all examples

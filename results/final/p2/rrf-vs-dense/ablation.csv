@@ -1,0 +1,5 @@
+metric,paired_questions,papers,mean_right_minus_left,ci_low,ci_high,resamples,seed,left_only_questions,right_only_questions,left_arm,right_arm,left_k,right_k
+precision_at_k,200,174,0.011999999999999997,-0.006297223077712761,0.03184079601990051,1000,42,0,0,Dense,Hybrid RRF,5,5
+pool_recall_at_k,199,174,0.01610831937465104,-0.013863423204512707,0.04624349422615389,1000,42,0,0,Dense,Hybrid RRF,5,5
+mrr_at_k,200,174,0.005166666666666666,-0.03300265486006083,0.04338613541480668,1000,42,0,0,Dense,Hybrid RRF,5,5
+pool_ndcg_at_k,199,174,0.012542294489448437,-0.015410543281886312,0.0408596499548931,1000,42,0,0,Dense,Hybrid RRF,5,5

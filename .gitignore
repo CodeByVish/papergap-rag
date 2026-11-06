@@ -25,6 +25,7 @@ dist/
 !/data/README.md
 /results/*
 !/results/README.md
+!/results/final/
 /models/
 /indexes/
 /cache/
