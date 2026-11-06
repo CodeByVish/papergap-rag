@@ -13,11 +13,11 @@ def test_synthetic_http_ui_smoke(monkeypatch):
     with serve() as base:
         monkeypatch.setenv('P5_API_BASE', base)
         app = AppTest.from_file(str(APP)).run()
-        app.text_area[0].set_value('Synthetic independent question').run()
+        app.text_area[0].set_value('Synthetic independent question')
         button(app, 'Ask question').click().run()
         assert not app.exception
         assert any('synthetic test answer' in x.value for x in app.markdown)
-        assert any('Synthetic evidence' in x.value for x in app.text)
+        assert any('Synthetic evidence' in x.value for x in app.markdown)
 
 
 @pytest.mark.skipif(os.getenv('P5_RUN_SMOKE') != '1', reason='P5 service/contract unavailable; set P5_RUN_SMOKE=1 and P5_RECORDS_PATH when supplied')

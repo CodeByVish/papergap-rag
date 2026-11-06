@@ -1,4 +1,4 @@
-# NLP Scientific Paper RAG UI
+# PaperRAG UI
 
 From the repository root on the prepared Apple M5:
 
@@ -13,46 +13,34 @@ future school GPU connection.
 
 ## Interaction
 
-The left drawer contains the product title and **ⓘ How to use**, followed by
-Connection, Search scope, **History directly below Search scope**, and Advanced
-settings. The main area shows the question input, Ask question, examples, then
-one submitted question and its Answer. No workspace creation is required.
+The sidebar shows PaperRAG, a live service status (checked every 15 seconds), New
+question, Search scope, Recent questions and Advanced settings. The main area shows
+one result first, then the composer card; **How to use** sits top right.
 
-The heading is **Ask the paper collection** for All papers,
-**Ask Paper 'Selected paper title'** for One paper (ID fallback if no title is supplied),
-and **Generate from prepared evidence** in Demo record mode. **Browse all
-examples** is the only example entry point; no standalone example buttons remain.
-
-1. Keep **All papers** for corpus search, or choose **One paper** and its title/ID.
-   Scope changes apply to the next submission. Legacy services without
-   `corpus_search` require a paper selection.
-2. Type into **Your question**, or open **Browse all
-   examples**. The library groups corpus topics and paper-specific questions;
-   paper-specific options show both title and ID. **Use this question** fills the
-   editable draft without submitting. In corpus mode it includes the paper
-   reference without changing the scope. A paper filter limits the library to
-   matching examples.
-3. Click **Ask question** and wait. Requests are synchronous and non-streaming;
-   no automatic POST retries or cancellation. Every question is independent;
-   history is not sent to the model.
-4. Read the submitted question and **Answer**, then any validation explanation.
-   **Evidence needs review** means an answer retained warning-level issues; open
-   **What was flagged?** for exact details. A validator block shows the accepted
-   refusal, with rejected text separately labelled. No status certifies accuracy.
-5. Expand **Sources** for titles/IDs, sections and passages, **Pipeline details**
-   for supplied retrieval/critic events, and **Debug information** for IDs,
-   timings and raw metadata. Candidate rankings and fusion/reranking scores are
-   not currently supplied by the API.
-6. Open a previous result from **History**; only one result is displayed and
-   browsing does not run inference. **+ New question** clears the draft/result
-   view and keeps history. Manual retry explicitly links another execution of
-   the latest matching submission; timeout means outcome unknown.
-7. Under **Advanced settings**, choose runs and download JSON for reporting.
-   Export before **Clear history**, which deletes all local session runs/drafts.
+1. Keep **All papers**, or choose **One paper** and its title/ID. Scope applies to
+   the next submission. Legacy services without `corpus_search` require a paper.
+2. Type into the composer, or open **Examples**; **Use this question** fills the
+   editable draft without submitting. The composer is a form, so the first click
+   counts and Ctrl/⌘+Enter also submits. Empty text shows a prompt.
+3. Requests are synchronous and non-streaming, with no automatic POST retries or
+   cancellation. Every question is independent; history is not sent to the model.
+4. The answer appears at the top. A banner explains its validation state and text
+   named by a warning is highlighted. A refusal is shown as a normal "No answer"
+   notice. Answer text renders literally, so `$` is never treated as maths. No
+   status certifies accuracy.
+5. Tabs, in order: **Sources** (cards with title, section, passage, IDs), **Flagged**
+   (when anything was raised, including any rejected draft), **Pipeline** (supplied
+   retrieval/critic events) and **Debug** (IDs, timings, raw metadata). Candidate
+   rankings and fusion/reranking scores are not supplied by the API.
+6. **Recent questions** reopens one result without running inference. **New
+   question** clears the draft/result view and keeps history. **Re-run the last
+   matching question** links another execution; timeout means outcome unknown.
+7. **Copy** and **Run JSON** act on the shown answer. Under **Advanced settings**,
+   choose runs and download JSON for reporting. Export before **Clear history**.
    Limits are 10 internal mode/scope contexts and 50 attempts per context;
    refresh/reconnect may lose history. Export omits the agent block and sensitive
    keys but retains answer/provenance/evidence content. Timings measure answer
-   HTTP waiting/processing, not isolated model inference; citation timing is separate.
+   HTTP waiting/processing, not isolated model inference.
 
 **Advanced settings → Input mode → Demo record** generates from a local original
 AgentState input. It does not perform fresh retrieval or rerun the agent. The

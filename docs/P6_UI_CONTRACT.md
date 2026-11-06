@@ -5,7 +5,7 @@
 > [the extension and owner review points](P6/CORPUS_SEARCH_CONTRACT.md).
 > Paper-required statements below describe the original endpoint deployment.
 
-> UI layout update (2026-11-02): title **NLP Scientific Paper RAG** and
+> UI layout update (2026-11-02): title **PaperRAG** and
 > **How to use** are in the drawer above Connection. Search scope is followed by
 > History; the main area shows input/examples, then one submitted question and
 > Answer, warning explanation, Sources, Pipeline details and Debug information.
