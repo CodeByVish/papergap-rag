@@ -39,7 +39,7 @@ Member name (alphabetical order) & Matriculation number\\\midrule
 Ananya Redhu & \todo{matriculation number}\\
 Changyan Xu & G2607680G\\
 Jingshuai Qian & \todo{matriculation number}\\
-Junlin Yin & \todo{matriculation number}\\
+Junlin Yin & G2604768B\\
 Junyu Hu & \todo{matriculation number}\\
 Maheshwari Vishakha Praveen & \todo{matriculation number}\\\bottomrule
 \end{tabularx}
@@ -49,11 +49,11 @@ Members are listed alphabetically by displayed full name. Confirm official spell
 \end{review}
 \vfill
 \begin{review}{Draft status}
-Available measurements are development results, not final held-out scores. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Pending entries are not zero scores. Final QA, RAG evaluation and controlled ablations remain to be inserted.
+The retrieval comparison uses accepted pooled relevance labels; agent and UI measurements remain development results. Label acceptance does not establish independent held-out performance. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Pending entries are not zero scores. Final QA, RAG evaluation and controlled ablations remain to be inserted.
 \end{review}
 \end{titlepage}
 \begin{abstract}
-Our system answers questions about NLP research papers using hybrid retrieval and evidence-conditioned generation. The knowledge base contains 28,617 section-aware passages from 1,584 papers with indexed text. BM25 and BGE dense retrieval are combined through reciprocal rank fusion (RRF); a bounded critic loop can request further evidence before Qwen3-8B generates a cited answer or refuses. On 200 questions scored against draft relevance labels, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. Reranking reduces all four reported top-five metrics. A separate 32-question development analysis finds that static top-eight retrieval recovers more mapped evidence than adaptive top-five retrieval. These findings motivate a top-eight RRF configuration without reranking, but do not establish answer accuracy or independent held-out performance.
+Our system answers questions about NLP research papers using hybrid retrieval and evidence-conditioned generation. The knowledge base contains 28,617 section-aware passages from 1,584 papers with indexed text. BM25 and BGE dense retrieval are combined through reciprocal rank fusion (RRF); a bounded critic loop can request further evidence before Qwen3-8B generates a cited answer or refuses. On 200 questions scored against accepted pooled relevance labels, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. Reranking reduces all four reported top-five metrics. A separate 32-question development analysis finds that static top-eight retrieval recovers more mapped evidence than adaptive top-five retrieval. These findings motivate a top-eight RRF configuration without reranking, but do not establish answer accuracy or independent held-out performance.
 \end{abstract}
 \tableofcontents
 \input{sections/01-system}

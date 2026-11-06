@@ -123,7 +123,7 @@ def offline():
         "Tokenise with casefold and \\w+\nBM25Okapi (k1 = 1.5, b = 0.75)\n"
         "Construction check only; object not saved")
     box(ax, rx, 100, lw, 16, "Dense: per-paper FAISS",
-        "Encode passage text with bge-small-en-v1.5\n(revision 5c38ec7c); L2-normalise\n"
+        "bge-small-en-v1.5; max 512 input tokens\nRevision 5c38ec7c; L2-normalise\n"
         "One exact IndexFlatIP per paper")
     arrow(ax, [(42, 95), (42, 100)])
     arrow(ax, [(128, 95), (128, 100)])
@@ -189,12 +189,12 @@ def online():
     arrow(ax, [(2 + lw, 105), (rx, 105)])
 
     retry = "#2f5f9e"
-    ax.plot([lc, lc, 167.5, 167.5], [111.5, 115.5, 115.5, 10], color=retry, lw=0.9,
+    ax.plot([rc, rc, 167.5, 167.5], [111.5, 115.5, 115.5, 10], color=retry, lw=0.9,
             ls=dash, zorder=1)
     arrow(ax, [(167.5, 10), (164, 10)], color=retry, ls=dash)
-    ax.text(103, 115.5, "Critic finds a gap: rewrite query and retry (at most 3 rounds). "
+    ax.text(121.5, 115.5, "Critic finds a gap: rewrite query and retry (at most 3 rounds).\n"
             "Empty section search repeats on the whole paper.",
-            fontsize=6.4, color=retry, ha="center", va="center", zorder=4,
+            fontsize=6.4, color=retry, ha="right", va="center", zorder=4,
             bbox=dict(fc="white", ec="none", pad=0.8))
     ax.text(2, 120.5, "Local UI \"All papers\" (paper_id = null) follows the same steps with global BM25 "
             "and one global FAISS index, and has no section retries.",
