@@ -63,7 +63,7 @@ all false refusals (1.5%). Two answers per arm were downgraded after a `PARSE_ER
 Adaptive minus static (paper-level bootstrap, 1,000 resamples, seed 42): F1 -0.0025 [-0.0109, 0.0056] on the 200
 (174 papers); +0.0001 [-0.0074, 0.0080] on the 160 (142 papers). No answer-quality gain from the loop.
 
-`ragas/` (RAGAS 0.2.15, live judge `qwen-plus-2025-12-01`, embeddings `qwen3.7-text-embedding` as recorded, DashScope;
+`ragas/` (RAGAS 0.2.15, live judge `qwen-plus-2025-12-01`, embeddings Qwen3.7 Text Embedding (`qwen3.7-text-embedding`), DashScope;
 same records and the exact rendered contexts, 8 x 1,200 characters; means of valid scores with counts):
 
 | | static | adaptive |

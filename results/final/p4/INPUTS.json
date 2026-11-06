@@ -40,7 +40,7 @@
     "delivery_archive": "p4-ragas-live-51585-20261106.tar.gz",
     "delivery_archive_sha256": "5dc5708a2b367267b48b8e499caed80de426da195f6c9f7a3d226c3ddba4ced7",
     "judge_model": "qwen-plus-2025-12-01",
-    "embedding_model": "qwen3.7-text-embedding (as recorded by P5; confirm the provider ID)",
+    "embedding_model": "Qwen3.7 Text Embedding (qwen3.7-text-embedding)",
     "endpoint": "DashScope OpenAI-compatible",
     "code_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
     "role_label": "development",

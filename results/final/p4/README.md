@@ -48,7 +48,7 @@ before the run are in `docs/P4_FREEZE_RECORD.md` and `configs/p4_freeze.json`.
   official QASPER evaluator. EM is near zero because the generator writes sentences and the references are short spans.
 - **Timing** is one A40, one request at a time, warm engine, no score cache; the scorer counts the two validator-downgraded
   answers per arm as technical errors, so latency percentiles use 198 questions. Critic token use was not recorded.
-- **RAGAS caveats.** The judge is a hosted LLM (`qwen-plus-2025-12-01` via DashScope), so the scores are model judgments, not human verification; the contexts were rebuilt from the records and the prompt configuration; DashScope's embeddings endpoint needed a wrapper (`ragas/kit/run_p6_evaluation_dashscope.py`) that sets `check_embedding_ctx_length=False` while the evaluator itself is unmodified; the embedding model ID is as recorded by P5 and should be confirmed; refusals and failures are excluded from each denominator; the outputs carry the `development` role label.
+- **RAGAS caveats.** The judge is a hosted LLM (`qwen-plus-2025-12-01` via DashScope), so the scores are model judgments, not human verification; the contexts were rebuilt from the records and the prompt configuration; DashScope's embeddings endpoint needed a wrapper (`ragas/kit/run_p6_evaluation_dashscope.py`) that sets `check_embedding_ctx_length=False` while the evaluator itself is unmodified; refusals and failures are excluded from each denominator; the outputs carry the `development` role label.
 - Manifests keep their producer paths (local paths on the producing machines); read them as historical.
 
 ## Reproduce
