@@ -305,22 +305,38 @@ def build_retriever(args: argparse.Namespace, passages: list[Any]):
     return HybridRetriever(sparse, dense, scorer=scorer, candidate_k=args.candidate_k).retrieve
 
 
+def prompt_config(args: argparse.Namespace | None = None):
+    """P5's rendering budget for this run, with the CLI override applied.
+
+    The default comes from P5's ``PromptConfig``; ``--max-chars-per-passage``
+    exists so a run at a different budget is an explicit, recorded choice rather
+    than a silent edit of the default. The critic view and the answer step both
+    take this one object, which is what keeps them looking at the same text.
+    """
+    from src.generation.prompts.grounded_qa import PromptConfig
+
+    config = PromptConfig()
+    override = getattr(args, "max_chars_per_passage", None) if args is not None else None
+    if override is not None:
+        config = config.model_copy(update={"max_chars_per_passage": override})
+    return config
+
+
 def build_critic_view(args: argparse.Namespace):
     """The critic's passage view; None keeps the default pool view."""
     if args.critic != "generator" or args.critic_view == "pool":
         return None
     from src.agent.generator_view import make_generator_view
 
-    return make_generator_view()
+    return make_generator_view(prompt_config(args))
 
 
-def prompt_budget() -> dict[str, Any] | None:
+def prompt_budget(args: argparse.Namespace | None = None) -> dict[str, Any] | None:
     """The generator's rendering limits, which the manifest must record with every run."""
     try:
-        from src.generation.pipeline import PipelineConfig
+        prompt = prompt_config(args)
     except ImportError:
         return None
-    prompt = PipelineConfig().prompt
     return {"max_passages": prompt.max_passages,
             "max_chars_per_passage": prompt.max_chars_per_passage}
 
@@ -338,6 +354,7 @@ def build_generation(args: argparse.Namespace):
     try:
         from src.generation import PROMPT_VERSION, GroundedQAPipeline, make_answer_fn
         from src.generation.generators import get_generator
+        from src.generation.pipeline import PipelineConfig
     except ImportError as error:
         raise SystemExit(
             f"P5's generation package is not importable ({error}); run from a checkout "
@@ -355,7 +372,12 @@ def build_generation(args: argparse.Namespace):
         kwargs["max_new_tokens"] = args.max_new_tokens
     generator = get_generator(args.generator, **kwargs)
     critic = GeneratorChatClient(generator) if args.critic == "generator" else None
-    answer = make_answer_fn(GroundedQAPipeline(generator)) if args.answers == "p5" else None
+    answer = None
+    if args.answers == "p5":
+        pipeline = GroundedQAPipeline(
+            generator, config=PipelineConfig(prompt=prompt_config(args))
+        )
+        answer = make_answer_fn(pipeline)
     return generator, critic, answer
 
 
@@ -380,6 +402,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--model-id", help="model path or hub id for the generator")
     p.add_argument("--max-new-tokens", type=int, default=FROZEN_MAX_NEW_TOKENS,
                    help="answer token budget (P5's frozen v7 value; the backend default is 768)")
+    p.add_argument("--max-chars-per-passage", type=int, default=None,
+                   help="override P5's per-passage rendering budget in characters\n"
+                        "(default: PromptConfig's current default, 2,500; 1,200 reproduces\n"
+                        "the v7 runs recorded before 2026-11-06)")
     p.add_argument("--expect-prompt-version", default=FROZEN_PROMPT_VERSION,
                    help="refuse to run answers if P5's PROMPT_VERSION differs")
     p.add_argument("--scoped", action="store_true", help="per-paper section-scoped retries")
@@ -448,7 +474,7 @@ def main(argv: Sequence[str] | None = None) -> None:
                           if critic is not None else None),
         "generator": generator.info() if generator is not None and hasattr(generator, "info") else None,
         "prompt_version": prompt_version() if answer_fn is not None else None,
-        "prompt_budget": prompt_budget() if generator is not None else None,
+        "prompt_budget": prompt_budget(args) if generator is not None else None,
         "critic_view": args.critic_view if critic is not None else None,
         "environment": environment(),
     }

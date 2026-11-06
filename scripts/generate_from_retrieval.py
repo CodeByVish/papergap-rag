@@ -637,6 +637,10 @@ def main(argv: list[str] | None = None) -> int:
                 "adapter": args.adapter,
                 "backend": args.backend,
                 "tag": args.tag,
+                "prompt_budget": {
+                    "max_passages": prompt_config.max_passages,
+                    "max_chars_per_passage": prompt_config.max_chars_per_passage,
+                },
                 "note": (
                     "Guards resume: re-running against this --out with a "
                     "different request set is refused rather than silently "
@@ -686,6 +690,10 @@ def main(argv: list[str] | None = None) -> int:
                 "adapter": args.adapter,
                 "backend": args.backend,
                 "tag": args.tag,
+                "prompt_budget": {
+                    "max_passages": prompt_config.max_passages,
+                    "max_chars_per_passage": prompt_config.max_chars_per_passage,
+                },
                 "payloads_read": len(payloads),
                 "requests_adapted": len(requests),
                 "payload_errors": errors,
