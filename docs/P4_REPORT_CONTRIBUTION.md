@@ -359,8 +359,8 @@ The paired difference, adaptive minus static, is −0.0025 (95% interval −0.01
 questions and +0.0001 (−0.007 to 0.008; 142 papers) on the 160 (paper-level bootstrap, 1,000 resamples,
 seed 42, P6's `compare` step). The scorer counts the two `PARSE_ERROR` answers per arm as failures, which is
 why it reports 4, 7 and 4 refusals where the generator reports 6, 9 and 6. All 200 questions are answerable, so
-the unanswerable-correctness metric is not available. The scorer's output is labelled `development` because its
-`held_out` label needs a team sign-off that has not been given; the numbers do not depend on the label.
+the unanswerable-correctness metric is not available. After the team's sign-off on 6 November (question use, the frozen list
+and the freeze), P4 reran the evidence, QA and comparison steps with the `held_out` label; the numbers are identical.
 **Answer quality (LLM judge, RAGAS).** P5 scored the held-out answers of the static and adaptive arms with RAGAS 0.2.15
 and a live judge (`qwen-plus-2025-12-01`, embeddings Qwen3.7 Text Embedding, `qwen3.7-text-embedding`, both through DashScope's
 OpenAI-compatible endpoint), on the same records as the other scores (prediction hashes match job 51585) and the
@@ -382,7 +382,7 @@ the adaptive arm answers three fewer. Caveats: the judge is a hosted LLM, so its
 the exact rendered text) were produced afterwards (the contexts files are not in the delivery archive; their hashes are in
 the run manifests), DashScope's
 embeddings endpoint needed a wrapper that sets `check_embedding_ctx_length=False` (the evaluator itself is unmodified),
-and the run is labelled `development` like the other P6-pipeline outputs. Cost and time as reported by P5: about 2.5
+and the RAGAS outputs keep the `development` label until they are rerun with the review file. Cost and time as reported by P5: about 2.5
 hours and 0.63 SGD for the two arms. The fifteen-passage arm was not judged.
 
 **What the held-out result supports.**
