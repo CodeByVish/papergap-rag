@@ -1,0 +1,19 @@
+{
+  "policy": "p6-qa-v0-proposed",
+  "questions": 200,
+  "answerable_em": 0.0,
+  "answerable_f1": 0.37350280243650713,
+  "unanswerable_correctness": null,
+  "combined_task_score": 0.37350280243650713,
+  "answered": 193,
+  "refused": 5,
+  "failures": 2,
+  "reference_exclusions": 0,
+  "answer_coverage": 0.965,
+  "em_n": 200,
+  "f1_n": 200,
+  "unanswerable_correctness_n": 0,
+  "task_score_n": 200,
+  "answered_only_f1": 0.38704953620363436,
+  "arm": "static-wide-2500"
+}

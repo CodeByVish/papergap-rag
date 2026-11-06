@@ -182,8 +182,10 @@ rebuilt 365/40 corpus and reproducible with `scripts/evaluate_retrieval_depth.py
   with `--bge` to see whether reranking moves gold into the top 5.
 - **Generation budget (P5, frozen v7).** `PromptConfig` uses `max_passages=8` and
   `max_chars_per_passage=1200`, sized for the old 200/40 chunks. With 365/40 chunks a top-10 run
-  would lose its last two passages, and every passage is cut at 1200 characters (71% of the gold
-  passages are longer, 28% of their text on average). Raise both with P5 before an answer-quality run.
+  would lose its last two passages, and every passage is cut at 1200 characters (recomputed on the final
+  365/40 development corpus: 33 of 45 gold passages, 73.3%, are longer, and 36.6% of the gold text is
+  beyond the cut). The primary held-out run kept 1200; P5's later 2,500-character checks (development job
+  51691, held-out job 51705, both post-hoc) are in `docs/P4_REPORT_CONTRIBUTION.md`, Section 3.9.
 
 ## Abstention
 
@@ -226,8 +228,9 @@ Critic audit, job 51172 against job 50977 (adaptive arm, verdicts with gold or u
 | insufficient, unanswerable (correct) | 8 | 12 |
 | sufficient, unanswerable (false accept) | 4 | 2 |
 
-Truncation does not explain the over-strict verdicts: the gold passage is longer than 1200 characters in 65%
-of them and in 75% of the correct "sufficient" verdicts. Two verdicts fell back to the rules (one failed
+Truncation does not by itself separate over-strict from correct verdicts: the gold passage is longer than 1200
+characters in 65% of them and in 75% of the correct "sufficient" verdicts. It does cost retries: at 2,500
+characters the adaptive arm needs 18 retries instead of 32 on the same items (job 51691). Two verdicts fell back to the rules (one failed
 quote check, one reply with an invalid `\%` escape in a LaTeX quote): 2.9% of verdicts.
 
 ## What the results support
@@ -251,7 +254,8 @@ plain retrieval at equal budget, but on this slice reading more passages up fron
 Do not write that adaptive retrieval improves recall unless a later run clears the matched-budget
 comparison. The held-out run (job 51585, 200 questions, top 8) did not: mean recall 0.858 static, 0.871
 adaptive, 0.953 for 15 passages; matched-budget gain +0.001 (95% CI -0.014 to 0.016); 88 retries, 95.5% of them
-ineffective; no unanswerable question in the set. Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md`,
+ineffective; answer token F1 0.366 against 0.368 for static (paired difference −0.0025, 95% CI −0.011 to 0.006);
+no unanswerable question in the set. Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md`,
 Section 3.8. Report the static baseline at depth 5, 8 (the generator takes at most 8 passages) and 10,
 not at 5 alone. Dev results of 32 questions have wide intervals; the held-out set decides.
 

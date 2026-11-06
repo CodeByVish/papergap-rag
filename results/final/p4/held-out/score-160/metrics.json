@@ -1,0 +1,142 @@
+{
+  "metrics": {
+    "static": {
+      "questions": 160,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.0,
+      "mean_passages": 7.975,
+      "questions_with_gold": 160,
+      "recall_before_retries": 0.8813541666666668,
+      "recall_after_retries": 0.8813541666666668,
+      "full_recall_recovery_rate": 0.0,
+      "gap_detected": 15,
+      "critic_gap_recovery_rate": 0.0,
+      "retries": 0,
+      "unnecessary_retry_rate": null,
+      "ineffective_retry_rate": null,
+      "redundant_retry_rate": null,
+      "refusal_rate": 0.0,
+      "correct_refusal_rate": null,
+      "false_refusal_rate": 0.0,
+      "unsatisfied_rate_unanswerable": null,
+      "unsatisfied_rate_answerable": 0.09375,
+      "critic_reused_rate": 0.0,
+      "critic_llm_rate": 0.0,
+      "critic_fallback_rate": 0.0,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 0.0419540877253894
+    },
+    "adaptive": {
+      "questions": 160,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.4375,
+      "mean_passages": 8.31875,
+      "questions_with_gold": 160,
+      "recall_before_retries": 0.8813541666666668,
+      "recall_after_retries": 0.8969791666666668,
+      "full_recall_recovery_rate": 0.09090909090909091,
+      "gap_detected": 38,
+      "critic_gap_recovery_rate": 0.07894736842105263,
+      "retries": 70,
+      "unnecessary_retry_rate": 0.7,
+      "ineffective_retry_rate": 0.9571428571428572,
+      "redundant_retry_rate": 0.4142857142857143,
+      "refusal_rate": 0.01875,
+      "correct_refusal_rate": null,
+      "false_refusal_rate": 0.01875,
+      "unsatisfied_rate_unanswerable": null,
+      "unsatisfied_rate_answerable": 0.21875,
+      "critic_reused_rate": 0.1608695652173913,
+      "critic_llm_rate": 0.9533678756476683,
+      "critic_fallback_rate": 0.046632124352331605,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 5.6443038641155
+    },
+    "static-wide": {
+      "questions": 160,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.0,
+      "mean_passages": 13.96875,
+      "questions_with_gold": 160,
+      "recall_before_retries": 0.9588541666666666,
+      "recall_after_retries": 0.9588541666666666,
+      "full_recall_recovery_rate": 0.0,
+      "gap_detected": 14,
+      "critic_gap_recovery_rate": 0.0,
+      "retries": 0,
+      "unnecessary_retry_rate": null,
+      "ineffective_retry_rate": null,
+      "redundant_retry_rate": null,
+      "refusal_rate": 0.0,
+      "correct_refusal_rate": null,
+      "false_refusal_rate": 0.0,
+      "unsatisfied_rate_unanswerable": null,
+      "unsatisfied_rate_answerable": 0.0875,
+      "critic_reused_rate": 0.0,
+      "critic_llm_rate": 0.0,
+      "critic_fallback_rate": 0.0,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 0.04726952357705159
+    }
+  },
+  "paired_recall_gain": {
+    "n": 160,
+    "mean_gain": 0.015625,
+    "ci95": [
+      0.0,
+      0.0375
+    ]
+  },
+  "matched_recall_gain": {
+    "n": 160,
+    "mean_gain": 0.009375,
+    "ci95": [
+      0.0,
+      0.025
+    ],
+    "mean_budget": 8.31875
+  },
+  "static_depth_recall": {
+    "questions_with_gold": 160,
+    "recall_at_k": {
+      "3": 0.5847916666666666,
+      "5": 0.7485416666666667,
+      "8": 0.8813541666666668,
+      "10": 0.906875,
+      "15": 0.9588541666666666
+    },
+    "full_recall_at_k": {
+      "3": 69,
+      "5": 98,
+      "8": 127,
+      "10": 134,
+      "15": 148
+    }
+  },
+  "refuse_if_unsatisfied": {
+    "correct_refusal_rate": null,
+    "false_refusal_rate": 0.21875,
+    "meets_proposed_gate": false
+  },
+  "critic_audit": {
+    "verdicts": {
+      "sufficient/gold complete": 103,
+      "insufficient/gold complete": 50,
+      "insufficient/gold missing": 18,
+      "sufficient/gold missing": 22
+    },
+    "model_verdicts": 193,
+    "sources": {
+      "llm": 184,
+      "reused": 37,
+      "fallback": 9
+    },
+    "sufficient_cites": {
+      "a gold passage": 107,
+      "no gold passage": 15
+    }
+  }
+}

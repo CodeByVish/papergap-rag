@@ -1,0 +1,16 @@
+{
+  "latency_field": "internal_pipeline_s",
+  "requests": 200,
+  "latency_n": 198,
+  "p50_seconds": 10.072273423982551,
+  "p95_seconds": 21.527334242477064,
+  "technical_errors": 2,
+  "successful_requests": 198,
+  "batch_seconds": 2519.0,
+  "successful_requests_per_second": 0.07860262008733625,
+  "completed_requests_per_second": 0.0793965859468043,
+  "arm": "static",
+  "hardware": "1x NVIDIA A40 (node TC2N01); vLLM 0.11.0, Qwen3-8B bfloat16; retrieval on CPU",
+  "concurrency": 1,
+  "cache_policy": "warm engine loaded once per job; fresh inference per question; no score cache (score_cache null); no reranker; run not resumed"
+}

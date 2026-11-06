@@ -1,0 +1,87 @@
+{
+  "args": {
+    "passages": "/home/msai/junyu007/p4-critic-20261103/inputs/passages_p3.jsonl",
+    "dense_index_dir": "/home/msai/junyu007/p5/data/365-40-dev/indexes/dense-bge-small",
+    "items": "/home/msai/junyu007/p4-critic-20261103/inputs/items.jsonl",
+    "from_qa": null,
+    "split": "validation",
+    "limit": null,
+    "out_dir": "/home/msai/junyu007/p4-context-20261106/runs/p4/q5-bge-dev",
+    "arms": [
+      "static",
+      "adaptive"
+    ],
+    "critic": "generator",
+    "answers": "p5",
+    "critic_view": "generator",
+    "generator": "vllm",
+    "model_id": "/home/msai/junyu007/p5/models/Qwen3-8B",
+    "max_new_tokens": 1024,
+    "expect_prompt_version": "p5-grounded-qa-v7",
+    "scoped": true,
+    "bge": true,
+    "score_cache": null,
+    "candidate_k": 20,
+    "top_k": 8,
+    "wide_k": null,
+    "max_retries": 2,
+    "device": "cpu",
+    "cache_folder": "/home/msai/junyu007/p5/hf-good/hub",
+    "local_files_only": true,
+    "resume": false
+  },
+  "started": 1793965936.5640237,
+  "finished": 1793967735.0273407,
+  "questions": 40,
+  "passages_sha256": "ecb1c601cdaebcd8e1e6bfeaf43f9cb4867f89e9762799ab06e7901549a9e403",
+  "items_sha256": "ff69f9a0c45f2e18282f2836c5f156c81fa925a17668b00f0d190ff42615cc55",
+  "critic_client": {
+    "calls": 56,
+    "escalations": 0
+  },
+  "generator": {
+    "backend": "vllm",
+    "model_id": "/home/msai/junyu007/p5/models/Qwen3-8B",
+    "loaded": true,
+    "options": {
+      "dtype": "bfloat16",
+      "gpu_memory_utilization": 0.85,
+      "max_model_len": 32768,
+      "tensor_parallel_size": 1,
+      "max_new_tokens": 1024,
+      "temperature": 0.0,
+      "top_p": 0.9,
+      "enable_thinking": false,
+      "enforce_eager": false
+    },
+    "last_generation_stats": {
+      "batch_size": 1,
+      "prompt_tokens": 4064,
+      "completion_tokens": 344,
+      "batch_seconds": 11.187717528955545
+    },
+    "kv_cache_budget_gb": 37.77
+  },
+  "prompt_version": "p5-grounded-qa-v7",
+  "prompt_budget": {
+    "max_passages": 8,
+    "max_chars_per_passage": 1200
+  },
+  "critic_view": "generator",
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Linux-5.14.0-503.14.1.el9_5.x86_64-x86_64-with-glibc2.34",
+    "git_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "git_dirty": false,
+    "packages": {
+      "torch": "2.8.0",
+      "vllm": "0.11.0",
+      "transformers": "4.57.6",
+      "sentence-transformers": "5.7.0",
+      "faiss-cpu": "1.15.1",
+      "rank-bm25": "0.2.2",
+      "langgraph": "1.2.19",
+      "pydantic": "2.13.5"
+    }
+  }
+}

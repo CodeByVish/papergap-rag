@@ -2,6 +2,10 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
+## P3 experiment delivery — 2026/11/07
+
+[PR #70](https://github.com/CodeByVish/papergap-rag/pull/70) integrates the four valid P3 chunk-size experiment runs into `main`, preserving the original artifact bytes from `03c2ae4`. See [the results index](../results/chunk_size/README.md) for the selected configuration, provenance, reproduction route and limitations. Integration follows the team's instruction to merge members' PRs. Report revisions are integrated separately through [PR #69](https://github.com/CodeByVish/papergap-rag/pull/69) into `P6/report-prep`.
+
 > Current P1 delivery: [29 October main sync after UI and generation merge](#p1-main-sync-after-ui-and-generation-merge-29-october-2026). Earlier PR states, integration limitations and test counts describe their original dated checkpoints; they are not current validation results.
 
 | Week | Dates | Exit checkpoint | Status |
@@ -735,6 +739,9 @@ provenance, timing boundaries, reproducible commands and remaining owner/GPU
 checks. Raw evidence stays ignored and is packaged for separate team sharing.
 These local changes have not been committed, reviewed or merged.
 
+## P2 approved-label scoring completed
+
+Scored PR #50 labels pinned to f70bf95 against the saved 200-question four-method pool. All 12 method/depth rows have complete judged coverage; paired top-five comparisons and reproduction instructions are in [P2 final retrieval results](P2_FINAL_RETRIEVAL_RESULTS.md). 25 P6/P2 evaluation tests passed. No model rerun, new latency measurement, or change to the frozen agent configuration.
 ## P4 held-out run — 6 November 2026
 
 The freeze record (`configs/p4_freeze.json`, commit `ad02d51`, top 8, three arms, answers on) was written at
@@ -746,5 +753,18 @@ top 8 0.858 / 0.881, adaptive 0.871 / 0.897 (8.3 passages, 1.44 rounds), static-
 passages). Adaptive against static: +0.013 (95% CI 0.001 to 0.028) and +0.016 (0.000 to 0.038). Adaptive
 against the plain ranking at equal passages: +0.001 (-0.014 to 0.016) and +0.009 (0.000 to 0.025). The
 adaptive arm made 88 retries, 95.5% of them ineffective; critic fallback 4.2%. All 200 questions are
-answerable, so abstention on unanswerable questions was not measured. Answer correctness is not yet scored.
+answerable, so abstention on unanswerable questions was not measured. Answer overlap (P5, scored the same day):
+token F1 0.368 static and 0.366 adaptive (paired difference -0.0025, 95% CI -0.011 to 0.006), EM 0.005 in every
+arm. RAGAS (P5, live judge qwen-plus-2025-12-01): faithfulness 0.892 static, 0.907 adaptive; response
+relevance 0.854 and 0.854; context precision 0.578 and 0.577; no paired interval excludes zero.
 Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md` Section 3.8; run record: `docs/P4_FREEZE_RECORD.md`.
+
+## P4 final delivery — 6 November 2026
+
+Pull requests: [#63](https://github.com/CodeByVish/papergap-rag/pull/63) docs (freeze record, held-out
+results, context-budget and reranker ablations, RAGAS, limitations); [#66](https://github.com/CodeByVish/papergap-rag/pull/66)
+P4 report sections (agent chapter, held-out and ablation tables, performance, figures, matriculation number);
+[#67](https://github.com/CodeByVish/papergap-rag/pull/67) reviewed final outputs in `results/final/p4/` (held-out
+scores, evidence recall, QA, RAGAS, performance, development reranker ablation, post-hoc 2,500-character run, inputs
+and checksums). The primary held-out result is at 8 x 1,200 characters (commit `ad02d51`); the shared code default is
+now 2,500 (PR 72) and the final demo uses 2,500. Reproduce the primary result with `MAX_CHARS_PER_PASSAGE=1200`.

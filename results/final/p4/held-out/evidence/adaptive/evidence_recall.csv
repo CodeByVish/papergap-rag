@@ -1,0 +1,2 @@
+arm,mode,k,questions,mapped_recall,mapped_recall_n,successful_only_mapped_recall,successful_only_n,mapping_exclusions,retrieval_failures,mean_retrieved_count,definition
+adaptive,adaptive,,200,0.871,200,0.871,200,0,0,8.28,mapped gold passage ID overlap; not pool recall or paragraph coverage

@@ -46,7 +46,7 @@ def frozen_record(questions_path: Path, count: int = 3) -> dict:
                       "count": count, "papers": 2},
         "retrieval": {"top_k": 5, "candidate_k": 20, "scoped": True, "reranker": False},
         "agent": {"max_retries": 2, "critic_view": "generator",
-                  "prompt_budget": {"max_passages": 8, "max_chars_per_passage": 1200}},
+                  "prompt_budget": {"max_passages": 8, "max_chars_per_passage": 2500}},
         "arms": ["static", "adaptive", "static-wide"],
     }
 
@@ -185,7 +185,7 @@ def test_gold_items_use_the_mapping_and_the_qa_answerability():
 
 def manifest_for(record: dict) -> dict:
     return {"environment": {"git_commit": COMMIT}, "passages_sha256": "b" * 64,
-            "critic_view": "generator", "prompt_budget": {"max_passages": 8, "max_chars_per_passage": 1200},
+            "critic_view": "generator", "prompt_budget": {"max_passages": 8, "max_chars_per_passage": 2500},
             "args": {"top_k": 5, "candidate_k": 20, "max_retries": 2, "scoped": True, "bge": False,
                      "arms": ["static", "adaptive", "static-wide"]}}
 
