@@ -87,5 +87,16 @@
     "archive_sha256": "f21552a4978e78024a732ffbd818db9797bacc3722b2b7f74fe8cb8f0172b33f",
     "role_label": "development (the frozen held-out script refuses a different prompt budget)",
     "note": "Per-arm answer records stay outside Git (in the archive). RAGAS was not run."
-  }
+  },
+  "freeze_record_versions": {
+    "as_frozen_and_used_for_scoring": {
+      "commit": "29694bf",
+      "sha256": "280957f02b05150d58d60198b31a57320fd3b23ff04825976a329f9b4fac4e73"
+    },
+    "on_main_after_pr_72": {
+      "sha256": "1df6277e0f079b6083d9927659592d10366d2d6c7f4e6be289d7bd715998a98f",
+      "change": "decision entries only (context-budget-2500 and a live-demo note); no recorded setting changed"
+    }
+  },
+  "reproduction_note": "The code default for max_chars_per_passage is now 2,500 (PR 72). The held-out results here are at 1,200: use commit ad02d51, or set MAX_CHARS_PER_PASSAGE=1200."
 }

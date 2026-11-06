@@ -34,6 +34,9 @@ A second folder, `development-ablation/`, holds the 2 x 2 ablation of rewriting 
 
 ## Read before using the tables
 
+- **Reproducing the primary result needs the 1,200-character budget.** The shared code default was later raised to 2,500 characters (PR 72, after these runs), and the final demonstration uses 2,500. The held-out numbers here are at 1,200: use commit `ad02d51`, or run a later commit with `MAX_CHARS_PER_PASSAGE=1200`.
+- **The frozen record gained a decision entry after the run.** `configs/p4_freeze.json` on main now also carries decision entries added by PR 72 (`context-budget-2500` and a note on the live demo); no recorded setting changed (no line was removed). The scoring here used the file as frozen (commit `29694bf`, SHA-256 `280957f0...`); the file on main now has SHA-256 `1df6277e...`. Both are in `INPUTS.json`.
+
 - **The primary result is the 1,200-character run.** The prompt renders at most 8 passages of 1,200 characters, fixed
   before the run. Nothing was changed after the result was known; each arm ran once.
 - **All 200 questions are answerable**, so abstention on unanswerable questions was not measured and
