@@ -1,8 +1,8 @@
 \section{Task and knowledge base (Q1)}
 \subsection{Collection, cleaning and storage (Q1.1)}
-We use the public QASPER dataset \citep{dasigi2021qasper}, obtained through Ai2's dataset distribution \citep{qasperdata}. The downloader reads pinned Hugging Face repository metadata (revision \texttt{fdc9d821}) and verifies the official v0.3 \href{https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-train-dev-v0.3.tgz}{train/development archive} and \href{https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-test-and-evaluator-v0.3.tgz}{test/evaluator archive}, rather than scraping papers from the web. Paper full text is exported separately from questions and answers. Answer annotations and relevance labels are excluded from the search index and inference inputs. Stored text retains case, punctuation, equations and numerical values; cleaning standardizes line endings, removes outer whitespace and drops empty containers. Aggressive normalization would risk changing the evidence.
+This project uses the public QASPER dataset \citep{dasigi2021qasper}, downloaded from its official v0.3 archives using metadata from the Allen Institute for AI (Ai2) Hugging Face repository \citep{qasperdata}. After download verification, paper text from all three official splits (train, validation and test) is combined into a single JSONL knowledge base for retrieval; no neural model is trained on QASPER. Cleaning unifies line endings, removes leading and trailing whitespace, and drops blank paragraphs and unusable sections while preserving the remaining text and its original order. Questions, reference answers and supporting-passage annotations are stored separately for evaluation. Only paper passages are indexed, and the answering model receives no reference answers or standard evidence annotations.
 
-The current chunker creates windows of up to 365 whitespace-delimited words, with 40-word overlap, without crossing section boundaries. Overlap preserves local continuity; section boundaries reduce unrelated context. Abstracts and figure/table text are not indexed, which limits coverage of questions whose answers appear there. JSONL records contain \texttt{passage\_id}, \texttt{paper\_id}, \texttt{title}, \texttt{section}, \texttt{chunk\_number}, \texttt{text}, and previous/next passage IDs. Manifests record counts, chunking settings and hashes. Passage schemas and official-split-to-project-role mappings remain \texttt{v0-proposed} pending team confirmation.
+The current chunker creates windows of up to 365 words with 40-word overlap. Words are counted by splitting text on whitespace, rather than using model tokens. Each chunk retains its start and end character positions in the cleaned section text. Consecutive chunks overlap by 40 words, so each new chunk starts 325 words after the previous one. The final chunk may contain fewer than 365 words. Paragraphs within the same source section may be combined before chunking. Chunks and their previous/next links stay within that section. Separate source sections are processed independently, even if they have the same title. Overlap preserves local continuity; section boundaries reduce unrelated context.
 
 Figure~\ref{fig:offline} shows the offline workflow from verified source archives to the saved dense indexes.
 \input{figures/offline-indexing}
@@ -15,23 +15,19 @@ The interface supports selected-paper and all-papers search. Formal evaluation u
 
 \input{review-checks/q1-2}
 
-\subsection{Corpus size and boundaries (Q1.3)}
+\subsection{Knowledge base size (Q1.3)}
 \begin{table}[htbp]\centering
-\caption{Corpus statistics reported in the current workbook. Source words exclude overlap; passage words include it.}\label{tab:corpus}
-\begin{tabular}{lrr}\toprule
-Measure & Development & All-paper text\\\midrule
-Source papers & 1,169 & 1,585\\
-Papers with passages & 1,168 & 1,584\\
-Passages & 21,360 & 28,617\\
-Source words & 4,262,446 & 5,659,921\\
-Passage words & 4,469,326 & 5,930,961\\
-Lowercased whitespace types & 174,636 & 210,909\\\bottomrule
+\caption{Full knowledge base statistics from the current 365/40 corpus manifest. Source words exclude overlap; passage words include it.}\label{tab:corpus}
+\begin{tabular}{lr}\toprule
+Measure & Knowledge base\\\midrule
+Source papers & 1,585\\
+Papers with passages & 1,584\\
+Passages & 28,617\\
+Source words & 5,659,921\\
+Passage words & 5,930,961\\\bottomrule
 \end{tabular}
 \end{table}
-Both corpus variants exceed the assignment's 10,000-passage and 100,000-word minimums. A word is a non-whitespace sequence; a type is its lowercased form with punctuation retained. These type counts therefore do not represent a linguistically normalized vocabulary. The development corpus contains official train and validation text; the larger corpus adds official test text. Indexing test-paper text supplies inference evidence and does not authorize using its questions or answers for tuning. QASPER's 5,049 questions and 7,993 answer annotations are separate from corpus documents.
-\begin{review}{Corpus provenance}
-Passage counts and corpus hashes are corroborated by the freeze record and retrieval manifest. Source-word and type counts are taken from the workbook; the original statistics output is not present in this checkout. Attach that output to the data archive and verify the counts before submission. Reproduce with the explicit 365/40 flags in \texttt{data/README.md}; builder defaults may still be 200/40.
-\end{review}
+The knowledge base combines paper text from all three official QASPER splits (train, validation and test). Its 28,617 passages and 5,659,921 source words exceed the assignment's 10,000-passage and 100,000-word minimums. One source paper has no usable passages, leaving 1,584 papers represented in the knowledge base.
 
 \input{review-checks/q1-3}
 
@@ -56,7 +52,7 @@ A Streamlit interface communicates with a FastAPI service. Users select a paper 
 \caption{Existing project UI screenshot, included to illustrate the answer workflow. It is a development capture, not evidence that the final GPU configuration has been rehearsed.}\label{fig:ui}
 \end{figure}
 \begin{review}{UI verification}
-Replace or confirm Figure~\ref{fig:ui} after a live rehearsal using the final top-eight, no-reranker GPU configuration. Verify citation expansion. The local five-query script received HTTP 400 for citation text lookup, so that run does not validate the citation lookup endpoint. The workbook also records an unresolved all-papers critic test; confirm its current status separately.
+Replace or confirm Figure~\ref{fig:ui} after a live rehearsal using the final top-eight, no-reranker GPU configuration. Verify citation expansion. The 5 November five-query script received HTTP 400 for citation text lookup, so that run does not validate the citation lookup endpoint; a repeat on 6 November resolved all seven citation identifiers without errors, but it is a laptop test, not a final GPU rehearsal. The workbook also records an unresolved all-papers critic test; confirm its current status separately.
 \end{review}
 
 \input{review-checks/q2-1}
@@ -74,10 +70,16 @@ Paper & Question\\\midrule
 \end{tabularx}
 \end{table}
 \input{tables/five-queries}
-These five calls used an Apple M5 with 24 GB memory, Ollama \texttt{qwen3:14b}, the development corpus and top-eight RRF without reranking. They are not a Qwen3-8B GPU benchmark. Client-observed answer latency includes the agent and generation. Mean latency is 122.7 seconds, median 104.6 seconds, and total measured call time 613.3 seconds, yielding 0.0082 questions per second for serial calls. An earlier 203.9-second warm-up call is excluded. Across seven retrieval calls in the saved agent logs, median latency is 31.6 ms (range 15.2--269.2 ms). LLM work dominates this local demonstration.
+On 5 November these five calls used an Apple M5 with 24 GB memory, Ollama \texttt{qwen3:14b}, the development corpus and top-eight RRF without reranking. They are not a Qwen3-8B GPU benchmark. Client-observed answer latency includes the agent and generation. Mean latency is 122.7 seconds, median 104.6 seconds, and total measured call time 613.3 seconds, yielding 0.0082 questions per second for serial calls. An earlier 203.9-second warm-up call is excluded. Across seven retrieval calls in the saved agent logs, median latency is 31.6 ms (range 15.2--269.2 ms). LLM work dominates this local demonstration.
+
+A repeat of the same five questions on 6 November, through the current interface's test harness against the live service on the same laptop (local \texttt{qwen3:14b}, 8{,}192-token context, 1{,}024-token completion budget, top-eight retrieval without reranking, service already warm), returned answers identical to those of 5 November. Mean answer latency was 73.1 seconds and median 62.4 seconds; the five serial calls took 365.6 seconds in total, a serial-call rate of 0.0137 questions per second (an estimate, not a measured batch throughput). Seven retrieval calls had a median of 53.2 ms (range 13.6--260.3 ms). The two runs are separate measurements: the repeat does not correct the 5 November figures, and no cold-start comparison is available. No citation lookup errors occurred, and all seven citation identifiers resolved to passages of the selected paper that appear in the retrieval log.
+
+A third run of the same five questions on 6 November used a budget of 2{,}500 characters per passage for both the critic and the generator, set by a local override while the shared code default was still 1{,}200 characters; the shared default has since been raised to 2{,}500, which is the budget of the final demonstration. It ran through the same test harness against the live service. All five questions were answered. Query 5 now returns an answer that cites its accuracy and MRR, query 1 returned a new answer with one citation (it had four), which matches the reference and is supported by its cited passage apart from a simplification of the method; the passage does not state the answer outright, which is what the validator's overstated-provenance warning reports; the other three answers are unchanged. All citation identifiers resolved. Mean answer latency was 126.0 seconds and median 113.8 seconds, which should not be compared with the earlier runs: another local service was running and the interface had just started. Five development questions do not establish an accuracy change, and this budget differs from the 1{,}200 characters of every evaluation result in this report; the post-hoc held-out run at 2{,}500 characters (Section~\ref{sec:context}) found no measurable change in recall or answer F1.
+
+Two of the five outcomes show how the agent and the generator can disagree. In query 2 the critic stayed unsatisfied after its retries but the system still answered: the critic's verdict does not force a refusal, which remains with the generator, because the rule that would force it fails the gate set before the held-out run (Section~\ref{sec:agent-heldout}); the critic still reported a missing result at 2{,}500 characters, so clipping does not explain that verdict. In query 5 the generator refused although the critic had quoted passages that name accuracy and MRR. The cause is clipping: the three metric statements in query 5's passages begin at characters 1{,}298, 1{,}414 and 1{,}437, beyond the 1{,}200 characters the generator renders, while in the earlier runs the critic read each passage up to 3{,}000 characters and so could see them. A replay reproduced the same refusal, critic quote and prompt; giving the critic the generator's view alone did not produce an answer, and raising the budget to 2{,}500 characters did. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did, so they avoid the mismatch; clipping itself still affects them (Q4.2). The refusal was a missed answer to an answerable question, not a successful refusal.
 
 \begin{review}{Do not interpret demonstration outputs as accuracy}
-Answers in Table~\ref{tab:five-results} summarize model outputs, not verified paper facts. Check each against its cited passages and QASPER references. Query 2 was answered despite the critic remaining unsatisfied. Query 5 refused even though the critic quoted a passage naming accuracy and MRR; investigate this mismatch before describing the refusal as successful grounding.
+Answers in Table~\ref{tab:five-results} summarize model outputs, not verified paper facts. Check each against its cited passages and QASPER references. The two outcomes that looked inconsistent, queries 2 and 5, are explained in the text above.
 \end{review}
 
 \input{review-checks/q2-2}

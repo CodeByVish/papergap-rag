@@ -2,5 +2,9 @@
 \draftreview{P3}{P1, P5, P4}{P3 checks corpus preprocessing; P1 checks lexical/dense transformations; P5 checks prompt rendering and output parsing; P4 verifies the clipping analysis.}
 \colorbox{yellow!45}{\strut\textbf{DONE FOR DRAFT --- P1}}\par
 Approved by Junlin Yin on 6 November 2026 for lexical and Dense preprocessing. Other owners' reviews remain pending.\par\smallskip
+\colorbox{yellow!45}{\strut\textbf{DONE FOR DRAFT --- P5}}\par
+Approved by Junyu Hu on 6 November 2026 for prompt rendering (eight passages at 1,200 characters) and structured-output parsing. Corpus preprocessing is covered by the P3 box below and the P4 review remains pending; the clipping figures (73.3\%, 33 of 45 development gold passages; 66.9\%, 232 of 347 held-out gold passages) were recomputed by P4 on the final corpus.\par\smallskip
+\colorbox{yellow!45}{\strut\textbf{DONE FOR DRAFT --- P3}}\par
+P3 scope: stored-text normalization and preserved source placeholders checked. Prompt clipping and parsing remain for P4/P5 verification; the clipping statistic was recomputed by P4 (73.3\%, 33 of 45 development gold passages).\par\smallskip
 \aistars{4}\quad\textbf{Provisional AI assessment: 4/5 stars. Target: 5/5 --- strong implementation.} This is an editorial assessment of the current evidence, not a course grade. The report explains light scientific-text cleaning, retriever-specific transformations and prompt clipping. Reviewers should verify the effective character/token limits, document how truncation changes available evidence, and check that equations, numerical values and method names remain intact. Confirm the denominator and source of the reported clipping statistic.
 \end{review}
