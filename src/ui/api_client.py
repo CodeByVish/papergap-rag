@@ -53,12 +53,14 @@ class P5ApiClient:
             response = self.session.request(method, self.config.base_url + path, json=body, headers=headers,
                                             timeout=(5, self.config.answer_timeout if path == '/answer' else 10))
         except (requests.Timeout, requests.ConnectionError):
+            if path != '/answer':  # Nothing was submitted, so there is no outcome to doubt.
+                raise ApiError('failed', 'Cannot reach the answer service. Check that it is running, then refresh.') from None
             raise ApiError('outcome_unknown', 'Connection lost or timed out; the service may still be processing. Retry manually.') from None
         except requests.RequestException:
             raise ApiError('failed', 'HTTP request failed. Check the service configuration.') from None
         if response.status_code != 200:
-            messages = {400: 'Request rejected: check the P5 contract; do not automatically retry.',
-                        401: 'Authentication required. Confirm authentication configuration with P5.',
+            messages = {400: 'The service rejected this request. Check the input before trying again.',
+                        401: 'Authentication required. Check the service credentials.',
                         429: 'Service busy. Retry manually in about 20 seconds.',
                         503: 'This service capability is unavailable.'}
             raise ApiError('rejected', messages.get(response.status_code, 'Service returned an HTTP error.'), response.status_code)
@@ -102,6 +104,9 @@ class P5ApiClient:
         if paper_id is not None:
             body['paper_id'] = paper_id
         return self._request('POST', '/answer', body)
+
+    def progress(self):
+        return self._request('GET', '/progress')
 
     def passages(self, ids):
         data = self._request('POST', '/passages', {'ids': list(dict.fromkeys(ids))})

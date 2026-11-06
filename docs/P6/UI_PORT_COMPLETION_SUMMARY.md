@@ -3,7 +3,7 @@
 ## Current UI update — 2026-11-02
 
 The approved layout is implemented in the working tree, without a new branch,
-commit or push. **NLP Scientific Paper RAG** and **How to use** sit above Connection
+commit or push. **PaperRAG** and **How to use** sit above Connection
 in the drawer. History follows Search scope directly. The main area now shows
 input, Ask question and Browse all examples before one submitted question and Answer;
 warning explanations, Sources, Pipeline details and Debug information follow.

@@ -468,7 +468,7 @@ next time. Export useful UI history before stopping either deployment.
 
 ## 3. Use the UI for the demo
 
-1. The drawer shows **NLP Scientific Paper RAG** and **How to use** above
+1. The drawer shows **PaperRAG** and **How to use** above
    Connection. Keep Search scope **All papers** (local corpus-capable API) or
    optionally choose **One paper** by title/ID. The main heading changes from
    **Ask the paper collection** to **Ask Paper** followed by the quoted paper
