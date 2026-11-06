@@ -1,0 +1,5 @@
+metric,paired_questions,papers,mean_right_minus_left,ci_low,ci_high,resamples,seed,left_only_questions,right_only_questions,left_arm,right_arm,left_k,right_k
+precision_at_k,200,174,-0.03000000000000001,-0.05545244076646472,-0.005100117936621889,1000,42,0,0,Hybrid RRF,Hybrid RRF followed by BGE reranking,5,5
+pool_recall_at_k,199,174,-0.054967296801467655,-0.10367664760348581,-0.009776437980690568,1000,42,0,0,Hybrid RRF,Hybrid RRF followed by BGE reranking,5,5
+mrr_at_k,200,174,-0.08683333333333337,-0.13768747615730376,-0.035004187604690123,1000,42,0,0,Hybrid RRF,Hybrid RRF followed by BGE reranking,5,5
+pool_ndcg_at_k,199,174,-0.06818292912772717,-0.11230231670654309,-0.02561152878243197,1000,42,0,0,Hybrid RRF,Hybrid RRF followed by BGE reranking,5,5
