@@ -153,3 +153,7 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 8. Have all members confirm the AI-use disclosure, additional tools/purposes, actual human verification and any required course declaration format.
 9. Restore the required data/results ZIP and code/libraries ZIP links in an appropriate final location. Removing the former submission-materials section did not remove the handout requirement. Check link access and archive completeness.
 10. Resolve highlighted items, remove temporary reviewer assignments and AI editorial ratings, retain substantive disclosures, rebuild and visually inspect the final PDF. Submit **`24.pdf`** through Blackboard by **7 November 2026, 11:59 pm SGT**.
+
+## P2 draft contribution — 6 November 2026
+
+P2 added the three paired fusion/reranking comparisons (12 metric rows) and a traceable NCEL reranking failure example in Q3. All differences and intervals were reproduced from saved per-question scores. See `review-checks/p2-evidence.md`. This does not mark the full report or human owner review complete. The cover now includes Maheshwari Vishakha Praveen / G2609099E, as supplied by the member.
