@@ -1,0 +1,44 @@
+[
+  {
+    "arm": "static",
+    "mode": "static",
+    "k": 5,
+    "questions": 200,
+    "mapped_recall": 0.7233333333333333,
+    "mapped_recall_n": 200,
+    "successful_only_mapped_recall": 0.7233333333333333,
+    "successful_only_n": 200,
+    "mapping_exclusions": 0,
+    "retrieval_failures": 0,
+    "mean_retrieved_count": 5.0,
+    "definition": "mapped gold passage ID overlap; not pool recall or paragraph coverage"
+  },
+  {
+    "arm": "static",
+    "mode": "static",
+    "k": 8,
+    "questions": 200,
+    "mapped_recall": 0.8576666666666667,
+    "mapped_recall_n": 200,
+    "successful_only_mapped_recall": 0.8576666666666667,
+    "successful_only_n": 200,
+    "mapping_exclusions": 0,
+    "retrieval_failures": 0,
+    "mean_retrieved_count": 7.965,
+    "definition": "mapped gold passage ID overlap; not pool recall or paragraph coverage"
+  },
+  {
+    "arm": "static",
+    "mode": "static",
+    "k": 10,
+    "questions": 200,
+    "mapped_recall": 0.8971666666666667,
+    "mapped_recall_n": 200,
+    "successful_only_mapped_recall": 0.8971666666666667,
+    "successful_only_n": 200,
+    "mapping_exclusions": 0,
+    "retrieval_failures": 0,
+    "mean_retrieved_count": 9.87,
+    "definition": "mapped gold passage ID overlap; not pool recall or paragraph coverage"
+  }
+]

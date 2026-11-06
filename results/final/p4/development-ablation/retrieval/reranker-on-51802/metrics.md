@@ -1,0 +1,45 @@
+Scored: 40 development questions (bge) (40 questions, development)
+
+| metric | static | adaptive |
+| --- | ---: | ---: |
+| questions | 40 | 40 |
+| errors | 0 | 0 |
+| answer_errors | 0 | 0 |
+| mean_rounds | 1.000 | 1.825 |
+| mean_passages | 7.850 | 8.625 |
+| questions_with_gold | 32 | 32 |
+| recall_before_retries | 0.854 | 0.854 |
+| recall_after_retries | 0.854 | 0.917 |
+| full_recall_recovery_rate | 0.000 | 0.286 |
+| gap_detected | 6 | 17 |
+| critic_gap_recovery_rate | 0.000 | 0.118 |
+| retries | 0 | 33 |
+| unnecessary_retry_rate | n/a | 0.588 |
+| ineffective_retry_rate | n/a | 0.882 |
+| redundant_retry_rate | n/a | 0.515 |
+| refusal_rate | 0.000 | 0.000 |
+| correct_refusal_rate | 0.000 | 0.000 |
+| false_refusal_rate | 0.000 | 0.000 |
+| unsatisfied_rate_unanswerable | 0.250 | 1.000 |
+| unsatisfied_rate_answerable | 0.125 | 0.219 |
+| critic_reused_rate | 0.000 | 0.260 |
+| critic_llm_rate | 0.000 | 0.963 |
+| critic_fallback_rate | 0.000 | 0.037 |
+| critic_thinking_drift_rate | 0.000 | 0.000 |
+| mean_elapsed_s | 4.157 | 11.267 |
+Refuse if the critic is still unsatisfied after the last round (not enabled): refuses 1.000 of unanswerable and 0.219 of answerable questions; meets the proposed gate (>= 0.5, <= 0.05): False.
+
+Critic audit (adaptive arm):
+
+| critic verdict / situation | count | reading |
+| --- | ---: | --- |
+| insufficient/gold complete | 10 | over-strict: all gold was in view |
+| insufficient/gold missing | 8 | correct: gold not retrieved yet |
+| sufficient/gold complete | 21 | correct |
+| sufficient/gold hidden | 1 | accepted although gold was outside its view |
+| sufficient/gold missing | 3 | false accept: gold not retrieved |
+| insufficient/unanswerable | 11 | correct |
+
+verdicts asked of the model, with gold or unanswerable: 54
+verdict sources: fallback 2, llm 52, reused 19
+sufficient verdicts by what they cite: a gold passage 15, no gold passage 8

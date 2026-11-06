@@ -1,0 +1,102 @@
+{
+  "run": {
+    "slurm_job": 51585,
+    "node": "TC2N01 (one NVIDIA A40)",
+    "date": "2026-11-06",
+    "code_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "git_dirty": false,
+    "delivery_archive": "p4-heldout-51585-20261106.tar.gz",
+    "delivery_archive_sha256": "96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f",
+    "sbatch_copy_with_wide_k_15_sha256": "937d2f015d0d582ca0f8c300037db765a71ec100fb16a0beab1af79da3c2c48a",
+    "settings": "ARMS=static adaptive static-wide; CRITIC=generator; SCOPED=1; OFFLINE=1; BGE=0; ANSWERS=p5; TOP_K=8; wide_k=15; max_retries=2; prompt p5-grounded-qa-v7, 8 x 1200 characters"
+  },
+  "record_files_outside_git": {
+    "runs/p4/held-out-200/adaptive.jsonl": "d9b10906e3220db915d337fead1d01ba489c4dd540f0d3677bafda7f4e0a3405",
+    "runs/p4/held-out-200/metrics.json": "d7237a3a907be103c0812fba5192d869686cc18ca887de915505801d901c5cb6",
+    "runs/p4/held-out-200/metrics.md": "1571a94014bcddbd4ccca1f95f52464285972a1cebc0b87c7b627bc54c15d950",
+    "runs/p4/held-out-200/run_manifest.json": "466e4a00d9cc9c671760cbc7e1b4e9bd9e467520d421d9cef84e15a351e34021",
+    "runs/p4/held-out-200/static.jsonl": "7b7e29428d8f410bfa5ad27a4b3830876a99e7ad408dd742a242bf5989121620",
+    "runs/p4/held-out-200/static-wide.jsonl": "dedad13b0eec25bd0aa738a752231c942806f5749304a904bf7d026107ba7848",
+    "logs/p4-agent-51585.out": "5a37ff8aa15ab532e42428333db647a05d4faf7d9b8778f2a717bd65bc38b613",
+    "p4_held_out_items.jsonl": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48"
+  },
+  "inputs": {
+    "held_out_items.jsonl": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48",
+    "questions_p3_frozen_list": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+    "all_paper_text_corpus_passages.jsonl": "8eeef0119e322fc9253255e2c6db6cb38ec276d7ebf3669dd28a856a636aa93e",
+    "dense_index_metadata.json": "a14070a74a041accb93064f893a560a5dacc94eb85391896d2f8d548222ba7ef",
+    "gold_evidence_mapping_all_splits.jsonl": "6bfd323ac4ed86d1e33afbffefb681d3d07821070af479fdfba3001ebfb9eaf4",
+    "qa.jsonl": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e",
+    "configs/p4_freeze.json": "280957f02b05150d58d60198b31a57320fd3b23ff04825976a329f9b4fac4e73",
+    "configs/p4_annotated_held_out_ids.jsonl": "690b6beb7ccbafba81673cef670ef80f358cbaaf410cb5eeb0b28c45c08f2a98"
+  },
+  "pinned_sources": {
+    "p3_commit": "1a1dc15b824590a39c80ea11a568fbe5814a926e (questions, gold mapping, corpus, qa.jsonl)",
+    "retrieval_scores_commit": "1bfae0439e59acf1934009e47b3f0351c7a4add2 (score-all-200, score-160)",
+    "p6_pipeline_commit": "ccff457659964256d357490d1eccfbc1b59e4c9b (evidence, qa, compare, performance)"
+  },
+  "note": "Per-arm answer records, the Slurm log, corpus, index and model are not duplicated; hashes identify them. Manifests keep producer paths.",
+  "ragas": {
+    "delivery_archive": "p4-ragas-live-51585-20261106.tar.gz",
+    "delivery_archive_sha256": "5dc5708a2b367267b48b8e499caed80de426da195f6c9f7a3d226c3ddba4ced7",
+    "judge_model": "qwen-plus-2025-12-01",
+    "embedding_model": "Qwen3.7 Text Embedding (qwen3.7-text-embedding)",
+    "endpoint": "DashScope OpenAI-compatible",
+    "code_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "role_label": "development",
+    "judge_trace_sha256_not_included": {
+      "static": "2f4ad461b4f344c32fd1dc6d0adf83acbbd78937d6ab92f9f858d5edaab0c73c",
+      "adaptive": "babca45621befefcb1c754dee34d86ebf42423f8b5d8f250ae7f8c416a47e617"
+    },
+    "note": "The run did not store rendered prompts: the contexts were produced afterwards (confirmed to be the exact rendered text). Contexts files are not in the archive; their SHA-256 are in the run manifests. Cost and time as reported by P5: about 0.63 SGD and 2.5 hours for both arms."
+  },
+  "development_ablation": {
+    "items": "p4_dev_items_40.jsonl (40 items, SHA-256 prefix ff69f9a0), development corpus ecb1c601...",
+    "reranker_off": {
+      "job": 51690,
+      "commit": "fb303bc (explicit 1,200-character override; same rendered prompt and generation path as ad02d51 per P5)",
+      "hardware": "TC2N04, 1 x NVIDIA L40S",
+      "elapsed": "0:15:21",
+      "archive": "p4-bge0-51690-20261106.tar.gz",
+      "archive_sha256": "4a2aefa56564a1945af0bd6db3d58136134a3ec246e9260862d7bf76ac121485"
+    },
+    "reranker_on": {
+      "job": 51802,
+      "commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+      "hardware": "TC2N02, 1 x NVIDIA A40, reranker on CPU",
+      "elapsed": "0:31:12",
+      "archive": "p4-q5-bge-51802-20261106.tar.gz",
+      "archive_sha256": "a4a2ff8e89e124966976b34e1cce12818ee8ce9c70b6e27e14de9f852c8da33c"
+    },
+    "note": "One run per cell on the development slice; record files stay outside Git (in the archives)."
+  },
+  "sensitivity_2500": {
+    "job": 51705,
+    "commit": "012ae82 (budget override and a job-script option; P5 states the rendered prompt and generation path are as in the primary run)",
+    "hardware": "TC2N04, 1 x NVIDIA L40S",
+    "elapsed": "1:49:19",
+    "prompt_budget": "8 x 2,500 characters",
+    "arms": [
+      "static",
+      "adaptive",
+      "static-wide"
+    ],
+    "items_sha256": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48",
+    "passages_sha256_prefix": "8eeef011",
+    "archive": "p4-heldout-wide2500-51705-20261106.tar.gz",
+    "archive_sha256": "f21552a4978e78024a732ffbd818db9797bacc3722b2b7f74fe8cb8f0172b33f",
+    "role_label": "development (the frozen held-out script refuses a different prompt budget)",
+    "note": "Per-arm answer records stay outside Git (in the archive). RAGAS was not run."
+  },
+  "freeze_record_versions": {
+    "as_frozen_and_used_for_scoring": {
+      "commit": "29694bf",
+      "sha256": "280957f02b05150d58d60198b31a57320fd3b23ff04825976a329f9b4fac4e73"
+    },
+    "on_main_after_pr_72": {
+      "sha256": "1df6277e0f079b6083d9927659592d10366d2d6c7f4e6be289d7bd715998a98f",
+      "change": "decision entries only (context-budget-2500 and a live-demo note); no recorded setting changed"
+    }
+  },
+  "reproduction_note": "The code default for max_chars_per_passage is now 2,500 (PR 72). The held-out results here are at 1,200: use commit ad02d51, or set MAX_CHARS_PER_PASSAGE=1200."
+}

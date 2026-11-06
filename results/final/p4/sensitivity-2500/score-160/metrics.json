@@ -1,0 +1,142 @@
+{
+  "metrics": {
+    "static": {
+      "questions": 160,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.0,
+      "mean_passages": 7.975,
+      "questions_with_gold": 160,
+      "recall_before_retries": 0.8813541666666668,
+      "recall_after_retries": 0.8813541666666668,
+      "full_recall_recovery_rate": 0.0,
+      "gap_detected": 15,
+      "critic_gap_recovery_rate": 0.0,
+      "retries": 0,
+      "unnecessary_retry_rate": null,
+      "ineffective_retry_rate": null,
+      "redundant_retry_rate": null,
+      "refusal_rate": 0.0,
+      "correct_refusal_rate": null,
+      "false_refusal_rate": 0.0,
+      "unsatisfied_rate_unanswerable": null,
+      "unsatisfied_rate_answerable": 0.09375,
+      "critic_reused_rate": 0.0,
+      "critic_llm_rate": 0.0,
+      "critic_fallback_rate": 0.0,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 0.03012165037653176
+    },
+    "adaptive": {
+      "questions": 160,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.3375,
+      "mean_passages": 8.25625,
+      "questions_with_gold": 160,
+      "recall_before_retries": 0.8813541666666668,
+      "recall_after_retries": 0.8876041666666667,
+      "full_recall_recovery_rate": 0.030303030303030304,
+      "gap_detected": 28,
+      "critic_gap_recovery_rate": 0.10714285714285714,
+      "retries": 54,
+      "unnecessary_retry_rate": 0.6666666666666666,
+      "ineffective_retry_rate": 0.9814814814814815,
+      "redundant_retry_rate": 0.37037037037037035,
+      "refusal_rate": 0.00625,
+      "correct_refusal_rate": null,
+      "false_refusal_rate": 0.00625,
+      "unsatisfied_rate_unanswerable": null,
+      "unsatisfied_rate_answerable": 0.15625,
+      "critic_reused_rate": 0.1308411214953271,
+      "critic_llm_rate": 0.946236559139785,
+      "critic_fallback_rate": 0.053763440860215055,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 4.075173944324343
+    },
+    "static-wide": {
+      "questions": 160,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.0,
+      "mean_passages": 13.96875,
+      "questions_with_gold": 160,
+      "recall_before_retries": 0.9588541666666666,
+      "recall_after_retries": 0.9588541666666666,
+      "full_recall_recovery_rate": 0.0,
+      "gap_detected": 14,
+      "critic_gap_recovery_rate": 0.0,
+      "retries": 0,
+      "unnecessary_retry_rate": null,
+      "ineffective_retry_rate": null,
+      "redundant_retry_rate": null,
+      "refusal_rate": 0.0,
+      "correct_refusal_rate": null,
+      "false_refusal_rate": 0.0,
+      "unsatisfied_rate_unanswerable": null,
+      "unsatisfied_rate_answerable": 0.0875,
+      "critic_reused_rate": 0.0,
+      "critic_llm_rate": 0.0,
+      "critic_fallback_rate": 0.0,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 0.024922766687814145
+    }
+  },
+  "paired_recall_gain": {
+    "n": 160,
+    "mean_gain": 0.00625,
+    "ci95": [
+      0.0,
+      0.01875
+    ]
+  },
+  "matched_recall_gain": {
+    "n": 160,
+    "mean_gain": -0.0020833333333333333,
+    "ci95": [
+      -0.00625,
+      0.0
+    ],
+    "mean_budget": 8.25625
+  },
+  "static_depth_recall": {
+    "questions_with_gold": 160,
+    "recall_at_k": {
+      "3": 0.5847916666666666,
+      "5": 0.7485416666666667,
+      "8": 0.8813541666666668,
+      "10": 0.906875,
+      "15": 0.9588541666666666
+    },
+    "full_recall_at_k": {
+      "3": 69,
+      "5": 98,
+      "8": 127,
+      "10": 134,
+      "15": 148
+    }
+  },
+  "refuse_if_unsatisfied": {
+    "correct_refusal_rate": null,
+    "false_refusal_rate": 0.15625,
+    "meets_proposed_gate": false
+  },
+  "critic_audit": {
+    "verdicts": {
+      "sufficient/gold complete": 111,
+      "insufficient/gold complete": 35,
+      "sufficient/gold missing": 24,
+      "insufficient/gold missing": 16
+    },
+    "model_verdicts": 186,
+    "sources": {
+      "llm": 176,
+      "reused": 28,
+      "fallback": 10
+    },
+    "sufficient_cites": {
+      "a gold passage": 116,
+      "no gold passage": 12
+    }
+  }
+}

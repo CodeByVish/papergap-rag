@@ -1,0 +1,2 @@
+questions,mode,faithfulness,faithfulness_n,answer_relevance,answer_relevance_n,context_precision,context_precision_n,usage_note,arm
+200,live,0.8917607592865325,194,0.8542006636663476,193,0.5781484208434751,194,Raw judge usage is in judge_trace.json where provider supplies it; embedding usage may be unavailable. No cost inferred.,static

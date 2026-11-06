@@ -1,0 +1,4 @@
+arm,mode,k,questions,mapped_recall,mapped_recall_n,successful_only_mapped_recall,successful_only_n,mapping_exclusions,retrieval_failures,mean_retrieved_count,definition
+static,static,5,200,0.7233333333333333,200,0.7233333333333333,200,0,0,5.0,mapped gold passage ID overlap; not pool recall or paragraph coverage
+static,static,8,200,0.8576666666666667,200,0.8576666666666667,200,0,0,7.965,mapped gold passage ID overlap; not pool recall or paragraph coverage
+static,static,10,200,0.8971666666666667,200,0.8971666666666667,200,0,0,9.87,mapped gold passage ID overlap; not pool recall or paragraph coverage
