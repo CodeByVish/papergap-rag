@@ -91,6 +91,17 @@ decision `depth-8-dev-check`) came first; development tuning was at depth 5 (dis
 `depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation is not
 attached to the record (`open_at_freezing`).
 
+## After the freeze: context-budget sensitivity (6 November)
+
+The frozen configuration renders 8 passages of at most 1,200 characters, and the primary held-out run
+(job 51585) used exactly that. After the primary run had finished, P5 ran the same configuration with 2,500
+characters per passage: on the 40 development items (job 51691) and on the same 200 held-out questions
+(job 51705). Neither run was in the record. They are **post-hoc sensitivity analyses**, were decided with the
+primary result already known, and carry no gold at generation time (P6's scripts score them afterwards).
+They do not replace or re-score job 51585; the report states 1,200 as the pre-declared primary result and shows
+2,500 next to it, with this timing. No recorded setting in `configs/p4_freeze.json` was changed for them. After the run, PR 72 (P5) added decision entries to the record (`context-budget-2500` and a note on the live demo) and raised the shared code default to 2,500 characters; nothing recorded was removed or changed, but the file's SHA-256 changed from `280957f0...` (as frozen, commit `29694bf`, used for scoring) to `1df6277e...`. The primary result is at 1,200 characters: reproduce it at commit `ad02d51`, or with `MAX_CHARS_PER_PASSAGE=1200` on a later commit.
+Results: `docs/P4_REPORT_CONTRIBUTION.md`, Section 3.9.
+
 ## Held-out run (6 November)
 
 P5 ran the frozen configuration once, as Slurm job 51585 (completed, exit 0, 2 h 23 min, one A40, 10:26 to
