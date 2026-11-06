@@ -473,6 +473,10 @@ so P4 scored it against the same gold and with the same scorers under the `devel
 - **Reading:** a larger budget gives better-cited answers and a cheaper, less over-strict critic (retries -18%, unsatisfied 22.0% to
   16.5%) but does not change what the held-out result says about the loop; it was not adopted. The two jobs ran on different GPUs
   (A40 and L40S, 2:23:09 and 1:49:19 whole-job), so their wall times are not comparable.
+- **Default and demo (6 November):** PR 72 (P5) raised the shared code default to 2,500 characters and the final live demo uses
+  2,500; every evaluation result in this chapter is at 1,200 (reproduce with commit `ad02d51` or `MAX_CHARS_PER_PASSAGE=1200`). Query 5 of the
+  five demo questions was refused at 1,200 (the metric statements start beyond the cut) and is answered at 2,500, so the demo's budget differs
+  from the evaluated one, which the report states.
 
 #### 3.10 Reranker ablation (development slice, 2 x 2)
 

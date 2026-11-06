@@ -735,3 +735,13 @@ token F1 0.368 static and 0.366 adaptive (paired difference -0.0025, 95% CI -0.0
 arm. RAGAS (P5, live judge qwen-plus-2025-12-01): faithfulness 0.892 static, 0.907 adaptive; response
 relevance 0.854 and 0.854; context precision 0.578 and 0.577; no paired interval excludes zero.
 Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md` Section 3.8; run record: `docs/P4_FREEZE_RECORD.md`.
+
+## P4 final delivery — 6 November 2026
+
+Pull requests: [#63](https://github.com/CodeByVish/papergap-rag/pull/63) docs (freeze record, held-out
+results, context-budget and reranker ablations, RAGAS, limitations); [#66](https://github.com/CodeByVish/papergap-rag/pull/66)
+P4 report sections (agent chapter, held-out and ablation tables, performance, figures, matriculation number);
+[#67](https://github.com/CodeByVish/papergap-rag/pull/67) reviewed final outputs in `results/final/p4/` (held-out
+scores, evidence recall, QA, RAGAS, performance, development reranker ablation, post-hoc 2,500-character run, inputs
+and checksums). The primary held-out result is at 8 x 1,200 characters (commit `ad02d51`); the shared code default is
+now 2,500 (PR 72) and the final demo uses 2,500. Reproduce the primary result with `MAX_CHARS_PER_PASSAGE=1200`.
