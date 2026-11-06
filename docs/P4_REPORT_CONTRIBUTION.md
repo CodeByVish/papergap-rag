@@ -378,10 +378,9 @@ response-relevance scores were invalid. Paired differences, adaptive minus stati
 questions); response relevance -0.003 [-0.008, 0.001] (188); context precision -0.003 [-0.015, 0.010] (191); on the 160
 not annotated by P4: +0.011 [-0.003, 0.032], -0.004 [-0.009, 0.001], -0.002 [-0.014, 0.009]. No interval excludes zero:
 the loop gives no measurable gain on these judge scores either. Faithfulness is scored only on answered questions, and
-the adaptive arm answers three fewer. Caveats: the judge is a hosted LLM from the same model family as the generator,
-its scores are model judgments and not human verification, the run did not store the rendered prompts, so the contexts were produced
-afterwards (P5 to confirm the method; P6's `contexts` step rebuilds them from the records and the prompt configuration; the
-contexts files are not in the delivery archive and their hashes are in the run manifests), DashScope's
+the adaptive arm answers three fewer. Caveats: the judge is a hosted LLM, so its scores are model judgments and not human verification, the run did not store the rendered prompts, so the contexts (confirmed to be
+the exact rendered text) were produced afterwards (the contexts files are not in the delivery archive; their hashes are in
+the run manifests), DashScope's
 embeddings endpoint needed a wrapper that sets `check_embedding_ctx_length=False` (the evaluator itself is unmodified),
 and the run is labelled `development` like the other P6-pipeline outputs. Cost and time as reported by P5: about 2.5
 hours and 0.63 SGD for the two arms. The fifteen-passage arm was not judged.
