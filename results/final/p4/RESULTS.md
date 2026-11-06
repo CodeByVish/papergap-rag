@@ -95,7 +95,28 @@ arm's totals are lower bounds. Retrieval takes about 0.04 s per question; the ag
 empty: the model is local, no price was supplied. Static-wide's prompt is the same size as static's, which fits the
 generator rendering at most 8 passages.
 
-## 6. Readings and limits
+## 6. Reranker ablation on the development slice (`development-ablation/`)
+
+The held-out run has no reranker arm and the freeze record forbids adding arms afterwards, so rewriting x reranking was run on the 40
+development items (32 answerable with gold, 8 unanswerable), one run per cell, primary 1,200-character budget. Reranker off:
+job 51690 (commit `fb303bc` with an explicit 1,200-character override, one L40S). Reranker on: job 51802 (`ad02d51`, one A40).
+Same items (`ff69f9a0...`), corpus and index. Rescored by P4; the retrieval figures reproduce P5's and job 51521's.
+
+| Cell | Recall | Token F1 | Answered / refused | Agent time (s) |
+| --- | ---: | ---: | ---: | ---: |
+| Neither (static) | 0.885 | 0.2703 | 36 / 4 | 0.02 |
+| Rewriting only (adaptive) | 0.927 | 0.2771 | 36 / 4 | 4.9 |
+| Reranking only (static + BGE) | 0.854 | 0.2430 | 35 / 5 | 4.2 |
+| Both (adaptive + BGE) | 0.917 | 0.2569 | 35 / 5 | 11.3 |
+
+Paired, over the 32 answerable questions: reranker on minus off, static: recall -0.031 [-0.156, 0.094], F1 -0.027 [-0.084, 0.024];
+adaptive: recall -0.010 [-0.094, 0.083], F1 -0.020 [-0.075, 0.024]. Loop on minus off: F1 +0.007 [-0.002, 0.018] (reranker
+off), +0.014 [0.0005, 0.032] (on); both versus neither -0.014 [-0.068, 0.039]. No difference involving the reranker can be told from
+zero; the reranker costs about 4 s of agent time per question (CPU cross-encoder). The one interval that just excludes zero is one of
+five comparisons and the held-out run found no F1 gain from the loop. Whole-job wall times (15:21 and 31:12) are not comparable: the jobs
+ran on different GPUs and the static arm's generation time alone differs (9.3 s against 19.5 s). Faithfulness was not judged here.
+
+## 7. Readings and limits
 
 - The held-out run does not support the claim that evidence-gap-driven retrieval improves recall or answers: the gain over
   static top 8 is small, there is none over reading the same number of passages, and F1 is unchanged. Retrieval depth is

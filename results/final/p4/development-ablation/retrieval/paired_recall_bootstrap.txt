@@ -1,0 +1,10 @@
+questions with gold: 32
+('adaptive', 0) mean recall 0.9271 full recall 28
+('adaptive', 1) mean recall 0.9167 full recall 27
+('static', 0) mean recall 0.8854 full recall 26
+('static', 1) mean recall 0.8542 full recall 25
+static: BGE on minus off: mean -0.0312 CI (-0.15625, 0.09375) | better 2 worse 3 same 27
+adaptive: BGE on minus off: mean -0.0104 CI (-0.09375, 0.08333333333333333) | better 1 worse 2 same 29
+loop gain with BGE on (adaptive - static): mean +0.0625 CI (0.0, 0.15625) | better 2 worse 0 same 30
+loop gain with BGE off (adaptive - static): mean +0.0417 CI (0.0, 0.11458333333333334) | better 2 worse 0 same 30
+both on vs neither (adaptive+BGE - static): mean +0.0312 CI (-0.0625, 0.125) | better 2 worse 1 same 29

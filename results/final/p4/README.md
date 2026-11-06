@@ -19,6 +19,8 @@ before the run are in `docs/P4_FREEZE_RECORD.md` and `configs/p4_freeze.json`.
 | `ragas/{static,adaptive}/`, `ragas/compare/` | Live RAGAS scores (faithfulness, response relevance, context precision) with per-question scores, run manifests, the judge configuration (no key) and the paired differences; `ragas/kit/` has the run script and the wrapper patch |
 | `PIPELINE_NOTES.md` | How the P6-pipeline outputs were produced |
 
+A second folder, `development-ablation/`, holds the 2 x 2 ablation of rewriting and reranking on the 40 development questions (jobs 51690 and 51802): `jobs/` (P5's manifests, metrics and job notes), `retrieval/` (recall scores and the paired bootstrap), `qa/` (token F1 per cell), `compare/` (paired differences). It is a development-slice result, one run per cell, and the two jobs differ in commit and GPU (see `RESULTS.md`, section 6).
+
 ## What is not here
 
 - **The per-arm answer records** (`static.jsonl`, `adaptive.jsonl`, `static-wide.jsonl`, about 19 MB with the log)

@@ -49,5 +49,25 @@
       "adaptive": "babca45621befefcb1c754dee34d86ebf42423f8b5d8f250ae7f8c416a47e617"
     },
     "note": "The run did not store rendered prompts: the contexts were produced afterwards (confirmed to be the exact rendered text). Contexts files are not in the archive; their SHA-256 are in the run manifests. Cost and time as reported by P5: about 0.63 SGD and 2.5 hours for both arms."
+  },
+  "development_ablation": {
+    "items": "p4_dev_items_40.jsonl (40 items, SHA-256 prefix ff69f9a0), development corpus ecb1c601...",
+    "reranker_off": {
+      "job": 51690,
+      "commit": "fb303bc (explicit 1,200-character override; same rendered prompt and generation path as ad02d51 per P5)",
+      "hardware": "TC2N04, 1 x NVIDIA L40S",
+      "elapsed": "0:15:21",
+      "archive": "p4-bge0-51690-20261106.tar.gz",
+      "archive_sha256": "4a2aefa56564a1945af0bd6db3d58136134a3ec246e9260862d7bf76ac121485"
+    },
+    "reranker_on": {
+      "job": 51802,
+      "commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+      "hardware": "TC2N02, 1 x NVIDIA A40, reranker on CPU",
+      "elapsed": "0:31:12",
+      "archive": "p4-q5-bge-51802-20261106.tar.gz",
+      "archive_sha256": "a4a2ff8e89e124966976b34e1cce12818ee8ce9c70b6e27e14de9f852c8da33c"
+    },
+    "note": "One run per cell on the development slice; record files stay outside Git (in the archives)."
   }
 }
