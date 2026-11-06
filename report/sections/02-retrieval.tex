@@ -82,6 +82,11 @@ Held-out, all 200 & 0.569 (84) & 0.723 (117) & 0.858 (154) & 0.897 (166) & 0.953
 Held-out, 160 not annotated by P4 & 0.585 (69) & 0.749 (98) & 0.881 (127) & 0.907 (134) & 0.959 (148)\\\bottomrule
 \end{tabular}
 \end{table}
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.92\linewidth]{images/recall-by-depth.png}
+\caption{Mean mapped-evidence recall of plain retrieval by depth (the values of Table~\ref{tab:depth}). The development slice reaches 0.974 at ten passages, the held-out curve is flatter (0.897 at ten), and the adaptive loop on the held-out questions (star) lies on the plain curve at the same number of passages. The generator renders at most eight passages.}\label{fig:depth}
+\end{figure}
+\paragraph{A passage recovered by the deeper setting.} On the development slice, for ``Where did they get the data for this project?'' (paper \texttt{1805.11535}; reference answer: Twitter), plain retrieval at depth five returns passages from the sections ``Reciprocal and Dating Recommendation'', ``Experimental Setup'', ``Why Twitter?'', ``Our Proposed Approach'' and ``Learning Tweet Representations''. The one passage labelled as evidence, in the section ``The Love Birds Dataset'' (``Our dataset is constructed via distant supervision from Twitter''), is ranked seventh: missed at depth five, retrieved at depth eight. It is 599 characters long, so the prompt renders it whole. The answer at depth eight, ``The data for this project was obtained from Twitter'', matches the reference but cites a different passage, so the example shows the mechanism and not an answer improvement; the aggregate gain of Table~\ref{tab:depth} does not mean that every answer improves. (The ranking is from the 15-passage run of the development slice, job 50977; the answer is from job 51690.)
 \begin{review}{Examples and chunking evidence}
 The chunk-size counts above match the saved Round 4 report. The BM25--Dense examples above were approved by Junlin Yin on 6 November 2026 within the P1 scope. A separate before/after query showing the exact relevant passage recovered by fusion or deeper retrieval remains to be reviewed by the relevant owners. Aggregate depth gains do not establish an individual improvement example. Do not infer that a recovered full chunk was visible after prompt truncation.
 \end{review}
