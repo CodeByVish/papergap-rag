@@ -40,22 +40,15 @@ and only the five matching QASPER reference records at P3 `1a1dc15b`.
   accuracy, accuracy/MRR and pipeline accuracy. Refusal is a missed answer,
   not a successful unanswerable example.
 
-The historical renderer analysis used a 1,200-character passage budget. The
-three query-5 metric statements begin at offsets 1,298, 1,414 and 1,437, so that
-offline reproduction clips all three. The user reports the newer budget is
-2,500 characters; these three passages are each shorter than 2,500 characters,
-so this particular clipping explanation does not apply at the newer budget.
-The exact original wire prompt was not captured; the historical analysis is
-not a proven cause of the original refusal. A fresh query-5 run with the
-2,500-character setting is needed to assess the updated behavior.
-
-Checkout discrepancy at this documentation update: both
-`src/generation/prompts/grounded_qa.py` and `configs/p4_freeze.json` still specify
-1,200 in this local checkout. The reported 2,500-character update has not been
-verified here. Synchronize the owner-approved change and confirm the effective
-server configuration before rerunning. Source and freeze settings were not
-changed by this documentation correction. The saved evidence ZIP remains a
-historical snapshot of the earlier verification.
+In the earlier 6 November run, prompt rendering omitted the metric statements
+from three retrieved passages, including the sentence quoted by the critic.
+The critic could: `scripts/p6_local.py` then left it on the 3,000-character pool
+view. A later local replay reproduced the same refusal, critic quote and 4,461
+prompt tokens as `run-5.json`, which confirms clipping as the cause in this local
+setup. Passing the generator's view to the critic alone did not produce an answer;
+raising the budget to 2,500 did. See
+[Fresh 2,500-character run](#fresh-2500-character-run). The cluster demo and frozen
+evaluation runs already give the critic the generator's view.
 
 ## Fresh live UI results
 
@@ -106,6 +99,43 @@ The Save screenshot button returned from Saving to its idle label, but the
 automation did not receive a downloadable PNG (a bounded download wait timed
 out). A browser screenshot was visually inspected, but no PNG is included in the
 handoff bundle. Screenshot download is therefore not accepted as passed.
+
+## Fresh 2,500-character run
+
+Run on 6 November 2026, saved separately in ignored
+`results/p6-ui-verification-20261106-2500-premerge/`. **Label: pre-merge, local
+override, 2,500 characters.** It covers the same five questions and order.
+
+The critic and generator both read 8 passages of at most 2,500 characters, set by
+`P6_MAX_CHARS_PER_PASSAGE=2500`; `runtime.json` records the effective budget. The
+shared default had not yet adopted that override and P5's `p5/context-2500` branch was not merged.
+The source was `e2fe038` with the `scripts/p6_local.py` change later committed as
+`904e7f4`, so `source.json` shows one modified file.
+
+| # | Outcome | Citations | Change from the 6 November run | Validator warnings |
+| --- | --- | ---: | --- | --- |
+| 1 | Answered | 1 | New answer; was 4 citations | `UNCOVERED_REQUIRED_COMPONENT`, `PROVENANCE_OVERSTATED` |
+| 2 | Answered | 1 | Same answer | `GENERATED_WITH_INSUFFICIENT_EVIDENCE`, `PROVENANCE_OVERSTATED` |
+| 3 | Answered | 1 | Same answer | None |
+| 4 | Answered | 1 | Same answer | `UNCOVERED_REQUIRED_COMPONENT` |
+| 5 | Answered: accuracy and MRR | 1 | Was refused | `UNCOVERED_REQUIRED_COMPONENT` |
+
+Query 2's critic still reported `MISSING_RESULT` in all three rounds, so clipping
+does not explain that verdict. The new query-1 answer has not yet been checked
+against its passages and reference.
+
+All citation IDs resolved, matched the selected paper and appeared in the retrieval
+log. No UI evidence errors occurred.
+
+Largest prompt: 5,549 tokens, within the 8,192-token context. Answer HTTP mean was
+126.0 s and median 113.8 s. Do not compare these timings with the runs above or
+attribute the difference to the budget: another local service was running and this
+API had just started.
+
+This run used AppTest, not a browser, and five development questions do not
+establish an accuracy change. Its rendering configuration differs from the earlier evaluation settings, so
+label it accordingly. Repeat a short confirmation after P5's change is merged. The
+evidence ZIP below does not contain this run; share it separately.
 
 ## Reproduce the live UI verification
 
@@ -168,7 +198,8 @@ omit agent traces, so use the raw local run records when reviewing the critic.
    submission materials. Verify access from a teammate's account.
 4. Review and commit the script/document/workbook changes on this task branch,
    obtain another member's review and follow CONTRIBUTING.md for the PR.
-5. Manually test Save screenshot in your normal browser, check the resulting
+5. Check the new query-1 answer and confirm the 2,500 run after P5's merge.
+6. Manually test Save screenshot in your normal browser, check the resulting
    PNG, and add the final screenshot to the report materials. If no file is
    downloaded, use the browser console to investigate the capture/download path.
 

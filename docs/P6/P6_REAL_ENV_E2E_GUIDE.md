@@ -170,7 +170,7 @@ flowchart LR
 
 Note: Swagger UI - http://127.0.0.1:8000/docs
 
-The critic and answer generator share the same Ollama model. Runtime retrieval models
+The critic and answer generator share the same Ollama model. The critic reads the generator's own view, so both see the same passages and characters. Runtime retrieval models
 run on CPU; the one-time index build uses Apple MPS. Ollama manages Apple GPU acceleration. This local
 quantized 14B setup is a development configuration, not a reproduction of P5's
 school Qwen3-8B/vLLM performance. Record model identity and settings separately.
@@ -277,6 +277,7 @@ This prints effective paths/settings and hides a configured token.
 | `P6_UI_PORT` | Streamlit browser port, 8501 |
 | `P6_PIPELINE` | `adaptive` runs P4; `static` performs one hybrid retrieval followed by P5 generation |
 | `P6_TOP_K` | Passages per retrieval round, 8; passed explicitly to the local Agent hook |
+| `P6_MAX_CHARS_PER_PASSAGE` | Optional characters per passage for this local run; blank uses the code default. Set it in `.env.p6.local` and restart `serve`. `results/p6-local/runtime.json` records the effective budget |
 | `DEMO_AGENT_TOP_K` | Cluster/factory retrieval depth, 8 |
 | `P6_INDEX_DEVICE` | `mps` uses the Apple GPU for the one-time dense index build; set `cpu` on machines without MPS |
 | `P6_P3_REF` | P3 Git reference used only by `setup` |
