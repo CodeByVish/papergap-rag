@@ -61,8 +61,23 @@ all false refusals (1.5%). Two answers per arm were downgraded after a `PARSE_ER
 | Answered / refused / failed (scorer) | 194 / 4 / 2 | 191 / 7 / 2 | 194 / 4 / 2 (P5) |
 
 Adaptive minus static (paper-level bootstrap, 1,000 resamples, seed 42): F1 -0.0025 [-0.0109, 0.0056] on the 200
-(174 papers); +0.0001 [-0.0074, 0.0080] on the 160 (142 papers). No answer-quality gain from the loop. Faithfulness
-and the other RAG metrics are not available (RAGAS not run).
+(174 papers); +0.0001 [-0.0074, 0.0080] on the 160 (142 papers). No answer-quality gain from the loop.
+
+`ragas/` (RAGAS 0.2.15, live judge `qwen-plus-2025-12-01`, embeddings `qwen3.7-text-embedding` as recorded, DashScope;
+same records and the exact rendered contexts, 8 x 1,200 characters; means of valid scores with counts):
+
+| | static | adaptive |
+| --- | ---: | ---: |
+| Faithfulness | 0.8918 (194) | 0.9069 (191) |
+| Response relevance | 0.8542 (193) | 0.8540 (189) |
+| Context precision | 0.5781 (194) | 0.5774 (191) |
+
+Refusals (4 and 7) and failures (2 per arm) are excluded; one static and two adaptive response-relevance scores were
+invalid. Paired adaptive minus static over the questions scored in both arms (paper-level bootstrap, 1,000 resamples, seed 42):
+faithfulness +0.0116 [-0.0014, 0.0262] (191); response relevance -0.0030 [-0.0078, 0.0012] (188); context precision
+-0.0025 [-0.0150, 0.0102] (191); on the 160 not annotated: +0.0113 [-0.0030, 0.0316], -0.0038 [-0.0093, 0.0012],
+-0.0024 [-0.0142, 0.0093]. No interval excludes zero. Cost and time as reported by P5: about 0.63 SGD and 2.5 hours for
+both arms. See `README.md` for the judge caveats.
 
 ## 5. Performance
 

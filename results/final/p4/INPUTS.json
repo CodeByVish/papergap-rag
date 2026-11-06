@@ -35,5 +35,19 @@
     "retrieval_scores_commit": "1bfae0439e59acf1934009e47b3f0351c7a4add2 (score-all-200, score-160)",
     "p6_pipeline_commit": "ccff457659964256d357490d1eccfbc1b59e4c9b (evidence, qa, compare, performance)"
   },
-  "note": "Per-arm answer records, the Slurm log, corpus, index and model are not duplicated; hashes identify them. Manifests keep producer paths."
+  "note": "Per-arm answer records, the Slurm log, corpus, index and model are not duplicated; hashes identify them. Manifests keep producer paths.",
+  "ragas": {
+    "delivery_archive": "p4-ragas-live-51585-20261106.tar.gz",
+    "delivery_archive_sha256": "5dc5708a2b367267b48b8e499caed80de426da195f6c9f7a3d226c3ddba4ced7",
+    "judge_model": "qwen-plus-2025-12-01",
+    "embedding_model": "qwen3.7-text-embedding (as recorded by P5; confirm the provider ID)",
+    "endpoint": "DashScope OpenAI-compatible",
+    "code_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "role_label": "development",
+    "judge_trace_sha256_not_included": {
+      "static": "2f4ad461b4f344c32fd1dc6d0adf83acbbd78937d6ab92f9f858d5edaab0c73c",
+      "adaptive": "babca45621befefcb1c754dee34d86ebf42423f8b5d8f250ae7f8c416a47e617"
+    },
+    "note": "Contexts files are not in the archive; their SHA-256 are in the run manifests. Cost and time as reported by P5: about 0.63 SGD and 2.5 hours for both arms."
+  }
 }

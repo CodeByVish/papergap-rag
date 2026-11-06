@@ -16,6 +16,7 @@ before the run are in `docs/P4_FREEZE_RECORD.md` and `configs/p4_freeze.json`.
 | `compare/` | Paired static-versus-adaptive differences (P6's `compare` step), all 200 and the 160 |
 | `performance/{static,adaptive,static-wide}/` | Latency percentiles, throughput and token ledgers (P6's `performance` step) |
 | `usage/` | Generator token ledgers per arm, built from each record's generation statistics |
+| `ragas/{static,adaptive}/`, `ragas/compare/` | Live RAGAS scores (faithfulness, response relevance, context precision) with per-question scores, run manifests, the judge configuration (no key) and the paired differences; `ragas/kit/` has the run script and the wrapper patch |
 | `PIPELINE_NOTES.md` | How the P6-pipeline outputs were produced |
 
 ## What is not here
@@ -24,7 +25,7 @@ before the run are in `docs/P4_FREEZE_RECORD.md` and `configs/p4_freeze.json`.
   stay outside Git. They are in the delivery archive `p4-heldout-51585-20261106.tar.gz` (SHA-256
   `96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f`); the hashes of each file are in `INPUTS.json`.
 - **The corpus, the dense index and the model** are not duplicated; their hashes are in `INPUTS.json`.
-- **RAGAS (faithfulness, answer relevance, context precision)** has not been run; no result is claimed.
+- **The RAGAS judge traces** (2.4 MB per arm) and the rendered-contexts files are not included; their hashes are in `INPUTS.json` and the run manifests. The fifteen-passage arm was not judged.
 - **The 2,500-character runs** (development job 51691, held-out job 51705) are post-hoc sensitivity analyses and are
   not part of this folder; they are added under a separate label once scored.
 
@@ -47,6 +48,7 @@ before the run are in `docs/P4_FREEZE_RECORD.md` and `configs/p4_freeze.json`.
   official QASPER evaluator. EM is near zero because the generator writes sentences and the references are short spans.
 - **Timing** is one A40, one request at a time, warm engine, no score cache; the scorer counts the two validator-downgraded
   answers per arm as technical errors, so latency percentiles use 198 questions. Critic token use was not recorded.
+- **RAGAS caveats.** The judge is a hosted LLM (`qwen-plus-2025-12-01` via DashScope), so the scores are model judgments, not human verification; the contexts were rebuilt from the records and the prompt configuration; DashScope's embeddings endpoint needed a wrapper (`ragas/kit/run_p6_evaluation_dashscope.py`) that sets `check_embedding_ctx_length=False` while the evaluator itself is unmodified; the embedding model ID is as recorded by P5 and should be confirmed; refusals and failures are excluded from each denominator; the outputs carry the `development` role label.
 - Manifests keep their producer paths (local paths on the producing machines); read them as historical.
 
 ## Reproduce
