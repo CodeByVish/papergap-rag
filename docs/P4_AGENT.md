@@ -290,8 +290,9 @@ not at 5 alone. Dev results of 32 questions have wide intervals; the held-out se
   hints against each paper's own names (about 86% of papers have a result-like section).
 - Reranker caches make repeat latency unrepresentative; use a fresh cache path for timings.
 - Never tune on held-out labels; use development questions for prompt and parameter changes.
-- **Depth.** Development tuning and jobs 50701, 50977 and 51172 were at top-k 5; the frozen held-out run is at
-  top-k 8 (`configs/p4_freeze.json`), checked once on the development items (job 51521).
+- **Depth.** Development tuning and jobs 50701, 50977 and 51172 were at top-k 5; the frozen held-out run
+  (job 51585, 6 November, run once and scored) is at top-k 8 (`configs/p4_freeze.json`), checked once on the
+  development items (job 51521).
 - **The dense encoder truncates at 512 tokens.** `_INDEX_SETTINGS["max_seq_length"] = 512` in
   `src/retrieval/dense_retriever.py` is the bge-small maximum, so a longer passage is embedded from its first
   512 tokens only; BM25 reads all of it. On the 365/40 chunks 14.7% of the development passages (3,142 of

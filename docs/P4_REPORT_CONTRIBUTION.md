@@ -4,8 +4,9 @@
 
 PaperGap's agent decides whether the passages retrieved so far are enough to answer a question and,
 if not, names what is missing and searches again. This chapter describes the design, the experiments
-on development questions, what they show, and what they do not show. All numbers below are
-development results; **no held-out question has been run** (see "Status of the numbers").
+on development questions, the single frozen run on the held-out questions, what they show, and what they
+do not show. Sections 3.1 to 3.7 are development results; Section 3.8 is the held-out result (see "Status of
+the numbers").
 
 ### 1. Design
 
@@ -232,9 +233,9 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
 | --- | --- |
 | Sections 3.1 to 3.6 | Development results, jobs 50701, 50977 and 51172, reproduced offline where stated |
 | Generator-view alignment, handles, quote requirement (#34) | Run on the real model in job 51172 (commit 37cb0c6) |
-| Answers for the arms | Generated once (job 51175, 40 questions) and counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
+| Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
 | Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
-| Held-out run | Configuration, commit and thresholds frozen on 6 November (`configs/p4_freeze.json`); **not yet run** (P5 runs it once, with answers); held-out tables are added after scoring |
+| Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval scored against P3's gold after the run (Section 3.8). **Answer correctness not yet measured** |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
 
 ### 5. Limitations
