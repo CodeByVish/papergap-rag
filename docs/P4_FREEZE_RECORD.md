@@ -84,7 +84,8 @@ questions in the same way while annotating; the rule forbids tuning on them.
 
 - whether the run also generates answers (needs P5's compute). The primary held-out run uses the
   frozen 8-passage, 1,200-character budget; the 2026-11-06 `context-budget-2500` decision records a
-  2,500-character ablation under a separate label, not a replacement for that run;
+  2,500-character ablation under a separate label, not a replacement for that run. The live demo
+  serves 8 x 2,500 under that label;
 - P3's confirmation, with P6, that the agent's held-out run uses this 200-question list (the plan names
   100 questions; 200 fits one job).
 

@@ -117,7 +117,7 @@
     {
       "id": "context-budget-2500",
       "date": "2026-11-06",
-      "text": "The 1,200-character per-passage rendering budget remains the configuration of the primary held-out run (job 51585). A 2,500-character ablation is run under a separate run label: on the 40-item 365-word development set, 73.3% of the 45 gold passages exceeded 1,195 characters, 36.8% of their text was hidden, and the longest gold passage is 2,509 characters. Eight passages at 2,500 characters is about 5-6K tokens, well inside the 32K window. The ablation is reported separately and does not replace or re-score job 51585; the runner records the budget in run_manifest.prompt_budget."
+      "text": "The 1,200-character per-passage rendering budget remains the configuration of the primary held-out run (job 51585). A 2,500-character ablation is run under a separate run label: on the 40-item 365-word development set, 73.3% of the 45 gold passages exceeded 1,195 characters, 36.8% of their text was hidden, and the longest gold passage is 2,509 characters. Eight passages at 2,500 characters is about 5-6K tokens, well inside the 32K window. The ablation is reported separately and does not replace or re-score job 51585; the runner records the budget in run_manifest.prompt_budget. The live demo serves 8 x 2,500 under this label; the report's held-out primary remains 8 x 1,200 unless the team records a further decision."
     }
   ],
   "unresolved_before_freezing": [
