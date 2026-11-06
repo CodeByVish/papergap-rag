@@ -4,6 +4,8 @@ The intended GPU generator is \texttt{Qwen/Qwen3-8B} \citep{qwen2025}, served th
 
 The model returns structured JSON containing an answer, citations, evidence status, retrieval rounds and claim provenance. It receives a closed list of citable passage IDs and an explicit refusal instruction. Validation checks citation references, numerical grounding and provenance consistency. These checks expose some errors, but a valid citation does not prove that a passage entails a claim. Heuristic warnings are diagnostics, not faithfulness scores.
 
+Final settings. The final held-out run (job 51585, 6 November 2026) served the local Qwen3-8B snapshot through vLLM 0.11.0 in bfloat16 on one NVIDIA A40 (46\,GB), with Python 3.12.10, PyTorch 2.8.0 and transformers 4.57.6. Decoding used temperature 0 (greedy), top-$p$ 0.9, thinking disabled, a 32,768-token model limit and 1,024 new tokens per answer. The prompt was \texttt{p5-grounded-qa-v7}, rendering at most eight passages of 1,200 characters. The run manifest records the commit, package versions and input hashes; the model directory does not store a Hub revision, so that pin remains open.
+
 \begin{review}{Model and prompt provenance}
 Insert the final generator revision, precision, decoding settings, GPU model, dependency snapshot and run manifest. Do not transfer timings or quality observations from the local 14B model to the 8B GPU model.
 \end{review}
@@ -32,34 +34,37 @@ One reviewer resolved all 188 disagreements, including 73 pairs they had origina
 The implemented scorer uses a proposed project policy, project QA policy, version 0 (proposed), rather than the official QASPER evaluator. It lowercases text, removes ASCII punctuation and English articles, and normalizes whitespace. Exact match compares normalized strings; token F1 uses multiset token overlap. Reference extraction supports yes/no, free-form and extractive-span annotations; mixed answerability uses available answerable references. Confirm aggregation and coverage policy before final scoring.
 
 For scientific generative answers, overlap scores can penalize correct paraphrases and reward incomplete wording. We therefore report them with refusal behavior, failures and RAG metrics rather than treating either as a complete quality measure. Relevance labels alone do not supply answer references; QA scoring also needs the linked QASPER reference answers.
+
+Final held-out records. Job 51585 produced 200 records for each arm. Under the project QA policy, static answered 194 questions, refused 4 and failed 2; adaptive answered 191, refused 7 and failed 2; static-wide answered 194, refused 4 and failed 2. The two failures per arm are responses downgraded after a parse error; the P5 status count records them as refusals. All 200 held-out questions have at least one answerable QASPER reference annotation, so the unanswerable subset is empty. Exact match is 0.005 for every arm; token F1 is 0.368 (static), 0.366 (adaptive) and 0.368 (static-wide). On the 160 questions P4 did not annotate, F1 is 0.369 for both static and adaptive. The point estimates show no adaptive answer-quality gain.
 \begin{table}[htbp]\centering\small
-\caption{Reserved final QA table. No final answer scores are available in this draft.}
+\caption{Final QA on the 200 held-out questions under the project policy \texttt{p6-qa-v0-proposed}. Coverage is answered questions over the subset; parse-error failures are not counted as answered.}
 \begin{tabularx}{\linewidth}{Ycccc}\toprule
 Arm / subset & EM & Token F1 & Unanswerable correct & Coverage\\\midrule
-Static / all 200 & \pending & \pending & \pending & \pending\\
-Adaptive / all 200 & \pending & \pending & \pending & \pending\\
-Static / remaining 160 & \pending & \pending & \pending & \pending\\
-Adaptive / remaining 160 & \pending & \pending & \pending & \pending\\\bottomrule
+Static / all 200 & 0.005 & 0.368 & n/a & 194/200 (0.970)\\
+Adaptive / all 200 & 0.005 & 0.366 & n/a & 191/200 (0.955)\\
+Static / remaining 160 & 0.006 & 0.369 & n/a & 155/160 (0.969)\\
+Adaptive / remaining 160 & 0.006 & 0.369 & n/a & 152/160 (0.950)\\\bottomrule
 \end{tabularx}
 \end{table}
 \begin{review}{Final QA run}
-Complete and verify the freeze record, then score paired arms on identical questions. Report answered, refused, failed and missing counts, the answerable/unanswerable denominators, reference policy and confidence intervals. The agent developer saw 40 evaluation questions while annotating: report both all 200 and the remaining 160, with exposure disclosed. Do not call the 160 independently held out until other members' prior question use is audited.
+Scores above use job 51585 and P3's \texttt{qa.jsonl} (SHA-256 \texttt{1515fc58...}). The scorer's held-out role requires a review file that is not in the repository, so the run used the development role; the references are the same, and the held-out gate remains to be recorded. Report paired uncertainty and the answerability denominators. The agent developer saw 40 evaluation questions while annotating: report both all 200 and the remaining 160, with exposure disclosed. Do not call the 160 independently held out until other members' prior question use is audited.
 \end{review}
 
 \input{review-checks/q4-4}
 
 \subsection{Answer-level RAG metrics (Q4.5)}
-RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project has a runner for RAGAS 0.2.15, but no live-judge results are available. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. Exact metric classes and reference requirements must be frozen with the chosen backend.
-\begin{table}[htbp]\centering
-\caption{Reserved RAG evaluation; valid-score counts must accompany means.}
+RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project runs RAGAS 0.2.15 with a live judge. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. The judge scores the exact rendered contexts (8 passages x 1,200 characters), not the full retrieved chunks.
+\begin{table}[htbp]\centering\small
+\caption{Live RAGAS on the 200 held-out questions; values are means with valid-score counts. Refusals and parse-error failures are excluded from each denominator.}
 \begin{tabular}{lccc}\toprule
 Arm & Faithfulness & Response relevance & Context precision\\\midrule
-Static & \pending & \pending & \pending\\
-Adaptive & \pending & \pending & \pending\\\bottomrule
+Static & 0.892 (194) & 0.854 (193) & 0.578 (194)\\
+Adaptive & 0.907 (191) & 0.854 (189) & 0.577 (191)\\\bottomrule
 \end{tabular}
 \end{table}
+Live judge. On 6 November 2026 the rendered contexts were scored with \texttt{qwen-plus-2025-12-01} as the judge and \texttt{qwen3.7-text-embedding} for response relevance, both through DashScope's OpenAI-compatible endpoint (timeout 120 s, one worker, no automatic retries). Static reaches 0.892 faithfulness (n=194), 0.854 response relevance (n=193) and 0.578 context precision (n=194); adaptive reaches 0.907 (n=191), 0.854 (n=189) and 0.577 (n=191). One static and two adaptive response-relevance scores were invalid. Paired differences over the 188--191 questions scored in both arms are $+0.0116$ (95\% interval $-0.0005$ to $0.027$) for faithfulness, $-0.003$ ($-0.008$ to $0.001$) for response relevance and $-0.003$ ($-0.015$ to $0.010$) for context precision (2,000 paired bootstrap resamples, seed 0). The intervals do not support an adaptive advantage. Judge scores are model judgments, not human verification.
 \begin{review}{RAGAS prerequisites}
-Choose and record judge and embedding model IDs/revisions, budget, prompts, retry policy and API configuration without publishing credentials. Test the live evaluator. Evaluate against the exact clipped contexts supplied to generation, not full retrieved chunks. Disclose exclusions, refusals, failed judge calls, score counts and judge limitations.
+Record the judge \texttt{qwen-plus-2025-12-01}, embedding \texttt{qwen3.7-text-embedding}, DashScope endpoint, timeout, concurrency and retry policy. DashScope's embeddings endpoint requires \texttt{check\_embedding\_ctx\_length=False}; without it response relevance fails with a bad request, so the runner wrapper sets it. Valid-score counts are in the table; refusals, parse errors and invalid scores are excluded. Review a sample manually and confirm that the judge measures the intended property; P6's evaluator review remains pending.
 \end{review}
 
 \input{review-checks/q4-5}
@@ -68,6 +73,8 @@ Choose and record judge and embedding model IDs/revisions, budget, prompts, retr
 The local five-query measurements in Q2.2 are the directly inspected end-to-end timing evidence. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the current laptop timings or interpreted as a controlled final speedup.
 
 Per-paper exact search depends mainly on the selected paper's passages. All-papers exact vector search grows with the indexed corpus. The current service permits one active answer request and returns HTTP 429 when busy; serial demonstration throughput does not establish concurrent capacity. Local and university model serving avoids per-call API charges, but compute and energy are not free. Paid judge cost remains unmeasured.
+
+Final generation timing. In job 51585, answer generation on one A40 (warm engine, serial calls) had p50/p95 latency of 10.6/23.6\,s for static, 11.2/24.0\,s for adaptive and 10.6/22.2\,s for static-wide (200 questions per arm; generation only, excluding model load and, for adaptive, the agent loop). The agent loop added a mean 5.6\,s per adaptive question (p95 12.3\,s). The job completed 600 arm-question records in 2\,h\,23\,min. These are observed serial timings, not a controlled throughput benchmark; startup, concurrency and cache effects remain to be measured.
 \assetplaceholder{Reserved final performance figure}{Insert paired end-to-end p50/p95 latency and stage breakdowns from the final GPU run; report hardware, warm-up, errors, tokens and serial/concurrent policy.}
 \begin{review}{Final performance measurements}
 Populate elapsed wall time, processed-question count, successful answers, latency percentiles and judge cost from a single documented final setup. Separate startup, fresh inference and cache-hit timing. Historical cluster timings summarized in the workbook lack raw local records and are not used here as final benchmark results.

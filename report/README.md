@@ -2,7 +2,7 @@
 
 Editable LaTeX review draft for AI6127, **Group 24**. The report title is **Evidence-grounded question answering over NLP research papers**. It uses no product name or running headers; the due date, **7 November 2026**, appears on the title page. The handout specifies 11:59 pm SGT.
 
-This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA/RAG scores and controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
+This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA and RAGAS scores are inserted; controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
 
 ## Files and report structure
 
@@ -18,6 +18,7 @@ Paths in this section are relative to `report/`.
 | `sections/05-ai-disclosure.tex` | Final numbered section before References; AI-use statement awaiting confirmation |
 | `review-checks/` | 13 highlighted question-level assessments and lead/support review assignments |
 | `review-checks/p1-evidence.md` | P1 method/result sources, exact qualitative-case identifiers and scoped owner approval |
+| `review-checks/p5-evidence.md` | P5 generation/answer sources, final held-out job 51585 hashes and scoped owner approval |
 | `tables/` | Available retrieval, agreement and five-query tables |
 | `figures/` | Pipeline figure wrappers and the development UI screenshot |
 | `images/` | Supplied offline/online pipeline PNGs and companion PDFs |
@@ -100,6 +101,8 @@ Assignments follow the repository README and evaluation handoff. The handoff pro
 
 Junlin Yin approved the current P1 report content on **6 November 2026**. The highlighted **DONE FOR DRAFT - P1** markers cover indexing-diagram consistency (Q1.1), BM25/Dense methods, comparison and cases (Q3), lexical/Dense preprocessing (Q4.2), and the sources and wording of historical retrieval measurements (Q4.6). Other owners' reviews remain open; this does not approve the whole Q3 section or the team report, rerun timing measurements, or confirm final GPU performance. Individual annotation-process statements, the group AI-use disclosure and missing member information retain their existing confirmation requirements. The approved baseline and scope are recorded in `review-checks/p1-evidence.md` and `source-audit.json`.
 
+Junyu Hu approved the current P5 report content on **6 November 2026**. The highlighted **DONE FOR DRAFT - P5** markers cover answer/refusal behavior and refusal wording (Q1.2), the generation approach and final serving/decoding settings (Q4.1), prompt rendering and output parsing (Q4.2), the scorer policy and final answer/refusal records (Q4.4), the live RAGAS run and judge configuration (Q4.5), and the model/GPU record and final generation timings (Q4.6). Paired EM/F1 uncertainty, P6's evaluator review, the Qwen3-8B Hub revision and other owners' reviews remain open; this does not approve the whole Q4 section or the team report. The supporting evidence is recorded in `review-checks/p5-evidence.md` and `source-audit.json`.
+
 To hide temporary P1–P6 assignments, change `\draftreviewerstrue` to `\draftreviewersfalse` in `main.tex`. The switch controls only `\draftreview{lead}{support}{scope}` text. It does **not** hide AI ratings, other review boxes, missing-result markers or TODOs. Resolve those items, then remove the editorial notes from the submission copy. Keep substantive limitations and annotation disclosures in the final prose.
 
 Search for `\todo`, `\begin{review}`, `\pending`, `\assetplaceholder` and `\draftreview` to locate unfinished material. Internal P1–P6 labels appear only in the temporary review assignments, not the explanatory prose. These assignments are not an individual contribution/grading declaration. The handout makes individual contribution attribution optional and recommends the shared project-grade option.
@@ -146,7 +149,7 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 1. Confirm official member spellings/order and add four missing matriculation numbers. Group 24, Changyan Xu / G2607680G and Junlin Yin / G2604768B are already entered. Names are alphabetical by displayed full name.
 2. Confirm annotation validity and preserve revised-label agreement, independence, method visibility and single-reviewer resolution disclosures. The accepted manifest records 102 human-reviewed and 86 human-spot-checked resolutions; the latter include the 66 previously unchecked suggestions. Their updated status does not demonstrate independent third-person adjudication or recover original independent submissions.
 3. Confirm the evaluation freeze, accepted gold, prior question exposure and all-200/remaining-160 reporting. Keep passage schemas and split mappings `v0-proposed` until team confirmation.
-4. Insert verified final QA/RAGAS scores, denominators, failures, uncertainty, controlled ablations and final performance/cost results. Record model revisions, prompts, decoding, hardware and timing policy.
+4. Final QA and RAGAS scores are inserted with denominators and failures. Add paired QA uncertainty, controlled ablations and final performance/cost results. Record model revisions, prompts, decoding, hardware and timing policy.
 5. Obtain the raw cluster evidence and corpus/chunk-tuning outputs supporting the transcribed findings. Reviewers should verify claims against those records.
 6. Check all five demonstration answers, the critic/refusal mismatch and citation lookup. Rehearse the final GPU UI. The report uses the raw agent-log retrieval median of 31.58 ms, rounded to 31.6 ms; the workbook's 31.4 ms comes from a separate timing record.
 7. Complete reserved figures and the qualitative example; confirm the supplied pipeline charts and screenshot still match the final system. Future-work proposals must remain distinct from tested improvements.

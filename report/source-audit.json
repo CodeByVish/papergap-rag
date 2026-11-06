@@ -179,5 +179,38 @@
       "new_experiment": false,
       "publication_performed": false
     }
+  },
+  "p5_review_update": {
+    "date": "2026-11-06",
+    "report_base_commit": "e43371c1de01e91b5af4e403a08c73dc7a313428",
+    "run_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "run_job": "51585",
+    "delivery_tarball_sha256": "96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f",
+    "run_manifest_sha256": "466e4a00d9cc9c671760cbc7e1b4e9bd9e467520d421d9cef84e15a351e34021",
+    "metrics_json_sha256": "d7237a3a907be103c0812fba5192d869686cc18ca887de915505801d901c5cb6",
+    "held_out_items_sha256": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48",
+    "human_review_status": "owner_approved_p5_scope",
+    "qa_reference_sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e",
+    "qa_bundle_sha256": "0b9f69920aaaa5938eeab43486fb2e6e47c948837c85ee9a700140bf7e657a04",
+    "ragas_bundle_sha256": "5dc5708a2b367267b48b8e499caed80de426da195f6c9f7a3d226c3ddba4ced7",
+    "ragas_judge_model": "qwen-plus-2025-12-01",
+    "ragas_embedding_model": "qwen3.7-text-embedding",
+    "verification_scope": "Read the delivered 200-question held-out records and run manifest; recomputed answer/refusal counts and answer-only latency percentiles; scored EM/F1 with the project QA policy at commit ad02d51; ran the live RAGAS judge on the exact rendered contexts. No model-revision run was performed.",
+    "scope": {
+      "Q1.2": "Answer/refusal behavior and canonical refusal wording",
+      "Q4.1": "Generation approach and final serving/decoding settings",
+      "Q4.2": "Prompt rendering and structured-output parsing",
+      "Q4.4": "Scorer policy, final answer/refusal records and held-out EM/F1 scores",
+      "Q4.5": "RAGAS runner description, judge configuration and live scores",
+      "Q4.6": "Model/GPU record and final generation timings"
+    },
+    "does_not_confirm": [
+      "Paired EM/F1 uncertainty or P6's evaluator review",
+      "Qwen3-8B Hub revision",
+      "Whole Q4 section or team report completion",
+      "Annotation independence or group AI-use disclosure"
+    ],
+    "new_experiment": false,
+    "publication_performed": false
   }
 }
