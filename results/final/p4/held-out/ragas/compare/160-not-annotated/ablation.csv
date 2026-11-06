@@ -1,0 +1,4 @@
+metric,paired_questions,papers,mean_right_minus_left,ci_low,ci_high,resamples,seed,left_only_questions,right_only_questions,left_arm,right_arm,left_k,right_k
+faithfulness,152,137,0.011340852130325813,-0.0029881516488659355,0.031590867007843915,1000,42,0,0,static,adaptive,,
+answer_relevance,150,136,-0.003754478033225106,-0.009268976461927989,0.0011668318780665382,1000,42,0,0,static,adaptive,,
+context_precision,152,137,-0.0024161967417660616,-0.014187313033747427,0.009252527186308371,1000,42,0,0,static,adaptive,,

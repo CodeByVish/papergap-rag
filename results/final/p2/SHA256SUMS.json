@@ -1,0 +1,21 @@
+{
+  "README.md": "ec0651b564f1e82a9c7ca7c7018112244ff6ff2f479401d2272ac47b7ce49a87",
+  "RESULTS.md": "eb3649ec8e138628cacbd4369a4a3f3f1d233048a0f10e24148cb3311c271409",
+  "INPUTS.json": "cd066f920f9ddb24114d2f1de26ae14a2b53e4c0a1569faf62cacc15e53d615c",
+  "bge-vs-rrf/summary.json": "2e932af2c37c61b91da5b2cac1fc8b35e274cdc0800193bf9cae48c8faea68c7",
+  "bge-vs-rrf/ablation.csv": "88ec8a4efb0ce295a7ac356228e891ce0fe82f1907701b0a04f47740c53579fa",
+  "bge-vs-rrf/run_manifest.json": "38baf3e8da901e0ffb2e71374bdf930f8c2f57175cf02d795fc5ac2f76abc76a",
+  "rrf-vs-dense/summary.json": "5064a6a3ec6cac29f76dc2ccae7feafd820f77cf5a98007cef9b7bd6dc429b87",
+  "rrf-vs-dense/ablation.csv": "9ed43b970351dcd3da9abe1ffa3b3b5302f44b12a1778363518b75f2eeb5beed",
+  "rrf-vs-dense/run_manifest.json": "1b47aa7e36261db60ea8af1b05e4abaa682747667b00e28e673eb306da835a82",
+  "dense-vs-bm25/summary.json": "826bd04bab0999354c94d2ad9a11f5cc116303b3322982bdd4d81d0fe1a8d5b5",
+  "dense-vs-bm25/ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+  "dense-vs-bm25/run_manifest.json": "7d06c860aba952916f2731a026d9a64683c2615ee6c8b51ecfd45d4a702037c2",
+  "rrf-vs-bm25/summary.json": "ba8ce90f3b515f746b84138fc167cc80e51fda3386a4399d175801a06c679e40",
+  "rrf-vs-bm25/ablation.csv": "9f94473e9e377e0c208a1e5f5f68553f0bb903dd923da9157e2f87ed1058172e",
+  "rrf-vs-bm25/run_manifest.json": "805e5f195b33a753bed803e2ac669a1cbd1f59e768b9bc16f094b2023e7ea26a",
+  "scored/summary.json": "3fcf968b3f7ad254399865793da931c3eabe4f105d4ed1d5f682333a2448455e",
+  "scored/scores.jsonl": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e",
+  "scored/retrieval.csv": "8ca147ed74d1c19aa765c91371de33074e026c893421990e0530a1486210b9bf",
+  "scored/run_manifest.json": "6997a6f08a7699c9e4efa0a83b76ec3651f8ea1de2ca3919e0330665042ea9f2"
+}

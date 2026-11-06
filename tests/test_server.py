@@ -107,6 +107,11 @@ def test_health_reports_what_the_ui_needs():
     assert body["papers"] == 1
     assert body["retrieval"] is False
     assert body["agent"] is False
+    # The demo must not be able to change its rendering budget invisibly.
+    assert body["prompt_budget"] == {
+        "max_passages": 8,
+        "max_chars_per_passage": 2500,
+    }
 
 
 def test_an_exported_record_is_answered_and_returned_unchanged():
@@ -542,3 +547,13 @@ def test_warm_up_runs_the_real_path_and_returns_seconds():
 
     assert seconds > 0
     assert messages and messages[0].startswith("[warmup]")
+
+
+def test_progress_reports_steps_without_changing_the_answer():
+    app_client = client()
+    assert app_client.get("/progress").json() == {"active": False, "events": []}
+    response = app_client.post("/answer", json={"record": exported_record()})
+    assert response.status_code == 200
+    view = app_client.get("/progress").json()
+    assert view["active"] is False
+    assert view["events"][0]["message"] == "Request received."

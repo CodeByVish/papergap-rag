@@ -1,0 +1,11 @@
+{
+  "role": "development",
+  "label": "51690",
+  "questions": 40,
+  "run_dir": "/private/tmp/claude-501/-Users-ananyaredhu-PycharmProjects-papergap-rag/810d0a8d-02a0-4182-98b9-12007d578225/scratchpad/bge0/p4-bge0-51690-20261106/runs/p4/context-dev-1200",
+  "scored_with_commit": "0c9e8ff1e3822f0329ae7596a7bdedf89d88ce85",
+  "freeze": null,
+  "inputs": {
+    "gold_items": "ff69f9a0c45f2e18282f2836c5f156c81fa925a17668b00f0d190ff42615cc55"
+  }
+}

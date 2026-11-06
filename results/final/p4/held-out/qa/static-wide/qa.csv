@@ -1,0 +1,2 @@
+policy,questions,answerable_em,answerable_f1,unanswerable_correctness,combined_task_score,answered,refused,failures,reference_exclusions,answer_coverage,em_n,f1_n,unanswerable_correctness_n,task_score_n,answered_only_f1,arm
+p6-qa-v0-proposed,200,0.005,0.3675596758126425,,0.3675596758126425,194,4,2,0,0.97,200,200,0,200,0.37892750083777577,static-wide

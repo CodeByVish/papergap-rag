@@ -374,7 +374,7 @@ sbatch --export=ALL,DEMO_RECORD_FN='scripts.demo_agent_factory:factory' \
 `factory(pipeline)` once after the engine loads; the factory loads P1's corpus
 and dense index, builds BM25 from the passages through P2's
 `run_agent_experiment.build_retriever`, reuses `pipeline.generator` as the
-critic, and returns `record_fn(question, paper_id, top_k=5, request_id=None)`.
+critic, and returns `record_fn(question, paper_id, top_k=8, request_id=None)`.
 
 The factory reads P4's `DEMO_AGENT_*` variables. `80_demo_server.sbatch` maps
 them onto P1's staged layout, so the demo needs no extra export:

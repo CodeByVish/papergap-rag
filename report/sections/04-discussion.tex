@@ -1,0 +1,48 @@
+\section{Downstream innovations and ablation (Q5)}
+\subsection{Bounded evidence-gap retrieval}
+The agent plans evidence requirements, retrieves passages and asks a critic whether evidence is sufficient. Typed gaps such as \texttt{MISSING\_RESULT} guide a rewritten query and optional section targeting. The loop permits at most two retries, preventing unbounded search. The critic reads the generator's clipped view and must supply an evidence quote that code checks against the supplied text, allowing punctuation differences, one changed word and ellipsis elisions. This check provides traceability, not the correctness of the critic's conclusion.
+
+\begin{table}[htbp]\centering
+\caption{Agent development evidence recovery: 32 mapped-evidence questions from a 40-question slice. These results are reported in the team development record, not final QA scores.}\label{tab:agent}
+\begin{tabular}{lrrr}\toprule
+Arm & Mean evidence recall & Complete evidence & Mean passages\\\midrule
+Static top five & 0.740 & 22/32 & 5.00\\
+Adaptive top five / round & 0.771 & 23/32 & 5.95\\
+Static top eight & 0.885 & 26/32 & $\leq 8$\\
+Static top ten & 0.974 & 30/32 & $\leq 10$\\\bottomrule
+\end{tabular}
+\end{table}
+The generator-view critic run (job 51172) improves mean evidence recall over static top five by 0.031, with a reported 95\% paired bootstrap interval of [0.000, 0.094] (2,000 resamples). At a matched passage budget, its difference from plain retrieval is $-0.042$, with interval [$-0.135$, 0.062]. Neither supports a reliable adaptive advantage. Static top eight recovers substantially more evidence on this slice. The agent audit further reports that 95.7\% of retries add no gold passage and 56.5\% occur when all gold is already retrieved. These observations suggest that critic calibration and stopping, rather than query wording alone, limit this implementation.
+
+\begin{review}{Strength and provenance of agent evidence}
+Table~\ref{tab:agent}, intervals and retry percentages are transcribed from the agent experiment contribution; raw cluster job outputs are absent locally. Attach jobs 51172 and associated depth/audit outputs, verify the reported bootstrap output and denominator, and regenerate the final tables from those files. The slice was reused for development, with one run per configuration. Do not generalize these findings to held-out answer quality.
+\end{review}
+
+\subsection{Grounded answers and refusal}
+Closed citation IDs, structured claim provenance, explicit refusal and validation make answer support inspectable. They target a practical failure: a fluent answer can contain numbers or claims that the retrieved text does not justify. However, their individual contribution to faithfulness has not been measured.
+
+A proposed rule that would force refusal whenever the critic remains unsatisfied is disabled. In job 51172 it would refuse six of eight unanswerable questions but also nine of 32 answerable questions (28.1\%), exceeding the proposed 5\% false-refusal limit. In a separate generated-answer development run (job 51175), both static and adaptive arms refuse three of eight unanswerable questions; answer correctness has not been scored. The loop therefore has no demonstrated refusal-quality gain.
+
+\subsection{Controlled ablations still required}
+Table~\ref{tab:agent} tests retrieval depth and adaptation; it does not isolate each downstream innovation or satisfy the full factorial comparison. Keep retrieval, generation prompt, model settings and question set fixed when changing one component.
+\begin{table}[htbp]\small\centering
+\caption{Reserved factorial ablation requested by the handout. All four results are pending.}
+\begin{tabularx}{\linewidth}{Yccccc}\toprule
+Configuration & Rewriting & Reranking & EM/F1 & Faithfulness & Latency\\\midrule
+Neither & Off & Off & \pending & \pending & \pending\\
+Rewriting only & On & Off & \pending & \pending & \pending\\
+Reranking only & Off & On & \pending & \pending & \pending\\
+Both & On & On & \pending & \pending & \pending\\\bottomrule
+\end{tabularx}
+\end{table}
+\begin{review}{Define the actual interventions before running}
+Decide whether ``rewriting'' includes the full critic-controlled retry loop, and state its passage/model-call budget. The table above isolates rewriting and reranking, but not post-generation validation. Add a paired validation-on/off comparison if claiming that validation improves downstream quality. Keep citation prompting fixed and record raw versus validated answers. If compute is insufficient, disclose the incomplete ablation rather than claiming isolated gains.
+\end{review}
+\assetplaceholder{Reserved qualitative comparison}{Insert a reviewed question with static/adaptive answers, exact displayed evidence, claim-level support and a failure explanation. Include a negative example rather than selecting only successes.}
+
+\input{review-checks/q5}
+
+\section{Conclusions, limitations and future work}
+Current evidence supports hybrid retrieval as a useful baseline and argues against retaining this reranker configuration. On the available agent development slice, increasing initial retrieval depth is more effective than adaptive retries. The system provides a working route from a scientific question to a cited answer, but final answer quality remains unmeasured. Annotation independence, the lack of independent third-person adjudication, evaluation-question exposure and context clipping limit the conclusions that can be drawn. Final evaluation should determine whether the agent's additional model calls provide an answer-quality benefit under a fixed evidence budget.
+
+Future work should first address these limitations. Sentence-aware evidence selection or a larger context budget could reduce the loss of useful text through truncation; both should be tested against the current prompt budget. The critic should be calibrated to avoid unnecessary retries and evaluated against static top-eight retrieval at comparable evidence and latency budgets. Stronger evaluation requires verified annotation provenance, independent review of disagreement resolutions, a documented independent evaluation set and repeated runs to quantify variability. Finally, indexing table and figure text could extend coverage beyond the current full-text passages. These are proposed experiments; their effects on answer quality and cost remain to be measured.

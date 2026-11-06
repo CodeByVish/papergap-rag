@@ -1,0 +1,71 @@
+{
+  "metrics": {
+    "static": {
+      "questions": 40,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.0,
+      "mean_passages": 7.85,
+      "questions_with_gold": 32,
+      "recall_before_retries": 0.8541666666666666,
+      "recall_after_retries": 0.8541666666666666,
+      "full_recall_recovery_rate": 0.0,
+      "gap_detected": 6,
+      "critic_gap_recovery_rate": 0.0,
+      "retries": 0,
+      "unnecessary_retry_rate": null,
+      "ineffective_retry_rate": null,
+      "redundant_retry_rate": null,
+      "refusal_rate": 0.0,
+      "correct_refusal_rate": 0.0,
+      "false_refusal_rate": 0.0,
+      "unsatisfied_rate_unanswerable": 0.25,
+      "unsatisfied_rate_answerable": 0.125,
+      "critic_reused_rate": 0.0,
+      "critic_llm_rate": 0.0,
+      "critic_fallback_rate": 0.0,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 4.157363717055705
+    },
+    "adaptive": {
+      "questions": 40,
+      "errors": 0,
+      "answer_errors": 0,
+      "mean_rounds": 1.825,
+      "mean_passages": 8.625,
+      "questions_with_gold": 32,
+      "recall_before_retries": 0.8541666666666666,
+      "recall_after_retries": 0.9166666666666666,
+      "full_recall_recovery_rate": 0.2857142857142857,
+      "gap_detected": 17,
+      "critic_gap_recovery_rate": 0.11764705882352941,
+      "retries": 33,
+      "unnecessary_retry_rate": 0.5882352941176471,
+      "ineffective_retry_rate": 0.8823529411764706,
+      "redundant_retry_rate": 0.5151515151515151,
+      "refusal_rate": 0.0,
+      "correct_refusal_rate": 0.0,
+      "false_refusal_rate": 0.0,
+      "unsatisfied_rate_unanswerable": 1.0,
+      "unsatisfied_rate_answerable": 0.21875,
+      "critic_reused_rate": 0.2602739726027397,
+      "critic_llm_rate": 0.9629629629629629,
+      "critic_fallback_rate": 0.037037037037037035,
+      "critic_thinking_drift_rate": 0.0,
+      "mean_elapsed_s": 11.267039449069125
+    }
+  },
+  "paired_recall_gain": {
+    "n": 32,
+    "mean_gain": 0.0625,
+    "ci95": [
+      0.0,
+      0.15625
+    ]
+  },
+  "refuse_if_unsatisfied": {
+    "correct_refusal_rate": 1.0,
+    "false_refusal_rate": 0.21875,
+    "meets_proposed_gate": false
+  }
+}
