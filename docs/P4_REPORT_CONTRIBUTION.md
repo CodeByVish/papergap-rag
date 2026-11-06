@@ -361,7 +361,29 @@ seed 42, P6's `compare` step). The scorer counts the two `PARSE_ERROR` answers p
 why it reports 4, 7 and 4 refusals where the generator reports 6, 9 and 6. All 200 questions are answerable, so
 the unanswerable-correctness metric is not available. The scorer's output is labelled `development` because its
 `held_out` label needs a team sign-off that has not been given; the numbers do not depend on the label.
-Faithfulness and the other RAG metrics (RAGAS, P5) are not yet available.
+**Answer quality (LLM judge, RAGAS).** P5 scored the held-out answers of the static and adaptive arms with RAGAS 0.2.15
+and a live judge (`qwen-plus-2025-12-01`, embeddings `qwen3.7-text-embedding` as recorded, both through DashScope's
+OpenAI-compatible endpoint), on the same records as the other scores (prediction hashes match job 51585) and the
+exact rendered contexts (8 passages of at most 1,200 characters). P4 recomputed the means from the per-question scores:
+
+| Mean (valid scores) | static | adaptive |
+| --- | ---: | ---: |
+| Faithfulness | 0.892 (194) | 0.907 (191) |
+| Response relevance | 0.854 (193) | 0.854 (189) |
+| Context precision | 0.578 (194) | 0.577 (191) |
+
+Refused answers (4 and 7) and the two validator-downgraded answers per arm are excluded; one static and two adaptive
+response-relevance scores were invalid. Paired differences, adaptive minus static, over the questions scored in both arms
+(paper-level bootstrap, 1,000 resamples, seed 42, P6's `compare` step): faithfulness +0.012 [-0.001, 0.026] (191
+questions); response relevance -0.003 [-0.008, 0.001] (188); context precision -0.003 [-0.015, 0.010] (191); on the 160
+not annotated by P4: +0.011 [-0.003, 0.032], -0.004 [-0.009, 0.001], -0.002 [-0.014, 0.009]. No interval excludes zero:
+the loop gives no measurable gain on these judge scores either. Faithfulness is scored only on answered questions, and
+the adaptive arm answers three fewer. Caveats: the judge is a hosted LLM from the same model family as the generator,
+its scores are model judgments and not human verification, the contexts were rebuilt from the records and the prompt
+configuration (the contexts files are not in the delivery archive; their hashes are in the run manifests), DashScope's
+embeddings endpoint needed a wrapper that sets `check_embedding_ctx_length=False` (the evaluator itself is unmodified),
+and the run is labelled `development` like the other P6-pipeline outputs. Cost and time as reported by P5: about 2.5
+hours and 0.63 SGD for the two arms. The fifteen-passage arm was not judged.
 
 **What the held-out result supports.**
 
@@ -430,9 +452,9 @@ no held-out 2,500 number is reported until it has been scored with the same froz
 | --- | --- |
 | Sections 3.1 to 3.6 | Development results, jobs 50701, 50977 and 51172, reproduced offline where stated |
 | Generator-view alignment, handles, quote requirement (#34) | Run on the real model in job 51172 (commit 37cb0c6) |
-| Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; held-out answers scored for EM and F1 (Section 3.8: F1 0.368 static, 0.366 adaptive); **faithfulness (RAGAS) and the development answers' correctness not yet measured** |
+| Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; held-out answers scored for EM and F1 (Section 3.8: F1 0.368 static, 0.366 adaptive); held-out answers also judged by RAGAS (faithfulness 0.892 and 0.907); **the development answers' correctness is not measured** |
 | Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
-| Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval and answer EM/F1 scored against P3's gold and the QASPER references after the run (Section 3.8). **RAGAS faithfulness not yet available** |
+| Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval and answer EM/F1 scored against P3's gold and the QASPER references after the run (Section 3.8). **RAGAS scored for static and adaptive (Section 3.8): no gain from the loop** |
 | Context-budget check, development | Job 51691 (P5, 6 November, the 40 development items, 1,200 against 2,500 characters per passage, one run per cell): Section 3.9. Post-hoc; not part of the freeze record |
 | Context-budget sensitivity, held-out | Job 51705 (P5): the 200 held-out questions at 2,500 characters, **running, not yet scored**. Post-hoc; reported next to the 1,200-character primary result (Section 3.9), never instead of it |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
@@ -462,8 +484,8 @@ no held-out 2,500 number is reported until it has been scored with the same froz
   (8 unanswerable questions).
 - **Answer quality is measured by overlap only.** EM and token F1 come from a proposed project scorer, not the
   official QASPER evaluator; EM is near zero because the generator writes sentences against short reference
-  spans, and F1 penalizes correct paraphrases. Faithfulness (RAGAS) is not yet available, so the results say
-  nothing about whether the answers are grounded.
+  spans, and F1 penalizes correct paraphrases. Faithfulness comes from a hosted LLM judge (RAGAS), not from human checking, so the
+  groundedness results are model judgments.
 - **Part of the held-out set was read before the freeze.** P4's author annotated 40 of the 200 questions, so
   results are given for all 200 and for the 160 that were not; the figures agree. The disclosure is in the
   freeze record.

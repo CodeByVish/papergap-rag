@@ -732,5 +732,6 @@ against the plain ranking at equal passages: +0.001 (-0.014 to 0.016) and +0.009
 adaptive arm made 88 retries, 95.5% of them ineffective; critic fallback 4.2%. All 200 questions are
 answerable, so abstention on unanswerable questions was not measured. Answer overlap (P5, scored the same day):
 token F1 0.368 static and 0.366 adaptive (paired difference -0.0025, 95% CI -0.011 to 0.006), EM 0.005 in every
-arm; RAGAS faithfulness is not yet available.
+arm. RAGAS (P5, live judge qwen-plus-2025-12-01): faithfulness 0.892 static, 0.907 adaptive; response
+relevance 0.854 and 0.854; context precision 0.578 and 0.577; no paired interval excludes zero.
 Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md` Section 3.8; run record: `docs/P4_FREEZE_RECORD.md`.
