@@ -1,6 +1,6 @@
 # P4 freeze record and held-out procedure
 
-Status: **draft**. The record is `configs/p4_freeze.json`; this page explains it and gives the
+Status: **frozen** on 6 November 2026 at 09:47 SGT (commit below). The record is `configs/p4_freeze.json`; this page explains it and gives the
 order of work. Nothing here has touched a held-out question, answer or label.
 
 ## Why
@@ -80,19 +80,14 @@ questions in the same way while annotating; the rule forbids tuning on them.
 7. **Report** every table the record lists, with the covered questions stated, including any in which
    the adaptive arm does not beat the plain ranking.
 
-## Still to settle before step 3
+## State at freezing (6 November)
 
-Filled in on 6 November (record still `draft`): `code.commit` (`ad02d51`, main after PR #50), the
-all-paper-text index path and `metadata.json` SHA-256 (built by P5), and `answers.generate` (true:
-ANSWERS=p5, prompt frozen at v7, 8 passages x 1200 characters). Open:
-
-- P5's development check of adaptive at top 8 (the 40 development items, the inputs of job 51172,
-  ANSWERS=none). If it is sensible, record the job and figures as a decision and freeze at 8; if not,
-  go back to the team before freezing. Development tuning was at top 5 (disclosure
-  `depth-5-tuning-8-run`);
-- P3's written confirmation that the 200-question list is the final held-out list (the plan names 100
-  questions; the 200 ids already equal P6's gold ids);
-- then set `frozen_at` and `status`, and commit.
+The record was frozen with `code.commit` `ad02d51` (main after PR #50), the all-paper-text index built by
+P5 (path and `metadata.json` SHA-256 in the record), `answers.generate` true (ANSWERS=p5, prompt v7,
+8 passages x 1200 characters) and `top_k` 8. P5's development check of adaptive at depth 8 (job 51521,
+decision `depth-8-dev-check`) came first; development tuning was at depth 5 (disclosure
+`depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation is not
+attached to the record (`open_at_freezing`).
 
 ## Tests
 

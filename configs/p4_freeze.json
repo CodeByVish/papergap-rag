@@ -1,8 +1,8 @@
 {
   "schema_version": "v0-proposed",
-  "status": "draft",
+  "status": "frozen",
   "purpose": "Freeze record for P4's end-to-end run on P3's frozen held-out question list. Procedure and field meanings: docs/P4_FREEZE_RECORD.md.",
-  "frozen_at": null,
+  "frozen_at": "2026-11-06T09:47:58+08:00",
   "code": {
     "commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
     "note": "Full 40-character hash of the main commit the run is made at (main after PR #50, which contains the stop_reason change of PR #40 and the top-8 default of PR #49). The record commit that follows is not the run commit. scripts/make_held_out_items.py checks that the hash exists."
@@ -117,11 +117,14 @@
       "id": "critic-final",
       "date": "2026-11-05",
       "text": "The critic (Qwen3-8B reading the generator's view, handles, quote check) is frozen as run in job 51172. It does not beat plain retrieval at equal passages and is lenient on unanswerable questions; the report states this."
+    },
+    {
+      "id": "depth-8-dev-check",
+      "date": "2026-11-06",
+      "text": "Before freezing at top_k 8, P5 ran adaptive and static once on the 40 development items at depth 8 (job 51521, commit ad02d51, same corpus, index and items as job 51172, ANSWERS=none). Mean gold recall: static 0.885 at 7.85 passages; adaptive 0.927 at 8.55 passages and 1.8 rounds; paired gain +0.042 (95% interval 0 to 0.115; at top 5 it was +0.031, 0 to 0.094). 32 retries (90.5% ineffective, 61.9% unnecessary, 40.6% redundant); critic fallback 6.9% (4 of 58 verdicts; 2.9% in job 51172); no errors, no thinking drift. Unsatisfied rates 0.75 (unanswerable) and 0.281 (answerable), identical to job 51172, so the refusal gate is still not met and the rule stays off. The figures were read, nothing was tuned on them, and depth 8 was kept. The exact comparison with the plain ranking at equal passages needs the static-wide arm and is made on the held-out run."
     }
   ],
-  "unresolved_before_freezing": [
-    "P5's development check of adaptive at top_k 8 (40 development items, job inputs of 51172, ANSWERS=none): if it is sensible, add the decision 'depth-8-dev-check' with the job number and figures; if not, return to the team before freezing",
-    "confirm in writing with P3 that the 200-question list is the final held-out list (the plan's 100 is superseded); the question ids already equal P6's 200 gold ids",
-    "set frozen_at and set status to frozen; code.commit stays ad02d51 unless the code changes before then"
+  "open_at_freezing": [
+    "The 200-question list is used as it is (P3's qa_for_held_out_v2, SHA-256 d509010b...); the plan's 100 held-out questions are superseded. Its ids equal the 200 ids of P6's gold. P3's written confirmation is not attached to this record."
   ]
 }
