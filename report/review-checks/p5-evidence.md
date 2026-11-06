@@ -1,8 +1,9 @@
 # P5 report review evidence
 
 Status: **P5 content approved by Junyu Hu on 6 November 2026; DONE FOR DRAFT - P5 scope only.**
-This approval covers the items and checks listed below. It does not certify final EM/F1 or RAGAS
-scores, the Qwen3-8B Hub revision, the Q4.3 annotation record, the Q5 ablations, or the team report.
+This approval covers the items and checks listed below, including the final held-out QA and live
+RAGAS scores. It does not certify the Qwen3-8B Hub revision, the Q4.3 annotation record, the Q5
+ablations, or the team report.
 
 ## Run used for the P5 checks
 
@@ -88,3 +89,10 @@ Counts were computed directly from the delivered JSONL records; latency percenti
 nearest-rank method over 200 values per arm. The report's Q4.4 prose and table now state the QA
 counts and EM/F1 scores. Paired bootstrap intervals over questions or papers, and the held-out
 review-file sign-off, remain to be produced.
+
+Recheck (6 November 2026, after the live-RAGAS commit): the 200 records per arm, the
+`SUFFICIENT` counts (194/191/194) and the two parse-error ids (`de830c534c…`, `cbb3c1c1e6…`)
+reproduce exactly from the delivered JSONL. `answer_s` nearest-rank percentiles over all 200
+records are 10.5/23.6 s (static), 11.0/24.0 s (adaptive) and 10.5/22.2 s (static-wide); the
+report rounds p50 to 10.6/11.2/10.6. The p95s agree; the 0.1–0.2 s p50 difference needs the
+producer's percentile convention confirmed before submission.
