@@ -18,6 +18,7 @@ Paths in this section are relative to `report/`.
 | `sections/05-ai-disclosure.tex` | Final numbered section before References; AI-use statement awaiting confirmation |
 | `review-checks/` | 13 highlighted question-level assessments and lead/support review assignments |
 | `review-checks/p1-evidence.md` | P1 method/result sources, exact qualitative-case identifiers and scoped owner approval |
+| `review-checks/p5-evidence.md` | P5 generation/answer sources, final held-out job 51585 hashes and scoped owner approval |
 | `tables/` | Available retrieval, agreement and five-query tables |
 | `figures/` | Pipeline figure wrappers and the development UI screenshot |
 | `images/` | Supplied offline/online pipeline PNGs and companion PDFs |
@@ -99,6 +100,8 @@ Each handout item has its own highlighted five-star assessment: **Q1.1–Q1.3, Q
 Assignments follow the repository README and evaluation handoff. The handoff proposes P5 for QA/RAGAS runs and P4 for agent performance/cost; confirm run ownership with the team. P6 coordinates review and cross-checks results without taking over each experiment. All annotators must confirm their label provenance, independence and prior question exposure for Q4.3.
 
 Junlin Yin approved the current P1 report content on **6 November 2026**. The highlighted **DONE FOR DRAFT - P1** markers cover indexing-diagram consistency (Q1.1), BM25/Dense methods, comparison and cases (Q3), lexical/Dense preprocessing (Q4.2), and the sources and wording of historical retrieval measurements (Q4.6). Other owners' reviews remain open; this does not approve the whole Q3 section or the team report, rerun timing measurements, or confirm final GPU performance. Individual annotation-process statements, the group AI-use disclosure and missing member information retain their existing confirmation requirements. The approved baseline and scope are recorded in `review-checks/p1-evidence.md` and `source-audit.json`.
+
+Junyu Hu approved the current P5 report content on **6 November 2026**. The highlighted **DONE FOR DRAFT - P5** markers cover answer/refusal behavior and refusal wording (Q1.2), the generation approach and final serving/decoding settings (Q4.1), prompt rendering and output parsing (Q4.2), the scorer policy and final answer/refusal records (Q4.4), the live RAGAS run and judge configuration (Q4.5), and the model/GPU record and final generation timings (Q4.6). Paired EM/F1 uncertainty, P6's evaluator review, the Qwen3-8B Hub revision and other owners' reviews remain open; this does not approve the whole Q4 section or the team report. The supporting evidence is recorded in `review-checks/p5-evidence.md` and `source-audit.json`.
 
 To hide temporary P1–P6 assignments, change `\draftreviewerstrue` to `\draftreviewersfalse` in `main.tex`. The switch controls only `\draftreview{lead}{support}{scope}` text. It does **not** hide AI ratings, other review boxes, missing-result markers or TODOs. Resolve those items, then remove the editorial notes from the submission copy. Keep substantive limitations and annotation disclosures in the final prose.
 
