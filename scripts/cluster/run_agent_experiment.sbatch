@@ -61,6 +61,7 @@ ARMS="${ARMS:-static adaptive}"
 TOP_K="${TOP_K:-8}"  # Frozen depth in configs/p4_freeze.json
 CRITIC="${CRITIC:-generator}"                     # generator | rules
 ANSWERS="${ANSWERS:-p5}"                          # p5 | none
+MAX_CHARS_PER_PASSAGE="${MAX_CHARS_PER_PASSAGE:-}"  # empty = P5's default (2,500); 1200 = pre-2026-11-06 v7
 SCOPED="${SCOPED:-0}"                             # 1 = per-paper section-scoped retries
 BGE="${BGE:-0}"                                   # 1 = BGE reranker (slower, CPU)
 SCORE_CACHE="${SCORE_CACHE:-}"                    # fresh path for cold latency numbers
@@ -78,6 +79,7 @@ echo "started   : $(date -Is)"
 echo "repo      : $PWD ($(git rev-parse --short HEAD 2>/dev/null || echo no-git))"
 echo "out dir   : $OUT_DIR  (resume=$RESUME)"
 echo "arms      : $ARMS   critic=$CRITIC   answers=$ANSWERS   scoped=$SCOPED   bge=$BGE"
+echo "budget    : ${MAX_CHARS_PER_PASSAGE:-default} chars/passage"
 
 FAILED=""
 fail() { echo "PRECONDITION FAILED: $1"; FAILED="${FAILED:+$FAILED; }$1"; }
@@ -138,6 +140,7 @@ if [ "$OFFLINE" = "1" ]; then
 fi
 if [ -n "$ITEMS" ]; then ARGS+=(--items "$ITEMS"); else ARGS+=(--from-qa "$QA" --split "$SPLIT" --limit "$LIMIT"); fi
 [ "$SCOPED" = "1" ] && ARGS+=(--scoped)
+[ -n "$MAX_CHARS_PER_PASSAGE" ] && ARGS+=(--max-chars-per-passage "$MAX_CHARS_PER_PASSAGE")
 [ "$BGE" = "1" ] && ARGS+=(--bge)
 [ -n "$SCORE_CACHE" ] && ARGS+=(--score-cache "$SCORE_CACHE")
 [ "$RESUME" = "1" ] && ARGS+=(--resume)

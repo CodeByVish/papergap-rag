@@ -113,6 +113,11 @@
       "id": "critic-final",
       "date": "2026-11-05",
       "text": "The critic (Qwen3-8B reading the generator's view, handles, quote check) is frozen as run in job 51172. It does not beat plain retrieval at equal passages and is lenient on unanswerable questions; the report states this."
+    },
+    {
+      "id": "context-budget-2500",
+      "date": "2026-11-06",
+      "text": "The 1,200-character per-passage rendering budget remains the configuration of the primary held-out run (job 51585). A 2,500-character ablation is run under a separate run label: on the 40-item 365-word development set, 73.3% of the 45 gold passages exceeded 1,195 characters, 36.8% of their text was hidden, and the longest gold passage is 2,509 characters. Eight passages at 2,500 characters is about 5-6K tokens, well inside the 32K window. The ablation is reported separately and does not replace or re-score job 51585; the runner records the budget in run_manifest.prompt_budget."
     }
   ],
   "unresolved_before_freezing": [
