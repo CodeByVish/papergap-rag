@@ -71,6 +71,13 @@ the 40 development items before the freeze (job 51521: recall 0.927 against 0.88
 7.85 passages, paired gain +0.042, 95% interval 0 to 0.115) and nothing was tuned on it. The arms are static
 (top 8), adaptive and static-wide (15 passages, giving plain retrieval at 5, 8 and 10).
 
+**Context budget.** The primary held-out run renders at most 8 passages of 1,200 characters each, the prompt
+budget fixed before the run (P5's prompt v7). After that run had finished, P5 repeated the configuration with
+2,500 characters per passage on the 40 development questions (job 51691) and on the same 200 held-out
+questions (job 51705). The 2,500-character runs are **post-hoc sensitivity analyses**: they are not in the
+freeze record, they do not replace or re-score the primary run, and they are reported separately
+(Section 3.9). Everything in Sections 3.1 to 3.8 uses 1,200 characters.
+
 **Metrics.** *Recall*: share of a question's gold passages among the distinct passages retrieved
 (mean over the 32 questions with gold). *Full recall*: questions with every gold passage. *Unnecessary
 retry*: a retry made when all gold was already retrieved. *Ineffective retry*: a retry that added no
@@ -153,7 +160,8 @@ asked of the model; reused verdicts excluded):
 | "Sufficient" on an unanswerable question (false accept) | 0 | 4 | 2 |
 
 Two defects explain the first job: the critic saw only the first 1,200 characters of each passage
-(71% of gold passages are longer, and it lost 28% of their text on average), and its prompt asked for
+(recomputed on the final 365/40 development corpus: 33 of the 45 gold passages, 73.3%, are longer, and 36.6% of
+the gold text lies beyond the cut), and its prompt asked for
 "clear, detailed" coverage without defining a bar. Fixing both cut the wasted retries from 23 to 9 but
 made the critic lenient: it now accepts 4 of 8 unanswerable questions, and 8 of 26 sufficient verdicts on
 answerable questions cite no gold passage. Recall did not change, because one question was gained and one
@@ -165,8 +173,10 @@ Job 51172 ran the critic on the generator's own view (8 passages of at most 1,20
 passage handles and a quote that must occur in the cited passages. It accepted fewer unanswerable
 questions (2 of 8, from 4) and was stricter on answerable ones: 19 over-strict verdicts, which come from 8
 questions (5 in job 50977), because every retry of an unsatisfied question is judged again. Truncation does
-not explain this: the gold passage is longer than 1,200 characters in 65% of the over-strict verdicts and in
-75% of the correct "sufficient" ones. Of 68 verdicts asked of the model, 2 (2.9%) fell back to the rules:
+not by itself separate good verdicts from bad ones: the gold passage is longer than 1,200 characters in 65%
+of the over-strict verdicts and in 75% of the correct "sufficient" ones. It does cost retries, however: with
+the per-passage budget raised to 2,500 characters the adaptive arm needs 18 retries instead of 32 on the same
+40 items (Section 3.9). Of 68 verdicts asked of the model, 2 (2.9%) fell back to the rules:
 one failed the quote check and one reply contained a LaTeX `\%` that made the JSON invalid. Of the sufficient
 verdicts, 12 cite a gold passage and 9 cite none. Of the 9 answerable questions the critic left
 unsatisfied, 3 had the answer in view: for "Where did they get the data?", the gold passage says the
@@ -354,6 +364,45 @@ arm shows the headroom for retrieval, not what the answer step would see. The he
 that the loop never lowered recall, that its critic is usable (4.2% fallback) but over-strict, and that
 retrieval depth is the factor that matters.
 
+#### 3.9 Context budget: 1,200 against 2,500 characters per passage (post-hoc sensitivity)
+
+The generator renders at most 8 passages, each cut at a character limit. With the primary limit of 1,200
+characters, 33 of the 45 development gold passages (73.3%) are cut and 36.6% of the gold text is hidden; on the
+held-out questions 232 of the 347 gold passages (66.9%) are longer than 1,200 characters. At 2,500 characters
+only one development gold passage (the longest, 2,509 characters) is cut. Eight passages of 2,500 characters
+give prompts of 3,400 to 6,600 tokens, well inside the model's 32,768-token window.
+
+P5 repeated the development items with the larger budget (job 51691; one run per cell, 40 questions: 32
+answerable, 8 unanswerable; both the critic and the generator read the same budget):
+
+| Metric | static 1,200 | static 2,500 | adaptive 1,200 | adaptive 2,500 |
+| --- | ---: | ---: | ---: | ---: |
+| Answered / refused | 36 / 4 | 37 / 3 | 36 / 4 | 37 / 3 |
+| Mean citations | 1.89 | 1.73 | 1.92 | 1.81 |
+| Citation gold recall | 0.694 | 0.747 | 0.726 | 0.769 |
+| Citation gold precision | 0.580 | 0.619 | 0.577 | 0.613 |
+| Prompt tokens (range) | 3,270-5,238 | 3,374-6,647 | 3,068-5,238 | 3,374-6,647 |
+| Mean rounds | 1.000 | 1.000 | 1.800 | 1.450 |
+| Retries | 0 | 0 | 32 | 18 |
+| Gaps detected | 6 | 6 | 18 | 10 |
+
+- **Better grounded citations.** Gold citation recall rises by 0.053 (static) and 0.043 (adaptive) and gold
+  citation precision by 0.039 and 0.036.
+- **A cheaper loop.** The adaptive arm makes 18 retries instead of 32 and detects 10 gaps instead of 18: the
+  critic sees more complete text and asks for more evidence less often.
+- **A small cost in refusal calibration.** Of the 8 unanswerable questions, 5 are answered at 1,200 characters
+  and 6 at 2,500; the extra one ("What is the size of the Atomic dataset?") was refused at 1,200 and is
+  answered at 2,500 with a sentence that does not answer it. Answerable questions stay at 31 of 32 answered.
+- **The loop still adds little.** Its gain in citation gold recall over static is +0.032 at 1,200 and +0.022 at
+  2,500 characters, and its gain in citation precision is about zero at both.
+- **Strength of the evidence.** One run per cell on 40 questions, with no intervals; the differences are a few
+  citations. Treat them as suggestive.
+
+The same 2,500-character configuration was also run on the 200 held-out questions (job 51705). It is a
+post-hoc sensitivity analysis on the questions of the primary result, started after the primary run had
+finished, and it is reported next to the primary result, never instead of it. **Status: running when this was written;
+no held-out 2,500 number is reported until it has been scored with the same frozen scripts.**
+
 ### 4. Status of the numbers
 
 | Result | Status |
@@ -363,6 +412,8 @@ retrieval depth is the factor that matters.
 | Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
 | Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
 | Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval scored against P3's gold after the run (Section 3.8). **Answer correctness not yet measured** |
+| Context-budget check, development | Job 51691 (P5, 6 November, the 40 development items, 1,200 against 2,500 characters per passage, one run per cell): Section 3.9. Post-hoc; not part of the freeze record |
+| Context-budget sensitivity, held-out | Job 51705 (P5): the 200 held-out questions at 2,500 characters, **running, not yet scored**. Post-hoc; reported next to the 1,200-character primary result (Section 3.9), never instead of it |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
 
 ### 5. Limitations
@@ -376,9 +427,10 @@ retrieval depth is the factor that matters.
 - **Retrieval recall is not answer quality.** Gold is P3's mapping of QASPER evidence to chunks
   (a proposal); a chunk can hold the gold paragraph and still not answer the question.
 - **Recall can overstate what the generator uses.** The generator renders at most 8 passages, each cut
-  at 1,200 characters, a limit set for the older 200-word chunks and frozen by P5 for the final run;
-  71% of gold passages are longer. A top-10 or adaptive run can therefore retrieve gold that the
-  prompt does not show.
+  at 1,200 characters, a limit set for the older 200-word chunks and frozen by P5 for the primary run;
+  73.3% of the development gold passages (33 of 45) and 66.9% of the held-out ones (232 of 347) are longer.
+  A top-10 or adaptive run can therefore retrieve gold that the prompt does not show. A 2,500-character
+  budget removes most of the clipping (Section 3.9) but was a post-hoc check, not the primary configuration.
 - **The critic is imperfect in both directions** (Section 3.3). Each configuration was run once, so
   run-to-run variation of the critic was not measured.
 - **The planner cannot predict unanswerable questions** and the mapper carries no usable signal
