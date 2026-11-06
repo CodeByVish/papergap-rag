@@ -362,7 +362,7 @@ why it reports 4, 7 and 4 refusals where the generator reports 6, 9 and 6. All 2
 the unanswerable-correctness metric is not available. The scorer's output is labelled `development` because its
 `held_out` label needs a team sign-off that has not been given; the numbers do not depend on the label.
 **Answer quality (LLM judge, RAGAS).** P5 scored the held-out answers of the static and adaptive arms with RAGAS 0.2.15
-and a live judge (`qwen-plus-2025-12-01`, embeddings `qwen3.7-text-embedding` as recorded, both through DashScope's
+and a live judge (`qwen-plus-2025-12-01`, embeddings Qwen3.7 Text Embedding, `qwen3.7-text-embedding`, both through DashScope's
 OpenAI-compatible endpoint), on the same records as the other scores (prediction hashes match job 51585) and the
 exact rendered contexts (8 passages of at most 1,200 characters). P4 recomputed the means from the per-question scores:
 
