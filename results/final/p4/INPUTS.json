@@ -48,6 +48,6 @@
       "static": "2f4ad461b4f344c32fd1dc6d0adf83acbbd78937d6ab92f9f858d5edaab0c73c",
       "adaptive": "babca45621befefcb1c754dee34d86ebf42423f8b5d8f250ae7f8c416a47e617"
     },
-    "note": "The run did not store rendered prompts: the contexts were produced afterwards (method to be confirmed by P5). Contexts files are not in the archive; their SHA-256 are in the run manifests. Cost and time as reported by P5: about 0.63 SGD and 2.5 hours for both arms."
+    "note": "The run did not store rendered prompts: the contexts were produced afterwards (confirmed to be the exact rendered text). Contexts files are not in the archive; their SHA-256 are in the run manifests. Cost and time as reported by P5: about 0.63 SGD and 2.5 hours for both arms."
   }
 }
