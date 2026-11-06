@@ -1,5 +1,19 @@
 # P6 local end-to-end UI guide
 
+## Final demo setting — 6 November 2026
+
+The final demo uses **`P6_MAX_CHARS_PER_PASSAGE=2500`**: the critic and generator
+both read 8 passages of at most 2,500 characters. Set it once in ignored
+`.env.p6.local`, then restart the service:
+
+```bash
+printf 'P6_MAX_CHARS_PER_PASSAGE=2500\n' >> .env.p6.local
+./scripts/p6-local.sh start
+```
+
+Confirm `prompt_budget` in `results/p6-local/runtime.json` shows 2,500. This local
+setting does not reach the cluster demo, which uses the prompt code's default.
+
 ## Saved demo settings — 5 November 2026
 
 The permanent defaults now use **top-8 per retrieval round**, **BGE reranker off**,
@@ -45,6 +59,9 @@ From the repository root:
 ```bash
 ./scripts/p6-local.sh start
 ```
+
+Set `P6_MAX_CHARS_PER_PASSAGE=2500` first; see
+[Final demo setting](#final-demo-setting--6-november-2026).
 
 Open [the local UI](http://127.0.0.1:8501). This command starts the P5-compatible
 API and Streamlit with saved configuration. It uses the **existing Ollama

@@ -102,6 +102,8 @@ handoff bundle. Screenshot download is therefore not accepted as passed.
 
 ## Fresh 2,500-character run
 
+**Final demo setting: `P6_MAX_CHARS_PER_PASSAGE=2500`.** Use this for the demo.
+
 Run on 6 November 2026, saved separately in ignored
 `results/p6-ui-verification-20261106-2500-premerge/`. **Label: pre-merge, local
 override, 2,500 characters.** It covers the same five questions and order.
@@ -121,8 +123,15 @@ The source was `e2fe038` with the `scripts/p6_local.py` change later committed a
 | 5 | Answered: accuracy and MRR | 1 | Was refused | `UNCOVERED_REQUIRED_COMPONENT` |
 
 Query 2's critic still reported `MISSING_RESULT` in all three rounds, so clipping
-does not explain that verdict. The new query-1 answer has not yet been checked
-against its passages and reference.
+does not explain that verdict.
+
+Query 1's new answer was checked against its cited passage and QASPER reference
+record at P3 `1a1dc15b`. Its "yes" matches the reference. Its method description
+is supported by the cited Results ::: Accuracy passage, with one simplification:
+the English word's Google translation is checked against the 20 words nearest the
+predicted embedding. The cited passage does not state "yes" outright, which fits
+the `PROVENANCE_OVERSTATED` warning, and the reference's evidence is a different
+sentence (the Europarl dataset). Treat it as supported, keeping the warning.
 
 All citation IDs resolved, matched the selected paper and appeared in the retrieval
 log. No UI evidence errors occurred.
@@ -147,10 +156,11 @@ P3 reference and model availability. Never put credentials in this document.
 Start the service and UI in one terminal:
 
 ```bash
+printf 'P6_MAX_CHARS_PER_PASSAGE=2500\n' >> .env.p6.local
 ./scripts/p6-local.sh start
 ```
 
-In another terminal, from the repository root:
+Skip the first line if `.env.p6.local` already sets it. In another terminal, from the repository root:
 
 ```bash
 .venv-p6/bin/python -m scripts.verify_p6_demo \
@@ -198,7 +208,7 @@ omit agent traces, so use the raw local run records when reviewing the critic.
    submission materials. Verify access from a teammate's account.
 4. Review and commit the script/document/workbook changes on this task branch,
    obtain another member's review and follow CONTRIBUTING.md for the PR.
-5. Check the new query-1 answer and confirm the 2,500 run after P5's merge.
+5. Confirm the 2,500 run after P5's merge.
 6. Manually test Save screenshot in your normal browser, check the resulting
    PNG, and add the final screenshot to the report materials. If no file is
    downloaded, use the browser console to investigate the capture/download path.
