@@ -16,6 +16,7 @@ scores, the Qwen3-8B Hub revision, the Q4.3 annotation record, the Q5 ablations,
 | Settings | `static adaptive static-wide`; critic `generator`; `SCOPED=1`, `OFFLINE=1`, `BGE=0`, `ANSWERS=p5`, `TOP_K=8`, `wide_k=15`; prompt `p5-grounded-qa-v7`, 8 x 1,200 characters, `max_new_tokens=1024` |
 | Delivery | `p4-heldout-51585-20261106.tar.gz`, SHA-256 `96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f` |
 | QA bundle | `p4-qa-51585-20261106.tar.gz`, SHA-256 `0b9f69920aaaa5938eeab43486fb2e6e47c948837c85ee9a700140bf7e657a04` |
+| Live RAGAS bundle | `p4-ragas-live-51585-20261106.tar.gz`, SHA-256 `5dc5708a2b367267b48b8e499caed80de426da195f6c9f7a3d226c3ddba4ced7` |
 
 Hashes of the delivered files:
 
@@ -64,8 +65,17 @@ Hashes of the delivered files:
   one answerable QASPER annotation, so the unanswerable subset is empty and
   `unanswerable_correctness` is not defined. The scorer classifies the two parse-error downgrades
   per arm as failures rather than refusals, which is why the QA refused counts are 4/7/4.
-- **Q4.5 (RAGAS).** `requirements-evaluation.txt` pins `ragas==0.2.15`; no live-judge run was made,
-  so the RAGAS table stays reserved.
+- **Q4.5 (RAGAS).** Live judge run on 6 November 2026 with `ragas==0.2.15`, judge
+  `qwen-plus-2025-12-01`, embedding `qwen3.7-text-embedding` (DashScope OpenAI-compatible
+  endpoint, timeout 120 s, `max_workers=1`, `max_retries=0`). Static: faithfulness 0.8918
+  (n=194), response relevance 0.8542 (n=193), context precision 0.5781 (n=194). Adaptive:
+  0.9069 (n=191), 0.8540 (n=189), 0.5774 (n=191). Refusals and parse-error failures are excluded;
+  one static and two adaptive response-relevance scores are invalid. Paired differences over
+  188-191 questions: faithfulness +0.0116 (-0.0005, 0.027), response relevance -0.0030
+  (-0.0075, 0.0011), context precision -0.0025 (-0.0146, 0.0095), 2,000 resamples, seed 0.
+  DashScope embeddings need `check_embedding_ctx_length=False`; the unchanged evaluator was
+  called through `live-ragas-kit/run_p6_evaluation_dashscope.py`, which sets it. The repository
+  was not modified.
 - **Q4.6 (model/GPU record and generation timing).** Answer-only latency from `answer_s`
   (200 questions per arm, warm engine, serial): static p50/p95 10.6/23.6 s, adaptive 11.2/24.0 s,
   static-wide 10.6/22.2 s. The agent loop (`elapsed_s`) added a mean 5.6 s per adaptive question

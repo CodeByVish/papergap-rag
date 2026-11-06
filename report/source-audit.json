@@ -192,17 +192,20 @@
     "human_review_status": "owner_approved_p5_scope",
     "qa_reference_sha256": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e",
     "qa_bundle_sha256": "0b9f69920aaaa5938eeab43486fb2e6e47c948837c85ee9a700140bf7e657a04",
-    "verification_scope": "Read the delivered 200-question held-out records and run manifest; recomputed answer/refusal counts and answer-only latency percentiles; scored EM/F1 with the project QA policy at commit ad02d51. No RAGAS or model-revision run was performed.",
+    "ragas_bundle_sha256": "5dc5708a2b367267b48b8e499caed80de426da195f6c9f7a3d226c3ddba4ced7",
+    "ragas_judge_model": "qwen-plus-2025-12-01",
+    "ragas_embedding_model": "qwen3.7-text-embedding",
+    "verification_scope": "Read the delivered 200-question held-out records and run manifest; recomputed answer/refusal counts and answer-only latency percentiles; scored EM/F1 with the project QA policy at commit ad02d51; ran the live RAGAS judge on the exact rendered contexts. No model-revision run was performed.",
     "scope": {
       "Q1.2": "Answer/refusal behavior and canonical refusal wording",
       "Q4.1": "Generation approach and final serving/decoding settings",
       "Q4.2": "Prompt rendering and structured-output parsing",
       "Q4.4": "Scorer policy, final answer/refusal records and held-out EM/F1 scores",
-      "Q4.5": "RAGAS runner description; no live-judge scores",
+      "Q4.5": "RAGAS runner description, judge configuration and live scores",
       "Q4.6": "Model/GPU record and final generation timings"
     },
     "does_not_confirm": [
-      "Paired EM/F1 uncertainty or RAGAS scores",
+      "Paired EM/F1 uncertainty or P6's evaluator review",
       "Qwen3-8B Hub revision",
       "Whole Q4 section or team report completion",
       "Annotation independence or group AI-use disclosure"

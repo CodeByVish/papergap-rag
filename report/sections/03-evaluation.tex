@@ -52,17 +52,18 @@ Scores above use job 51585 and P3's \texttt{qa.jsonl} (SHA-256 \texttt{1515fc58.
 \input{review-checks/q4-4}
 
 \subsection{Answer-level RAG metrics (Q4.5)}
-RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project has a runner for RAGAS 0.2.15, but no live-judge results are available. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. Exact metric classes and reference requirements must be frozen with the chosen backend.
-\begin{table}[htbp]\centering
-\caption{Reserved RAG evaluation; valid-score counts must accompany means.}
+RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project runs RAGAS 0.2.15 with a live judge. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. The judge scores the exact rendered contexts (8 passages x 1,200 characters), not the full retrieved chunks.
+\begin{table}[htbp]\centering\small
+\caption{Live RAGAS on the 200 held-out questions; values are means with valid-score counts. Refusals and parse-error failures are excluded from each denominator.}
 \begin{tabular}{lccc}\toprule
 Arm & Faithfulness & Response relevance & Context precision\\\midrule
-Static & \pending & \pending & \pending\\
-Adaptive & \pending & \pending & \pending\\\bottomrule
+Static & 0.892 (194) & 0.854 (193) & 0.578 (194)\\
+Adaptive & 0.907 (191) & 0.854 (189) & 0.577 (191)\\\bottomrule
 \end{tabular}
 \end{table}
+Live judge. On 6 November 2026 the rendered contexts were scored with \texttt{qwen-plus-2025-12-01} as the judge and \texttt{qwen3.7-text-embedding} for response relevance, both through DashScope's OpenAI-compatible endpoint (timeout 120 s, one worker, no automatic retries). Static reaches 0.892 faithfulness (n=194), 0.854 response relevance (n=193) and 0.578 context precision (n=194); adaptive reaches 0.907 (n=191), 0.854 (n=189) and 0.577 (n=191). One static and two adaptive response-relevance scores were invalid. Paired differences over the 188--191 questions scored in both arms are $+0.012$ (95\% interval $-0.001$ to $0.027$) for faithfulness, $-0.003$ ($-0.008$ to $0.001$) for response relevance and $-0.003$ ($-0.015$ to $0.010$) for context precision (2,000 paired bootstrap resamples, seed 0). The intervals do not support an adaptive advantage. Judge scores are model judgments, not human verification.
 \begin{review}{RAGAS prerequisites}
-Choose and record judge and embedding model IDs/revisions, budget, prompts, retry policy and API configuration without publishing credentials. Test the live evaluator. Evaluate against the exact clipped contexts supplied to generation, not full retrieved chunks. Disclose exclusions, refusals, failed judge calls, score counts and judge limitations.
+Record the judge \texttt{qwen-plus-2025-12-01}, embedding \texttt{qwen3.7-text-embedding}, DashScope endpoint, timeout, concurrency and retry policy. DashScope's embeddings endpoint requires \texttt{check\_embedding\_ctx\_length=False}; without it response relevance fails with a bad request, so the runner wrapper sets it. Valid-score counts are in the table; refusals, parse errors and invalid scores are excluded. Review a sample manually and confirm that the judge measures the intended property; P6's evaluator review remains pending.
 \end{review}
 
 \input{review-checks/q4-5}
