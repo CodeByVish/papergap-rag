@@ -177,7 +177,24 @@ def setup():
     print("Setup complete. Run: ./scripts/p6-local.sh start", flush=True)
 
 
-def make_retriever(passages, offline=None):
+class ObservedSource:
+    """Record what one retrieval source returned, without changing it."""
+
+    def __init__(self, source):
+        self.source, self.hits = source, []
+
+    def _seen(self, hits):
+        self.hits = list(hits)
+        return hits
+
+    def retrieve(self, *args, **kwargs):
+        return self._seen(self.source.retrieve(*args, **kwargs))
+
+    def retrieve_corpus(self, *args, **kwargs):
+        return self._seen(self.source.retrieve_corpus(*args, **kwargs))
+
+
+def make_retriever(passages, offline=None, on_progress=None):
     from scripts.build_indexes import PINNED_REVISION
     from scripts.demo_hybrid import RERANKER_REVISION
     from scripts.demo_p1 import _check_same_passages
@@ -206,12 +223,54 @@ def make_retriever(passages, offline=None):
         if os.environ["DEMO_AGENT_BGE"] == "1"
         else None
     )
-    return CorpusHybridRetriever(
-        BM25Retriever(passages),
-        dense,
+    sparse_source, dense_source = BM25Retriever(passages), dense
+    if on_progress:
+        sparse_source, dense_source = ObservedSource(sparse_source), ObservedSource(dense_source)
+    hybrid = CorpusHybridRetriever(
+        sparse_source,
+        dense_source,
         scorer=scorer,
         candidate_k=int(os.environ["DEMO_AGENT_CANDIDATE_K"]),
     ).retrieve
+    if not on_progress:
+        return hybrid
+
+    def observed(query, paper_id=None, top_k=5, **scope):
+        hits = hybrid(query, paper_id, top_k, **scope)
+        ranks = {"bm25": {}, "dense": {}}
+        found = {}
+        for name, source in (("bm25", sparse_source), ("dense", dense_source)):
+            for hit in source.hits:
+                ranks[name][hit.passage.passage_id] = hit.rank
+                found[hit.passage.passage_id] = hit.passage
+        kept = {hit.passage.passage_id for hit in hits}
+        rows = [
+            {
+                "passage_id": pid,
+                "title": passage.title,
+                "section": passage.section,
+                "paper_id": passage.paper_id,
+                "bm25_rank": ranks["bm25"].get(pid),
+                "dense_rank": ranks["dense"].get(pid),
+                # Same formula and default k as CorpusHybridRetriever's fusion.
+                "rrf_score": round(sum(1 / (60 + r[pid]) for r in ranks.values() if pid in r), 5),
+                "kept": pid in kept,
+            }
+            for pid, passage in found.items()
+        ]
+        rows.sort(key=lambda row: (not row["kept"], -row["rrf_score"]))
+        sparse_ids, dense_ids = set(ranks["bm25"]), set(ranks["dense"])
+        on_progress(
+            f"Hybrid search: BM25 {len(sparse_ids)} + dense {len(dense_ids)} candidates, "
+            f"{len(sparse_ids & dense_ids)} in both, RRF merged {len(found)}, "
+            f"{'reranked' if scorer else 'no reranker'}, top {len(hits)} kept.",
+            "search",
+            "search",
+            rows,
+        )
+        return hits
+
+    return observed
 
 
 def make_generator():
@@ -246,20 +305,22 @@ def serve():
     from src.agent.qwen_client import GeneratorChatClient
     from src.agent.sections import make_section_selector
     from src.generation.pipeline import GroundedQAPipeline
-    from src.generation.server import create_app, load_passage_index
+    from src.generation.server import ProgressLog, create_app, load_passage_index
 
     corpus = Path(os.environ["PAPERGAP_CORPUS"])
     passages = load_passages(corpus)
     generator = make_generator()
     generator.load()
-    retriever = make_retriever(passages)
-    options = {}
+    progress = ProgressLog()
+    retriever = make_retriever(passages, on_progress=progress.add)
+    options = {"progress": progress}
     if os.environ["P6_PIPELINE"] == "adaptive":
         options["record_fn"] = make_record_fn(
             retriever,
             GeneratorChatClient(generator),
             max_retries=int(os.environ["DEMO_AGENT_MAX_RETRIES"]),
             default_top_k=int(os.environ["P6_TOP_K"]),
+            on_progress=progress.add,
             section_selector=make_section_selector(passages)
             if os.environ["DEMO_AGENT_SCOPED"] == "1"
             else None,
