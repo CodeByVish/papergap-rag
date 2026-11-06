@@ -15,34 +15,87 @@ Static top ten & 0.974 & 30/32 & $\leq 10$\\\bottomrule
 The generator-view critic run (job 51172) improves mean evidence recall over static top five by 0.031, with a reported 95\% paired bootstrap interval of [0.000, 0.094] (2,000 resamples). At a matched passage budget, its difference from plain retrieval is $-0.042$, with interval [$-0.135$, 0.062]. Neither supports a reliable adaptive advantage. Static top eight recovers substantially more evidence on this slice. The agent audit further reports that 95.7\% of retries add no gold passage and 56.5\% occur when all gold is already retrieved. These observations suggest that critic calibration and stopping, rather than query wording alone, limit this implementation.
 
 \begin{review}{Strength and provenance of agent evidence}
-Table~\ref{tab:agent}, intervals and retry percentages are transcribed from the agent experiment contribution; raw cluster job outputs are absent locally. Attach jobs 51172 and associated depth/audit outputs, verify the reported bootstrap output and denominator, and regenerate the final tables from those files. The slice was reused for development, with one run per configuration. Do not generalize these findings to held-out answer quality.
+The development table and intervals are transcribed from the agent experiment contribution (jobs 50701, 50977, 51172, 51521; the cluster outputs are in the team's delivery archives). The held-out tables below are scored from job 51585 with the frozen record \texttt{configs/p4\_freeze.json}; the scoring script refused any run whose manifest differed from the record. Each configuration was run once. Bootstrap intervals resample questions, not papers, unlike the paired retrieval comparison above. Part of the held-out list (40 questions) was read by the agent developer before the freeze, hence the 160-question column.
 \end{review}
+
+\subsection{Held-out evaluation of the agent}\label{sec:agent-heldout}
+The configuration was frozen on 6 November 2026 (code commit \texttt{ad02d51}) and run once on the 200 held-out questions: top eight per round, no reranking, at most two retries, a Qwen3-8B critic reading the generator's view, and answers from the same generator in every arm, each passage cut at 1{,}200 characters. All 200 questions are answerable and have mapped gold. Table~\ref{tab:heldout} gives mapped-evidence recall.
+\begin{table}[htbp]\centering\small
+\caption{Held-out mapped-evidence recall by arm (job 51585). Complete evidence in brackets.}\label{tab:heldout}
+\begin{tabular}{lrrr}\toprule
+ & Static, top eight & Adaptive & Static-wide (15)\\\midrule
+All 200 questions: recall & 0.858 & 0.871 & 0.953\\
+\quad complete evidence & 154 & 157 & 183\\
+\quad mean passages & 7.97 & 8.28 & 13.95\\
+160 questions not annotated by P4: recall & 0.881 & 0.897 & 0.959\\
+\quad complete evidence & 127 & 130 & 148\\
+\quad mean passages & 7.98 & 8.32 & 13.97\\\bottomrule
+\end{tabular}
+\end{table}
+Paired differences (mean per-question recall, 95\% bootstrap interval, 2{,}000 resamples, seed 0): adaptive minus static top eight is $+0.013$ [0.001, 0.028] on 200 questions and $+0.016$ [0.000, 0.038] on the 160. Against plain retrieval over the same number of passages (8.28 and 8.32 on average) the matched-budget difference is $+0.001$ [$-0.014$, 0.016] and $+0.009$ [0.000, 0.025]. The loop raised recall on 4 of 200 questions (three reached complete evidence), lowered it on none, and left 196 unchanged. Reading more passages is better than retrying: plain top ten recovers 0.897 and top fifteen 0.953 (Table~\ref{tab:depth}), against 0.871 for the loop at 8.3 passages. The generator renders at most eight passages, so the fifteen-passage figure shows headroom for retrieval, not evidence the answer step used.
+
+The loop was expensive for this gain. It ran retries on 45 of 200 questions (88 retries); 95.5\% added no gold passage, 62.5\% were made when all gold was already retrieved, and 46.6\% added no new passage. The depth-8 development check (job 51521) predicted this closely (90.5\%, 61.9\% and 40.6\%). The critic returned a model verdict for 95.8\% of its calls and fell back to the rules for 4.2\% (10 of 239). Two thirds of its ``insufficient'' verdicts (54 of 83) were issued with all gold already in view, and 29 of its 156 ``sufficient'' verdicts were issued with gold missing.
+
+\paragraph{Abstention.}
+The held-out list has no unanswerable question, so the correct-refusal rate and the proposed refusal gate cannot be assessed on it; the gate remains disabled as fixed before the run. The critic was unsatisfied after its last round on 22.0\% of the answerable questions (21.9\% on the 160), against the 5\% the gate allows. The generator refused the same six questions in every arm, and the critic's own ``insufficient information'' stop added three more in the adaptive arm; because every question is answerable, those three are false refusals (1.5\%) caused by the loop.
+
+\paragraph{Answer quality.}
+The generated answers were scored against the QASPER reference answers with the project's proposed scorer (normalized exact match and token F1, best matching reference; policy version 0, not the official QASPER evaluator). Exact match is 0.005 in every arm (one question of 200), because the generator writes sentences and the references are mostly short spans, so we rely on F1. Mean F1 is 0.368 for static top eight, 0.366 for the adaptive arm and 0.368 for the fifteen-passage arm. The paired difference, adaptive minus static, is $-0.002$ [$-0.011$, 0.006] on all 200 questions (174 papers) and $+0.0001$ [$-0.007$, 0.008] on the 160 not annotated by P4 (142 papers; 1{,}000 paper-level bootstrap resamples, seed 42). The adaptive arm answered 191 questions against 194 for static (coverage 95.5\% against 97.0\%): its three extra refusals are the critic's. Two answers per arm were downgraded after a parse error and count as failures in the scorer, which is why it reports four refusals for the static arm where the generator's own count is six. All 200 questions are answerable, so the unanswerable-correctness metric is not available. Faithfulness and the other RAG metrics are reported separately \todo{RAGAS from P5}.
+
+\paragraph{Reading.}
+On unseen questions the loop behaves as it did on the development slice. It found a gold passage that plain top-eight retrieval missed on 2\% of questions, at the price of 88 retries, about 5.6\,s of agent time per question and three false refusals, and it does no better than reading the same number of passages; the answers it produces score no better (F1 0.366 against 0.368). All of this is at the primary 1{,}200-character budget; part of the loop's waste comes from the clipped view the critic reads (Section~\ref{sec:context}). The result does not support the claim that evidence-gap-driven retrieval improves recall. It supports the narrower claims that the loop never lowered recall, that its critic is usable but over-strict, and that retrieval depth is the factor that matters.
+
+\subsection{Context budget: a post-hoc sensitivity analysis}\label{sec:context}
+The generator renders at most eight passages and cuts each at a character limit. The primary result, whose configuration was fixed before any held-out question was run, used 1{,}200 characters; every result above is from that run. After the primary run had finished, we repeated the configuration with 2{,}500 characters per passage, first on the 40 development questions and then on the same 200 held-out questions. Both are \emph{post-hoc sensitivity analyses}: they were decided with the primary result known, they are not part of the frozen protocol, and they do not replace the primary result, which stands unchanged.
+
+On the development slice (one run per cell; 32 answerable and 8 unanswerable questions; the critic and the generator read the same budget) the larger budget gives better-grounded citations and a cheaper loop (Table~\ref{tab:context}). Gold citation recall rises by 0.053 (static) and 0.043 (adaptive) and gold citation precision by 0.039 and 0.036; the adaptive arm makes 18 retries instead of 32 and detects 10 gaps instead of 18, because the critic sees more complete text. It also costs a little refusal calibration: of the 8 unanswerable questions, 5 are answered at 1{,}200 characters and 6 at 2{,}500, the extra one with a sentence that does not answer the question; answerable questions stay at 31 of 32. The loop's own gain in gold citation recall over static is $+0.032$ at 1{,}200 and $+0.022$ at 2{,}500 characters, and its gain in citation precision is about zero at both. These are one run on 40 questions without intervals, so we read them as suggestive.
+\begin{table}[htbp]\centering\small
+\caption{Context-budget check on the 40 development questions (post-hoc; one run per cell).}\label{tab:context}
+\begin{tabular}{lrrrr}\toprule
+ & Static 1{,}200 & Static 2{,}500 & Adaptive 1{,}200 & Adaptive 2{,}500\\\midrule
+Answered / refused & 36 / 4 & 37 / 3 & 36 / 4 & 37 / 3\\
+Gold citation recall & 0.694 & 0.747 & 0.726 & 0.769\\
+Gold citation precision & 0.580 & 0.619 & 0.577 & 0.613\\
+Mean rounds & 1.00 & 1.00 & 1.80 & 1.45\\
+Retries & 0 & 0 & 32 & 18\\
+Gaps detected & 6 & 6 & 18 & 10\\\bottomrule
+\end{tabular}
+\end{table}
+\paragraph{Held-out sensitivity at 2{,}500 characters.}
+The same 200 held-out questions were run once more at 2{,}500 characters (job 51705) and scored afterwards with the same frozen scripts. \todo{held-out result at 2{,}500 characters (job 51705) not yet scored: add one row per arm next to the primary result, labelled post-hoc}
+
+
+Claude (Anthropic) was used through Claude Code to assist with implementing and testing the agent and experiment scripts, scoring the held-out run, and drafting the agent chapter and documentation; the author reviewed and ran these.
 
 \subsection{Grounded answers and refusal}
 Closed citation IDs, structured claim provenance, explicit refusal and validation make answer support inspectable. They target a practical failure: a fluent answer can contain numbers or claims that the retrieved text does not justify. However, their individual contribution to faithfulness has not been measured.
 
 A proposed rule that would force refusal whenever the critic remains unsatisfied is disabled. In job 51172 it would refuse six of eight unanswerable questions but also nine of 32 answerable questions (28.1\%), exceeding the proposed 5\% false-refusal limit. In a separate generated-answer development run (job 51175), both static and adaptive arms refuse three of eight unanswerable questions; answer correctness has not been scored. The loop therefore has no demonstrated refusal-quality gain.
 
-\subsection{Controlled ablations still required}
-Table~\ref{tab:agent} tests retrieval depth and adaptation; it does not isolate each downstream innovation or satisfy the full factorial comparison. Keep retrieval, generation prompt, model settings and question set fixed when changing one component.
+\subsection{Ablation: what was and was not isolated}
+The handout asks for the contribution of each innovation alone and together. Two components were varied (query rewriting through the critic-controlled retry loop, and reranking) and Table~\ref{tab:ablation} shows what exists for each cell. Rewriting off and on are the static and adaptive arms of the held-out run. Reranking was compared with plain RRF at the retrieval level only: on the 200-question relevance pool (Table~\ref{tab:retrieval}) it lowered all four metrics, and in an earlier paired run on the development items it lowered recall at every depth (top five 0.724 against 0.740, top ten 0.885 against 0.974). No arm with reranking was run on the held-out questions, and none combines it with the loop: the freeze record fixed the arms before the run and forbids adding arms after the results are known. The answer-quality columns are therefore incomplete, and we do not claim separate answer-quality gains for rewriting, reranking or post-generation validation.
 \begin{table}[htbp]\small\centering
-\caption{Reserved factorial ablation requested by the handout. All four results are pending.}
-\begin{tabularx}{\linewidth}{Yccccc}\toprule
-Configuration & Rewriting & Reranking & EM/F1 & Faithfulness & Latency\\\midrule
-Neither & Off & Off & \pending & \pending & \pending\\
-Rewriting only & On & Off & \pending & \pending & \pending\\
-Reranking only & Off & On & \pending & \pending & \pending\\
-Both & On & On & \pending & \pending & \pending\\\bottomrule
+\caption{Ablation of rewriting and reranking. Mapped-evidence recall and latency are from the held-out run (200 questions); ``not run'' marks cells that were not run.}\label{tab:ablation}
+\begin{tabularx}{\linewidth}{Ycccccc}\toprule
+Configuration & Rewriting & Reranking & Recall & EM/F1 & Faithfulness & p50 (s)\\\midrule
+Neither (static) & Off & Off & 0.858 & 0.005 / 0.368 & \pending & 10.1\\
+Rewriting only (adaptive) & On & Off & 0.871 & 0.005 / 0.366 & \pending & 16.4\\
+Reranking only & Off & On & not run & not run & not run & not run\\
+Both & On & On & not run & not run & not run & not run\\\bottomrule
 \end{tabularx}
 \end{table}
-\begin{review}{Define the actual interventions before running}
-Decide whether ``rewriting'' includes the full critic-controlled retry loop, and state its passage/model-call budget. The table above isolates rewriting and reranking, but not post-generation validation. Add a paired validation-on/off comparison if claiming that validation improves downstream quality. Keep citation prompting fixed and record raw versus validated answers. If compute is insufficient, disclose the incomplete ablation rather than claiming isolated gains.
-\end{review}
-\assetplaceholder{Reserved qualitative comparison}{Insert a reviewed question with static/adaptive answers, exact displayed evidence, claim-level support and a failure explanation. Include a negative example rather than selecting only successes.}
+\subsection{Examples from the held-out run}
+Three held-out questions illustrate what the loop does well and badly. All three are among the 160 that P4 did not annotate; they were chosen from the four questions where the loop gained evidence and the three where its critic refused, and are explanations, not an estimate of frequency. Reference answers are QASPER's.
+
+\textbf{A gain.} ``What QA system was used in this work?'' (paper \texttt{1908.10149}; reference: the Rasa natural language understanding framework). Plain top-eight retrieval misses the one gold passage, from the section ``Question Answering System''. The static arm answers that the system is ``a baseline QA system that provides a top-10 ranking'', citing three passages that do not contain the answer. The adaptive arm retrieves again twice with the query extended by ``name baseline'' and then ``name''; the second retry retrieves the gold passage, and the answer, ``based on the Rasa natural language understanding (NLU) framework'', cites it.
+
+\textbf{A partial gain.} ``What types of social media did they consider?'' (paper \texttt{1809.01202}; reference: Facebook status update messages). The static arm answers ``tweets and social media texts in general''. After one retry with the query extended by ``dataset experimental setup evaluation metrics'', the adaptive arm retrieves the dataset passage (``3,268 random Facebook status update messages'') and cites it, but still adds ``and tweets'' from another passage, so the answer is better supported and not fully correct.
+
+\textbf{A failure caused by the loop.} ``What language is the data in?'' (paper \texttt{1903.11437}; reference: English, German and French). The mapped gold passage, about Europarl data ``in several languages'', is already among the eight passages of the first round. The static arm answers ``English'' (partly right, and not citing the gold passage). The critic reads the same eight passages, concludes that none states the language and stops with \texttt{INSUFFICIENT\_INFORMATION}, so the adaptive arm refuses. A critic that is over-strict turns a partly correct answer into a refusal; it did so for three of 200 questions.
 
 \input{review-checks/q5}
 
 \section{Conclusions, limitations and future work}
-Current evidence supports hybrid retrieval as a useful baseline and argues against retaining this reranker configuration. On the available agent development slice, increasing initial retrieval depth is more effective than adaptive retries. The system provides a working route from a scientific question to a cited answer, but final answer quality remains unmeasured. Annotation independence, the lack of independent third-person adjudication, evaluation-question exposure and context clipping limit the conclusions that can be drawn. Final evaluation should determine whether the agent's additional model calls provide an answer-quality benefit under a fixed evidence budget.
+Current evidence supports hybrid retrieval as a useful baseline and argues against retaining this reranker configuration. On the frozen held-out run, increasing the initial retrieval depth recovers more evidence than adaptive retries: the evidence-gap loop adds 0.013 to the mapped-evidence recall of static top-eight retrieval, adds nothing over reading the same number of passages, and costs about 60\% more median latency. The system provides a working route from a scientific question to a cited answer, and its answers score a token F1 of 0.368 without the loop and 0.366 with it, so the loop's extra model calls bought no measurable answer quality; faithfulness is reported separately \todo{RAGAS from P5}. Annotation independence, the lack of independent third-person adjudication, evaluation-question exposure (40 held-out questions were read before the freeze), the absence of unanswerable questions in the held-out list and context clipping limit the conclusions that can be drawn. Final evaluation should determine whether the agent's additional model calls provide an answer-quality benefit under a fixed evidence budget. A larger per-passage context budget is the most promising next step: in a post-hoc check it improved citation grounding and halved the critic's retries on the development slice (Section~\ref{sec:context}), but it has not been adopted as the primary configuration.
 
 Future work should first address these limitations. Sentence-aware evidence selection or a larger context budget could reduce the loss of useful text through truncation; both should be tested against the current prompt budget. The critic should be calibrated to avoid unnecessary retries and evaluated against static top-eight retrieval at comparable evidence and latency budgets. Stronger evaluation requires verified annotation provenance, independent review of disagreement resolutions, a documented independent evaluation set and repeated runs to quantify variability. Finally, indexing table and figure text could extend coverage beyond the current full-text passages. These are proposed experiments; their effects on answer quality and cost remain to be measured.

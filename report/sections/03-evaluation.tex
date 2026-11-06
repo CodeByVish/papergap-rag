@@ -10,7 +10,7 @@ Insert the final generator revision, precision, decoding settings, GPU model, de
 \input{review-checks/q4-1}
 
 \subsection{Preprocessing (Q4.2)}
-We preserve case, punctuation and numerical values in stored evidence so that retrieved passages remain traceable to their source text. Matching representations are processed separately: BM25 uses Unicode word-token extraction and case folding to reduce variation due to letter case, while Dense uses the model's own tokenizer rather than BM25 preprocessing. Only Dense queries receive a retrieval instruction; query and passage embeddings are L2-normalized for cosine-similarity search. The encoder's 512-token input limit can truncate longer passages without changing their stored text. Generation renders at most eight passages, each clipped at 1,200 characters, and parses structured output with limited repair of malformed escapes. Consequently, retrieval can find a relevant passage whose useful sentence is absent from the prompt. The agent development analysis reports that 71\% of mapped gold passages exceed the character limit.
+We preserve case, punctuation and numerical values in stored evidence so that retrieved passages remain traceable to their source text. Matching representations are processed separately: BM25 uses Unicode word-token extraction and case folding to reduce variation due to letter case, while Dense uses the model's own tokenizer rather than BM25 preprocessing. Only Dense queries receive a retrieval instruction; query and passage embeddings are L2-normalized for cosine-similarity search. The encoder's 512-token input limit can truncate longer passages without changing their stored text. Generation renders at most eight passages, each clipped at 1,200 characters, and parses structured output with limited repair of malformed escapes. Consequently, retrieval can find a relevant passage whose useful sentence is absent from the prompt. On the 40 development questions, 33 of the 45 mapped gold passages (73.3\%) exceed the 1{,}200-character limit and 36.6\% of their text lies beyond it; on the held-out questions 232 of the 347 mapped gold passages (66.9\%) exceed it. Section~\ref{sec:context} reports a post-hoc check with a 2{,}500-character limit. The same limit shows in the token counts: over 200 questions the generator received 934{,}334 prompt tokens in the static arm and 934{,}460 in the 15-passage arm, so passages beyond the eighth were retrieved but not rendered.
 
 
 \input{review-checks/q4-2}
@@ -32,15 +32,16 @@ The implemented scorer uses a proposed project policy, project QA policy, versio
 
 For scientific generative answers, overlap scores can penalize correct paraphrases and reward incomplete wording. We therefore report them with refusal behavior, failures and RAG metrics rather than treating either as a complete quality measure. Relevance labels alone do not supply answer references; QA scoring also needs the linked QASPER reference answers.
 \begin{table}[htbp]\centering\small
-\caption{Reserved final QA table. No final answer scores are available in this draft.}
+\caption{Held-out QA scores (job 51585), project scorer version 0. EM and token F1 are against the best-matching QASPER reference. All 200 questions are answerable, so unanswerable correctness is not available.}
 \begin{tabularx}{\linewidth}{Ycccc}\toprule
 Arm / subset & EM & Token F1 & Unanswerable correct & Coverage\\\midrule
-Static / all 200 & \pending & \pending & \pending & \pending\\
-Adaptive / all 200 & \pending & \pending & \pending & \pending\\
-Static / remaining 160 & \pending & \pending & \pending & \pending\\
-Adaptive / remaining 160 & \pending & \pending & \pending & \pending\\\bottomrule
+Static / all 200 & 0.005 & 0.368 & n/a & 0.970\\
+Adaptive / all 200 & 0.005 & 0.366 & n/a & 0.955\\
+Static / 160 not annotated by P4 & 0.005 & 0.369 & n/a & 0.969\\
+Adaptive / 160 not annotated by P4 & 0.005 & 0.369 & n/a & 0.950\\\bottomrule
 \end{tabularx}
 \end{table}
+Coverage is the share of questions the system answered (the rest were refused or failed). The paired F1 difference between the arms is $-0.002$ [$-0.011$, 0.006] on 200 questions and $+0.0001$ [$-0.007$, 0.008] on the 160 (paper-level bootstrap, 1{,}000 resamples, seed 42). Exact match is close to zero because the model writes sentences and QASPER's references are often short spans or yes/no answers; 21 of the 200 questions score an F1 of zero in each arm (this includes the refusals and failures). These scores come from an overlap metric and should be read with the faithfulness results and the examples in Q5, not alone.
 \begin{review}{Final QA run}
 Complete and verify the freeze record, then score paired arms on identical questions. Report answered, refused, failed and missing counts, the answerable/unanswerable denominators, reference policy and confidence intervals. The agent developer saw 40 evaluation questions while annotating: report both all 200 and the remaining 160, with exposure disclosed. Do not call the 160 independently held out until other members' prior question use is audited.
 \end{review}
@@ -67,7 +68,17 @@ Choose and record judge and embedding model IDs/revisions, budget, prompts, retr
 The local five-query measurements in Q2.2 are the directly inspected end-to-end timing evidence. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the current laptop timings or interpreted as a controlled final speedup.
 
 Per-paper exact search depends mainly on the selected paper's passages. All-papers exact vector search grows with the indexed corpus. The current service permits one active answer request and returns HTTP 429 when busy; serial demonstration throughput does not establish concurrent capacity. Local and university model serving avoids per-call API charges, but compute and energy are not free. Paid judge cost remains unmeasured.
-\assetplaceholder{Reserved final performance figure}{Insert paired end-to-end p50/p95 latency and stage breakdowns from the final GPU run; report hardware, warm-up, errors, tokens and serial/concurrent policy.}
+End-to-end timing comes from the frozen held-out run (job 51585): 200 questions per arm, one NVIDIA A40, Qwen3-8B in bfloat16 through vLLM 0.11.0, retrieval on CPU, one request at a time with the engine warm and no score cache. Latency is agent time plus generation time per question; throughput divides the questions by the wall-clock time the runner measured for each arm, not by summed latencies (Table~\ref{tab:perf}). The two answers per arm that the validator downgraded after a parse error count as technical errors in the evaluation tool, so percentiles use 198 questions.
+\begin{table}[htbp]\centering\small
+\caption{Held-out end-to-end performance, 200 questions per arm, serial requests on one A40. Tokens are the generator's totals.}\label{tab:perf}
+\begin{tabular}{lrrrrrr}\toprule
+Arm & Wall time (s) & Questions/s & p50 (s) & p95 (s) & Prompt tokens & Output tokens\\\midrule
+Static (8 passages) & 2{,}519 & 0.079 & 10.1 & 21.5 & 934{,}334 & 73{,}586\\
+Adaptive & 3{,}583 & 0.055 & 16.4 & 31.5 & 928{,}803 & 74{,}598\\
+Static-wide (15 passages) & 2{,}456 & 0.081 & 10.1 & 21.2 & 934{,}460 & 73{,}573\\\bottomrule
+\end{tabular}
+\end{table}
+Generation dominates: retrieval and fusion take 0.04\,s per question on the cluster CPU, against about 12\,s for the answer. The agent loop adds a mean 5.6\,s per question, 251 critic calls over 200 questions, and raises median latency by about 60\% (16.4 against 10.1\,s) and lowers throughput by about 30\%, for a recall gain of 0.013 (Section~\ref{sec:agent-heldout}). The critic's own token use was not recorded, so the adaptive arm's token total is a lower bound. There is no per-call monetary cost, because the model is served locally; GPU time was 2\,h 23\,min for the three arms. Concurrent throughput was not measured: calls were serial, and these figures are not a scaling benchmark.
 \begin{review}{Final performance measurements}
 Populate elapsed wall time, processed-question count, successful answers, latency percentiles and judge cost from a single documented final setup. Separate startup, fresh inference and cache-hit timing. Historical cluster timings summarized in the workbook lack raw local records and are not used here as final benchmark results.
 \end{review}
