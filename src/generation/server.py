@@ -600,6 +600,12 @@ def create_app(
             "backend": backend_info.get("backend"),
             "model_id": backend_info.get("model_id"),
             "prompt_version": prompt_version,
+            # The demo's rendering budget is not in the frozen answer contract,
+            # so health must expose it or a 1,200/2,500 switch is invisible.
+            "prompt_budget": {
+                "max_passages": pipeline.config.prompt.max_passages,
+                "max_chars_per_passage": pipeline.config.prompt.max_chars_per_passage,
+            },
             "retrieval": retriever is not None or record_fn is not None,
             "agent": record_fn is not None,
             "corpus_search": allow_corpus,
