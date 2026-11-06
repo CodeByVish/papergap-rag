@@ -19,6 +19,8 @@ before the run are in `docs/P4_FREEZE_RECORD.md` and `configs/p4_freeze.json`.
 | `ragas/{static,adaptive}/`, `ragas/compare/` | Live RAGAS scores (faithfulness, response relevance, context precision) with per-question scores, run manifests, the judge configuration (no key) and the paired differences; `ragas/kit/` has the run script and the wrapper patch |
 | `PIPELINE_NOTES.md` | How the P6-pipeline outputs were produced |
 
+`sensitivity-2500/` holds the post-hoc 2,500-character run on the same 200 held-out questions (job 51705): the job's manifest and P5's notes, retrieval and answer scores under the `development` label (the frozen held-out script refuses a run whose prompt budget differs from the record), paired comparisons with the 1,200-character run, and the validator counts. It is a sensitivity analysis next to the primary result, never instead of it; RAGAS was not run for it, and it ran on a different GPU at a later commit (`RESULTS.md`, section 7).
+
 A second folder, `development-ablation/`, holds the 2 x 2 ablation of rewriting and reranking on the 40 development questions (jobs 51690 and 51802): `jobs/` (P5's manifests, metrics and job notes), `retrieval/` (recall scores and the paired bootstrap), `qa/` (token F1 per cell), `compare/` (paired differences). It is a development-slice result, one run per cell, and the two jobs differ in commit and GPU (see `RESULTS.md`, section 6).
 
 ## What is not here
@@ -28,8 +30,7 @@ A second folder, `development-ablation/`, holds the 2 x 2 ablation of rewriting 
   `96b3e0fc82314afa9527e4f0e351264c1b2163f8670414360269d62fdb6ad08f`); the hashes of each file are in `INPUTS.json`.
 - **The corpus, the dense index and the model** are not duplicated; their hashes are in `INPUTS.json`.
 - **The RAGAS judge traces** (2.4 MB per arm) and the rendered-contexts files are not included; their hashes are in `INPUTS.json` and the run manifests. The fifteen-passage arm was not judged.
-- **The 2,500-character runs** (development job 51691, held-out job 51705) are post-hoc sensitivity analyses and are
-  not part of this folder; they are added under a separate label once scored.
+- **The 2,500-character development job 51691** is not in this folder (P5's context-budget check on the 40 development items; it is in `docs/P4_REPORT_CONTRIBUTION.md`, section 3.9). The held-out 2,500 run (job 51705) is in `sensitivity-2500/`, labelled post-hoc.
 
 ## Read before using the tables
 

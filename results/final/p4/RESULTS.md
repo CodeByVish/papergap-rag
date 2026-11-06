@@ -116,7 +116,28 @@ zero; the reranker costs about 4 s of agent time per question (CPU cross-encoder
 five comparisons and the held-out run found no F1 gain from the loop. Whole-job wall times (15:21 and 31:12) are not comparable: the jobs
 ran on different GPUs and the static arm's generation time alone differs (9.3 s against 19.5 s). Faithfulness was not judged here.
 
-## 7. Readings and limits
+## 7. Post-hoc context-budget sensitivity (`sensitivity-2500/`)
+
+Job 51705 (P5) repeated the held-out run with 8 passages of at most 2,500 characters instead of 1,200: same 200 questions, corpus, index and
+settings; L40S GPU (the primary run: A40) and a later commit `012ae82` that adds the budget override and a job-script option. It was
+started after the primary run had finished and is a sensitivity analysis, not a replacement. Scored by P4 against the same gold and with the
+same scorers under the `development` label; RAGAS was not run.
+
+| 200 questions | static 1,200 | static 2,500 | adaptive 1,200 | adaptive 2,500 |
+| --- | ---: | ---: | ---: | ---: |
+| Mapped-evidence recall | 0.858 | 0.858 | 0.871 | 0.865 |
+| Retries | 0 | 0 | 88 | 72 |
+| Critic unsatisfied, answerable (%) | n/a | n/a | 22.0 | 16.5 |
+| Answered (generator) | 194 | 193 | 191 | 192 |
+| Token F1 | 0.3681 | 0.3731 | 0.3656 | 0.3688 |
+| Citation-provenance warnings | 23 | 15 | 24 | 19 |
+
+Static retrieval is identical in all 200 questions. Adaptive minus static recall +0.007 [0.000, 0.019] (primary +0.013); matched-budget -0.008
+[-0.022, 0.001]. Token F1, 2,500 minus 1,200 (paper-level bootstrap, 1,000 resamples, seed 42): static +0.005 [-0.019, 0.029], adaptive +0.003
+[-0.021, 0.028]; loop at 2,500: -0.004 [-0.015, 0.005]. The larger budget gives better-cited answers and a cheaper, less over-strict critic but
+does not change the conclusions about the loop. Wall times (1:49:19 against 2:23:09) are not comparable across GPUs. See `validator_counts.md`.
+
+## 8. Readings and limits
 
 - The held-out run does not support the claim that evidence-gap-driven retrieval improves recall or answers: the gain over
   static top 8 is small, there is none over reading the same number of passages, and F1 is unchanged. Retrieval depth is
@@ -125,5 +146,5 @@ ran on different GPUs and the static arm's generation time alone differs (9.3 s 
   comes from the clipped view the critic reads (development check, job 51691); this was not tested on the held-out
   primary run.
 - A 2,500-character budget was run afterwards as post-hoc sensitivity analyses (development job 51691, held-out job
-  51705). They are not included here and never replace the primary result.
+  51705, section 7). They never replace the primary result.
 - Each arm ran once; run-to-run variation of the critic was not measured.
