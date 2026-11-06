@@ -689,7 +689,13 @@ available as the default option. 60 tests pass in the P6/P1/P2 evaluation suites
 
 Superseded: the 188 disagreements now have final labels from a disclosed review,
 and the drop policies have been removed. `finalize-labels --disagreements resolved`
-builds the 200-question, 1,853-pair draft in `data/gold/p6/draft-v3/`.
+builds the 200-question, 1,853-pair gold.
+
+Formal gold on P6/formal-gold: `data/gold/p6/final/` (role `held_out`, labels
+unchanged from the draft, `902dab4c`) replaces `draft-v3`. It assumes P3 agrees
+with every checklist item; P3's written confirmation and team sign-off are
+required on the PR before merge. Retrieval scoring is ready; other runs wait for
+the P4 freeze.
 
 ## P2 configuration and annotation audit — 5 November 2026
 
@@ -712,3 +718,17 @@ remain active. Existing explicit deployment overrides are preserved. Verificatio
 24 local/demo tests passed and the cluster shell syntax check passed. Preparing
 the larger local index and restarting/live-checking an actual service remain
 runtime actions; no new semantic-quality or final-evaluation claim is made.
+
+## P4 held-out run — 6 November 2026
+
+The freeze record (`configs/p4_freeze.json`, commit `ad02d51`, top 8, three arms, answers on) was written at
+09:47 SGT. P5 ran it once on P3's frozen 200-question list as Slurm job 51585 (2 h 23 min, clean checkout,
+no rerun; the wide arm used `--wide-k 15` through a copy of the sbatch outside the repository). P4 scored it
+after the run with P3's gold mapping: `scripts/score_agent_records.py --role held-out` accepted the manifest
+against the record. Result, mean gold recall on all 200 / on the 160 questions P4 did not annotate: static
+top 8 0.858 / 0.881, adaptive 0.871 / 0.897 (8.3 passages, 1.44 rounds), static-wide 0.953 / 0.959 (13.9
+passages). Adaptive against static: +0.013 (95% CI 0.001 to 0.028) and +0.016 (0.000 to 0.038). Adaptive
+against the plain ranking at equal passages: +0.001 (-0.014 to 0.016) and +0.009 (0.000 to 0.025). The
+adaptive arm made 88 retries, 95.5% of them ineffective; critic fallback 4.2%. All 200 questions are
+answerable, so abstention on unanswerable questions was not measured. Answer correctness is not yet scored.
+Tables and reading: `docs/P4_REPORT_CONTRIBUTION.md` Section 3.8; run record: `docs/P4_FREEZE_RECORD.md`.

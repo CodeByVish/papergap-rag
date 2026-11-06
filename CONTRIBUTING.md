@@ -10,7 +10,7 @@ Read the [execution plan](docs/EXECUTION_PLAN.md) and [open decisions](docs/REQU
 4. Open a pull request. Obtain review from another member; involve affected owners for interface changes.
 5. Merge only after review and update the weekly tracker with the PR or result link.
 
-Do not commit credentials, real `.env` files, raw datasets, model weights, indexes or generated results. Keep small synthetic fixtures under `tests/fixtures/`. Put final reusable logic in `src/`, not notebooks. No license is chosen yet; the team must agree before adding one.
+Do not commit credentials, real `.env` files, raw datasets, model weights, indexes or temporary generated results. Reviewed final evaluation outputs may be committed under `results/final/<owner>/`, with provenance and checksums; keep corpora, models, credentials and temporary runs out of that folder. Keep small synthetic fixtures under `tests/fixtures/`. Put final reusable logic in `src/`, not notebooks. No license is chosen yet; the team must agree before adding one.
 
 ## Interface checkpoint
 

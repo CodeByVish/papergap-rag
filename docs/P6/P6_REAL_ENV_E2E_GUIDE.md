@@ -62,7 +62,7 @@ listening on port 11434. No paid API key is needed.
 
 ### Layout and controls
 
-The left drawer starts with **NLP Scientific Paper RAG** and **ⓘ How to use**,
+The left drawer starts with **PaperRAG** and **ⓘ How to use**,
 then **Connection**, **Search scope**, **History**, and **Advanced settings**.
 No workspace creation is required.
 
@@ -75,7 +75,7 @@ stored results retain their original question and scope.
 
 ```text
 LEFT DRAWER                         MAIN AREA
-NLP Scientific Paper RAG             Ask the paper collection
+PaperRAG             Ask the paper collection
 ⓘ How to use                        Your question [editable input]
 Connection                          Ask question
 Search scope                        Browse all examples

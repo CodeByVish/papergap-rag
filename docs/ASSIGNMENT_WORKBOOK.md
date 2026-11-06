@@ -174,7 +174,7 @@ Design a simple UI (you can design one from scratch or you can tap on an existin
 
 **Status:** Done. The UI is merged in [src/ui/app.py](../src/ui/app.py). A rehearsal of the final configuration is still needed (see Submission status).
 
-**NLP Scientific Paper RAG** is a Streamlit app that talks to a FastAPI service.
+**PaperRAG** is a Streamlit app that talks to a FastAPI service.
 
 | UI feature | Problem it solves |
 | --- | --- |
@@ -364,7 +364,7 @@ Discuss whether you had to preprocess data (e.g., microtext normalization) and w
 
 Build an evaluation dataset by manually labeling at least 1,000 records with an inter-annotator agreement of at least 80% (it is recommended to have 3 annotators, but 2 is also OK)
 
-**Status:** Done, but draft. The gold in [data/gold/p6/draft-v3/](../data/gold/p6/draft-v3/final_labels_manifest.json) is not team-confirmed, and its confirmation flags are placeholders.
+**Status:** Generated, pending P3's written confirmation and team sign-off on the PR. The gold is in [data/gold/p6/final/](../data/gold/p6/final/final_labels_manifest.json).
 
 | Item | Value |
 | --- | --- |
@@ -389,7 +389,7 @@ Kappa corrects agreement for chance. The Qian/Yin pair labelled far more pairs a
 **Required disclosures for the report**
 
 - **Disagreements:** they were not settled by a third person. One reviewer, Changyan Xu, resolved all 188 and had annotated 73 of them.
-- **Label sources for the 188:** 102 human-reviewed, 20 human spot-checked and 66 unchecked AI suggestions. AI suggestions may have been visible during review, and most records have no written reason.
+- **Label sources for the 188:** 102 human-reviewed and 86 human spot-checked. AI suggestions may have been visible during review, and most records have no written reason.
 - **Independence:** 89.85% is agreement on the current revised files, not on original pre-review labels. P2 records that batches A08-10 began as AI suggestions later confirmed by a person.
 - **Blinding:** annotators could see which retrieval method found each passage.
 - **Question use:** P4's author read 40 of the 200 questions while annotating, so the final report must also show results on the other 160.

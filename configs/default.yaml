@@ -32,7 +32,7 @@ retrieval:
   reranker_model: BAAI/bge-reranker-base
   sparse_candidates: 20
   dense_candidates: 20
-  top_k: 5
+  top_k: 8  # frozen evaluation depth (configs/p4_freeze.json)
   rrf_k: 60  # starting value; tune on development only
 agent:
   max_retries: 2  # initial retrieval + two retries = at most three rounds

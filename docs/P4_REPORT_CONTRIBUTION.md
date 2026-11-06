@@ -4,8 +4,9 @@
 
 PaperGap's agent decides whether the passages retrieved so far are enough to answer a question and,
 if not, names what is missing and searches again. This chapter describes the design, the experiments
-on development questions, what they show, and what they do not show. All numbers below are
-development results; **no held-out question has been run** (see "Status of the numbers").
+on development questions, the single frozen run on the held-out questions, what they show, and what they
+do not show. Sections 3.1 to 3.7 are development results; Section 3.8 is the held-out result (see "Status of
+the numbers").
 
 ### 1. Design
 
@@ -18,7 +19,7 @@ plan_question -> retrieve -> map_evidence -> critic -> [stop | rewrite_query -> 
 | Component | What it does |
 | --- | --- |
 | Planner | Rule-based. Assigns one of five question types (factual, method, result, comparison, limitation) and the evidence requirements an answer needs (`method`, `experiment_context`, `result`, `comparison`, `limitation`, `direct_answer`). It never predicts "unanswerable": the question text cannot show that. |
-| Retrieve | P2's hybrid retriever inside the selected paper: BM25 and the pinned `BAAI/bge-small-en-v1.5` dense retriever, 20 candidates each, fused with RRF (k = 60), top 5 per round. Passages accumulate across rounds and are de-duplicated by passage id. |
+| Retrieve | P2's hybrid retriever inside the selected paper: BM25 and the pinned `BAAI/bge-small-en-v1.5` dense retriever, 20 candidates each, fused with RRF (k = 60), top 5 per round in the development jobs (8 in the frozen held-out run, Section 2). Passages accumulate across rounds and are de-duplicated by passage id. |
 | Evidence mapper | Rule-based; maps each requirement to retrieved passages by section name or keywords. Advisory only (see "Limitations": it cannot tell evidence from lookalikes). |
 | Critic | `Qwen/Qwen3-8B` (thinking off, temperature 0) returns one JSON verdict: `sufficient`, one of eight gap labels, the passages it relies on, an evidence quote, what is missing, and a reason. The reply is parsed and validated by code; two bad replies fall back to a rule-based check. |
 | Rewriter | One action per gap label: add the critic's own terms for the missing fact, or the gap's fixed vocabulary (method, dataset/setup, results, baselines); never repeats an earlier query. |
@@ -57,10 +58,18 @@ appears in P3's frozen held-out list (`qa_for_held_out_v2`, checked on 4 Novembe
 
 **Arms.** All arms use the same retriever, corpus and questions.
 
-- *static*: one round, top 5, no critic.
+- *static*: one round, top 5 in the development jobs, no critic.
 - *adaptive*: the full loop above, up to 3 rounds.
 - *static-wide*: one round with 15 passages; its first *k* passages are the plain-retrieval baseline at
   every depth *k*, from a single run.
+
+**Held-out run.** The held-out configuration is frozen in `configs/p4_freeze.json` (6 November, code commit
+`ad02d51`): the same retriever and critic as above, but **top 8 per round** instead of 5, with answers. The
+team moved the depth to 8 because plain retrieval is better there (0.885 against 0.740 at top 5 on the
+development items). All tuning and jobs 50701, 50977 and 51172 were at top 5; adaptive at top 8 was run once on
+the 40 development items before the freeze (job 51521: recall 0.927 against 0.885 for static, 8.55 against
+7.85 passages, paired gain +0.042, 95% interval 0 to 0.115) and nothing was tuned on it. The arms are static
+(top 8), adaptive and static-wide (15 passages, giving plain retrieval at 5, 8 and 10).
 
 **Metrics.** *Recall*: share of a question's gold passages among the distinct passages retrieved
 (mean over the 32 questions with gold). *Full recall*: questions with every gold passage. *Unnecessary
@@ -68,7 +77,7 @@ retry*: a retry made when all gold was already retrieved. *Ineffective retry*: a
 gold. *Redundant retry*: a retry that added no new passage. *Matched-budget gain*: per question, the
 adaptive arm's final recall minus the plain ranking's recall over the same number of passages the
 adaptive arm ended with. Intervals are 95% paired bootstrap intervals (2,000 resamples) over the 32
-questions.
+development questions, or over the 200 held-out questions in Section 3.8.
 
 **Compute.** One GPU per job (A40 for the first run, L40S for later ones), Qwen3-8B in bfloat16 through
 vLLM 0.11.0 (transformers 4.57.6, torch 2.8.0), one engine shared by critic and answers, run by P5 on
@@ -115,12 +124,13 @@ quote its evidence.
 
 Recall of the plain question (hybrid retrieval, no critic, no retry) at each depth:
 
-| top-k | 3 | 5 (default) | 8 | 10 | 15 |
+| top-k | 3 | 5 (development default) | 8 | 10 | 15 |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Mean gold recall | 0.599 | 0.740 | 0.885 | **0.974** | 0.974 |
 | Questions with full recall | 17/32 | 22/32 | 26/32 | 30/32 | 30/32 |
 
-Six of the 32 questions have their best gold passage at ranks 6 to 10. The fusion constants hardly
+(The held-out curve, Section 3.8, has the same shape but is flatter at the top: 0.723, 0.858, 0.897 and 0.953 at
+5, 8, 10 and 15.) Six of the 32 questions have their best gold passage at ranks 6 to 10. The fusion constants hardly
 matter: candidate pools of 10, 20 or 40 and RRF constants of 30, 60 or 90 move recall@5 by one or two
 questions (0.74 to 0.80), so they were not tuned. An ideal stopping rule (stop at the smallest of
 3/5/8/10/15 that holds all gold) would read 5.56 passages for the same 0.974, which bounds what any
@@ -216,7 +226,133 @@ correct has not been checked: the development items carry no gold answer text.
 
 The honest summary is that the loop spends fewer passages and model calls than it first did and matches
 plain retrieval at an equal budget, but on this development slice reading more passages up front is
-better than retrying. We do not claim that adaptive retrieval improves recall.
+better than retrying. We do not claim that adaptive retrieval improves recall. The held-out run (3.8) gives
+the same picture on 200 questions.
+
+#### 3.8 Held-out result
+
+**What was run.** The configuration frozen on 6 November (commit `ad02d51`, Section 2) was run once, by P5, on
+P3's frozen list of 200 questions (174 papers, 78 validation-split and 122 test-split questions; list SHA-256
+`d509010b...`), over the all-paper-text corpus (28,617 passages, 1,584 papers). Top 8 per round, no reranker,
+at most 2 retries, Qwen3-8B critic reading the generator's view, three arms, answers generated by P5's
+prompt v7. The run held questions only; gold was read afterwards, for scoring, with P3's evidence-to-passage
+mapping. Each arm was run once and nothing was changed after the result. All 200 questions are answerable
+and have mapped gold (347 gold passages, 1.74 per question). **There is no unanswerable question in the held-out
+set**, so the subset the freeze record names for unanswerable questions is empty. Intervals are 95% paired
+bootstrap intervals (2,000 resamples, seed 0) over the questions.
+
+Because P4's author labelled 40 of these questions for annotation before the freeze (disclosure
+`p4-annotated-40` in the freeze record), every table is given for all 200 questions **and** for the 160 that
+P4 did not annotate. The two agree.
+
+**Retrieval.** Mean gold recall and the cost of the arms:
+
+| | static (top 8) | adaptive | static-wide (15) |
+| --- | ---: | ---: | ---: |
+| *All 200 questions* | | | |
+| Mean gold recall | 0.858 | **0.871** | 0.953 |
+| Questions with full recall | 154/200 | 157/200 | 183/200 |
+| Mean passages retrieved | 7.97 | 8.28 | 13.95 |
+| Mean rounds | 1.00 | 1.44 | 1.00 |
+| Agent time per question (s, A40) | < 0.1 | 5.6 | < 0.1 |
+| *The 160 questions P4 did not annotate* | | | |
+| Mean gold recall | 0.881 | **0.897** | 0.959 |
+| Questions with full recall | 127/160 | 130/160 | 148/160 |
+| Mean passages retrieved | 7.98 | 8.32 | 13.97 |
+| Mean rounds | 1.00 | 1.44 | 1.00 |
+
+Plain retrieval (the question as the query, no critic, no retry) at each depth, read from the static-wide arm:
+
+| top-k | 3 | 5 | 8 | 10 | 15 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Mean gold recall, 200 questions | 0.569 | 0.723 | 0.858 | 0.897 | 0.953 |
+| Questions with full recall | 84/200 | 117/200 | 154/200 | 166/200 | 183/200 |
+| Mean gold recall, 160 questions | 0.585 | 0.749 | 0.881 | 0.907 | 0.959 |
+| Questions with full recall | 69/160 | 98/160 | 127/160 | 134/160 | 148/160 |
+
+**Paired comparisons** (mean difference in per-question recall, 95% interval):
+
+| Comparison | 200 questions | 160 questions |
+| --- | --- | --- |
+| Adaptive against static top 8 | +0.013 [0.001, 0.028] | +0.016 [0.000, 0.038] |
+| Adaptive against the plain ranking at equal passages (matched budget, 8.28 and 8.32 passages) | **+0.001 [−0.014, 0.016]** | +0.009 [0.000, 0.025] |
+
+The adaptive arm ended with higher recall than static on **4 of the 200 questions** (3 of them reaching full
+recall) and with lower recall on none; the other 196 are identical. The gain over static top 8 is therefore
+real but small, and its interval only just excludes zero (it reaches zero on the 160). **At equal
+passages the adaptive arm does not beat the plain ranking**: on all 200 questions the gain is 0.001. Reading
+more passages up front is better than retrying: plain top 10 reads 10 passages and reaches 0.897, plain top 15
+reads 15 and reaches 0.953, against 0.871 for the loop at 8.3.
+
+**The loop's cost.**
+
+| | adaptive, held-out (200) | adaptive, depth-8 development check (job 51521, 40 items) |
+| --- | ---: | ---: |
+| Questions the loop retried | 45/200 (2 with one retry, 43 with two) | n/a |
+| Retries | 88 | 32 |
+| Unnecessary retries (all gold already retrieved) | 62.5% | 61.9% |
+| Ineffective retries (added no gold) | 95.5% | 90.5% |
+| Redundant retries (added no new passage) | 46.6% | 40.6% |
+| Stop reason: sufficient / max rounds / insufficient information | 156 / 41 / 3 | 25 / 14 / 1 |
+| Critic verdicts: from the model / rule fallback; share reused from the previous round | 95.8% / 4.2%; 17.0% reused | 93.1% / 6.9% |
+
+The depth-8 development check predicted this well: the retry rates are close, and the gain over static was
++0.042 there against +0.013 here, both with intervals that reach or nearly reach zero. Of 88 retries, 4 added a gold
+passage.
+
+**What the critic gets wrong** (all 200 questions; verdicts asked of the model with gold known, reused
+verdicts excluded; the 160-question counts are in brackets):
+
+| Verdict and situation | Count |
+| --- | ---: |
+| "Insufficient" although all gold was already retrieved (over-strict) | 54 (50) |
+| "Insufficient", gold still missing (correct) | 29 (18) |
+| "Sufficient", all gold retrieved (correct) | 127 (103) |
+| "Sufficient", gold missing (false accept) | 29 (22) |
+
+Of 239 verdicts asked of the model, 10 (4.2%) fell back to the rules, below the 10% at which the instruction
+would need rewording. Of the sufficient verdicts, 131 cite a gold passage and 21 cite none. Two thirds of the
+critic's "insufficient" verdicts (54 of 83) were made with all gold already in view, and about a fifth of its
+"sufficient" ones (29 of 156) were made with gold missing, as in the development runs; it was left unchanged, as
+frozen.
+
+**Abstention and answers.** The refusal rule stays off, as frozen. Its gate needs unanswerable questions, and
+the held-out set has none, so the held-out result neither meets nor fails the gate on that side; the other side
+is visible: the critic was unsatisfied after the last round on **22.0%** of the answerable questions (21.9% on
+the 160), against the 5% the gate allows. Had the rule been on, it would have refused about one question in five
+that is answerable. Generated answers were counted, not graded:
+
+| | static | adaptive | static-wide |
+| --- | ---: | ---: | ---: |
+| Generator answered (evidence status SUFFICIENT) | 194 | 191 | 194 |
+| Refused (insufficient evidence) | 6 | 9 | 6 |
+| Answer downgraded by the validator (`PARSE_ERROR`) | 2 | 2 | 2 |
+
+The generator refuses the same 6 questions in every arm. The 3 extra refusals in the adaptive arm are the 3
+questions where the critic itself stopped with `INSUFFICIENT_INFORMATION`; since every held-out question is
+answerable, all 3 are false refusals (1.5%), caused by the loop. Whether the answers are correct has not been
+measured (no EM, F1 or faithfulness yet), so no claim is made about answer quality.
+
+**What the held-out result supports.**
+
+| Claim | Supported? | Evidence |
+| --- | --- | --- |
+| Adaptive recovers more gold than static top 8 | Marginally | 0.858 to 0.871, +0.013 [0.001, 0.028]; 4 questions; 160: +0.016 [0.000, 0.038] |
+| Adaptive beats plain retrieval reading the same number of passages | **No** | matched gain +0.001 [−0.014, 0.016] at 8.28 passages; 160: +0.009 [0.000, 0.025] |
+| Adaptive beats a well-set static baseline | **No** | plain top 10 0.897 and top 15 0.953, against 0.871 at 8.3 passages |
+| The critic's retries are worth their cost | **No** | 88 retries, 95.5% ineffective, 62.5% unnecessary, 4 gained a gold passage; about 5.6 s per question |
+| The loop reliably refuses unanswerable questions | **Not tested** | no unanswerable question in the set; the unsatisfied rule would refuse 22.0% of the answerable ones; the critic false-refused 3 (1.5%) |
+| Deeper plain retrieval is better than retrying | Yes | recall 0.723 at 5, 0.858 at 8, 0.897 at 10, 0.953 at 15 |
+
+**Reading.** On unseen questions the agent's evidence-gap loop behaves as it did on the development slice. It
+finds a gold passage that plain top-8 retrieval missed on 4 of 200 questions (2%), at the price of 88 retries,
+five seconds of agent time per question and 3 false refusals, and it does no better than simply reading the
+same number of passages. The extra recall that reading more passages gives (0.953 at 15) is not usable by the
+generator as configured, because P5's prompt renders at most 8 passages of 1,200 characters: the 15-passage
+arm shows the headroom for retrieval, not what the answer step would see. The held-out run therefore does
+**not** support the claim that evidence-gap-driven retrieval improves recall; it supports the narrower claims
+that the loop never lowered recall, that its critic is usable (4.2% fallback) but over-strict, and that
+retrieval depth is the factor that matters.
 
 ### 4. Status of the numbers
 
@@ -224,14 +360,17 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
 | --- | --- |
 | Sections 3.1 to 3.6 | Development results, jobs 50701, 50977 and 51172, reproduced offline where stated |
 | Generator-view alignment, handles, quote requirement (#34) | Run on the real model in job 51172 (commit 37cb0c6) |
-| Answers for the arms | Generated once (job 51175, 40 questions) and counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
-| Held-out run | **Not yet run**; the configuration, commit and thresholds are frozen first |
+| Answers for the arms | Generated once on the development items (job 51175, 40 questions) and once in the held-out run (job 51585, 200 questions), counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
+| Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
+| Held-out run | Frozen on 6 November (`configs/p4_freeze.json`, commit `ad02d51`) and **run once** by P5 the same day (job 51585, clean checkout, 200 questions, three arms, with answers); retrieval scored against P3's gold after the run (Section 3.8). **Answer correctness not yet measured** |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
 
 ### 5. Limitations
 
-- **Small and single-slice.** 32 questions with gold; intervals are wide (the matched-budget interval
-  spans zero), and every conclusion rests on one development slice and one run per configuration.
+- **Small and single-slice.** The development results rest on 32 questions with gold; intervals are wide (the
+  matched-budget interval spans zero), from one development slice and one run per configuration. The held-out
+  run has 200 questions, but still one run per arm and one critic sample per question; run-to-run variation of
+  the Qwen critic was not measured, so the small differences of Section 3.8 (a gain of 0.013) could move.
 - **Exploratory tuning.** The critic prompt, the rewriter and the depth analysis were developed on these
   same 40 questions. They are descriptions of this slice, not independent confirmation.
 - **Retrieval recall is not answer quality.** Gold is P3's mapping of QASPER evidence to chunks
@@ -245,7 +384,32 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
 - **The planner cannot predict unanswerable questions** and the mapper carries no usable signal
   (Section 3.5), so the system relies on one LLM verdict.
 - **No dense retrieval tuning.** Retrieval used the defaults the team chose; only depth was examined.
-- **Abstention is not available** (Section 3.6).
+- **Abstention is not available** (Section 3.6), and **the held-out set cannot test it**: all 200 questions are
+  answerable, so the correct-refusal rate and the refusal gate could only be assessed on the development slice
+  (8 unanswerable questions).
+- **Answer quality is not measured.** The held-out answers were generated and counted as answered or refused,
+  but not graded (EM, F1, faithfulness). The recall results do not say whether answers improved.
+- **Part of the held-out set was read before the freeze.** P4's author annotated 40 of the 200 questions, so
+  results are given for all 200 and for the 160 that were not; the figures agree. The disclosure is in the
+  freeze record.
+- **Retrieval beyond 8 passages is not shown to the generator.** The adaptive arm retrieves 8.3 passages on
+  average and the 15-passage arm 13.9, but the prompt renders at most 8 passages, so recall above 8 is
+  headroom for retrieval and not evidence the answer step used.
+- **The wide arm ran with a flag outside the repository.** `--wide-k 15` was passed through a copy of the
+  cluster script because the runner's default (24) exceeds the candidate pool; the recorded `static_wide_k` was
+  respected and no setting was changed.
+- **Development tuning at depth 5, held-out run at depth 8.** The critic, rewriter and gate decisions were
+  made on top-5 runs; only one development check was made at top 8 (job 51521). The held-out figures are
+  therefore from a depth the tuning did not use.
+- **The dense encoder truncates long passages.** `BAAI/bge-small-en-v1.5` is built with a 512-token limit
+  (`max_seq_length` in `src/retrieval/dense_retriever.py`, the model's maximum), so the vector of a longer
+  passage is computed from its first 512 tokens only. With the model's own tokenizer on the 365/40 chunks,
+  14.7% of the development passages (3,142 of 21,360) and 14.3% of the all-paper-text passages used for the
+  held-out run (4,099 of 28,617) are longer, losing 84 to 88 tokens on average; 14 of the 45 development gold
+  passages (31%) are affected, losing about 52 tokens on average. BM25 reads the full text, so the hybrid
+  retriever is only partly affected. The effect on recall was not tested and the chunking is frozen, so it is
+  reported, not fixed. (P2 reports 27.1% of passages above 512 tokens, probably with the reranker's
+  tokenizer; this was not checked.)
 
 ### 6. Reproducibility
 
@@ -263,5 +427,9 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
   OUT_DIR=... sbatch scripts/cluster/run_agent_experiment.sbatch`; each output directory holds one
   record file per arm, `metrics.md`, `metrics.json` and `run_manifest.json` (arguments, commit, package
   versions, file hashes, critic call counts, and the generator's rendering limits).
+- **Held-out run:** `configs/p4_freeze.json` (frozen 6 November, code `ad02d51`); the run's inputs were written
+  by `scripts/make_held_out_items.py`, the job (51585) by P5, and the scores by `scripts/score_agent_records.py
+  --role held-out`, which refuses unless the run's manifest matches the record. Commands:
+  `docs/P4_FREEZE_RECORD.md`.
 - **Environment (job 50977):** Python 3.12.10, vLLM 0.11.0, transformers 4.57.6, torch 2.8.0,
   sentence-transformers 5.7.0, faiss-cpu 1.15.1, rank-bm25 0.2.2, LangGraph 1.2.19.

@@ -256,3 +256,17 @@ def test_factory_reads_the_depth_from_the_environment(monkeypatch):
     monkeypatch.delenv("DEMO_AGENT_TOP_K")
     f.factory(pipeline)("What accuracy did it get?", "p")
     assert built == [10, 8]  # explicit override or persistent demo default
+
+
+def test_progress_is_reported_and_the_record_is_unchanged():
+    lines = []
+    plain = make_record_fn(retriever, OracleChat())("What accuracy did the model achieve?", "p", 5, "r")
+    live = make_record_fn(retriever, OracleChat(), on_progress=lambda line, step, active: lines.append(line))(
+        "What accuracy did the model achieve?", "p", 5, "r")
+    for record in (plain, live):
+        record.pop("elapsed_s")
+        for entry in record["retrieval_log"]:  # Wall-clock timings differ between runs.
+            entry.pop("retrieval_ms", None), entry.pop("scoped_retrieval_ms", None)
+    assert live == plain
+    assert any("kept" in line for line in lines) and any("Evidence check" in line for line in lines)
+    assert lines[-1].startswith("Stopped searching")
