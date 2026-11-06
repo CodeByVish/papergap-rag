@@ -72,18 +72,27 @@ Closed citation IDs, structured claim provenance, explicit refusal and validatio
 
 A proposed rule that would force refusal whenever the critic remains unsatisfied is disabled. In job 51172 it would refuse six of eight unanswerable questions but also nine of 32 answerable questions (28.1\%), exceeding the proposed 5\% false-refusal limit. In a separate generated-answer development run (job 51175), both static and adaptive arms refuse three of eight unanswerable questions; answer correctness has not been scored. The loop therefore has no demonstrated refusal-quality gain.
 
-\subsection{Ablation: what was and was not isolated}
-The handout asks for the contribution of each innovation alone and together. Two components were varied (query rewriting through the critic-controlled retry loop, and reranking) and Table~\ref{tab:ablation} shows what exists for each cell. Rewriting off and on are the static and adaptive arms of the held-out run. Reranking was compared with plain RRF at the retrieval level only: on the 200-question relevance pool (Table~\ref{tab:retrieval}) it lowered all four metrics, and in an earlier paired run on the development items it lowered recall at every depth (top five 0.724 against 0.740, top ten 0.885 against 0.974). No arm with reranking was run on the held-out questions, and none combines it with the loop: the freeze record fixed the arms before the run and forbids adding arms after the results are known. The answer-quality columns are therefore incomplete, and we do not claim separate answer-quality gains for rewriting, reranking or post-generation validation.
+\subsection{Ablation of rewriting and reranking}
+The handout asks for the contribution of each innovation alone and together. Two components were varied: query rewriting (the critic-controlled retry loop) and reranking (a cross-encoder, \texttt{bge-reranker-base}, over the fused candidates). The frozen held-out run fixed its three arms before it was run and has no reranker arm, so the full two-by-two was run on the 40 development questions (Table~\ref{tab:ablation}). The four development cells use the same questions, corpus, retriever, critic, generator and the primary 1{,}200-character budget; each is one run. The two no-reranker cells ran at a commit that sets the same 1{,}200-character budget explicitly, on an L40S GPU, and the two reranker cells at the frozen commit on an A40, so run times are not comparable across them; agent time (retrieval and critic, mostly on the CPU) is.
 \begin{table}[htbp]\small\centering
-\caption{Ablation of rewriting and reranking. Mapped-evidence recall and latency are from the held-out run (200 questions); ``not run'' marks cells that were not run.}\label{tab:ablation}
-\begin{tabularx}{\linewidth}{Ycccccc}\toprule
-Configuration & Rewriting & Reranking & Recall & EM/F1 & Faithfulness & p50 (s)\\\midrule
-Neither (static) & Off & Off & 0.858 & 0.005 / 0.368 & \pending & 10.1\\
-Rewriting only (adaptive) & On & Off & 0.871 & 0.005 / 0.366 & \pending & 16.4\\
-Reranking only & Off & On & not run & not run & not run & not run\\
-Both & On & On & not run & not run & not run & not run\\\bottomrule
+\caption{Ablation of rewriting and reranking. Recall is mapped-evidence recall, F1 is token F1, agent time is retrieval plus critic time per question. Upper block: held-out run (no reranker arm exists). Lower block: development slice, 40 questions of which 32 have gold, one run per cell; faithfulness was not judged there.}\label{tab:ablation}
+\begin{tabularx}{\linewidth}{Yccccccc}\toprule
+Configuration & Rewriting & Reranking & Recall & F1 & Answered & Faithfulness & Agent time (s)\\\midrule
+\multicolumn{8}{l}{\textit{Held-out, 200 questions}}\\
+Neither (static) & Off & Off & 0.858 & 0.368 & 194 & 0.892 & 0.04\\
+Rewriting only (adaptive) & On & Off & 0.871 & 0.366 & 191 & 0.907 & 5.6\\
+Reranking only & Off & On & not run & not run & not run & not run & not run\\
+Both & On & On & not run & not run & not run & not run & not run\\\midrule
+\multicolumn{8}{l}{\textit{Development slice, 40 questions}}\\
+Neither (static) & Off & Off & 0.885 & 0.270 & 36 & n/a & 0.02\\
+Rewriting only (adaptive) & On & Off & 0.927 & 0.277 & 36 & n/a & 4.9\\
+Reranking only & Off & On & 0.854 & 0.243 & 35 & n/a & 4.2\\
+Both & On & On & 0.917 & 0.257 & 35 & n/a & 11.3\\\bottomrule
 \end{tabularx}
 \end{table}
+Adding the reranker did not help. Without the loop it lowers mapped-evidence recall from 0.885 to 0.854 and token F1 from 0.270 to 0.243; with the loop, from 0.927 to 0.917 and from 0.277 to 0.257. It also lowers the gold citation recall of the answers (0.694 to 0.550 without the loop, 0.726 to 0.650 with it, as counted for the answer step) and the number of answered questions (36 to 35). Paired over the 32 answerable questions, none of these differences can be told from zero: F1 changes by $-0.027$ [$-0.084$, 0.024] without the loop and $-0.020$ [$-0.075$, 0.024] with it, recall by $-0.031$ [$-0.156$, 0.094] and $-0.010$ [$-0.094$, 0.083]. The supported conclusion is that reranking brings no benefit here, not that it reduces accuracy by a measured amount. It does cost time: agent time per question rises from 0.02\,s to 4.2\,s without the loop and from 4.9\,s to 11.3\,s with it, because the cross-encoder runs on the CPU. This agrees with the 200-question relevance pool, where reranking lowered all four metrics at top five (Table~\ref{tab:retrieval}), and with the earlier paired development run at every depth.
+
+The loop's own gain is small in both settings: token F1 rises by 0.007 [$-0.002$, 0.018] without the reranker and by 0.014 [0.0005, 0.032] with it. The second interval only just excludes zero, it is one of five comparisons on 32 questions, and the held-out run found no F1 gain from the loop ($-0.002$), so we do not read it as an interaction between the two components. The development slice is the one the agent was tuned on, so these cells are descriptive. Post-generation validation was not isolated (no arm runs without it), so we claim no separate answer-quality gain for rewriting, reranking or validation.
 \subsection{Examples from the held-out run}
 Three held-out questions illustrate what the loop does well and badly. All three are among the 160 that P4 did not annotate; they were chosen from the four questions where the loop gained evidence and the three where its critic refused, and are explanations, not an estimate of frequency. Reference answers are QASPER's.
 
