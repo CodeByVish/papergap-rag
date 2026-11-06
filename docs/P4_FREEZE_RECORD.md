@@ -1,7 +1,9 @@
 # P4 freeze record and held-out procedure
 
-Status: **draft**. The record is `configs/p4_freeze.json`; this page explains it and gives the
-order of work. Nothing here has touched a held-out question, answer or label.
+Status: **frozen** on 6 November 2026 at 09:47 SGT (commit below); **run and scored** the same day (Slurm
+job 51585, section "Held-out run (6 November)"). The record is `configs/p4_freeze.json`; this page explains it
+and gives the order of work. The record was written before any held-out question, answer or label was read
+for scoring; the labels were read only after the run, by `scripts/score_agent_records.py`.
 
 ## Why
 
@@ -80,12 +82,53 @@ questions in the same way while annotating; the rule forbids tuning on them.
 7. **Report** every table the record lists, with the covered questions stated, including any in which
    the adaptive arm does not beat the plain ranking.
 
-## Still to settle before step 3
+## State at freezing (6 November)
 
-- whether the run also generates answers (needs P5's compute and a decision on the 8-passage,
-  1200-character budget, which P5 keeps frozen);
-- P3's confirmation, with P6, that the agent's held-out run uses this 200-question list (the plan names
-  100 questions; 200 fits one job).
+The record was frozen with `code.commit` `ad02d51` (main after PR #50), the all-paper-text index built by
+P5 (path and `metadata.json` SHA-256 in the record), `answers.generate` true (ANSWERS=p5, prompt v7,
+8 passages x 1200 characters) and `top_k` 8. P5's development check of adaptive at depth 8 (job 51521,
+decision `depth-8-dev-check`) came first; development tuning was at depth 5 (disclosure
+`depth-5-tuning-8-run`). The 200-question list is used as it is: P3's written confirmation is not
+attached to the record (`open_at_freezing`).
+
+## Held-out run (6 November)
+
+P5 ran the frozen configuration once, as Slurm job 51585 (completed, exit 0, 2 h 23 min, one A40, 10:26 to
+12:49 SGT, no `RESUME`). The run's `run_manifest.json` reports code `ad02d5103e28dbca2230555dd90e36c5cdc70f4f`
+and `git_dirty` false, and the scoring script accepted it against the record (commit, corpus hash, critic
+view, prompt budget, retrieval settings, arms; every arm holds exactly the 200 questions). Inputs, checked by
+hash before the run: items file `84e909e7...9a48`, all-paper-text corpus `8eeef011...`, dense index
+`metadata.json` `a14070a7...`. Settings as recorded: `ARMS="static adaptive static-wide"`, `CRITIC=generator`,
+`SCOPED=1`, `OFFLINE=1`, `ANSWERS=p5`, `TOP_K=8`, prompt `p5-grounded-qa-v7`, 8 passages x 1200 characters.
+Each arm was run once; no question was rerun.
+
+Two things differ from what the record's text assumed, neither changes a recorded setting:
+
+- **Wide arm depth.** The runner's default for `static-wide` is `top_k x (max_retries + 1)` = 24, which exceeds
+  `candidate_k` 20 and is refused at start-up. P5 passed `--wide-k 15` (the recorded `static_wide_k`) through a
+  copy of `scripts/cluster/run_agent_experiment.sbatch` kept outside the checkout (SHA-256 `937d2f01...`); the
+  repository was not modified. Outputs were written outside the checkout, which is why `git_dirty` is false.
+- **No unanswerable questions.** All 200 questions have mapped gold and an answerable label, so the record's
+  "unanswerable questions, separately" subset is empty. The rates that need unanswerable questions
+  (`correct_refusal_rate`, `unsatisfied_rate_unanswerable`) are `n/a`, and nothing can be said here about
+  abstention on unanswerable questions.
+
+Scoring (after the run, gold read only now), with P3's `gold_evidence_mapping_all_splits.jsonl` from
+`origin/p3-qasper-foundation`:
+
+```bash
+python -m scripts.score_agent_records --role held-out --freeze configs/p4_freeze.json \
+    --run-dir <OUT_DIR> --questions held_out_items.jsonl --mapping gold_evidence_mapping_all_splits.jsonl \
+    --qa data/processed/qa.jsonl --out-dir scores/held-out-all --label "all 200 questions"
+python -m scripts.score_agent_records ... --exclude-ids configs/p4_annotated_held_out_ids.jsonl \
+    --out-dir scores/held-out-160 --label "the 160 questions P4 did not annotate"
+```
+
+The two score directories were scored at commit `1bfae04`, which differs from the frozen `ad02d51` only in
+`configs/default.yaml` and `src/generation/server.py` (the demo server's default depth), and are kept outside
+Git with the run's records. The tables are in
+`docs/P4_REPORT_CONTRIBUTION.md`, Section 3.8. The result does not change any configuration: per the rule, it
+drives no targeted improvement.
 
 ## Tests
 

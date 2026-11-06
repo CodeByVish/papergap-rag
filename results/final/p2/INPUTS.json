@@ -1,0 +1,13 @@
+{
+  "gold_commit": "f70bf95593a6b9f705674770b8c3e833ca76290c",
+  "pool_commit": "1a1dc15b824590a39c80ea11a568fbe5814a926e",
+  "input_files": {
+    "final_labels.jsonl": "902dab4c56c6c3a3d9da04859d2bfb4447f39afa6e0d1a7710e1fba8098effec",
+    "final_labels_manifest.json": "32659d952600ae4261934596b4c201b5bb920a1fbb0842f13e102941d4534572",
+    "pairs.jsonl": "2915d5b789f3adfc73487636aa26bf74b34a64c6f42c584dceeb4871330f8602",
+    "retrieval-review.json": "d3570d3e291a8f3162fda434e18da0264ed8c6a3b7de0bd2fefdc7611149359c",
+    "questions.jsonl": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+    "rankings.jsonl": "b5c04581f01693503d0a8586e24c38f76b50a54c493207e2e1e1e8ae2e9193f2"
+  },
+  "note": "Original run manifests preserve producer paths. Inputs are available from the pinned commits; corpus and raw pool text are not duplicated here."
+}
