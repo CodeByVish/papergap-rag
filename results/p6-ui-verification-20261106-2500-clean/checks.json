@@ -1,0 +1,87 @@
+[
+  {
+    "number": 1,
+    "question_id": "30c6d34b878630736f819fd898319ac4e71ee50b",
+    "outcome": "completed",
+    "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 106850.01337499125,
+    "citation_http_ms": 8.370374998776242,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "UNCOVERED_REQUIRED_COMPONENT",
+      "PROVENANCE_OVERSTATED"
+    ]
+  },
+  {
+    "number": 2,
+    "question_id": "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50",
+    "outcome": "completed",
+    "answer": "The evaluation metric used is average classification accuracy.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 100200.13641598052,
+    "citation_http_ms": 10.192874993663281,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "GENERATED_WITH_INSUFFICIENT_EVIDENCE",
+      "PROVENANCE_OVERSTATED"
+    ]
+  },
+  {
+    "number": 3,
+    "question_id": "729694a9fe1e05d329b7a4078a596fe606bc5a95",
+    "outcome": "completed",
+    "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%. The other categories (date, time, norp, language, ordinal, cardinal, quantity, percent, money, law) have F-1 scores between 80-90%, with the exception of time (65%).",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 165523.33224998438,
+    "citation_http_ms": 6.279084016568959,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": []
+  },
+  {
+    "number": 4,
+    "question_id": "65ad17f614b7345f0077424c04c94971c831585b",
+    "outcome": "completed",
+    "answer": "They use a BiLSTM with max pooling to obtain sentence representations.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 98413.90954199596,
+    "citation_http_ms": 5.2892499952577055,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "UNCOVERED_REQUIRED_COMPONENT"
+    ]
+  },
+  {
+    "number": 5,
+    "question_id": "5bcc12680cf2eda2dd13ab763c42314a26f2d993",
+    "outcome": "completed",
+    "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 109147.28937498876,
+    "citation_http_ms": 4.734582995297387,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "UNCOVERED_REQUIRED_COMPONENT"
+    ]
+  }
+]

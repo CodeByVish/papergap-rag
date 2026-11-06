@@ -1,0 +1,13 @@
+{
+  "passages": {
+    "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9": {
+      "text": "The process for checking the accuracy of the model consisted of first taking a random subset of the corpus that was not used for training. This subset consists of slightly more common words because the more common words should have more accurate word embeddings. Infrequent words (like websites and serial numbers) would not necessarily have accurate word embeddings that were generated through the word2vec model. The English word embedding was multiplied by the transformation matrix to create the predicted translated word embedding. The cosine similarity was then generated with each translated word embedding stored in the corpus. The 20 words with the highest cosine similarity were then outputted. Then the English word was translated through Google Translate and compared to the 20 outputted translated words. It was considered a match if the translated word was found in this list of 20 similar words. The reason why the translated word was not just compared to the most similar embedding was because each word could have multiple semantic meanings or have different synonyms in the other language. After running this accuracy formulation, results for different languages and objective functions are reported in Table TABREF18. In the table you can see the different results we obtained across different languages. You can notice that we increased the number of languages from the first review of our paper. In addition, the table shows the comparison between our baseline method (Least Squares) and our final one (Normalized vectors, with cosine similarity), which shows a slight improvement with respect to the first one.",
+      "paper_id": "1912.10167",
+      "title": "Machine Translation with Cross-lingual Word Embeddings",
+      "section": "Results ::: Accuracy",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "missing": []
+}

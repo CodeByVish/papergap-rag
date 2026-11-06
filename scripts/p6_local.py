@@ -297,20 +297,34 @@ def make_generator():
     raise ValueError("P6_BACKEND must be ollama, mock or vllm")
 
 
+def make_pipeline(generator):
+    """Use the code's default budget unless P6_MAX_CHARS_PER_PASSAGE overrides it."""
+    from src.generation.pipeline import GroundedQAPipeline, PipelineConfig
+    from src.generation.prompts.grounded_qa import PromptConfig
+
+    budget = os.environ.get("P6_MAX_CHARS_PER_PASSAGE")
+    if not budget:
+        return GroundedQAPipeline(generator)
+    prompt = PromptConfig(max_chars_per_passage=int(budget))
+    return GroundedQAPipeline(generator, config=PipelineConfig(prompt=prompt))
+
+
 def serve():
     import uvicorn
+
+    from scripts.demo_agent_factory import critic_view_for
 
     from scripts.build_indexes import load_passages
     from src.agent.demo import make_record_fn
     from src.agent.qwen_client import GeneratorChatClient
     from src.agent.sections import make_section_selector
-    from src.generation.pipeline import GroundedQAPipeline
     from src.generation.server import ProgressLog, create_app, load_passage_index
 
     corpus = Path(os.environ["PAPERGAP_CORPUS"])
     passages = load_passages(corpus)
     generator = make_generator()
     generator.load()
+    pipeline = make_pipeline(generator)
     progress = ProgressLog()
     retriever = make_retriever(passages, on_progress=progress.add)
     options = {"progress": progress}
@@ -324,6 +338,7 @@ def serve():
             section_selector=make_section_selector(passages)
             if os.environ["DEMO_AGENT_SCOPED"] == "1"
             else None,
+            critic_view=critic_view_for(pipeline),
         )
     elif os.environ["P6_PIPELINE"] == "static":
         options["retriever"] = lambda q, p, k: [
@@ -332,7 +347,7 @@ def serve():
     else:
         raise ValueError("P6_PIPELINE must be adaptive or static")
     app = create_app(
-        GroundedQAPipeline(generator),
+        pipeline,
         **options,
         allow_corpus=True,
         papers=sorted({p.paper_id for p in passages}),
@@ -355,6 +370,10 @@ def serve():
                 for p in directory.rglob("*.py")
             },
             "generator": generator.info(),
+            "prompt_budget": {
+                "max_passages": pipeline.config.prompt.max_passages,
+                "max_chars_per_passage": pipeline.config.prompt.max_chars_per_passage,
+            },
             "pipeline": os.environ["P6_PIPELINE"],
             "corpus": str(corpus),
             "dense_index": os.environ["PAPERGAP_DENSE_INDEX"],

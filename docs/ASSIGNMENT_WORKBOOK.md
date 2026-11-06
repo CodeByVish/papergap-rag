@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Q1 Knowledge base | Done | 28,617 passages from 1,584 NLP papers; 5.66M source words; 210,909 word types |
 | Q2.1 UI | Done | Streamlit app with paper or all-papers search, citations and warnings |
-| Q2.2 Five queries | Done (local run) | 5 live queries: 4 answered, 1 refused; 122.7 s mean with the local model; retrieval about 30 ms |
+| Q2.2 Five queries | Done (school GPU) | 5 live queries, all answered; 15.1 s mean with `Qwen3-8B`; retrieval about 112 ms |
 | Q3 Retrieval | Done on draft gold | Hybrid RRF is best at MRR@5 = 0.804; reranker lowered quality, so it was dropped |
 | Q4.1-4.2 Generation, preprocessing | Done | Qwen3-8B answers only from cited passages, or refuses |
 | Q4.3 Labelled dataset | Done, team sign-off pending | 1,853 pairs; 89.85% agreement (target 80%) |
@@ -191,7 +191,52 @@ The UI calls `/health`, `/papers`, `/answer` and `/passages`. Each question is a
 
 Write five queries, get their results, and measure the speed of the querying
 
-**Status:** Done on the local machine, run on 2026-11-05 at commit `ceeaca8`. Raw output is saved locally in `results/p6-local/five-queries-20261105.json` (not in Git; include it in the data ZIP).
+**Status:** Done on the school GPU, run on 2026-11-07 from the UI at commit `58a3aaa` against the live P5 API.
+
+**Setup:** School GPU (job 51905, node TC2N01), `Qwen3-8B` via vLLM, 2,500 characters inferred, warmed service, five development questions, serial, through the SSH tunnel. Raw output is in `results/p6-ui-verification-20261107-gpu/`.
+
+| # | Paper | Answer (short) | Outcome | Rounds | Citations | Time (s) |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| 1 | `1912.10167` | Yes | Answered, 1 warning | 1 | 3 | 19.7 |
+| 2 | `1911.07555` | Classification accuracy | Answered, 2 warnings | 3 | 2 | 17.1 |
+| 3 | `1904.10503` | F1 of 88% on OntoNotes and 53% on Wiki(gold) | Answered, no warnings | 1 | 1 | 16.2 |
+| 4 | `1904.05584` | BiLSTM with max pooling | Answered, 1 warning | 1 | 1 | 11.5 |
+| 5 | `1912.01046` | Accuracy and MRR | Answered, 1 warning | 1 | 1 | 10.8 |
+
+| Speed | Value |
+| --- | --- |
+| Full answer, mean / median | 15.1 s / 16.2 s |
+| Full answer, range | 10.8-19.7 s |
+| Serial rate (not measured batch throughput) | 0.066 questions/s (5 in 75.3 s) |
+| Retrieval call, median over 7 calls | 111.5 ms (range 68.1-204.0 ms) |
+
+**How to read the GPU run**
+
+- **Budget:** the service does not report its budget. 2,500 is inferred: each prompt is exactly 4 tokens below the matching local 2,500 run, and query 5 answers.
+- **Warm-up:** one separate question (31.7 s) is excluded.
+- **Evidence:** all citations resolved to the selected paper. The source tree had staged documentation edits only; the code was `58a3aaa`.
+- **Limits:** one pass gives a typical time, not a reliable p95. Other GPU use during the run was not checked.
+
+**Laptop run, kept separate.** Run on 2026-11-06 at commit `58a3aaa`.
+
+**Setup:** Local Apple M5, `qwen3:14b`, 2,500 characters via local setting, warmed service, five development questions, serial. Raw output is in `results/p6-ui-verification-20261106-2500-clean/`.
+
+| # | Paper | Answer (short) | Outcome | Rounds | Citations | Time (s) |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| 1 | `1912.10167` | Yes; accuracy was checked on an unused subset against Google Translate | Answered, 2 warnings | 1 | 1 | 106.9 |
+| 2 | `1911.07555` | Average classification accuracy | Answered, 2 warnings | 3 | 1 | 100.2 |
+| 3 | `1904.10503` | F1 of 88% on OntoNotes and 53% on Wiki(gold) | Answered, no warnings | 1 | 1 | 165.5 |
+| 4 | `1904.05584` | BiLSTM with max pooling | Answered, 1 warning | 1 | 1 | 98.4 |
+| 5 | `1912.01046` | Accuracy and MRR | Answered, 1 warning | 1 | 1 | 109.1 |
+
+| Speed | Value |
+| --- | --- |
+| Full answer, mean / median | 116.0 s / 106.9 s |
+| Full answer, range | 98.4-165.5 s |
+| Serial rate (not measured batch throughput) | 0.0086 questions/s (5 in 580.1 s) |
+| Retrieval call, median over 7 calls | 39.3 ms (range 23.6-286.1 ms) |
+
+**Earlier run, kept separate.** The 2026-11-05 run at commit `ceeaca8` used 1,200 characters per passage. Raw output: `results/p6-local/five-queries-20261105.json`.
 
 | # | Paper | Answer (short) | Outcome | Rounds | Citations | Time (s) |
 | --- | --- | --- | --- | ---: | ---: | ---: |
@@ -203,17 +248,18 @@ Write five queries, get their results, and measure the speed of the querying
 
 | Speed | Value |
 | --- | --- |
-| Full answer, mean / median | 122.7 s / 104.6 s |
+| Full answer, mean / median | 122.7 s / 104.6 s (4 answered, query 5 refused) |
 | Full answer, range | 76.3-174.2 s |
-| Throughput, one at a time | 0.008 questions/s (5 in 613.3 s) |
+| Serial rate | 0.008 questions/s (5 in 613.3 s) |
 | Retrieval call, median over the 7 scored calls | 31.4 ms (range 15.1-269.0 ms) |
 
 **How to read this**
 
-- **Setup:** Apple M5, 24 GB, 8 passages, no reranker, development corpus, local Ollama `qwen3:14b`. The final system uses `Qwen3-8B` on a GPU, so these times describe the laptop, not the final system.
+- **Setup details:** Apple M5, 24 GB, 8 passages, no reranker, local Ollama `qwen3:14b`. The final system uses `Qwen3-8B` on a GPU, so these times describe the laptop, not the final system. One pass of five questions gives a typical time, not a reliable p95.
 - **Bottleneck:** almost all the time is LLM work; retrieval is under 1% of it.
-- **Warm-up:** one earlier query (203.9 s) loaded the models and is excluded.
-- **Not verified:** answers were not checked against QASPER references. Citation text lookup was not measured because the test script's request was rejected (HTTP 400).
+- **Warm-up:** in the 2026-11-06 run, one separate question (151.2 s) warmed the service and is excluded. In the 2026-11-05 run, one earlier query (203.9 s) loaded the models and is excluded.
+- **Query 1 check:** the 2,500 answer is supported by its cited passage and matches the QASPER yes/no reference. Its warnings are kept.
+- **Follow-up verification (6 November):** the four generated answers were checked against cited passages and the five matching QASPER reference rows. Query 5 is answerable and its refusal is a missed answer. The original citation lookup requests failed with HTTP 400; a fresh five-run UI verification resolved all seven citations successfully. Keep the original timings above separate from the new run. See [verification and teammate handoff](P6/FIVE_DEMO_VERIFICATION.md).
 - **Warnings:** they are heuristic flags. For example, query 2 was answered although the critic still judged the evidence incomplete.
 
 ### Question 3
@@ -342,7 +388,7 @@ Motivate the choice of your generation or classification approach in relation wi
 | Explicit refusal | "Not enough evidence" beats a confident guess |
 | Rule-based validation after generation | Catches invalid citations, unsupported numbers and overstated provenance |
 
-**Limits.** The model reads at most 8 passages of 1,200 characters each. A 365-word chunk is usually longer: 71% of development gold passages are cut. A valid citation shows a passage was supplied, not that it proves the claim. We did not fine-tune the model or benchmark it against external systems, so we make no state-of-the-art performance claim.
+**Limits (historical measured configuration).** The model read at most 8 passages of 1,200 characters each. The user reports a newer 2,500-character budget; the following truncation statistic describes the earlier configuration. A 365-word chunk is usually longer: 71% of development gold passages are cut. A valid citation shows a passage was supplied, not that it proves the claim. We did not fine-tune the model or benchmark it against external systems, so we make no state-of-the-art performance claim.
 
 #### Q4.2
 
@@ -437,12 +483,14 @@ Discuss performance metrics, e.g., latency, records processed per second, cost, 
 | --- | --- | --- |
 | RRF retrieval | 100 questions, older 200/40 corpus, CPU, no warm-up | p50 17.57 ms, p95 21.34 ms |
 | RRF + BGE retrieval | Same | p50 2,387 ms, p95 3,769 ms (about 136× slower) |
-| RRF retrieval, 365/40 | 5 queries, Apple M5 CPU, 8 passages (Q2.2) | median 31.4 ms |
+| RRF retrieval, 365/40 | 5 queries, Apple M5 CPU, 8 passages (Q2.2) | median 39.3 ms |
+| RRF retrieval, 365/40 | 5 queries, school GPU service, 8 passages (Q2.2) | median 111.5 ms |
 | Critic loop, excluding final answer | 40 questions, GPU, job 51172 | 6.1 s per question |
 | Full agent answer | Live on cluster, 5 Nov, 2 runs | about 34 s |
 | Static answer | Cluster vLLM, older corpus | 14.7 s for one answer |
 | Three-arm experiment | 40 questions, one GPU | about 9 minutes |
-| Full answer, local laptop | Apple M5, `qwen3:14b`, 5 queries (Q2.2) | mean 122.7 s; 0.008 questions/s |
+| Full answer, school GPU | School GPU (job 51905, node TC2N01), `Qwen3-8B` via vLLM, 2,500 characters inferred, warmed service, five development questions, serial, through the SSH tunnel (Q2.2) | mean 15.1 s, median 16.2 s; 0.066 questions/s (serial) |
+| Full answer, local laptop | Local Apple M5, `qwen3:14b`, 2,500 characters via local setting, warmed service, five development questions, serial (Q2.2) | mean 116.0 s, median 106.9 s; 0.0086 questions/s (serial) |
 | Index startup | BM25 rebuild for 28,617 passages | 4.31 s |
 
 **Findings**
@@ -482,7 +530,7 @@ flowchart LR
 
 **Innovation 1: adaptive retrieval.** A critic names what is missing, such as `MISSING_RESULT`, and the rewriter searches for it, for up to 3 rounds. To make its verdict checkable, it must quote the evidence word for word, and code confirms the quote exists.
 
-**Innovation 2: grounded answers.** Closed citations, refusal and validation make unsupported output visible. In Q2.2, for example, query 5 refused instead of guessing.
+**Innovation 2: grounded answers.** Closed citations, refusal and validation make unsupported output visible. Q2.2 query 5 is a limitation: it refused an answerable question despite relevant retrieved evidence. At 1,200 characters per passage, its metric statements were clipped from the generator's view. With the critic and generator both reading 2,500 characters, query 5 answers accuracy and MRR (Q2.2).
 
 **Ablation so far** (40 development questions, 32 with gold; all static arms use RRF):
 

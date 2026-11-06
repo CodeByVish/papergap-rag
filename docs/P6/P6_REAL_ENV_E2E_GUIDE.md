@@ -1,5 +1,19 @@
 # P6 local end-to-end UI guide
 
+## Final demo setting — 6 November 2026
+
+The final demo uses **`P6_MAX_CHARS_PER_PASSAGE=2500`**: the critic and generator
+both read 8 passages of at most 2,500 characters. Set it once in ignored
+`.env.p6.local`, then restart the service:
+
+```bash
+printf 'P6_MAX_CHARS_PER_PASSAGE=2500\n' >> .env.p6.local
+./scripts/p6-local.sh start
+```
+
+Confirm `prompt_budget` in `results/p6-local/runtime.json` shows 2,500. This local
+setting does not reach the cluster demo, which uses the prompt code's default.
+
 ## Saved demo settings — 5 November 2026
 
 The permanent defaults now use **top-8 per retrieval round**, **BGE reranker off**,
@@ -45,6 +59,9 @@ From the repository root:
 ```bash
 ./scripts/p6-local.sh start
 ```
+
+Set `P6_MAX_CHARS_PER_PASSAGE=2500` first; see
+[Final demo setting](#final-demo-setting--6-november-2026).
 
 Open [the local UI](http://127.0.0.1:8501). This command starts the P5-compatible
 API and Streamlit with saved configuration. It uses the **existing Ollama
@@ -170,7 +187,7 @@ flowchart LR
 
 Note: Swagger UI - http://127.0.0.1:8000/docs
 
-The critic and answer generator share the same Ollama model. Runtime retrieval models
+The critic and answer generator share the same Ollama model. The critic reads the generator's own view, so both see the same passages and characters. Runtime retrieval models
 run on CPU; the one-time index build uses Apple MPS. Ollama manages Apple GPU acceleration. This local
 quantized 14B setup is a development configuration, not a reproduction of P5's
 school Qwen3-8B/vLLM performance. Record model identity and settings separately.
@@ -277,6 +294,7 @@ This prints effective paths/settings and hides a configured token.
 | `P6_UI_PORT` | Streamlit browser port, 8501 |
 | `P6_PIPELINE` | `adaptive` runs P4; `static` performs one hybrid retrieval followed by P5 generation |
 | `P6_TOP_K` | Passages per retrieval round, 8; passed explicitly to the local Agent hook |
+| `P6_MAX_CHARS_PER_PASSAGE` | Optional characters per passage for this local run; blank uses the code default. Set it in `.env.p6.local` and restart `serve`. `results/p6-local/runtime.json` records the effective budget |
 | `DEMO_AGENT_TOP_K` | Cluster/factory retrieval depth, 8 |
 | `P6_INDEX_DEVICE` | `mps` uses the Apple GPU for the one-time dense index build; set `cpu` on machines without MPS |
 | `P6_P3_REF` | P3 Git reference used only by `setup` |

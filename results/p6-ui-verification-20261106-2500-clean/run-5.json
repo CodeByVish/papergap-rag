@@ -1,0 +1,448 @@
+{
+  "client_run_id": "15792c78-7c54-4c5f-9d4d-daf9c60803d7",
+  "conversation_id": "e50a6165-48b1-4589-ab0a-bdd7df5e9eb6",
+  "message_id": "217777fc-b2b0-4bd1-b64c-08b289b050a4",
+  "retry_of_client_run_id": null,
+  "submission": {
+    "question": "What evaluation metrics were used in the experiment?",
+    "paper_id": "1912.01046"
+  },
+  "capabilities": {
+    "retrieval": true,
+    "passage_text": true,
+    "backend": "ollama",
+    "model_id": "qwen3:14b",
+    "prompt_version": "p5-grounded-qa-v7",
+    "agent": true
+  },
+  "service_mode": "ollama",
+  "submitted_at": "2026-11-06T14:24:36.412848+00:00",
+  "outcome": "completed",
+  "answer_record": {
+    "request_id": "ui-1793975076423",
+    "result": {
+      "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+      "citations": [
+        "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+      ],
+      "evidence_status": "SUFFICIENT",
+      "retrieval_rounds": 1,
+      "provenance": [
+        {
+          "claim": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+          "passage_ids": [
+            "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+          ],
+          "support": "direct"
+        }
+      ]
+    },
+    "validation": {
+      "final_result": {
+        "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+        "citations": [
+          "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+            "passage_ids": [
+              "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "raw_result": {
+        "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+        "citations": [
+          "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+            "passage_ids": [
+              "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "violations": [
+        {
+          "code": "UNCOVERED_REQUIRED_COMPONENT",
+          "severity": "warning",
+          "message": "the agent required component 'direct_answer' but its evidence map contains no passage for it",
+          "subject": "direct_answer"
+        }
+      ],
+      "downgraded": false,
+      "downgrade_reason": null,
+      "checks_run": [
+        "R1_citation_reference",
+        "R1b_provenance_reference",
+        "R4_evidence_status",
+        "R3_numeric_grounding",
+        "R2_claim_coverage"
+      ],
+      "schema_version": "p5-answer-v1"
+    },
+    "generation": {
+      "backend": {
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "loaded": true,
+        "options": {
+          "base_url": "http://127.0.0.1:11434",
+          "num_ctx": 8192,
+          "max_new_tokens": 1024
+        },
+        "last_generation_stats": {
+          "batch_size": 1,
+          "prompt_tokens": 5130,
+          "completion_tokens": 222,
+          "batch_seconds": 67.7953155
+        },
+        "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+        "timing_policy": "Ollama total_duration; includes server load/evaluation"
+      },
+      "prompt_version": "p5-grounded-qa-v7",
+      "diagnostics": {
+        "had_code_fence": false,
+        "had_thinking_block": false,
+        "unclosed_thinking_block": false,
+        "leading_text_chars": 0,
+        "trailing_text_chars": 0,
+        "candidate_index": 0,
+        "extra_fields": [],
+        "coerced": [],
+        "repaired_invalid_escapes": false,
+        "invalid_escape_repairs": 0
+      },
+      "raw_text_excerpt": "{\n  \"answer\": \"The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).\",\n  \"citations\": [\"qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).\",\n      \"passage_ids\": [\"qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+      "raw_text_chars": 558
+    },
+    "agent": {
+      "paper_id": "1912.01046",
+      "sufficient": true,
+      "gap_label": "NONE",
+      "rewritten_query": null,
+      "required_components": [
+        "direct_answer"
+      ],
+      "evidence_map": {
+        "direct_answer": []
+      },
+      "retrieval_log": [
+        {
+          "round": 1,
+          "query": "What evaluation metrics were used in the experiment?",
+          "triggered_by": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-0a8c7571fb2e4519be74ea2d9b8ff244f054db8ef27b75f9b0b8987fb6c7c507",
+            "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1",
+            "qasper-passage-v1-4e3b50eb4957785a942c2b186c172a0c0a6d6b029d40aff9354ce2face8f86b0",
+            "qasper-passage-v1-6faec55cdabbeaaec3582456fb9b30106d0cd7c3ec73e92d2497bb3aa0ea9ac7",
+            "qasper-passage-v1-db33d651da316f094d3828867e758fff204dc242c17cc6501c98d9a731f4c38d",
+            "qasper-passage-v1-2aeab82a64bb4bb72cb3c86aa5319add0e1c7a0df9aa237f32980462b1d812ac",
+            "qasper-passage-v1-9f09807a7876a61ae6731b042b6e319bd3b77ab4441aeda3e507e98613f83124",
+            "qasper-passage-v1-0981391c4fef2d9de75789853dcf5a80137a472d3908fb62fa15b4c0cca29b57"
+          ],
+          "paper_ids": [
+            "1912.01046"
+          ],
+          "search_scope": "paper",
+          "section": null,
+          "scope_fallback": false,
+          "scoped_retrieval_ms": null,
+          "retrieval_ms": 286.0724170168396
+        }
+      ],
+      "critic_log": [
+        {
+          "round": 1,
+          "source": "llm",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-0a8c7571fb2e4519be74ea2d9b8ff244f054db8ef27b75f9b0b8987fb6c7c507",
+            "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1",
+            "qasper-passage-v1-4e3b50eb4957785a942c2b186c172a0c0a6d6b029d40aff9354ce2face8f86b0",
+            "qasper-passage-v1-6faec55cdabbeaaec3582456fb9b30106d0cd7c3ec73e92d2497bb3aa0ea9ac7",
+            "qasper-passage-v1-db33d651da316f094d3828867e758fff204dc242c17cc6501c98d9a731f4c38d",
+            "qasper-passage-v1-2aeab82a64bb4bb72cb3c86aa5319add0e1c7a0df9aa237f32980462b1d812ac",
+            "qasper-passage-v1-9f09807a7876a61ae6731b042b6e319bd3b77ab4441aeda3e507e98613f83124",
+            "qasper-passage-v1-0981391c4fef2d9de75789853dcf5a80137a472d3908fb62fa15b4c0cca29b57"
+          ],
+          "supporting_passage_ids": [
+            "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1",
+            "qasper-passage-v1-2aeab82a64bb4bb72cb3c86aa5319add0e1c7a0df9aa237f32980462b1d812ac",
+            "qasper-passage-v1-9f09807a7876a61ae6731b042b6e319bd3b77ab4441aeda3e507e98613f83124"
+          ],
+          "evidence_quote": "We used accuracy and MRR (Mean Reciprocal Ranking) as metrics.",
+          "missing_components": [],
+          "reason": "The passages p2, p6, and p7 explicitly mention the evaluation metrics used in the experiment, including accuracy and MRR (Mean Reciprocal Ranking).",
+          "errors": [],
+          "raw_replies": [
+            "{\n  \"sufficient\": true,\n  \"gap_label\": \"NONE\",\n  \"supporting_passage_ids\": [\"p2\", \"p6\", \"p7\"],\n  \"evidence_quote\": \"We used accuracy and MRR (Mean Reciprocal Ranking) as metrics.\",\n  \"missing_components\": [],\n  \"reason\": \"The passages p2, p6, and p7 explicitly mention the evaluation metrics used in the experiment, including accuracy and MRR (Mean Reciprocal Ranking).\"\n}"
+          ],
+          "thinking_drift": false
+        }
+      ]
+    },
+    "search": {
+      "scope": "paper",
+      "paper_id": "1912.01046",
+      "source_papers": [
+        "1912.01046"
+      ]
+    }
+  },
+  "error": null,
+  "evidence": {
+    "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1": {
+      "text": "We also considered a simpler task by casting our problem as a retrieval task. Specifically, in addition to a plain transcript, we also provided the model with the segmentation information which was created during the data collection phrase (See Section. SECREF3). Note that each segments corresponds to a candidate answer. Then, the task is to pick the best segment for given a query. This task is easier than Baseline1's task in that the segmentation information is provided to the model. Unlike Baseline1, however, it is unable to return an answer span at various granularities. Baseline2 is based on the attentive LSTM BIBREF17, which has been developed for the InsuranceQA task. The right diagram in Fig. FIGREF15 illustrates the Baseline2 model.\n\nModel. The two inputs, $s$ and $q$ represent the segment text and a question. The model first encodes the two inputs.\n\n$h^s$ is then re-weighted using attention weights.\n\nwhere $\\odot $ denotes the element-wise multiplication operation. The final score is computed using a one-layer feed-forward network.\n\nDuring training, the model requires negative samples. For each positive example, (question, ground-truth segment), all the other segments in the same transcript are used as negative samples. Cross entropy is used as an objective function.\n\nMetrics. We used accuracy and MRR (Mean Reciprocal Ranking) as metrics. The accuracy is\n\nWe split the ground-truth dataset to train/dev/test into the ratio of 6/2/2. The resulting size is 3,718 (train), 1,238 (dev) and 1,239 qa pairs (test).",
+      "paper_id": "1912.01046",
+      "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+      "section": "Baselines ::: Baseline2: Segment retrieval",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "answer_http_elapsed_ms": 109147.28937498876,
+  "citation_http_elapsed_ms": 4.734582995297387,
+  "finished_at": "2026-11-06T14:26:25.563619+00:00",
+  "evidence_error": null,
+  "progress_log": [
+    {
+      "elapsed_s": 0.0,
+      "message": "Request received.",
+      "step": "plan",
+      "active": "plan"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Planned: factual question, needs direct_answer. Searching...",
+      "step": "plan",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 0.3,
+      "message": "Hybrid search: BM25 17 + dense 17 candidates, 17 in both, RRF merged 17, no reranker, top 8 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-0a8c7571fb2e4519be74ea2d9b8ff244f054db8ef27b75f9b0b8987fb6c7c507",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "TutorialVQA Dataset ::: Data Collection",
+          "paper_id": "1912.01046",
+          "bm25_rank": 1,
+          "dense_rank": 2,
+          "rrf_score": 0.03252,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Baselines ::: Baseline2: Segment retrieval",
+          "paper_id": "1912.01046",
+          "bm25_rank": 4,
+          "dense_rank": 4,
+          "rrf_score": 0.03125,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-4e3b50eb4957785a942c2b186c172a0c0a6d6b029d40aff9354ce2face8f86b0",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "TutorialVQA Dataset ::: Data Collection",
+          "paper_id": "1912.01046",
+          "bm25_rank": 9,
+          "dense_rank": 1,
+          "rrf_score": 0.03089,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-6faec55cdabbeaaec3582456fb9b30106d0cd7c3ec73e92d2497bb3aa0ea9ac7",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "TutorialVQA Dataset ::: Dataset Details",
+          "paper_id": "1912.01046",
+          "bm25_rank": 2,
+          "dense_rank": 8,
+          "rrf_score": 0.03083,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-db33d651da316f094d3828867e758fff204dc242c17cc6501c98d9a731f4c38d",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "TutorialVQA Dataset ::: Overview",
+          "paper_id": "1912.01046",
+          "bm25_rank": 8,
+          "dense_rank": 3,
+          "rrf_score": 0.03058,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-2aeab82a64bb4bb72cb3c86aa5319add0e1c7a0df9aa237f32980462b1d812ac",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Baselines ::: Baseline3: Pipeline Segment retrieval",
+          "paper_id": "1912.01046",
+          "bm25_rank": 6,
+          "dense_rank": 6,
+          "rrf_score": 0.0303,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-9f09807a7876a61ae6731b042b6e319bd3b77ab4441aeda3e507e98613f83124",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Baselines ::: Baseline1: Sentence-level prediction",
+          "paper_id": "1912.01046",
+          "bm25_rank": 7,
+          "dense_rank": 7,
+          "rrf_score": 0.02985,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-0981391c4fef2d9de75789853dcf5a80137a472d3908fb62fa15b4c0cca29b57",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Introduction",
+          "paper_id": "1912.01046",
+          "bm25_rank": 3,
+          "dense_rank": 14,
+          "rrf_score": 0.02939,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-9e975499df7936320803acf2a4ab6595d34c2503268c373a659b10b6ae453ada",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Conclusion",
+          "paper_id": "1912.01046",
+          "bm25_rank": 16,
+          "dense_rank": 5,
+          "rrf_score": 0.02854,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-2e5374ef1504ba40dc22799b5a4e608159c4b811e32a94fff62e1a93a6ce881e",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Introduction",
+          "paper_id": "1912.01046",
+          "bm25_rank": 5,
+          "dense_rank": 17,
+          "rrf_score": 0.02837,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-4404ef14b9025ccf426c7ddb020a970abb8d5c5655a7aded5f3be7eddb8d1187",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Related Work",
+          "paper_id": "1912.01046",
+          "bm25_rank": 10,
+          "dense_rank": 12,
+          "rrf_score": 0.02817,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-98991dc2f5d0f46d8144eb6b58685da1c26e138634df7cb5260be28935b71109",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "TutorialVQA Dataset",
+          "paper_id": "1912.01046",
+          "bm25_rank": 15,
+          "dense_rank": 9,
+          "rrf_score": 0.02783,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-3b458d0339b24a0db4e312bd89a04c857bce5213bfc9db9ae182ad0506377771",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Baselines ::: Results",
+          "paper_id": "1912.01046",
+          "bm25_rank": 14,
+          "dense_rank": 10,
+          "rrf_score": 0.0278,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-a6b3c0f8a433526e89ea2c5bfe230b5b9fc81d5da8fa722179f64d6e30ea20e8",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Related Work",
+          "paper_id": "1912.01046",
+          "bm25_rank": 13,
+          "dense_rank": 11,
+          "rrf_score": 0.02778,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-dc516ff54881eb71d3f34acf3525e2221dd6711929d12f006f93d12b164a42cd",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "TutorialVQA Dataset ::: Basis",
+          "paper_id": "1912.01046",
+          "bm25_rank": 12,
+          "dense_rank": 13,
+          "rrf_score": 0.02759,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-498b1e5d09668ca7d64f9905c7985e0258b4a53f500fd2c4ba99bd4e8fe864c0",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Discussion and Future Work",
+          "paper_id": "1912.01046",
+          "bm25_rank": 11,
+          "dense_rank": 15,
+          "rrf_score": 0.02742,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-7f24fc12db85e4dad9a86739e3d790b0ace3dd198b7868e40053d337ee16ff74",
+          "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+          "section": "Baselines",
+          "paper_id": "1912.01046",
+          "bm25_rank": 17,
+          "dense_rank": 16,
+          "rrf_score": 0.02614,
+          "kept": false
+        }
+      ]
+    },
+    {
+      "elapsed_s": 0.3,
+      "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 0.3,
+      "message": "Keyword match: 0 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 41.3,
+      "message": "Evidence check (model, 8 passages): enough.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 41.3,
+      "message": "Stopped searching: sufficient, budget 3 rounds.",
+      "step": "check",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 41.3,
+      "message": "Writing the answer and checking its citations...",
+      "step": "write",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 109.1,
+      "message": "Answer ready: SUFFICIENT, 1 cited, 1 validation notes.",
+      "step": "write",
+      "active": "done"
+    }
+  ]
+}
