@@ -116,10 +116,14 @@ installed outside the project. `/health` reports `"agent": true`. A question sen
 `scripts/demo_client.py` returns 200 with a cited answer, and all 3 cited passage ids resolve through
 `/passages` (365/40 corpus). The log line `agent <id>: rounds=1 retrieved=10 critic=[(1, 'fallback', 8)]`
 shows the critic reading the generator's 8 of 10 retrieved passages; with `DEMO_AGENT_CRITIC_VIEW=pool` it
-shows 10. **P5's server calls the hook as `record_fn(question, paper_id)`, so its `--top-k` never reaches the
-agent**: set the depth with `DEMO_AGENT_TOP_K` (default 5). Not verified: the Qwen critic through vLLM, GPU
+shows 10. (that check predates the passthrough: the server then called the hook as `record_fn(question, paper_id)` and
+its `--top-k` did not reach the agent; the hook is now `record_fn(question, paper_id, top_k, request_id)`
+(PR #27) and the demo depth defaults to 8, PR #54). Not verified in that local check: the Qwen critic through vLLM, GPU
 memory with the retrieval models beside the engine, latency with the real critic (about 7 s per question
-here, mock critic), the SSH tunnel. `--record-fn` is still only on P5's branch.
+here, mock critic), the SSH tunnel. Since then `--record-fn` and the top-k passthrough are on main (PR #27), and P5 ran the demo on
+the cluster on 5 November (jobs 51185 and 51186): with the default critic view the critic reads 8 passages,
+with `DEMO_AGENT_CRITIC_VIEW=pool` it reads 10 at top-k 10, and both returned an answer with citations in
+about 34 s.
 
 ## Measures (`src/agent/experiments.py`)
 
@@ -160,7 +164,7 @@ Recall of plain retrieval (the question as the query, hybrid RRF with the shippe
 reranker, no critic, no retry) on the 32 development items with P3 gold, measured offline on the
 rebuilt 365/40 corpus and reproducible with `scripts/evaluate_retrieval_depth.py`:
 
-| top-k | 3 | 5 (shipped default) | 8 | 10 | 15 |
+| top-k | 3 | 5 (development default) | 8 | 10 | 15 |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | mean gold recall | 0.599 | 0.740 | 0.885 | **0.974** | 0.974 |
 | questions with full recall | 17/32 | 22/32 | 26/32 | 30/32 | 30/32 |
@@ -286,3 +290,11 @@ not at 5 alone. Dev results of 32 questions have wide intervals; the held-out se
   hints against each paper's own names (about 86% of papers have a result-like section).
 - Reranker caches make repeat latency unrepresentative; use a fresh cache path for timings.
 - Never tune on held-out labels; use development questions for prompt and parameter changes.
+- **Depth.** Development tuning and jobs 50701, 50977 and 51172 were at top-k 5; the frozen held-out run is at
+  top-k 8 (`configs/p4_freeze.json`), checked once on the development items (job 51521).
+- **The dense encoder truncates at 512 tokens.** `_INDEX_SETTINGS["max_seq_length"] = 512` in
+  `src/retrieval/dense_retriever.py` is the bge-small maximum, so a longer passage is embedded from its first
+  512 tokens only; BM25 reads all of it. On the 365/40 chunks 14.7% of the development passages (3,142 of
+  21,360) and 14.3% of the all-paper-text passages (4,099 of 28,617) are longer, losing 84 to 88 tokens on
+  average, and 14 of the 45 development gold passages (31%) are affected (about 52 tokens lost). Effect on
+  recall untested; the chunking is frozen, so the report states it as a limitation.

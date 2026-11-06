@@ -18,7 +18,7 @@ plan_question -> retrieve -> map_evidence -> critic -> [stop | rewrite_query -> 
 | Component | What it does |
 | --- | --- |
 | Planner | Rule-based. Assigns one of five question types (factual, method, result, comparison, limitation) and the evidence requirements an answer needs (`method`, `experiment_context`, `result`, `comparison`, `limitation`, `direct_answer`). It never predicts "unanswerable": the question text cannot show that. |
-| Retrieve | P2's hybrid retriever inside the selected paper: BM25 and the pinned `BAAI/bge-small-en-v1.5` dense retriever, 20 candidates each, fused with RRF (k = 60), top 5 per round. Passages accumulate across rounds and are de-duplicated by passage id. |
+| Retrieve | P2's hybrid retriever inside the selected paper: BM25 and the pinned `BAAI/bge-small-en-v1.5` dense retriever, 20 candidates each, fused with RRF (k = 60), top 5 per round in the development jobs (8 in the frozen held-out run, Section 2). Passages accumulate across rounds and are de-duplicated by passage id. |
 | Evidence mapper | Rule-based; maps each requirement to retrieved passages by section name or keywords. Advisory only (see "Limitations": it cannot tell evidence from lookalikes). |
 | Critic | `Qwen/Qwen3-8B` (thinking off, temperature 0) returns one JSON verdict: `sufficient`, one of eight gap labels, the passages it relies on, an evidence quote, what is missing, and a reason. The reply is parsed and validated by code; two bad replies fall back to a rule-based check. |
 | Rewriter | One action per gap label: add the critic's own terms for the missing fact, or the gap's fixed vocabulary (method, dataset/setup, results, baselines); never repeats an earlier query. |
@@ -57,10 +57,18 @@ appears in P3's frozen held-out list (`qa_for_held_out_v2`, checked on 4 Novembe
 
 **Arms.** All arms use the same retriever, corpus and questions.
 
-- *static*: one round, top 5, no critic.
+- *static*: one round, top 5 in the development jobs, no critic.
 - *adaptive*: the full loop above, up to 3 rounds.
 - *static-wide*: one round with 15 passages; its first *k* passages are the plain-retrieval baseline at
   every depth *k*, from a single run.
+
+**Held-out run.** The held-out configuration is frozen in `configs/p4_freeze.json` (6 November, code commit
+`ad02d51`): the same retriever and critic as above, but **top 8 per round** instead of 5, with answers. The
+team moved the depth to 8 because plain retrieval is better there (0.885 against 0.740 at top 5 on the
+development items). All tuning and jobs 50701, 50977 and 51172 were at top 5; adaptive at top 8 was run once on
+the 40 development items before the freeze (job 51521: recall 0.927 against 0.885 for static, 8.55 against
+7.85 passages, paired gain +0.042, 95% interval 0 to 0.115) and nothing was tuned on it. The arms are static
+(top 8), adaptive and static-wide (15 passages, giving plain retrieval at 5, 8 and 10).
 
 **Metrics.** *Recall*: share of a question's gold passages among the distinct passages retrieved
 (mean over the 32 questions with gold). *Full recall*: questions with every gold passage. *Unnecessary
@@ -115,7 +123,7 @@ quote its evidence.
 
 Recall of the plain question (hybrid retrieval, no critic, no retry) at each depth:
 
-| top-k | 3 | 5 (default) | 8 | 10 | 15 |
+| top-k | 3 | 5 (development default) | 8 | 10 | 15 |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Mean gold recall | 0.599 | 0.740 | 0.885 | **0.974** | 0.974 |
 | Questions with full recall | 17/32 | 22/32 | 26/32 | 30/32 | 30/32 |
@@ -225,7 +233,8 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
 | Sections 3.1 to 3.6 | Development results, jobs 50701, 50977 and 51172, reproduced offline where stated |
 | Generator-view alignment, handles, quote requirement (#34) | Run on the real model in job 51172 (commit 37cb0c6) |
 | Answers for the arms | Generated once (job 51175, 40 questions) and counted as answered or refused; **correctness (EM, F1, faithfulness) not yet measured** |
-| Held-out run | **Not yet run**; the configuration, commit and thresholds are frozen first |
+| Depth-8 development check | Job 51521 (P5, 6 November, 40 development items, commit `ad02d51`): static 0.885 at 7.85 passages, adaptive 0.927 at 8.55; critic fallback 6.9%; refusal gate still not met |
+| Held-out run | Configuration, commit and thresholds frozen on 6 November (`configs/p4_freeze.json`); **not yet run** (P5 runs it once, with answers); held-out tables are added after scoring |
 | Live demo of the full agent | Merged (P5's server option, PR #27) and run live on the cluster by P5 on 5 November: both critic views returned an answer with citations in about 34 s |
 
 ### 5. Limitations
@@ -246,6 +255,18 @@ better than retrying. We do not claim that adaptive retrieval improves recall.
   (Section 3.5), so the system relies on one LLM verdict.
 - **No dense retrieval tuning.** Retrieval used the defaults the team chose; only depth was examined.
 - **Abstention is not available** (Section 3.6).
+- **Development tuning at depth 5, held-out run at depth 8.** The critic, rewriter and gate decisions were
+  made on top-5 runs; only one development check was made at top 8 (job 51521). The held-out figures are
+  therefore from a depth the tuning did not use.
+- **The dense encoder truncates long passages.** `BAAI/bge-small-en-v1.5` is built with a 512-token limit
+  (`max_seq_length` in `src/retrieval/dense_retriever.py`, the model's maximum), so the vector of a longer
+  passage is computed from its first 512 tokens only. With the model's own tokenizer on the 365/40 chunks,
+  14.7% of the development passages (3,142 of 21,360) and 14.3% of the all-paper-text passages used for the
+  held-out run (4,099 of 28,617) are longer, losing 84 to 88 tokens on average; 14 of the 45 development gold
+  passages (31%) are affected, losing about 52 tokens on average. BM25 reads the full text, so the hybrid
+  retriever is only partly affected. The effect on recall was not tested and the chunking is frozen, so it is
+  reported, not fixed. (P2 reports 27.1% of passages above 512 tokens, probably with the reranker's
+  tokenizer; this was not checked.)
 
 ### 6. Reproducibility
 
