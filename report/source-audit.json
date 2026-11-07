@@ -208,8 +208,19 @@
       "Paired EM/F1 uncertainty or P6's evaluator review",
       "Qwen3-8B Hub revision",
       "Whole Q4 section or team report completion",
-      "Annotation independence or group AI-use disclosure"
+      "Other annotators' annotation independence or the group AI-use disclosure"
     ],
+    "annotation_provenance_update": {
+      "date": "2026-11-07",
+      "scope": {
+        "Q4.3": "Annotator A batches 01-04: the annotator's own label provenance, independence from the other annotator, and prior question exposure (80 of the 200 questions)"
+      },
+      "basis": "The annotator's statement on 7 November 2026; label counts from data/processed/annotation_common_v3_markdown/annotator_A/batch_01.md to batch_04.md on p3-qasper-foundation; agreement figures from report/tables/agreement.tex",
+      "does_not_confirm": [
+        "The final Q4.3 gold, the single-reviewer resolution of the 188 disagreements, or the other annotators' statements",
+        "P6's annotation statistics"
+      ]
+    },
     "new_experiment": false,
     "publication_performed": false
   }
