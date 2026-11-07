@@ -81,14 +81,15 @@ both arms. See `README.md` for the judge caveats.
 
 ## 5. Performance
 
-`performance/` (one A40, serial requests, per-arm wall time measured by the runner; latency = agent time plus
-generation time per question, n = 198 after the scorer's technical errors):
+`performance/latency-all-200/` (one A40, serial requests, per-arm wall time measured by the runner; latency = agent time plus
+generation time per question, all 200 records per arm, including the two validator-downgraded answers; the P6 tool's output
+in `performance/<arm>/` excludes those and uses 198 records, giving 10.1 / 16.4 / 10.1 s medians):
 
 | Arm | Wall time (s) | Questions/s | p50 (s) | p95 (s) | Prompt tokens | Output tokens |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| static | 2,519 | 0.079 | 10.1 | 21.5 | 934,334 | 73,586 |
-| adaptive | 3,583 | 0.055 | 16.4 | 31.5 | 928,803 | 74,598 |
-| static-wide | 2,456 | 0.081 | 10.1 | 21.2 | 934,460 | 73,573 |
+| static | 2,519 | 0.079 | 10.6 | 23.7 | 934,334 | 73,586 |
+| adaptive | 3,583 | 0.056 | 16.5 | 32.9 | 928,803 | 74,598 |
+| static-wide | 2,456 | 0.081 | 10.6 | 22.3 | 934,460 | 73,573 |
 
 Tokens are the generator's. The critic's tokens were not recorded (251 critic calls, 2 escalations), so the adaptive
 arm's totals are lower bounds. Retrieval takes about 0.04 s per question; the agent loop adds a mean 5.6 s. Cost is

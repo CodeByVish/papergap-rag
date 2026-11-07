@@ -80,20 +80,20 @@ Final generation timing. In job 51585, answer generation on one A40 (warm engine
 Populate elapsed wall time, processed-question count, successful answers, latency percentiles and judge cost from a single documented final setup. Separate startup, fresh inference and cache-hit timing. Historical cluster timings summarized in the workbook lack raw local records and are not used here as final benchmark results.
 \end{review}
 
-End-to-end timing comes from the frozen held-out run (job 51585): 200 questions per arm, one NVIDIA A40, Qwen3-8B in bfloat16 through vLLM 0.11.0, retrieval on CPU, one request at a time with the engine warm and no score cache. Latency is agent time plus generation time per question; throughput divides the questions by the wall-clock time the runner measured for each arm, not by summed latencies (Table~\ref{tab:perf}). The two answers per arm that the validator downgraded after a parse error count as technical errors in the evaluation tool, so percentiles use 198 questions.
+End-to-end timing comes from the frozen held-out run (job 51585): 200 questions per arm, one NVIDIA A40, Qwen3-8B in bfloat16 through vLLM 0.11.0, retrieval on CPU, one request at a time with the engine warm and no score cache. Latency is agent time plus generation time per question; throughput divides the questions by the wall-clock time the runner measured for each arm, not by summed latencies (Table~\ref{tab:perf}). Percentiles are over all 200 records per arm, including the two answers per arm that the validator downgraded after a parse error, which are among the slowest (about 33\,s of generation each).
 \begin{table}[htbp]\centering\small
-\caption{Held-out end-to-end performance, 200 questions per arm, serial requests on one A40. Tokens are the generator's totals.}\label{tab:perf}
+\caption{Held-out end-to-end performance, 200 questions per arm, serial requests on one A40. Percentiles are over all 200 records per arm. Tokens are the generator's totals.}\label{tab:perf}
 \begin{tabular}{lrrrrrr}\toprule
 Arm & Wall time (s) & Questions/s & p50 (s) & p95 (s) & Prompt tokens & Output tokens\\\midrule
-Static (8 passages) & 2{,}519 & 0.079 & 10.1 & 21.5 & 934{,}334 & 73{,}586\\
-Adaptive & 3{,}583 & 0.055 & 16.4 & 31.5 & 928{,}803 & 74{,}598\\
-Static-wide (15 passages) & 2{,}456 & 0.081 & 10.1 & 21.2 & 934{,}460 & 73{,}573\\\bottomrule
+Static (8 passages) & 2{,}519 & 0.079 & 10.6 & 23.7 & 934{,}334 & 73{,}586\\
+Adaptive & 3{,}583 & 0.056 & 16.5 & 32.9 & 928{,}803 & 74{,}598\\
+Static-wide (15 passages) & 2{,}456 & 0.081 & 10.6 & 22.3 & 934{,}460 & 73{,}573\\\bottomrule
 \end{tabular}
 \end{table}
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.92\linewidth]{images/latency-by-arm.png}
-\caption{Held-out latency per question (left; agent plus generation time, one A40, serial requests) and throughput (right) by arm, the values of Table~\ref{tab:perf}. The retry loop raises median latency by about 60\% and lowers throughput by about 30\%.}\label{fig:latency}
+\caption{Held-out latency per question (left; agent plus generation time, one A40, serial requests) and throughput (right) by arm, the values of Table~\ref{tab:perf}. The retry loop raises median latency by about 56\% and lowers throughput by about 30\%.}\label{fig:latency}
 \end{figure}
-Generation dominates: retrieval and fusion take 0.04\,s per question on the cluster CPU, against about 12\,s for the answer. The agent loop adds a mean 5.6\,s per question, 251 critic calls over 200 questions, and raises median latency by about 60\% (16.4 against 10.1\,s) and lowers throughput by about 30\%, for a recall gain of 0.013 (Section~\ref{sec:agent-heldout}). The critic's own token use was not recorded, so the adaptive arm's token total is a lower bound. There is no per-call monetary cost, because the model is served locally; GPU time was 2\,h 23\,min for the three arms. The RAGAS judge (Q4.5) was a paid hosted model: scoring the two arms took about 2.5 hours and cost about 0.63 Singapore dollars, as reported by the member who ran it. Concurrent throughput was not measured: calls were serial, and these figures are not a scaling benchmark.
+Generation dominates: retrieval and fusion take 0.04\,s per question on the cluster CPU, against about 12\,s for the answer. The agent loop adds a mean 5.6\,s per question, 251 critic calls over 200 questions, and raises median latency by about 56\% (16.5 against 10.6\,s) and lowers throughput by about 30\%, for a recall gain of 0.013 (Section~\ref{sec:agent-heldout}). The critic's own token use was not recorded, so the adaptive arm's token total is a lower bound. There is no per-call monetary cost, because the model is served locally; GPU time was 2\,h 23\,min for the three arms. The RAGAS judge (Q4.5) was a paid hosted model: scoring the two arms took about 2.5 hours and cost about 0.63 Singapore dollars, as reported by the member who ran it. Concurrent throughput was not measured: calls were serial, and these figures are not a scaling benchmark.
 
 \input{review-checks/q4-6}

@@ -1,0 +1,47 @@
+{
+  "convention": "linear-interpolated percentiles (same as the P6 performance tool), over all 200 records per arm including the two validator-downgraded answers; throughput = records / measured per-arm wall time",
+  "arms": {
+    "static": {
+      "arm": "static",
+      "records": 200,
+      "batch_seconds": 2519,
+      "completed_requests_per_second": 0.0794,
+      "end_to_end_p50_s": 10.57,
+      "end_to_end_p95_s": 23.67,
+      "generation_only_p50_s": 10.54,
+      "generation_only_p95_s": 23.63,
+      "slowest_two_answer_s": [
+        33.2,
+        77.7
+      ]
+    },
+    "adaptive": {
+      "arm": "adaptive",
+      "records": 200,
+      "batch_seconds": 3583,
+      "completed_requests_per_second": 0.0558,
+      "end_to_end_p50_s": 16.46,
+      "end_to_end_p95_s": 32.87,
+      "generation_only_p50_s": 11.09,
+      "generation_only_p95_s": 24.04,
+      "slowest_two_answer_s": [
+        33.1,
+        33.1
+      ]
+    },
+    "static-wide": {
+      "arm": "static-wide",
+      "records": 200,
+      "batch_seconds": 2456,
+      "completed_requests_per_second": 0.0814,
+      "end_to_end_p50_s": 10.55,
+      "end_to_end_p95_s": 22.28,
+      "generation_only_p50_s": 10.51,
+      "generation_only_p95_s": 22.24,
+      "slowest_two_answer_s": [
+        33.1,
+        33.2
+      ]
+    }
+  }
+}
