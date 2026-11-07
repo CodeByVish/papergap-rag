@@ -1,15 +1,27 @@
 \section{Generation and evaluation (Q4)}
 \subsection{Generation approach (Q4.1)}
-The GPU generator is \texttt{Qwen/Qwen3-8B} \citep{qwen2025}, served through vLLM with prompt version grounded QA, version 7. Generative QA permits synthesis across passages rather than requiring a single extracted span. An open-weight model lets us control prompting, logging and post-generation checks. The design is motivated by evidence-conditioned generation; we have not benchmarked it against external systems and make no state-of-the-art performance claim.
+\textbf{Task fit.} We use evidence-conditioned generative question answering because questions about scientific papers may require combining methods, datasets and findings described across several passages. A generative model can synthesize this information into a coherent response, whereas a single-span extractive approach restricts the answer to a contiguous text segment.
 
-The model returns structured JSON containing an answer, citations, evidence status, retrieval rounds and claim provenance. It receives a closed list of citable passage IDs and an explicit refusal instruction. Validation checks citation references, numerical grounding and provenance consistency. These checks expose some errors, but a valid citation does not prove that a passage entails a claim. Heuristic warnings are diagnostics, not faithfulness scores.
+\textbf{Relationship to established research.} Our approach follows retrieval-augmented generation: relevant passages are retrieved from an external collection and supplied as context for answer generation \citep{lewis2020rag}. This connects the answer to accessible source material rather than relying solely on knowledge stored in model parameters. PaperRAG applies this principle through its hybrid retriever and passage-level citation interface; it does not reproduce the original RAG paper's jointly trained architecture.
 
-Final settings. The final held-out run (job 51585, 6 November 2026) served the local Qwen3-8B snapshot through vLLM 0.11.0 in bfloat16 on one NVIDIA A40 (46\,GB), with Python 3.12.10, PyTorch 2.8.0 and transformers 4.57.6. Decoding used temperature 0 (greedy), top-$p$ 0.9, thinking disabled, a 32,768-token model limit and 1,024 new tokens per answer. The prompt was \texttt{p5-grounded-qa-v7}, rendering at most eight passages of 1,200 characters. The run manifest records the commit, package versions and input hashes; the model directory does not store a Hub revision, so that pin remains open.
+Work on grounded generation also distinguishes answer correctness from citation support: ALCE evaluates both, motivating our inspectable citations and separate answer-quality and grounding measurements \citep{gao2023alce}. Self-RAG learns adaptive retrieval and critique through special reflection tokens \citep{asai2023selfrag}. PaperRAG instead uses a prompted generator, a separate bounded critic and programmatic validation, without task-specific model training. This modular design lets us change retrieval and checking policies and compare their contributions while keeping the generator fixed. It trades a learned, integrated control mechanism for explicit, separately testable stages.
 
-\begin{review}{Model and prompt provenance}
-The settings above are recorded; the Qwen3-8B Hub revision pin remains open. Do not transfer timings or quality observations from the local 14B model to the 8B GPU model.
-\end{review}
-\input{review-checks/q4-1}
+\textbf{Model choice.} We selected the open-weight \texttt{Qwen/Qwen3-8B} model for deployment on the available university GPU and for control over prompts, inference settings and output processing. Qwen3 supports both thinking and non-thinking modes \citep{qwen2025}; our configuration uses non-thinking generation for direct, context-conditioned answers. This is a practical model choice for the project rather than a claim that it outperforms alternative generators.
+
+\textbf{Evidence inspection.} The generator receives retrieved passages, a closed list of citable passage IDs and an instruction to refuse when evidence is insufficient. Structured output records the answer, citations and claim provenance. Post-generation checks assess citation validity, numerical grounding and provenance consistency, making potential support issues visible to users. These checks support inspection; semantic grounding is evaluated separately through the answer-quality and RAG metrics in Q4.4--Q4.5.
+
+\textbf{Primary evaluation configuration.}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{lY}\toprule
+Model serving & Qwen3-8B, vLLM 0.11.0, bfloat16, one NVIDIA A40 (46\,GB)\\
+Decoding & Greedy (temperature 0), top-$p$ 0.9, thinking disabled; up to 1,024 new tokens\\
+Context & 32,768-token model limit; up to eight passages of 1,200 characters each\\
+Prompt & \texttt{p5-grounded-qa-v7}\\\bottomrule
+\end{tabularx}
+\end{center}
+
+% 5/5 assessment retained internally.
+% \input{review-checks/q4-1}
 
 \subsection{Preprocessing (Q4.2)}
 Cleaning retains formula and citation placeholders already present in QASPER; it cannot recover missing numbers. Retrieval preprocessing is described in Section 3.1. The encoder's 512-token limit can truncate a passage without changing its stored text. Generation receives at most eight passages, each clipped to 1,200 characters, and its structured output allows limited repair of malformed escapes. A relevant passage may therefore be retrieved while its useful sentence is absent from the prompt. On the 40 development questions, 33 of the 45 mapped gold passages (73.3\%) exceed the 1{,}200-character limit and 36.6\% of their text lies beyond it; on the held-out questions 232 of the 347 mapped gold passages (66.9\%) exceed it. Section~\ref{sec:context} reports a post-hoc check with a 2{,}500-character limit; the shared code default has since been raised to that value, while the primary downstream evaluation uses 1{,}200 characters; post-hoc runs use 2{,}500, and the all-papers demonstration budget was not recorded. The same limit shows in the token counts: over 200 questions the generator received 934{,}334 prompt tokens in the static arm and 934{,}460 in the 15-passage arm, so passages beyond the eighth were retrieved but not rendered.
