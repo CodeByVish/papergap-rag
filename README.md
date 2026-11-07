@@ -2,15 +2,18 @@
 
 An evidence-gap-driven agentic RAG system for adaptive multi-section question answering over NLP research papers.
 
-**Status:** P1/P2 real-data retrieval and evaluation tools, P4 agent components, P5 v7 generation with R4 reranked inputs, and the Streamlit UI are available. P5 reports Qwen generation measurements on training-integration examples; real-Qwen validation of P4's critic, final held-out evaluation and acceptance of the complete shared pipeline remain pending. See [P1 experiments](docs/P1_WEEK3_WEEK4.md), [P2 handoffs](docs/P2_STATUS.md), [P5 Week 6](docs/P5_WEEK6.md) and the [29 October P1 checkpoint](docs/WEEKLY_TRACKER.md#p1-main-sync-after-ui-and-generation-merge-29-october-2026).
+**Status (7 November 2026, submission day):** the system, the experiments and the report draft are complete. The frozen configuration was evaluated once on 200 held-out questions (Slurm job 51585), with a post-hoc sensitivity run at a larger context budget and a development-slice ablation of rewriting and reranking. The final results are committed under [`results/final/`](results/final/README.md) and written up in [`report/`](report/README.md). Hybrid retrieval (BM25 + dense, fused by RRF) is the retrieval baseline; on the held-out run the evidence-gap loop adds 0.013 to mapped-evidence recall over static top-eight retrieval but nothing over reading the same number of passages, so the report does not claim that it improves recall or answers (see [Final configuration and results](#final-configuration-and-results)). Shared schemas and split mappings stay `v0-proposed` until the team confirms them.
 
 ## Start here
 
+- [Final results](results/final/README.md): reviewed outputs per owner (`p1`, `p2`, `p4`, `p5`), with checksums.
+- [Report source](report/README.md): the LaTeX report, how to build it and where its numbers come from.
 - [Week-by-week execution plan](docs/EXECUTION_PLAN.md): tasks, deliverables and integration checkpoints.
 - [Requirements and open decisions](docs/REQUIREMENTS.md): rubric mapping and decisions to resolve in Week 1.
 - [Evaluation protocol](docs/EVALUATION.md): annotation, held-out data and experiment comparisons.
 - [Contributing](CONTRIBUTING.md): setup, branches, reviews and module ownership.
 - [Weekly tracker](docs/WEEKLY_TRACKER.md): update at each team meeting.
+- [P4 freeze record](docs/P4_FREEZE_RECORD.md) and [agent contribution](docs/P4_REPORT_CONTRIBUTION.md): what was fixed before the held-out run and how it was scored.
 - [P1 used-question inventory](docs/handoffs/P1_QUESTION_USAGE.md): prior development usage for the team held-out exclusion audit.
 
 ## Team
@@ -26,11 +29,23 @@ An evidence-gap-driven agentic RAG system for adaptive multi-section question an
 
 Everyone annotates, writes their report section, validates their module and reviews another member's work. P6 coordinates integration; each producer owns their interface and integration fixes.
 
-## Planned pipeline
+## Pipeline
 
-Selected paper + question → BM25 and dense retrieval → RRF → reranking → evidence critic → targeted retrieval if needed → evidence-conditioned answer or abstention → citation validation → Streamlit.
+Selected paper + question → BM25 and dense (`BAAI/bge-small-en-v1.5`) retrieval → reciprocal rank fusion (RRF) → top eight passages → evidence critic → targeted retrieval if needed → evidence-conditioned answer (Qwen3-8B) or abstention → citation validation → Streamlit UI.
 
-Maximum: one initial retrieval plus two retries. Optional dual critics and NLI come after the required pipeline and evaluation work.
+Maximum: one initial retrieval plus two retries (at most three rounds). The `BAAI/bge-reranker-base` reranker is implemented but **off** in the final configuration: on the accepted relevance labels it lowered all four top-five metrics. Dual critics and an NLI check were not part of the evaluated pipeline. The frozen settings are in [`configs/p4_freeze.json`](configs/p4_freeze.json); the knowledge base is 28,617 passages (365-word chunks, 40-word overlap) from 1,584 QASPER papers.
+
+## Final configuration and results
+
+| Question | Result | Where |
+| --- | --- | --- |
+| Retrieval, K = 5, 200 questions, accepted pooled labels | MRR@5: RRF 0.804, dense 0.799, BM25 0.730; adding the BGE reranker lowers all four top-five metrics | [`results/final/p1`](results/final/p1/README.md), [`p2`](results/final/p2/README.md) |
+| Held-out agent run, 200 questions, mapped-evidence recall | Static top-8 0.858; adaptive 0.871; the loop's gain at an equal passage budget is 0.001 (95% interval −0.014 to 0.016) | [`results/final/p4`](results/final/p4/README.md), [`RESULTS.md`](results/final/p4/RESULTS.md) |
+| Answer quality (token F1) | 0.368 static, 0.366 adaptive | same |
+| Cost of the loop | about 56% more median latency | same |
+| Generation run (job 51585) | Qwen3-8B on vLLM 0.11.0, one A40, 8 passages × 1,200 characters | [`results/final/p5`](results/final/p5/README.md) |
+
+The 1,200-character budget is the primary result. A post-hoc run at 2,500 characters (job 51705) is reported next to it as a sensitivity analysis; the code default and the final live demo use 2,500. To reproduce the primary result, check out commit `ad02d5103e28dbca2230555dd90e36c5cdc70f4f`, or run a later commit with `MAX_CHARS_PER_PASSAGE=1200`. The held-out results do not establish independently held-out downstream performance: the agent developer read 40 of the 200 questions during annotation, and the report states this limitation.
 
 ## Local setup
 
@@ -45,11 +60,9 @@ python -m pip install -r requirements-dev.txt
 
 Windows activation: `.venv\Scripts\activate`.
 
-The dependency files are provisional ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. University GPU access is available; P5 must confirm hardware and allocation details before model setup; vLLM and GPU-specific packages are deliberately separate decisions. P6 should record resolved versions after the first successful clean installation. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
+The dependency files are ranges, not a tested lockfile. Installation downloads libraries, not model weights or the dataset. The held-out run used Qwen3-8B with vLLM 0.11.0 on one NVIDIA A40 on the university cluster ([run record](results/final/p5/README.md)); vLLM and GPU-specific packages are installed separately there and are not in `requirements.txt`. Launch the UI with `python -m streamlit run src/ui/app.py`; see [UI setup and usage](src/ui/README.md).
 
-The UI currently uses `IndexedRetriever` and a direct LLM client. Connecting it
-to the shared P1/P2 retrieval, P4 orchestration and P5 `GroundedQAPipeline`
-remains an integration and acceptance task.
+The UI talks to the answer service (`src/generation/server.py`, served on the cluster GPU) through `P5ApiClient`; see the [demo architecture](docs/DEMO_OPTION_C.md) and the [P6 end-to-end guide](docs/P6/P6_REAL_ENV_E2E_GUIDE.md). The final demo uses 8 passages of at most 2,500 characters, top eight, with the reranker off.
 
 ## P1 retrieval: Week 1 / Week 2
 
@@ -88,7 +101,7 @@ python -B -m pytest tests/test_p1.py -v
 python -B -m pytest -q
 ```
 
-Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. Retrieval quality metrics remain pending compatible gold mappings and the agreed P6 evaluation protocol; P1/P2 metric tooling is available. Keep real data, model weights, caches, indexes and generated results in ignored local directories; only small synthetic fixtures belong in Git.
+Dense unit tests use deterministic fake encoders with real FAISS and do not download models. A real SentenceTransformer run is a separate check. See the [Week 1/2 verification record](docs/WEEKLY_TRACKER.md#p1-verification-evidence) for historical synthetic runs, the Week 3/4 workflow below for P1 real-corpus experiments, and the [P2 real-data handoff](docs/P2_WEEK2.md) for Hybrid/reranking evidence. The final retrieval metrics are in [`results/final/`](results/final/README.md). Keep real data, model weights, caches, indexes and raw run output in ignored local directories; only small synthetic fixtures and the reviewed outputs under `results/final/` belong in Git.
 
 ## P1 retrieval: Week 3 / Week 4
 
@@ -120,10 +133,10 @@ P1 integration checks used fixed request bindings; they do not establish
 dynamic section selection. See [section interfaces](docs/P2_AGENT_CACHE.md).
 
 P1 saved-ranking scoring and P2 retrieval evaluation/pooling tools are
-available. Compatible gold evidence-to-passage mappings, relevance rules and
-the approved held-out/configuration freeze remain external inputs. This
-workflow exports real retrieval candidates and latency; quality metrics remain
-unavailable until those inputs are supplied. See the [P2 evaluation handoff](docs/P2_EVALUATION_HANDOFF.md)
+available. This workflow exports real retrieval candidates and latency; quality metrics
+come from scoring those rankings against the accepted pooled relevance labels, and the
+final comparison is in [`results/final/p1`](results/final/p1/README.md) and
+[`p2`](results/final/p2/README.md). See the [P2 evaluation handoff](docs/P2_EVALUATION_HANDOFF.md)
 and the linked P1 verification record for scope and limitations.
 
 The Week 3/4 delivery branch includes main's merged P2 and P4 APIs.
@@ -151,22 +164,25 @@ artifact records](docs/P1_WEEK3_WEEK4.md#separate-p1-and-p2-artifacts).
 ## Repository layout
 
 ```text
-docs/                 Plan, requirements, evaluation and team tracker
-configs/              Proposed shared configuration
+docs/                 Plan, requirements, evaluation, team tracker, per-owner handoffs (docs/P6 for evaluation and UI)
+configs/              Shared configuration; configs/p4_freeze.json is the held-out freeze record
 src/data/             P3: data preparation
 src/retrieval/        P1/P2: retrievers, fusion and reranking
-src/agent/            P4: planning and adaptive retrieval
-src/generation/       P5: generation and citation validation
+src/agent/            P4: planning, critic, adaptive retrieval and the freeze protocol
+src/generation/       P5: generation, citation validation and the answer service
 src/evaluation/       P6 + experiment owners: metrics and logging
 src/ui/               P6: Streamlit
 scripts/              Reproducible command-line entry points
 tests/                Module and integration tests
-data/                Local datasets (ignored except README)
-results/              Local experiment outputs (ignored except README)
+report/               LaTeX source of the final report (see report/README.md)
+results/final/        Reviewed final outputs per owner, with checksums (committed)
+results/              Everything else is local experiment output (ignored)
+notebooks/, examples/ Evaluation walkthrough and annotation notebooks; example response schema
+data/                 Local datasets (ignored except README)
 ```
 
 ## Assignment delivery
 
-Deadline supplied: **7 November, 11:59 PM SGT**. Submit one PDF with team details, the full report, and accessible links to code and datasets/results. Target code/report freeze: 6 November.
+Deadline: **7 November 2026, 11:59 PM SGT**. Submit one PDF (exported as `24.pdf`) with team details, the full report, and accessible links to the code and to the data and results archives. The report source is in [`report/`](report/README.md); each owner's reviewed results are described in [`results/final/`](results/final/README.md). Raw run archives and the data zip are delivered outside Git.
 
-**Rubric clarification confirmed by the team:** passage chunks count toward 10,000 documents, and query–passage pairs count toward 1,000 evaluation records. Actual corpus size and annotation agreement still need verification; see [requirements](docs/REQUIREMENTS.md).
+**Rubric clarification confirmed by the team:** passage chunks count toward 10,000 documents, and query–passage pairs count toward 1,000 evaluation records. The knowledge base has 28,617 passages from 1,584 papers; the judged pool has 1,853 question–passage pairs with 89.854% agreement. See [requirements](docs/REQUIREMENTS.md) and the report's annotation section for the process and its limitations.
