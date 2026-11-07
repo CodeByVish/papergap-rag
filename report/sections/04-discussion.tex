@@ -88,17 +88,17 @@ A proposed rule that would force refusal whenever the critic remains unsatisfied
 \subsection{Ablation of rewriting and reranking}
 The handout asks for the contribution of each innovation alone and together. Two components were varied: query rewriting (the critic-controlled retry loop) and reranking (a cross-encoder, \texttt{bge-reranker-base}, over the fused candidates). The frozen held-out run fixed its three arms before it was run and has no reranker arm, so the full two-by-two was run on the 40 development questions (Table~\ref{tab:ablation}). The four development cells use the same questions, corpus, retriever, critic, generator and the primary 1{,}200-character budget; each is one run. The two no-reranker cells ran at a commit that sets the same 1{,}200-character budget explicitly, on an L40S GPU, and the two reranker cells at the frozen commit on an A40, so run times are not comparable across them; agent time (retrieval and critic, mostly on the CPU) is.
 \begin{table}[htbp]\small\centering
-\caption{Ablation of rewriting and reranking. Recall is mapped-evidence recall, F1 is token F1, agent time is retrieval plus critic time per question. Upper block: held-out run (no reranker arm exists). Lower block: development slice, 40 questions of which 32 have gold, one run per cell; faithfulness was not judged there.}\label{tab:ablation}
+\caption{Ablation of rewriting and reranking. Neither is the static arm and rewriting is the adaptive loop. Recall is mapped-evidence recall, F1 is token F1, agent time is retrieval plus critic time per question. Upper block: held-out run (no reranker arm exists). Lower block: development slice, 40 questions of which 32 have gold, one run per cell; faithfulness was not judged there.}\label{tab:ablation}
 \begin{tabularx}{\linewidth}{Yccccccc}\toprule
 Configuration & Rewriting & Reranking & Recall & F1 & Answered & Faithfulness & Agent time (s)\\\midrule
 \multicolumn{8}{l}{\textit{Held-out, 200 questions}}\\
-Neither (static) & Off & Off & 0.858 & 0.368 & 194 & 0.892 & 0.04\\
-Rewriting only (adaptive) & On & Off & 0.871 & 0.366 & 191 & 0.907 & 5.6\\
+Neither & Off & Off & 0.858 & 0.368 & 194 & 0.892 & 0.04\\
+Rewriting only & On & Off & 0.871 & 0.366 & 191 & 0.907 & 5.6\\
 Reranking only & Off & On & not run & not run & not run & not run & not run\\
 Both & On & On & not run & not run & not run & not run & not run\\\midrule
 \multicolumn{8}{l}{\textit{Development slice, 40 questions}}\\
-Neither (static) & Off & Off & 0.885 & 0.270 & 36 & n/a & 0.02\\
-Rewriting only (adaptive) & On & Off & 0.927 & 0.277 & 36 & n/a & 4.9\\
+Neither & Off & Off & 0.885 & 0.270 & 36 & n/a & 0.02\\
+Rewriting only & On & Off & 0.927 & 0.277 & 36 & n/a & 4.9\\
 Reranking only & Off & On & 0.854 & 0.243 & 35 & n/a & 4.2\\
 Both & On & On & 0.917 & 0.257 & 35 & n/a & 11.3\\\bottomrule
 \end{tabularx}
