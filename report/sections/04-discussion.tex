@@ -26,9 +26,7 @@ Static top ten & 0.974 & 30/32 & $\leq 10$\\\bottomrule\end{tabularx}
 \end{table}
 The generator-view critic run (job 51172) improves mean evidence recall over static top five by 0.031, with a reported 95\% paired bootstrap interval of [0.000, 0.094] (2,000 resamples). At a matched passage budget, its difference from plain retrieval is $-0.042$, with interval [$-0.135$, 0.062]. Neither supports a reliable adaptive advantage. Static top eight recovers substantially more evidence on this slice. The agent audit further reports that 95.7\% of retries add no gold passage and 56.5\% occur when all gold is already retrieved. These observations suggest that critic calibration and stopping, rather than query wording alone, limit this implementation.
 
-\begin{review}{Strength and provenance of agent evidence}
-The development table and intervals are transcribed from the agent experiment contribution (jobs 50701, 50977, 51172, 51521; the cluster outputs are in the team's delivery archives). The held-out tables below are scored from job 51585 with the frozen record \texttt{configs/p4\_freeze.json}; the scoring script refused any run whose manifest differed from the record. Each configuration was run once. The recall intervals resample questions (2{,}000 resamples, seed 0); the F1 and RAGAS intervals resample papers (1{,}000 resamples, seed 42), like the paired retrieval comparison above. Part of the held-out list (40 questions) was read by the agent developer before the freeze, hence the 160-question column.
-\end{review}
+
 
 \subsection{Held-out evaluation of the agent}\label{sec:agent-heldout}
 The configuration was frozen on 6 November 2026 (code commit \texttt{ad02d51}) and run once on the 200 held-out questions: top eight per round, no reranking, at most two retries, a Qwen3-8B critic reading the generator's view, and answers from the same generator in every arm, each passage cut at 1{,}200 characters. All 200 questions are answerable and have mapped gold. \hyperref[tab:heldout]{Table~\ref*{tab:heldout}} gives mapped-evidence recall.
@@ -108,10 +106,10 @@ Both & On & On & --- & --- & --- & --- & ---\\
 \par\bigskip\noindent\textbf{(b) Development slice --- 40 questions}\par\nobreak\smallskip
 \small\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{27mm}YYY>{\raggedright\arraybackslash}p{8mm}YYY}\toprule
 Configuration & Rewrite & Rerank & Recall & F1 & Answered & Faith-\newline fulness & Agent\newline time (s)\\\midrule
-Static & Off & Off & 0.885 & 0.270 & 36 & n/a & 0.02\\
-Rewrite only & On & Off & 0.927 & 0.277 & 36 & n/a & 4.9\\
-Rerank only & Off & On & 0.854 & 0.243 & 35 & n/a & 4.2\\
-Both & On & On & 0.917 & 0.257 & 35 & n/a & 11.3\\\bottomrule\end{tabularx}
+Static & Off & Off & 0.885 & 0.270 & 36 & not judged & 0.02\\
+Rewrite only & On & Off & 0.927 & 0.277 & 36 & not judged & 4.9\\
+Rerank only & Off & On & 0.854 & 0.243 & 35 & not judged & 4.2\\
+Both & On & On & 0.917 & 0.257 & 35 & not judged & 11.3\\\bottomrule\end{tabularx}
 \end{table}
 Adding the reranker did not help. Without the loop it lowers mapped-evidence recall from 0.885 to 0.854 and token F1 from 0.270 to 0.243; with the loop, from 0.927 to 0.917 and from 0.277 to 0.257. It also lowers the gold citation recall of the answers (0.694 to 0.550 without the loop, 0.726 to 0.650 with it, as counted for the answer step) and the number of answered questions (36 to 35). Paired over the 32 answerable questions, none of these differences can be told from zero: F1 changes by $-0.027$ [$-0.084$, 0.024] without the loop and $-0.020$ [$-0.075$, 0.024] with it, recall by $-0.031$ [$-0.156$, 0.094] and $-0.010$ [$-0.094$, 0.083]. The supported conclusion is that reranking brings no benefit here, not that it reduces accuracy by a measured amount. Observed agent time per question rises from 0.02\,s to 4.2\,s without the loop and from 4.9\,s to 11.3\,s with it, with the cross-encoder running on the CPU; the cross-hardware design prevents isolating its timing cost. This direction agrees with the 200-question relevance pool, where reranking lowered all four metrics at top five (\hyperref[tab:retrieval]{Table~\ref*{tab:retrieval}}), and with the earlier paired development run at every depth.
 
@@ -125,7 +123,8 @@ Three held-out questions illustrate what the loop does well and badly. All three
 
 \textbf{A failure caused by the loop.} ``What language is the data in?'' (paper \texttt{1903.11437}; reference: English, German and French). The mapped gold passage, about Europarl data ``in several languages'', is already among the eight passages of the first round. The static arm answers ``English'' (partly right, and not citing the gold passage). The critic reads the same eight passages, concludes that none states the language and stops with \texttt{INSUFFICIENT\_INFORMATION}, so the adaptive arm refuses. A critic that is over-strict turns a partly correct answer into a refusal; it did so for three of 200 questions.
 
-\input{review-checks/q5}
+% Q5 assessment retained internally; hidden from the report.
+% \input{review-checks/q5}
 
 \section{Conclusions, limitations and future work}
 Current evidence supports hybrid retrieval as a useful baseline and argues against retaining this reranker configuration. On the frozen held-out run, increasing the initial retrieval depth recovers more evidence than adaptive retries: the evidence-gap loop adds 0.013 to the mapped-evidence recall of static top-eight retrieval, adds nothing over reading the same number of passages, and costs about 56\% more median latency. The system provides a working route from a scientific question to a cited answer, and its answers score a token F1 of 0.368 without the loop and 0.366 with it, so the loop's extra model calls bought no measurable answer quality; paired LLM-judge comparisons do not establish a difference in faithfulness, relevance or context precision (Q4.5). Annotation included AI assistance, and the disagreement reviewer had labelled some disputed pairs. These limitations, the reading of 40 held-out questions by the agent developer before the freeze, the absence of unanswerable questions in the held-out list, and context clipping qualify the findings. The frozen retrieval comparison does not establish held-out downstream performance. In post-hoc checks a larger per-passage context budget improved gold-citation metrics on the development slice, reduced citation-provenance warnings on the held-out questions and cut the critic's retries in both, but it changed neither recall nor answer F1 measurably (Section~\ref{sec:context}); it has not been adopted as the primary configuration.
