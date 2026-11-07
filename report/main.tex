@@ -55,7 +55,7 @@ Maheshwari Vishakha Praveen & G2609099E\\\bottomrule
 \vspace{6mm}
 \vfill
 \begin{review}{Draft status}
-The retrieval comparison uses accepted pooled relevance labels and questions excluded from recorded prior development use; the agent was evaluated on the frozen held-out question list in one pre-declared run (200 questions, 40 of which the agent developer read during annotation), plus one post-hoc sensitivity run at a larger context budget, and the UI measurements remain development results. This does not establish independently held-out downstream performance. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Required data/results and code archive links are still absent; add accessible links before submission and export the final file as \texttt{24.pdf}. Pending entries are not zero scores. Overlap QA scores (EM and token F1), live RAGAS scores and the development-slice factorial ablation are reported; no reranker arm exists on the held-out questions.
+The retrieval comparison uses accepted pooled relevance labels and questions excluded from recorded prior development use; the agent was evaluated on the frozen held-out question list in one pre-declared run (200 questions, 40 of which the agent developer read during annotation), plus one post-hoc sensitivity run at a larger context budget, and the UI measurements remain development results. This does not establish independently held-out downstream performance. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Submission-material links are provided at the end of this report; export the final file as \texttt{24.pdf}. Pending entries are not zero scores. Overlap QA scores (EM and token F1), live RAGAS scores and the development-slice factorial ablation are reported; no reranker arm exists on the held-out questions.
 \end{review}
 \end{titlepage}
 \begin{abstract}
@@ -66,6 +66,11 @@ Investigating an NLP research topic often requires searching many papers and pie
 \input{sections/02-retrieval}
 \input{sections/03-evaluation}
 \input{sections/04-discussion}
+\section{Submission materials}
+\begin{description}
+\item[Data and results.] Knowledge base, queries and retrieved results, evaluation dataset, generated answers or classification results, and supporting data for Questions 3 and 5: \href{https://drive.google.com/drive/folders/1JgMAa2VR1ysmSiBmPY1e-jqtlkv8pxAx?usp=sharing}{Google Drive: data and results archive}.
+\item[Source code and libraries.] Source code and libraries, with a README explaining how to compile and run the system: \href{https://drive.google.com/drive/folders/1Sqxo20rhiv-Gn9JbQnMPjZGqjmI6b4yE?usp=sharing}{Google Drive: source code archive}.
+\end{description}
 \input{sections/05-ai-disclosure}
 \bibliographystyle{plainnat}
 \bibliography{references}

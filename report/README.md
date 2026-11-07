@@ -27,7 +27,7 @@ Paths in this section are relative to `report/`.
 | `source-audit.json` | Hashes of selected drafting inputs; not an experiment freeze |
 | `build/main.pdf` | Compiled review PDF; local and ignored by Git |
 
-The former “Reproducibility and submission materials” section has been removed. Its archive-link placeholders are absent from the report; the handout's link requirements still need to be addressed before submission.
+The “Submission materials” section includes the supplied Google Drive folder links for handout item 4 (data/results) and item 5 (source code/libraries and README). Verify folder access and compressed-archive contents before submission.
 
 ## Build and preview
 
@@ -157,7 +157,7 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 6. Q2.2 now reports the 7 November all-papers browser run on the school GPU (node TC2N03) as the final demonstration, with screenshots in `figures/query-*.png`. Record its job number and per-passage budget from the service log; neither is in the run files. The earlier selected-paper runs remain only as clipping evidence. Every evaluation result stays at 1,200 characters (reproduce with `MAX_CHARS_PER_PASSAGE=1200` or at commit `ad02d51`).
 7. Confirm the supplied pipeline charts and screenshot still match the final system. Future-work proposals must remain distinct from tested improvements.
 8. Have all members confirm the AI-use disclosure, additional tools/purposes, actual human verification and any required course declaration format.
-9. Restore the required data/results ZIP and code/libraries ZIP links in an appropriate final location. Removing the former submission-materials section did not remove the handout requirement. Check link access and archive completeness.
+9. The supplied data/results and code/libraries folder links are included in “Submission materials”. Check link access and compressed-archive completeness.
 10. Resolve highlighted items, remove temporary reviewer assignments and AI editorial ratings, retain substantive disclosures, rebuild and visually inspect the final PDF. Submit **`24.pdf`** through Blackboard by **7 November 2026, 11:59 pm SGT**.
 
 ## P2 draft contribution — 6 November 2026
@@ -166,7 +166,7 @@ P2 added the three paired fusion/reranking comparisons (12 metric rows) and a tr
 
 ## Editorial review (7 November 2026)
 
-The current review table, applied replacements, unresolved grading risks and reassessed ratings are in [review-checks/editorial-review-20261107.md](review-checks/editorial-review-20261107.md). The post-review build has 36 pages and no unresolved references or overfull/underfull box warnings. All pages were rendered for layout inspection. This is a review copy with editorial boxes, not the submission copy. The data/results archive and runnable code archive links remain missing. Q4.6 is now 3/5 because timing summaries require a common-record recomputation; other evidence-based ratings are unchanged. Historical scoped owner approvals were preserved, not extended to the new edits.
+The current review table, applied replacements, unresolved grading risks and reassessed ratings are in [review-checks/editorial-review-20261107.md](review-checks/editorial-review-20261107.md). The post-review build has 36 pages and no unresolved references or overfull/underfull box warnings. All pages were rendered for layout inspection. This is a review copy with editorial boxes, not the submission copy. The supplied data/results and runnable code folder links have since been added to “Submission materials”. Q4.6 is now 3/5 because timing summaries require a common-record recomputation; other evidence-based ratings are unchanged. Historical scoped owner approvals were preserved, not extended to the new edits.
 
 UI editorial update: Q2.1 now follows implementation, querying, inspecting results and interaction scope. The agent workflow diagram is in Q5. The removed internal UI-verification note concerned the 7 November headless Chromium run on the final GPU service; the workbook all-papers critic check should be reconciled against query 5 of that run. This remains an internal follow-up, not a claim of owner approval.
 
