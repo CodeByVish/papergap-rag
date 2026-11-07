@@ -2,8 +2,9 @@
 
 Status: **P5 content approved by Junyu Hu on 6 November 2026; DONE FOR DRAFT - P5 scope only.**
 This approval covers the items and checks listed below, including the final held-out QA and live
-RAGAS scores. It does not certify the Qwen3-8B Hub revision, the Q4.3 annotation record, the Q5
-ablations, or the team report.
+RAGAS scores. It does not certify the Qwen3-8B Hub revision, the final Q4.3 gold and the other
+annotators' records, the Q5 ablations, or the team report. Q4.3 annotator A's own label provenance
+was added on 7 November 2026 (final section).
 
 ## Run used for the P5 checks
 
@@ -96,3 +97,26 @@ reproduce exactly from the delivered JSONL. `answer_s` nearest-rank percentiles 
 records are 10.5/23.6 s (static), 11.0/24.0 s (adaptive) and 10.5/22.2 s (static-wide); the
 report rounds p50 to 10.6/11.2/10.6. The p95s agree; the 0.1–0.2 s p50 difference needs the
 producer's percentile convention confirmed before submission.
+
+## Q4.3 annotator A label provenance (7 November 2026)
+
+P5 also confirms its own part of the Q4.3 annotation record, which the 6 November approval
+explicitly left out. The facts below come from the shared template and the label files on
+`p3-qasper-foundation`, and from the annotator's own statement on 7 November 2026.
+
+| | |
+| --- | --- |
+| Scope | annotator A, batches 01–04 |
+| Questions | 80 of the 200 held-out questions |
+| Labels | 747 binary labels |
+| Provenance | written by the annotator from the passage text; no AI suggestion in these four batches |
+| Independence | no labels or criteria exchanged with Changyan Xu before submission |
+| Agreement with Xu | 739 shared pairs, 91.47%, Cohen's kappa 0.791 |
+| Prior exposure | the annotator knew the 80 questions were for the final held-out evaluation; the later generation run covers all 200 |
+
+These statements were confirmed by Junyu Hu rather than recomputed from the files: the
+label counts come from `data/processed/annotation_common_v3_markdown/annotator_A/batch_01.md`
+to `batch_04.md` (each headed `Annotator: HU JUNYU`), and the agreement figures from
+`report/tables/agreement.tex`. The pool, the 188 disagreements, the single-reviewer
+resolution and the AI-suggestion caveat for other batches are disclosed in
+Section~\ref{sec:annotation} of the report and are not certified by this record.
