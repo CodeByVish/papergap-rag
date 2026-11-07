@@ -47,19 +47,15 @@ Words are counted as whitespace-delimited units. Unique types are counted after 
 
 \section{System and interface (Q2)}
 \subsection{User interface (Q2.1)}
-\begin{figure}[htbp]\centering
-\begin{tikzpicture}[node distance=6mm,box/.style={draw=blue!45!black,rounded corners,fill=blue!4,align=center,text width=10.7cm,minimum height=8mm},arr/.style={-{Stealth},thick}]
-\node[box](q){Question and selected paper};
-\node[box,below=of q](r){BM25 top 20 + BGE dense top 20 $\rightarrow$ RRF top 8};
-\node[box,below=of r](c){Critic checks evidence; if needed, rewrite and retrieve again\\At most two retries; section targeting where available};
-\node[box,below=of c](g){Qwen3-8B: cited answer or refusal};
-\node[box,below=of g](v){Validate citation IDs, numbers and claim provenance $\rightarrow$ UI};
-\draw[arr](q)--(r);\draw[arr](r)--(c);\draw[arr](c)--(g);\draw[arr](g)--(v);
-\end{tikzpicture}
-\caption{Agent configuration used in the primary evaluation. The general critic-unsatisfied refusal gate is disabled; an explicit critic stop can still produce a refusal (Q5). Static evaluation bypasses the critic loop.}\label{fig:system}
-\end{figure}
 
-A Streamlit interface communicates with a FastAPI service. Users select a paper or all papers, enter a question, or choose an example. The answer view exposes citations, source passages, evidence status, warnings and retrieval history. Expandable details let users inspect evidence without crowding the initial answer. Refusals appear as normal outcomes rather than system failures. Each question is independent; session history is not conversational model memory.
+
+\textbf{Implementation.} We built a web interface using Streamlit, connected to the retrieval and generation pipeline through a FastAPI service. It provides a single place to ask questions and inspect the evidence supporting an answer.
+
+\textbf{Querying.} Users select a specific paper or search across the full collection, enter a natural-language question and submit it. They can also choose an example question to get started. Figure~\ref{fig:ui-entry} shows the input screen with a question entered and the full collection selected.
+
+\textbf{Inspecting results.} The interface displays the generated answer with passage citations and expandable source details. Users can inspect the cited text, evidence status and validation warnings; retrieval history provides further detail when needed. Keeping supporting information expandable makes the main answer easy to read while allowing users to investigate its evidence. Figure~\ref{fig:ui} shows a returned answer and its sources.
+
+\textbf{Interaction scope.} When the system returns a refusal, the interface presents it as an outcome rather than a technical error. Each submitted question is processed independently; displayed session history does not provide conversational memory.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.97\linewidth]{figures/ui-query-entry.png}
@@ -70,11 +66,8 @@ A Streamlit interface communicates with a FastAPI service. Users select a paper 
 \includegraphics[width=0.97\linewidth,height=0.52\textheight,keepaspectratio]{figures/ui-answer.png}
 \caption{The interface answering query 3 of Table~\ref{tab:queries} in a browser against the live GPU service, with all papers in scope. The answer raised no validator warnings, and each source card shows its passage, rank and RRF score. Figure~\ref{fig:five-queries} shows how flagged sentences appear.}\label{fig:ui}
 \end{figure}
-\begin{review}{UI verification}
-Figure~\ref{fig:ui} and Figure~\ref{fig:five-queries} come from the 7 November browser run on the final GPU service (Section~\ref{sec:five-queries}), driven by headless Chromium. The workbook's unresolved all-papers critic test should be closed against that run's query 5.
-\end{review}
 
-\input{review-checks/q2-1}
+
 
 \subsection{Five measured queries (Q2.2)}\label{sec:five-queries}
 \begin{table}[htbp]\small\centering

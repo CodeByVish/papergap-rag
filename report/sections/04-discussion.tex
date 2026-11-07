@@ -2,6 +2,19 @@
 \subsection{Bounded evidence-gap retrieval}
 The agent plans evidence requirements, retrieves passages and asks a critic whether evidence is sufficient. Typed gaps such as \texttt{MISSING\_RESULT} guide a rewritten query and optional section targeting. The loop permits at most two retries, preventing unbounded search. The critic reads the generator's clipped view and must supply an evidence quote that code checks against the supplied text, allowing punctuation differences, one changed word and ellipsis elisions. This check provides traceability, not the correctness of the critic's conclusion.
 
+Figure~\ref{fig:system} summarizes the agent workflow used in the primary evaluation.
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[node distance=6mm,box/.style={draw=blue!45!black,rounded corners,fill=blue!4,align=center,text width=10.7cm,minimum height=8mm},arr/.style={-{Stealth},thick}]
+\node[box](q){Question and selected paper};
+\node[box,below=of q](r){BM25 top 20 + BGE dense top 20 $\rightarrow$ RRF top 8};
+\node[box,below=of r](c){Critic checks evidence; if needed, rewrite and retrieve again\\At most two retries; section targeting where available};
+\node[box,below=of c](g){Qwen3-8B: cited answer or refusal};
+\node[box,below=of g](v){Validate citation IDs, numbers and claim provenance $\rightarrow$ UI};
+\draw[arr](q)--(r);\draw[arr](r)--(c);\draw[arr](c)--(g);\draw[arr](g)--(v);
+\end{tikzpicture}
+\caption{Agent configuration used in the primary evaluation. The general critic-unsatisfied refusal gate is disabled; an explicit critic stop can still produce a refusal (Q5). Static evaluation bypasses the critic loop.}\label{fig:system}
+\end{figure}
+
 \begin{table}[htbp]\centering
 \caption{Agent development evidence recovery: 32 mapped-evidence questions from a 40-question slice. These results are reported in the team development record, not final QA scores.}\label{tab:agent}
 \begin{tabularx}{\linewidth}{>{\hsize=1.6\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y}\toprule
