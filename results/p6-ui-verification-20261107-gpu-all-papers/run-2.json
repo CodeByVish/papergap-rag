@@ -1,0 +1,586 @@
+{
+  "schema_version": "p6-ui-export-v1",
+  "exported_at": "2026-11-07T07:55:31.825075+00:00",
+  "timing_definition": "answer_http_elapsed_ms includes HTTP waiting/processing; excludes citations and rendering. Not model inference time.",
+  "runs": [
+    {
+      "client_run_id": "242d62fb-4a7a-446b-b1b3-102740ec1b6c",
+      "conversation_id": "e9fc67ee-3b80-4ad5-a576-7841b6e4f696",
+      "message_id": "d3db2bf9-2182-4d3c-8495-87384d9c2e1f",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "How is commonsense knowledge used to improve dialogue systems?",
+        "paper_id": null
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "vllm",
+        "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "vllm",
+      "submitted_at": "2026-11-07T07:55:16.361675+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1794038116635",
+        "result": {
+          "answer": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory, which allows models to recall relevant information about concepts covered in the dialogue and integrate it into their responses. This helps in making the conversations more meaningful and engaging.",
+          "citations": [
+            "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7",
+            "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory",
+              "passage_ids": [
+                "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "This helps in making the conversations more meaningful and engaging",
+              "passage_ids": [
+                "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory, which allows models to recall relevant information about concepts covered in the dialogue and integrate it into their responses. This helps in making the conversations more meaningful and engaging.",
+            "citations": [
+              "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7",
+              "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory",
+                "passage_ids": [
+                  "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "This helps in making the conversations more meaningful and engaging",
+                "passage_ids": [
+                  "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory, which allows models to recall relevant information about concepts covered in the dialogue and integrate it into their responses. This helps in making the conversations more meaningful and engaging.",
+            "citations": [
+              "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7",
+              "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory",
+                "passage_ids": [
+                  "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "This helps in making the conversations more meaningful and engaging",
+                "passage_ids": [
+                  "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "PROVENANCE_OVERSTATED",
+              "severity": "warning",
+              "message": "claim is marked 'direct' but the text it names supports 'unsupported': 'Commonsense knowledge is used to improve dialogue systems by integrating it as external memory'",
+              "subject": "Commonsense knowledge is used to improve dialogue systems by integrating it as external memory"
+            },
+            {
+              "code": "PROVENANCE_OVERSTATED",
+              "severity": "warning",
+              "message": "claim is marked 'direct' but the text it names supports 'unsupported': 'This helps in making the conversations more meaningful and engaging'",
+              "subject": "This helps in making the conversations more meaningful and engaging"
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "vllm",
+            "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+            "loaded": true,
+            "options": {
+              "dtype": "bfloat16",
+              "gpu_memory_utilization": 0.85,
+              "max_model_len": 32768,
+              "tensor_parallel_size": 1,
+              "temperature": 0.0,
+              "top_p": 0.9,
+              "enable_thinking": false,
+              "enforce_eager": false
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 9.999415265046991
+            },
+            "kv_cache_budget_gb": 37.74
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"Commonsense knowledge is used to improve dialogue systems by integrating it as external memory, which allows models to recall relevant information about concepts covered in the dialogue and integrate it into their responses. This helps in making the conversations more meaningful and engaging.\",\n  \"citations\": [\"qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7\", \"qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\"claim\": \"Commonsense knowledge is used to improve dialogue systems by integrating it as external memory\", \"passage_ids\": [\"qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7\"], \"support\": \"direct\"},\n    {\"claim\": \"This helps in making the conversations more meaningful and engaging\", \"passage_ids\": [\"qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33\"], \"support\": \"direct\"}\n  ]\n}",
+          "raw_text_chars": 1029
+        },
+        "search": {
+          "scope": "corpus",
+          "paper_id": null,
+          "source_papers": [
+            "1709.05453",
+            "1803.05223",
+            "1908.06725",
+            "1909.02151",
+            "2003.04707",
+            "2003.08380"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7": {
+          "text": "Collectively, the success of large pretrained neural models, both encoder-only BERT-like architectures as well as encoder\u2013decoder architectures like T5, raise interesting questions for the pursuit of commonsense reasoning. Researchers have discovered that previous models perform well on benchmark datasets because they pick up on incidental biases in the dataset that have nothing to do with the task; in contrast, the WinoGrande dataset has devoted considerable effort to reducing such biases, which may allow models to (inadvertently) \u201ccheat\u201d (for example, using simple statistical associations). While it is certainly true that datasets over-estimate the commonsense reasoning capabilities of modern models BIBREF1, there are alternative and complementary explanations as well:\n\nIt has been a fundamental assumption of the research community that commonsense reasoning is difficult because it comprises tacit rather than explicit knowledge BIBREF8. That is, commonsense knowledge\u2014like water is wet and that a tuba is usually too big to fit in a backpack\u2014is not written down anywhere (unlike, say, factual knowledge, which can be modeled in a knowledge graph). As a result\u2014the reasoning goes\u2014data-driven techniques (even neural models) will be of limited use due to the paucity of relevant corpora.\n\nYet, previous encoder-only architectures like RoBERTa that exploit a language modeling objective (that is, relying only on explicit textual knowledge) can clearly make headway in a commonsense reasoning task, and we can further improve upon these approaches with a sequence-to-sequence model. This leaves us with two possible explanations: despite careful controls, the WinoGrande challenge still contains incidental biases that these more sophisticated models can exploit, or that we are genuinely making at least some progress in commonsense reasoning. The latter, in particular, challenges the notion that commonsense knowledge is (mostly) tacit. Perhaps it is the case that in a humongous corpus of natural language text, someone really has written about trying to stuff a tuba in a backpack?",
+          "paper_id": "2003.08380",
+          "title": "TTTTTackling WinoGrande Schemas",
+          "section": "Implications",
+          "previous_passage_id": null,
+          "next_passage_id": null,
+          "context_before": "",
+          "context_after": ""
+        },
+        "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33": {
+          "text": "Ambiguity and implicitness are inherent properties of natural language that cause challenges for computational models of language understanding. In everyday communication, people assume a shared common ground which forms a basis for efficiently resolving ambiguities and for inferring implicit information. Thus, recoverable information is often left unmentioned or underspecified. Such information may include encyclopedic and commonsense knowledge. This work focuses on commonsense knowledge about everyday activities, so-called scripts.\n\nThis paper introduces a dataset to evaluate natural language understanding approaches with a focus on interpretation processes requiring inference based on commonsense knowledge. In particular, we present MCScript, a dataset for assessing the contribution of script knowledge to machine comprehension. Scripts are sequences of events describing stereotypical human activities (also called scenarios), for example baking a cake or taking a bus BIBREF0 . To illustrate the importance of script knowledge, consider Example ( SECREF1 ):\n\nWithout using commonsense knowledge, it may be difficult to tell who ate the food: Rachel or the waitress. In contrast, if we utilize commonsense knowledge, in particular, script knowledge about the eating in a restaurant scenario, we can make the following inferences: Rachel is most likely a customer, since she received an order. It is usually the customer, and not the waitress, who eats the ordered food. So She most likely refers to Rachel.\n\nVarious approaches for script knowledge extraction and processing have been proposed in recent years. However, systems have been evaluated for specific aspects of script knowledge only, such as event ordering BIBREF1 , BIBREF2 , event paraphrasing BIBREF3 , BIBREF4 or event prediction (namely, the narrative cloze task BIBREF5 , BIBREF6 , BIBREF7 , BIBREF8 , BIBREF9 ). These evaluation methods lack a clear connection to real-world tasks. Our MCScript dataset provides an extrinsic evaluation framework, based on text comprehension involving commonsense knowledge. This framework makes it possible to assess system performance in a multiple-choice question answering setting, without imposing any specific structural or methodical requirements.\n\nMCScript is a collection of (1) narrative texts, (2) questions of various types referring to these texts, and (3) pairs of answer candidates for each question. It comprises approx. 2,100 texts and a total of approx. 14,000 questions. Answering a substantial subset of",
+          "paper_id": "1803.05223",
+          "title": "MCScript: A Novel Dataset for Assessing Machine Comprehension Using Script Knowledge",
+          "section": "Introduction",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-519f69ca47a98bf0fb4c030e3ca00109ae63834063c6e485b9452bcb988f2610",
+          "context_before": "",
+          "context_after": " questions requires knowledge beyond the facts mentioned in the text, i.e."
+        }
+      },
+      "answer_http_elapsed_ms": 15143.330791965127,
+      "citation_http_elapsed_ms": 92.20691700465977,
+      "finished_at": "2026-11-07T07:55:31.519097+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: method question, needs method. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.2,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 8 in both, RRF merged 32, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-5db33d29f255d88fce91d2f552a855d3532a3312d03a692eea1f35e5ede07b2f",
+              "title": "Augmenting End-to-End Dialog Systems with Commonsense Knowledge",
+              "section": "Introduction",
+              "paper_id": "1709.05453",
+              "bm25_rank": 1,
+              "dense_rank": 1,
+              "rrf_score": 0.03279,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-2b5f28c3c671f6e93dc73f38ebb422ccd92c89c4edf22e481c7486810ace87de",
+              "title": "Augmenting End-to-End Dialog Systems with Commonsense Knowledge",
+              "section": "Conclusion and Future Work",
+              "paper_id": "1709.05453",
+              "bm25_rank": 3,
+              "dense_rank": 5,
+              "rrf_score": 0.03126,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-dd8ef6d878a1d7321aefeff88aeb2d70c9af2145f9c124ea938a7f27a811103b",
+              "title": "KagNet: Knowledge-Aware Graph Networks for Commonsense Reasoning",
+              "section": "Introduction",
+              "paper_id": "1909.02151",
+              "bm25_rank": 6,
+              "dense_rank": 4,
+              "rrf_score": 0.03078,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-f2c2dc14f1ab05cf11a041562462152319c93b99dbb0d35eafd4c9f78d2098ac",
+              "title": "Align, Mask and Select: A Simple Method for Incorporating Commonsense Knowledge into Language Representation Models",
+              "section": "Commonsense Reasoning",
+              "paper_id": "1908.06725",
+              "bm25_rank": 8,
+              "dense_rank": 10,
+              "rrf_score": 0.02899,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-3b2b736b6d361becf40088c5c0a5e62d993d5d4c2cb2f327eac2ad8ee8467030",
+              "title": "Augmenting End-to-End Dialog Systems with Commonsense Knowledge",
+              "section": "Tri-LSTM Encoder",
+              "paper_id": "1709.05453",
+              "bm25_rank": 13,
+              "dense_rank": 8,
+              "rrf_score": 0.0284,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-cb3c122fbb4b3fddf15eb04f619ed5f41ee079111a4e84f01ade500ddc5457e7",
+              "title": "TTTTTackling WinoGrande Schemas",
+              "section": "Implications",
+              "paper_id": "2003.08380",
+              "bm25_rank": 9,
+              "dense_rank": 12,
+              "rrf_score": 0.02838,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-8f4bf9d038288aee408e8eefd0aa85b0fa6f95c95edf8a7d33f7a59310675c33",
+              "title": "MCScript: A Novel Dataset for Assessing Machine Comprehension Using Script Knowledge",
+              "section": "Introduction",
+              "paper_id": "1803.05223",
+              "bm25_rank": 17,
+              "dense_rank": 6,
+              "rrf_score": 0.02814,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-2419fa3e73fb8de9779126a0d0d7e3e10f2a398a4a011c42a5bffeb63ebc5903",
+              "title": "Neuro-symbolic Architectures for Context Understanding",
+              "section": "Context Understanding through Neuro-symbolism",
+              "paper_id": "2003.04707",
+              "bm25_rank": 12,
+              "dense_rank": 13,
+              "rrf_score": 0.02759,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-09ed4a6fcfe78463cffbf4bbfab2f068f76a148ba23376862aa2c380637da7e2",
+              "title": "Common-Knowledge Concept Recognition for SEVA",
+              "section": "INTRODUCTION",
+              "paper_id": "2003.11687",
+              "bm25_rank": 2,
+              "dense_rank": null,
+              "rrf_score": 0.01613,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-9f14ccafcca7d59d97cd26f780c52e6507742ddaf2c7548714db24aec81cb46a",
+              "title": "MCScript: A Novel Dataset for Assessing Machine Comprehension Using Script Knowledge",
+              "section": "Summary",
+              "paper_id": "1803.05223",
+              "bm25_rank": null,
+              "dense_rank": 2,
+              "rrf_score": 0.01613,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c75f2f1c8316fc74340f91c65fbb79ebccd3e2d1df78f5ff7390ae141f51fff5",
+              "title": "Neuro-symbolic Architectures for Context Understanding",
+              "section": "Applications of Neuro-symbolism ::: Application II: Neural Question-Answering using Commonsense Knowledge Bases ::: Introduction",
+              "paper_id": "2003.04707",
+              "bm25_rank": null,
+              "dense_rank": 3,
+              "rrf_score": 0.01587,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-4fd824c1c4ecc30b8999ce3ddcf95ea3e22c6b0b255dac0c2ad2fb1f03de7045",
+              "title": "Augmenting End-to-End Dialog Systems with Commonsense Knowledge",
+              "section": "Results and Analysis",
+              "paper_id": "1709.05453",
+              "bm25_rank": 4,
+              "dense_rank": null,
+              "rrf_score": 0.01562,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-bc2d5eacc58fd3b542888021ccc12b814d1b227402cb4f654b02b45aab71d880",
+              "title": "Multi-Perspective Fusion Network for Commonsense Reading Comprehension",
+              "section": "paragraph 1",
+              "paper_id": "1901.02257",
+              "bm25_rank": 5,
+              "dense_rank": null,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-6b5fb40b3c46e55b7626b166549b96a68b323b4afb14b166a5db9ca9915bd7f0",
+              "title": "Incorporating Structured Commonsense Knowledge in Story Completion",
+              "section": "Introduction",
+              "paper_id": "1811.00625",
+              "bm25_rank": 7,
+              "dense_rank": null,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8d2f6567aeb6c851b4974498f0bbc9a426646dc1e03399e26c3f46a8f6f17e39",
+              "title": "Neuro-symbolic Architectures for Context Understanding",
+              "section": "Applications of Neuro-symbolism ::: Application II: Neural Question-Answering using Commonsense Knowledge Bases ::: Introduction",
+              "paper_id": "2003.04707",
+              "bm25_rank": null,
+              "dense_rank": 7,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c2f9269b081b5a0348a4259484613b0af88bccae79bd28ff3d3d12564af17d4a",
+              "title": "CommonGen: A Constrained Text Generation Dataset Towards Generative Commonsense Reasoning",
+              "section": "Introduction",
+              "paper_id": "1911.03705",
+              "bm25_rank": null,
+              "dense_rank": 9,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-35fb73333025dc542f3db88b050f23be07e62192fca79f4b5791e3d09b313734",
+              "title": "Align, Mask and Select: A Simple Method for Incorporating Commonsense Knowledge into Language Representation Models",
+              "section": "Introduction",
+              "paper_id": "1908.06725",
+              "bm25_rank": 10,
+              "dense_rank": null,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-6f80e2040646628e47ee31cd72a5bdead48e2b9753aa55e7a6b4a31cc20b40bb",
+              "title": "Learning from Easy to Complex: Adaptive Multi-curricula Learning for Neural Dialogue Generation",
+              "section": "Related Work",
+              "paper_id": "2003.00639",
+              "bm25_rank": 11,
+              "dense_rank": null,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e216bcc82e1bdef55669a0bda81a9f610db0ee8d7ead411be4580502b7cc846c",
+              "title": "A Simple Method for Commonsense Reasoning",
+              "section": "Conclusion",
+              "paper_id": "1806.02847",
+              "bm25_rank": null,
+              "dense_rank": 11,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-2cfe738508c5f1688021af3b640ffbd860ae4bf1fb474f315bd35044c303af8c",
+              "title": "Incorporating Structured Commonsense Knowledge in Story Completion",
+              "section": "Related Work",
+              "paper_id": "1811.00625",
+              "bm25_rank": 14,
+              "dense_rank": null,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-9d5b680fd9ea7f2377590acdeb8239ff7ba9ba56e1c303278bb9ff18b03e1bf5",
+              "title": "A Simple Method for Commonsense Reasoning",
+              "section": "Importance of training corpus",
+              "paper_id": "1806.02847",
+              "bm25_rank": null,
+              "dense_rank": 14,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3e96b5d49a4906fb1acf4826ff2cd63fd2a5d50d2df943eee4596a547a869d04",
+              "title": "Augmenting End-to-End Dialog Systems with Commonsense Knowledge",
+              "section": "ConceptNet",
+              "paper_id": "1709.05453",
+              "bm25_rank": 15,
+              "dense_rank": null,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3dc4b0a87f6066743fa0043ca75178f3c203e5d01b74d46e67139234974aa822",
+              "title": "Attention Is (not) All You Need for Commonsense Reasoning",
+              "section": "Conclusion",
+              "paper_id": "1905.13497",
+              "bm25_rank": null,
+              "dense_rank": 15,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-99971ed0024fbf34c846401dab651da75d6dc854246b6a7a233f826118804e98",
+              "title": "Bringing Stories Alive: Generating Interactive Fiction Worlds",
+              "section": "Conclusion",
+              "paper_id": "2001.10161",
+              "bm25_rank": 16,
+              "dense_rank": null,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-934d6aacdf37381d0a23ba987660872563f8bdf8704c4173d3a011a277ae168b",
+              "title": "Story Ending Generation with Incremental Encoding and Commonsense Knowledge",
+              "section": "Knowledge Graph Representation",
+              "paper_id": "1808.10113",
+              "bm25_rank": null,
+              "dense_rank": 16,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8f0d9f0b0e1f9b5b23c84d5a6cb09cf020101de955945b91107a231a1050df77",
+              "title": "Augmenting End-to-End Dialog Systems with Commonsense Knowledge",
+              "section": "Commonsense Knowledge",
+              "paper_id": "1709.05453",
+              "bm25_rank": null,
+              "dense_rank": 17,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-24d9650a3983abcf479d8707adf1372b675164bb9cbe4b165db701f79431b3dd",
+              "title": "Story Ending Generation with Incremental Encoding and Commonsense Knowledge",
+              "section": "Introduction",
+              "paper_id": "1808.10113",
+              "bm25_rank": 18,
+              "dense_rank": null,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-44527ab68ba6fa989856497c336b14676123a3f278ae48af7304702c5e812f4d",
+              "title": "Neuro-symbolic Architectures for Context Understanding",
+              "section": "Applications of Neuro-symbolism ::: Application II: Neural Question-Answering using Commonsense Knowledge Bases ::: Knowledge pre-training",
+              "paper_id": "2003.04707",
+              "bm25_rank": null,
+              "dense_rank": 18,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-4b77a0ce9acbdaadccd65099f40a494545979bc99e15b2bcfdb814773ae95326",
+              "title": "Towards Task-Oriented Dialogue in Mixed Domains",
+              "section": "Introduction",
+              "paper_id": "1909.02265",
+              "bm25_rank": 19,
+              "dense_rank": null,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a47746c9f2cb817622d9bbf2ddf898bb7d25222cacff9d9b7c86dfacae378edd",
+              "title": "Learning from Dialogue after Deployment: Feed Yourself, Chatbot!",
+              "section": "Introduction",
+              "paper_id": "1901.05415",
+              "bm25_rank": null,
+              "dense_rank": 19,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0ae9a11e20ebd2829778fbad7899014d272b4f8024e7e2a0ba21355296d73d8b",
+              "title": "KagNet: Knowledge-Aware Graph Networks for Commonsense Reasoning",
+              "section": "Related Work",
+              "paper_id": "1909.02151",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-539542de52eb38afdae1e0c6238b2a159847c57e823eff80cf24e619ec78c056",
+              "title": "Learning from Dialogue after Deployment: Feed Yourself, Chatbot!",
+              "section": "Future Work",
+              "paper_id": "1901.05415",
+              "bm25_rank": null,
+              "dense_rank": 20,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.2,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.2,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 5.1,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 5.1,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 5.1,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 15.1,
+          "message": "Answer ready: SUFFICIENT, 2 cited, 2 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    }
+  ]
+}

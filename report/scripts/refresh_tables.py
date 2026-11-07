@@ -27,14 +27,14 @@ rows=[' / '.join(names[n] for n in x['annotators'])+f" & {x['n']} & {100*x['agre
 \begin{tabular}{lrrr}\toprule
 Annotator pair & Records & Agreement & Kappa\\\midrule
 '''+ '\n'.join(rows)+r'\bottomrule\end{tabular}\end{table}'+'\n')
-a=[json.loads((r/f'results/p6-ui-verification-20261107-gpu/run-{i}.json').read_text()) for i in range(1,6)]
-summaries=['Yes, experiments were performed','Classification accuracy','F1: 88\\% on OntoNotes, 53\\% on Wiki(gold)','BiLSTM with max pooling','Accuracy and MRR']
+a=[json.loads((r/f'results/p6-ui-verification-20261107-gpu-all-papers/run-{i}.json').read_text())['runs'][0] for i in range(1,6)]
+summaries=['Topical coherence among entities in the same document','Commonsense knowledge as external memory','Comparable corpora, back-translation, monolingual data','Statistical, feature-based and neural induction; latent-variable and compound PCFGs','Bottleneck features, LSTMs, CNNs, x-vectors, Ghost-VLAD']
 rows=[]
 for i,(x,s) in enumerate(zip(a,summaries),1):
  rows.append(f"{i} & {s} & {x['answer_record']['result']['retrieval_rounds']} & {len(x['answer_record']['result']['citations'])} & {len(x['answer_record']['validation']['violations'])} & {x['answer_http_elapsed_ms']/1000:.1f}"+r'\\')
-(out/'tables/five-queries.tex').write_text(r'''% Source: results/p6-ui-verification-20261107-gpu/ (job 51905); seconds are answer HTTP time.
+(out/'tables/five-queries.tex').write_text(r'''% Source: results/p6-ui-verification-20261107-gpu-all-papers/; seconds are answer HTTP time.
 \begin{table}[htbp]\small\centering
-\caption{Final demonstration on the school GPU. Summaries of generated outputs, not verified factual answers; Section~\ref{sec:five-queries} gives the check against passages and references. Warning counts are validator diagnostics.}\label{tab:five-results}
+\caption{Final all-papers demonstration on the school GPU. Summaries of generated outputs, not verified factual answers; Section~\ref{sec:five-queries} gives the check against the cited passages. Warning counts are validator diagnostics.}\label{tab:five-results}
 \begin{tabularx}{\linewidth}{rYrrrr}\toprule
 \# & Output summary & Rounds & Cites & Warnings & Seconds\\\midrule
 '''+ '\n'.join(rows)+r'\bottomrule\end{tabularx}\end{table}'+'\n')
