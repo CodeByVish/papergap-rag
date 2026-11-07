@@ -1,6 +1,6 @@
 \section{Task and knowledge base (Q1)}
 \subsection{Collection, cleaning and storage (Q1.1)}
-\textbf{Acquisition.} We use the public QASPER dataset \citep{dasigi2021qasper}, downloaded from its official v0.3 archives using metadata from the Ai2 Hugging Face repository \citep{qasperdata}. The acquisition pipeline records the source revision and verifies downloaded files using checksums. Paper text from the official training, validation and test splits is combined into the retrieval collection. Questions, reference answers and evidence annotations are exported separately for evaluation; no neural model is trained on QASPER.
+\textbf{Acquisition.} We use the public QASPER dataset \citep{dasigi2021qasper}, downloaded from its official v0.3 archives using metadata from the Ai2 Hugging Face repository \citep{qasperdata}. The acquisition pipeline records the source revision and verifies downloaded files using checksums. Paper text from the official training, validation and test splits is combined into the retrieval collection. No neural model is trained on QASPER.
 
 \textbf{Cleaning.} We normalize line endings, trim leading and trailing whitespace, and remove blank paragraphs and unusable sections while preserving the remaining text and its original order. Only full-text sections are indexed; abstracts and figure/table content are excluded. Formula and citation placeholders already present in QASPER are retained.
 
@@ -12,7 +12,7 @@
 \input{figures/offline-indexing}
 
 \subsection{Application and scope (Q1.2)}
-Researchers must search across many papers and piece together findings scattered across their sections to answer research questions. Finding relevant evidence, comparing approaches and tracing claims to sources is time-consuming. PaperRAG supports evidence-grounded question answering over an indexed collection of NLP papers, helping researchers identify useful papers and investigate their methods and findings.
+PaperRAG supports researchers investigating NLP methods and findings through evidence-grounded question answering. It aims to reduce the effort of locating evidence scattered across papers and sections and tracing claims to their sources.
 
 Users enter a natural-language question and choose either a specific paper or the full collection. Selected-paper search supports detailed questions about a paper's methods, datasets, experiments and results. Collection-wide search supports topic exploration by retrieving relevant passages across papers. The system generates an answer with inspectable passage citations, or an explicit refusal when the available evidence is insufficient. Users can open the cited passages to examine the support for individual claims.
 
@@ -67,10 +67,10 @@ Words are counted as whitespace-delimited units. Unique types are counted after 
 \caption{The interface answering query 3 of \hyperref[tab:queries]{Table~\ref*{tab:queries}} in a browser against the live GPU service, with all papers in scope. The answer raised no validator warnings, and each source card shows its passage, rank and RRF score. \hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}} shows how flagged sentences appear.}\label{fig:ui}
 \end{figure}
 
-
-
 \subsection{Five measured queries (Q2.2)}\label{sec:five-queries}
-\begin{table}[htbp]\small\centering
+\par\smallskip
+\noindent\begin{minipage}{\linewidth}
+\captionsetup{type=table}\small\centering
 \caption{The five demonstration queries, run with all papers in scope.}\label{tab:queries}
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{5mm}Y@{}}\toprule
 \# & Question\\\midrule
@@ -79,9 +79,13 @@ Words are counted as whitespace-delimited units. Unique types are counted after 
 3 & What approaches are used for machine translation when parallel training data is limited?\\
 4 & What methods have researchers used to induce context-free grammars (CFGs)? Cite the papers supporting your answer.\\
 5 & What methods are used for low-resource language identification?\\\bottomrule\end{tabularx}
-\end{table}
+\end{minipage}\par\medskip
 \input{tables/five-queries}
-The final demonstration ran on 7 November on the school GPU (node TC2N03): \texttt{Qwen3-8B} served through vLLM, prompt \texttt{p5-grounded-qa-v7}, top-eight RRF without reranking and the 28,617-passage corpus across all 1,584 papers. Headless Chromium submitted the questions one at a time through the Streamlit interface to the live service over an SSH tunnel, and we saved a screenshot (\hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}}) and the run export after each answer. The service had been up for about 2.6 hours, and no separate warm-up question was run. Latency is the answer HTTP time seen by the client; it includes the agent and generation but excludes citation lookup and rendering. Mean latency is 19.9 seconds, median 19.3 seconds and range 15.1--26.3 seconds. The five calls took 99.5 seconds in total, or 0.050 questions per second for serial calls; this is a rate derived from one pass, not a measured batch throughput, and one pass cannot support a p95. Final generation accounts for 69.9 of the 99.5 seconds. Query 5 is the slowest because it used all three rounds; its final generation took 13.8 seconds, within the 10.0--16.1 second range of the others. The interface's progress log, which has 0.1-second resolution, places each first retrieval at 0.2--0.5 seconds after submission, and each critic check took about 3--5 seconds, so LLM work dominates. Citation lookup took 92--148 ms per query. The service did not report the per-passage character budget, so this run does not fix it.
+\textbf{Run setup.} We submitted the five queries in \hyperref[tab:queries]{Table~\ref*{tab:queries}} through the Streamlit interface, with the full collection selected. Requests ran sequentially against the school GPU service using Qwen3-8B through vLLM and top-eight RRF retrieval without reranking. The service was already running; no dedicated warm-up query was used.
+
+\textbf{Results.} \hyperref[tab:five-results]{Table~\ref*{tab:five-results}} summarizes the returned answers, citation counts, validation warnings and latency. \hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}} shows the corresponding interface outputs. The summaries describe generated responses; warning counts are validator diagnostics.
+
+\textbf{Query speed.} Latency was measured as the client-observed answer HTTP response time, including retrieval, critic processing and answer generation, but excluding subsequent citation lookup and interface rendering. Mean latency was 19.9 seconds, with a median of 19.3 seconds and a range of 15.1--26.3 seconds. Query 5 took longest and required three retrieval rounds; the others required one. Each query was measured once, so these figures describe the demonstration rather than repeated-run performance.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.48\linewidth]{figures/query-1.png}\hfill\includegraphics[width=0.48\linewidth]{figures/query-2.png}\\[2mm]
@@ -90,14 +94,7 @@ The final demonstration ran on 7 November on the school GPU (node TC2N03): \text
 \caption{Answers to queries 1--5 as shown by the interface, left to right and top to bottom. Screenshots are cropped to the answer column.}\label{fig:five-queries}
 \end{figure}
 
-All five questions were answered, and all 15 citations resolved to passage text. Each query drew on five to 18 source papers. We checked each answer against its cited passages; these are topic questions without QASPER references, so this checks grounding, not completeness. Query 3 is fully grounded: its three approaches each appear in the cited passage, and it raised no warning. Query 1 is partly grounded: topical coherence is supported, but the answer omits the local-context methods its fourth source describes, and the validator flags its second sentence. Query 2 is not grounded: neither cited passage mentions dialogue or memory, so the two validator warnings are correct, and the model's \texttt{SUFFICIENT} label and the critic's verdict were both wrong. Query 4 is partly grounded: its statistical, feature-based and neural methods match paper 1906.10225, but the flagged compound-PCFG claim cites a semantic-parsing paper (1601.06068) rather than 1906.10225, which proposes them. The answer text also names no papers, as the question asked; the supporting papers appear only as source cards. Query 5 lists real methods from a passage on audio language identification, but that passage is about Indian languages rather than low-resource methods, and the x-vector claim cites two unrelated passages on translation and syntax.
+\textbf{Result observations.} All five queries returned answers, and all 15 citations resolved to passage text. The AI-assisted inspection of cited passages found support for Query 3's listed approaches, while the other outputs contained omissions, unsupported claims or citation mismatches. Query 2's cited passages did not support its dialogue-related answer. Query 4 included a citation mismatch for compound PCFGs and did not name the supporting papers in the answer text, although source cards identified them. Query 5 illustrates the role of source inspection: the system retrieved passages ranked as relevant, but some did not directly support the associated claims. These exploratory queries demonstrate the query workflow and citation inspection; quantitative answer-quality evaluation is reported in Q4.
 
-Query 5 also shows the agent and generator disagreeing. The critic reported a missing method in all three rounds, the pool grew to 20 passages, and the search stopped at the round limit, yet the model labelled its answer \texttt{SUFFICIENT}. The validator kept the answer and warned, because an unsatisfied verdict at the round limit does not automatically force refusal; the general refusal gate failed its development criterion before the held-out run (Section~\ref{sec:agent-heldout}). Queries 2 and 5 show that an answer can look confident when all-papers retrieval returns weak evidence, so readers must rely on the warnings and sources. A topical corpus also limits answers: citations can only reach what the 1,584 papers contain.
-
-An earlier selected-paper demonstration on five QASPER questions gives separate evidence on context clipping. At 1{,}200 characters per passage on a laptop (Apple M5, 24 GB, Ollama \texttt{qwen3:14b}), an answerable question about evaluation metrics was refused because the metric statements began beyond the 1{,}200 characters the generator rendered, while the critic read each passage up to 3{,}000 characters. Raising the budget to 2{,}500 characters produced an answer. That refusal was a missed answer, not a successful refusal. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did; clipping itself still affects them (Q4.2). Those timings used a different model and must not be compared with \hyperref[tab:five-results]{Table~\ref*{tab:five-results}}.
-
-\begin{review}{Do not interpret demonstration outputs as accuracy}
-Answers in \hyperref[tab:five-results]{Table~\ref*{tab:five-results}} summarize model outputs, not verified paper facts. The check above is AI-assisted and needs P5/P4 confirmation. Record the GPU job number and per-passage budget for this run from the service log.
-\end{review}
-
-\input{review-checks/q2-2}
+% Hidden from report; assessment retained in review-checks/q2-2.tex.
+% \input{review-checks/q2-2}
