@@ -1,0 +1,465 @@
+{
+  "schema_version": "p1-comparison-verification-v1",
+  "status": "passed",
+  "verified_at_utc": "2026-11-05 15:47:09 UTC",
+  "reporting_timezone": "Asia/Shanghai",
+  "scope": "One offline rerun of P6 compare on the supplied P2 per-question scores; BM25 versus Dense at K=5.",
+  "comparison_run_count": 1,
+  "numeric_comparison_policy": "Exact parsed CSV and JSON equality; no numerical tolerance.",
+  "execution": {
+    "command": "& 'E:\\miniconda\\py311\\envs\\papergap\\python.exe' -B -m scripts.run_p6_evaluation compare --left 'results/p2-final-retrieval-handoff/scored/scores.jsonl' --right 'results/p2-final-retrieval-handoff/scored/scores.jsonl' --left-arm BM25 --right-arm Dense --k 5 --metrics precision_at_k pool_recall_at_k mrr_at_k pool_ndcg_at_k --resamples 1000 --seed 42 --output 'results/p1-bm25-vs-dense-verification-20261105/comparison'",
+    "exit_code": 0,
+    "wall_time_seconds": 1.7678804000000001,
+    "stdout": "Wrote evaluation bundle: results\\p1-bm25-vs-dense-verification-20261105\\comparison\r\n",
+    "interpreter": "E:/miniconda/py311/envs/papergap/python.exe",
+    "output_directory": "results/p1-bm25-vs-dense-verification-20261105/comparison"
+  },
+  "provenance": {
+    "local_git_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "producer_git_commit": "ceeaca8718daa0bbd2e6a9a3409b3eab6c4aa153",
+    "p3_pool_commit": "1a1dc15b824590a39c80ea11a568fbe5814a926e",
+    "producer_label_commit": "f70bf95593a6b9f705674770b8c3e833ca76290c",
+    "scores_sha256": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e",
+    "zip_sha256": "390793afc22508c4f10fbb74d2c8d42f936b941b840a4537d08c102187d89d69"
+  },
+  "preflight": {
+    "ok": true,
+    "errors": [],
+    "branch": "main",
+    "head": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "status": "",
+    "producer_commit": "ceeaca8718daa0bbd2e6a9a3409b3eab6c4aa153",
+    "python": "3.11.16 | packaged by Anaconda, Inc. | (main, Aug 27 2026, 14:36:16) [MSC v.1942 64 bit (AMD64)]",
+    "code_checks": [
+      {
+        "path": "scripts/run_p6_evaluation.py",
+        "producer_manifest_sha256": "0da910bc688ba29f8ce2493b442e6ade0df19b7b69d278e1b3259ad37beebb7c",
+        "producer_git_blob_sha256": "0da910bc688ba29f8ce2493b442e6ade0df19b7b69d278e1b3259ad37beebb7c",
+        "current_git_blob_sha256": "0da910bc688ba29f8ce2493b442e6ade0df19b7b69d278e1b3259ad37beebb7c",
+        "working_file_sha256": "0dea90bb9c188de4e167d3ea74e449a69741d19cac7e8dd39f0a223a5a0919f6",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/__init__.py",
+        "producer_manifest_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "producer_git_blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "current_git_blob_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/agreement.py",
+        "producer_manifest_sha256": "645ecad68fc6ce7a5c911ccce7dfdc959e24de36e4fe63170eca8f2572946243",
+        "producer_git_blob_sha256": "645ecad68fc6ce7a5c911ccce7dfdc959e24de36e4fe63170eca8f2572946243",
+        "current_git_blob_sha256": "645ecad68fc6ce7a5c911ccce7dfdc959e24de36e4fe63170eca8f2572946243",
+        "working_file_sha256": "e64b93293f4725e4898c8e74c0aba01734463fcf94c0bc24e58c4de23157dfcb",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/common.py",
+        "producer_manifest_sha256": "c94c527867d8ca22acd6d5948c599e790ebc98ad29326cec98d07e3c0a614368",
+        "producer_git_blob_sha256": "c94c527867d8ca22acd6d5948c599e790ebc98ad29326cec98d07e3c0a614368",
+        "current_git_blob_sha256": "c94c527867d8ca22acd6d5948c599e790ebc98ad29326cec98d07e3c0a614368",
+        "working_file_sha256": "bc1aef91de1b6c3d6c8f744f63adeff9247eb21f8f7e4c163c34f18ab20274a8",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/comparison.py",
+        "producer_manifest_sha256": "2ebb9b6a3df31f652c10a18ad86d656202d76565d30fa91a6f3755b6b65d59f3",
+        "producer_git_blob_sha256": "2ebb9b6a3df31f652c10a18ad86d656202d76565d30fa91a6f3755b6b65d59f3",
+        "current_git_blob_sha256": "2ebb9b6a3df31f652c10a18ad86d656202d76565d30fa91a6f3755b6b65d59f3",
+        "working_file_sha256": "38ed4e2becae862e6d5a2eea6e62a75617707669c50933a9a44e46f1b2d995fd",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/contexts.py",
+        "producer_manifest_sha256": "29f4d343a20aad17d33d7146835233719a72892b2716469b4ebeaec29a5b92eb",
+        "producer_git_blob_sha256": "29f4d343a20aad17d33d7146835233719a72892b2716469b4ebeaec29a5b92eb",
+        "current_git_blob_sha256": "29f4d343a20aad17d33d7146835233719a72892b2716469b4ebeaec29a5b92eb",
+        "working_file_sha256": "c6c91d10011f1975bc7f39b53e0972046910781b24427568e224596f0a831cf0",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/evidence.py",
+        "producer_manifest_sha256": "63b8810f19ddb09f91cbe036a56722348b9aff8f467d9753fc96603350c41b5c",
+        "producer_git_blob_sha256": "63b8810f19ddb09f91cbe036a56722348b9aff8f467d9753fc96603350c41b5c",
+        "current_git_blob_sha256": "63b8810f19ddb09f91cbe036a56722348b9aff8f467d9753fc96603350c41b5c",
+        "working_file_sha256": "3e71445b2f39173d4c9d35f4b18558368c4a0ff5c5b37815bff15111652f41ea",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/p3_rankings.py",
+        "producer_manifest_sha256": "f2303c6b342a385b724707e2a8029766cd57ce957814899d2c15b3aa4c6118f2",
+        "producer_git_blob_sha256": "f2303c6b342a385b724707e2a8029766cd57ce957814899d2c15b3aa4c6118f2",
+        "current_git_blob_sha256": "f2303c6b342a385b724707e2a8029766cd57ce957814899d2c15b3aa4c6118f2",
+        "working_file_sha256": "fa5ad89864d55bb2c8bae5b1215c87a6805b1cb226768ed08fe9b0218cac6148",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/performance.py",
+        "producer_manifest_sha256": "9db7bd98c0d493325fb1c4f9e9e2a7794e03fd44ade0407d7d1b4991952118b5",
+        "producer_git_blob_sha256": "9db7bd98c0d493325fb1c4f9e9e2a7794e03fd44ade0407d7d1b4991952118b5",
+        "current_git_blob_sha256": "9db7bd98c0d493325fb1c4f9e9e2a7794e03fd44ade0407d7d1b4991952118b5",
+        "working_file_sha256": "72cde7410fec4a16e39c0c5a2e5afbff795b284d67a23cb6356f278ae1260eaa",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/pooling.py",
+        "producer_manifest_sha256": "2398cb77202ac104375e4bea8addaa280b940f6818ed1c0578bc448efba058f9",
+        "producer_git_blob_sha256": "2398cb77202ac104375e4bea8addaa280b940f6818ed1c0578bc448efba058f9",
+        "current_git_blob_sha256": "2398cb77202ac104375e4bea8addaa280b940f6818ed1c0578bc448efba058f9",
+        "working_file_sha256": "2daf5546e3eaedfa7db1952fcdbff5bd617f691d6a66e5d773988d5d687883cb",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/qa.py",
+        "producer_manifest_sha256": "a0693f249a251324cdddc7babd0e23cb1f983fe8bb54b8b0cdc338f2a06526c1",
+        "producer_git_blob_sha256": "a0693f249a251324cdddc7babd0e23cb1f983fe8bb54b8b0cdc338f2a06526c1",
+        "current_git_blob_sha256": "a0693f249a251324cdddc7babd0e23cb1f983fe8bb54b8b0cdc338f2a06526c1",
+        "working_file_sha256": "f9148e152e1c5ef78cf4000c944d5f6f8e5b3d5477f314f106399974906f26fb",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/ragas_runner.py",
+        "producer_manifest_sha256": "a86a2cf431aa1b7d30679378930b09b3f7dfaf5d788e360d28054662f4c62577",
+        "producer_git_blob_sha256": "a86a2cf431aa1b7d30679378930b09b3f7dfaf5d788e360d28054662f4c62577",
+        "current_git_blob_sha256": "a86a2cf431aa1b7d30679378930b09b3f7dfaf5d788e360d28054662f4c62577",
+        "working_file_sha256": "4a703b5a66402015b3a1d42f1cc498756ec84eaaa5e574fe6ca0a5379190870a",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      },
+      {
+        "path": "src/evaluation/retrieval.py",
+        "producer_manifest_sha256": "bfcc57a36febf207dc2e951fcadee6a7c66ebdec0dd8c1679670309d212c6339",
+        "producer_git_blob_sha256": "bfcc57a36febf207dc2e951fcadee6a7c66ebdec0dd8c1679670309d212c6339",
+        "current_git_blob_sha256": "bfcc57a36febf207dc2e951fcadee6a7c66ebdec0dd8c1679670309d212c6339",
+        "working_file_sha256": "22305c2061674bd44ca65ec3a28272dac3221cc421d533c0f63a3247cc374dfc",
+        "git_blobs_identical": true,
+        "working_file_matches_git_after_eol_conversion": true
+      }
+    ],
+    "bundle_files": 24,
+    "checksum_entries": 23,
+    "checksum_mismatches": [],
+    "zip_members": 24,
+    "zip_crc_error": null,
+    "zip_mismatches": [],
+    "zip_sha256": "390793afc22508c4f10fbb74d2c8d42f936b941b840a4537d08c102187d89d69",
+    "scores_sha256": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e",
+    "score_rows": 2400,
+    "parameters": {
+      "left_arm": "BM25",
+      "right_arm": "Dense",
+      "k": 5,
+      "left_k": null,
+      "right_k": null,
+      "metrics": [
+        "precision_at_k",
+        "pool_recall_at_k",
+        "mrr_at_k",
+        "pool_ndcg_at_k"
+      ],
+      "resamples": 1000,
+      "seed": 42
+    },
+    "denominators": {
+      "precision_at_k": {
+        "paired_questions": 200,
+        "papers": 174
+      },
+      "pool_recall_at_k": {
+        "paired_questions": 199,
+        "papers": 174
+      },
+      "mrr_at_k": {
+        "paired_questions": 200,
+        "papers": 174
+      },
+      "pool_ndcg_at_k": {
+        "paired_questions": 199,
+        "papers": 174
+      }
+    },
+    "null_question_ids": {
+      "precision_at_k": [],
+      "pool_recall_at_k": [
+        "06cc8fcafc0880cf69a2514bb7341642b9833041"
+      ],
+      "mrr_at_k": [],
+      "pool_ndcg_at_k": [
+        "06cc8fcafc0880cf69a2514bb7341642b9833041"
+      ]
+    },
+    "protected_hashes": {
+      "results/p1-annotation-B05-B07/ai_assisted_review/review_batch_05.md": "fd1567f6bddfc7a6ecd5a62e4e4b4c8d436064b9a74b2d1740327dec3a5377c7",
+      "results/p1-annotation-B05-B07/ai_assisted_review/review_batch_06.md": "3c26d2cc0951ce1fd7eb1cd3dee59fbaa6b022c1e3dfd9eeec62781f19f8b324",
+      "results/p1-annotation-B05-B07/ai_assisted_review/review_batch_07.md": "1285ed59e591df7cddd907062c5ef966d64f6eae66ff597328534a400c9c742f",
+      "results/p1-annotation-B05-B07/comparison/Junlin_Yin_vs_Jingshuai_Qian_B05-B07_20261104.md": "f6707a22e469b95729900ae0d69387838ffd15bc97ed88bf85067051712a4f30",
+      "results/p1-annotation-B05-B07/completed/annotator_B/batch_05.md": "cf276810a58f192e228e745956652317eae14d6b48debfa29315c3fc83188c03",
+      "results/p1-annotation-B05-B07/completed/annotator_B/batch_06.md": "689fc748b2fb04f345f8a665131d2c88300d2ccd93869b974e95ffc109c9089a",
+      "results/p1-annotation-B05-B07/completed/annotator_B/batch_07.md": "dfd95adebfc4285cb62e2d6e681c7157d791ad3c5d8022bc72b2df336c6ffa2f",
+      "results/p1-annotation-B05-B07/final_20261104/batch_05.md": "e347a8f189c0c8d093b8999794ae9af0cd8f2dab4b0559e69de68d942eef0161",
+      "results/p1-annotation-B05-B07/final_20261104/batch_06.md": "cb8c145af180df73b0fbe2e931bb6a22042d35c8c5845c340a715e8a6fbb4631",
+      "results/p1-annotation-B05-B07/final_20261104/batch_07.md": "61057f57fe1875f2373fbeb5f04c17ecacc2eb658030df2ceec7f955901fd7f6",
+      "results/p1-annotation-B05-B07/original/batch_05.md": "e381a9663a06358c5efd1cb977e0801e9398c9085165b45ca4e67f26242111e8",
+      "results/p1-annotation-B05-B07/original/batch_06.md": "f34f0b1ff7367a334675eb97380cd9c8d0ebd25c62cc67340f5722899166ca9e",
+      "results/p1-annotation-B05-B07/original/batch_07.md": "79da474ae62abf8b6397a9a47718a478ae118bf0c380375f5c4e7c8cc47b59ca",
+      "results/p2-final-retrieval-handoff/bge-vs-rrf/ablation.csv": "88ec8a4efb0ce295a7ac356228e891ce0fe82f1907701b0a04f47740c53579fa",
+      "results/p2-final-retrieval-handoff/bge-vs-rrf/run_manifest.json": "38baf3e8da901e0ffb2e71374bdf930f8c2f57175cf02d795fc5ac2f76abc76a",
+      "results/p2-final-retrieval-handoff/bge-vs-rrf/summary.json": "2e932af2c37c61b91da5b2cac1fc8b35e274cdc0800193bf9cae48c8faea68c7",
+      "results/p2-final-retrieval-handoff/dense-vs-bm25/ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+      "results/p2-final-retrieval-handoff/dense-vs-bm25/run_manifest.json": "7d06c860aba952916f2731a026d9a64683c2615ee6c8b51ecfd45d4a702037c2",
+      "results/p2-final-retrieval-handoff/dense-vs-bm25/summary.json": "826bd04bab0999354c94d2ad9a11f5cc116303b3322982bdd4d81d0fe1a8d5b5",
+      "results/p2-final-retrieval-handoff/inputs/final_labels.jsonl": "902dab4c56c6c3a3d9da04859d2bfb4447f39afa6e0d1a7710e1fba8098effec",
+      "results/p2-final-retrieval-handoff/inputs/final_labels_manifest.json": "32659d952600ae4261934596b4c201b5bb920a1fbb0842f13e102941d4534572",
+      "results/p2-final-retrieval-handoff/inputs/pairs.jsonl": "2915d5b789f3adfc73487636aa26bf74b34a64c6f42c584dceeb4871330f8602",
+      "results/p2-final-retrieval-handoff/inputs/questions.jsonl": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+      "results/p2-final-retrieval-handoff/inputs/rankings.jsonl": "b5c04581f01693503d0a8586e24c38f76b50a54c493207e2e1e1e8ae2e9193f2",
+      "results/p2-final-retrieval-handoff/inputs/retrieval-review.json": "d3570d3e291a8f3162fda434e18da0264ed8c6a3b7de0bd2fefdc7611149359c",
+      "results/p2-final-retrieval-handoff/RESULTS.md": "eb3649ec8e138628cacbd4369a4a3f3f1d233048a0f10e24148cb3311c271409",
+      "results/p2-final-retrieval-handoff/rrf-vs-bm25/ablation.csv": "9f94473e9e377e0c208a1e5f5f68553f0bb903dd923da9157e2f87ed1058172e",
+      "results/p2-final-retrieval-handoff/rrf-vs-bm25/run_manifest.json": "805e5f195b33a753bed803e2ac669a1cbd1f59e768b9bc16f094b2023e7ea26a",
+      "results/p2-final-retrieval-handoff/rrf-vs-bm25/summary.json": "ba8ce90f3b515f746b84138fc167cc80e51fda3386a4399d175801a06c679e40",
+      "results/p2-final-retrieval-handoff/rrf-vs-dense/ablation.csv": "9ed43b970351dcd3da9abe1ffa3b3b5302f44b12a1778363518b75f2eeb5beed",
+      "results/p2-final-retrieval-handoff/rrf-vs-dense/run_manifest.json": "1b47aa7e36261db60ea8af1b05e4abaa682747667b00e28e673eb306da835a82",
+      "results/p2-final-retrieval-handoff/rrf-vs-dense/summary.json": "5064a6a3ec6cac29f76dc2ccae7feafd820f77cf5a98007cef9b7bd6dc429b87",
+      "results/p2-final-retrieval-handoff/scored/retrieval.csv": "8ca147ed74d1c19aa765c91371de33074e026c893421990e0530a1486210b9bf",
+      "results/p2-final-retrieval-handoff/scored/run_manifest.json": "6997a6f08a7699c9e4efa0a83b76ec3651f8ea1de2ca3919e0330665042ea9f2",
+      "results/p2-final-retrieval-handoff/scored/scores.jsonl": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e",
+      "results/p2-final-retrieval-handoff/scored/summary.json": "3fcf968b3f7ad254399865793da931c3eabe4f105d4ed1d5f682333a2448455e",
+      "results/p2-final-retrieval-handoff/SHA256SUMS.json": "af2067ab48d86299d61b4fd81571c91edbaba42756f4c1a9e72eb7110f957eaa",
+      "results/p2-final-retrieval-handoff.zip": "390793afc22508c4f10fbb74d2c8d42f936b941b840a4537d08c102187d89d69"
+    },
+    "local_branches": "refs/heads/main ad02d5103e28dbca2230555dd90e36c5cdc70f4f\nrefs/heads/p1/fix-retrieval-log-test ae6b48aa2a9c187a8602e36cbc35939b1574a6ef\nrefs/heads/p1/retrieval 5d3f4477f42887067bb4b3f8bd9231f1bc9289e9\nrefs/heads/p1/week3-week4 8a4a9286e27319820e324933f3ba45df28af83a3",
+    "worktrees": "worktree E:/Lenovo/Desktop/papergap-rag\nHEAD ad02d5103e28dbca2230555dd90e36c5cdc70f4f\nbranch refs/heads/main\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-b05-b07-final-push-20261104\nHEAD 197ab7c53408faa560c785e94bc86167433701b0\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-b05-b07-push-20261102\nHEAD ee9a2df22d1e2b76ab400a37cf6e0df00bc7c44a\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-main-20261017\nHEAD 6fa06b5ae89a270bc7e5e9b407b998fce3d10e8c\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-p2-20261017\nHEAD 0046e680fd361f90b608a949d2dd132d55db71aa\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-retrieval-log-test-20261105\nHEAD ae6b48aa2a9c187a8602e36cbc35939b1574a6ef\nbranch refs/heads/p1/fix-retrieval-log-test\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p3-week3-week4\nHEAD 499bb6d8ea2952f10e0499bfb8eb2986d683ba06\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/pr39-main-baseline-20261105\nHEAD a56ec1a581dde40390b728b2e90173c4802001a6\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/pr39-p1-conflicts-20261105\nHEAD 1a4f8db1bf979897cc060558eaf7bb49f45c7047\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/pr39-teammate-review-20261105\nHEAD f7997f6fc60cf46914e83da4d09bb8b0bf41114f\ndetached"
+  },
+  "verification": {
+    "ok": true,
+    "issues": [],
+    "csv_fields_exact_match": true,
+    "csv_bytes_exact_match": true,
+    "summary_data_exact_match": true,
+    "summary_bytes_exact_match": false,
+    "csv_sha256": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+    "original_csv_sha256": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+    "summary_sha256": "0846e71dfb406f7a2167501d7e2ed5f52e883a848b0ed5de953d25e78ca7daca",
+    "original_summary_sha256": "826bd04bab0999354c94d2ad9a11f5cc116303b3322982bdd4d81d0fe1a8d5b5",
+    "summary_difference_only_crlf": true,
+    "results": [
+      {
+        "metric": "precision_at_k",
+        "paired_questions": 200,
+        "papers": 174,
+        "mean_right_minus_left": 0.04500000000000001,
+        "ci_low": 0.017074958123953113,
+        "ci_high": 0.07282499999999996,
+        "resamples": 1000,
+        "seed": 42,
+        "left_only_questions": 0,
+        "right_only_questions": 0,
+        "left_arm": "BM25",
+        "right_arm": "Dense",
+        "left_k": 5,
+        "right_k": 5
+      },
+      {
+        "metric": "pool_recall_at_k",
+        "paired_questions": 199,
+        "papers": 174,
+        "mean_right_minus_left": 0.09087519125207565,
+        "ci_low": 0.04188790323823302,
+        "ci_high": 0.14206910216775445,
+        "resamples": 1000,
+        "seed": 42,
+        "left_only_questions": 0,
+        "right_only_questions": 0,
+        "left_arm": "BM25",
+        "right_arm": "Dense",
+        "left_k": 5,
+        "right_k": 5
+      },
+      {
+        "metric": "mrr_at_k",
+        "paired_questions": 200,
+        "papers": 174,
+        "mean_right_minus_left": 0.06958333333333334,
+        "ci_low": 0.016822390572390575,
+        "ci_high": 0.12219741992315175,
+        "resamples": 1000,
+        "seed": 42,
+        "left_only_questions": 0,
+        "right_only_questions": 0,
+        "left_arm": "BM25",
+        "right_arm": "Dense",
+        "left_k": 5,
+        "right_k": 5
+      },
+      {
+        "metric": "pool_ndcg_at_k",
+        "paired_questions": 199,
+        "papers": 174,
+        "mean_right_minus_left": 0.08325889612249864,
+        "ci_low": 0.036561417314898446,
+        "ci_high": 0.13140236403636482,
+        "resamples": 1000,
+        "seed": 42,
+        "left_only_questions": 0,
+        "right_only_questions": 0,
+        "left_arm": "BM25",
+        "right_arm": "Dense",
+        "left_k": 5,
+        "right_k": 5
+      }
+    ],
+    "manifest": {
+      "git_commit": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+      "python": "3.11.16",
+      "packages": {
+        "pydantic": "2.13.5",
+        "ragas": "0.4.3",
+        "langchain-openai": "1.1.9"
+      },
+      "arguments": {
+        "command": "compare",
+        "output": "results\\p1-bm25-vs-dense-verification-20261105\\comparison",
+        "left": "results\\p2-final-retrieval-handoff\\scored\\scores.jsonl",
+        "right": "results\\p2-final-retrieval-handoff\\scored\\scores.jsonl",
+        "metrics": [
+          "precision_at_k",
+          "pool_recall_at_k",
+          "mrr_at_k",
+          "pool_ndcg_at_k"
+        ],
+        "k": 5,
+        "left_k": null,
+        "right_k": null,
+        "left_arm": "BM25",
+        "right_arm": "Dense",
+        "resamples": 1000,
+        "seed": 42
+      },
+      "inputs": {
+        "left": {
+          "path": "E:\\Lenovo\\Desktop\\papergap-rag\\results\\p2-final-retrieval-handoff\\scored\\scores.jsonl",
+          "sha256": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e"
+        },
+        "right": {
+          "path": "E:\\Lenovo\\Desktop\\papergap-rag\\results\\p2-final-retrieval-handoff\\scored\\scores.jsonl",
+          "sha256": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e"
+        }
+      },
+      "output_sha256": {
+        "ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+        "summary.json": "0846e71dfb406f7a2167501d7e2ed5f52e883a848b0ed5de953d25e78ca7daca"
+      }
+    },
+    "output_files": [
+      "ablation.csv",
+      "run_manifest.json",
+      "summary.json"
+    ],
+    "output_hashes": {
+      "ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+      "run_manifest.json": "24365221b5d86247c6cdcf43b3eea29b30e5f11923e528d23b3119b8a465b080",
+      "summary.json": "0846e71dfb406f7a2167501d7e2ed5f52e883a848b0ed5de953d25e78ca7daca"
+    },
+    "protected_hashes_after": {
+      "results/p1-annotation-B05-B07/ai_assisted_review/review_batch_05.md": "fd1567f6bddfc7a6ecd5a62e4e4b4c8d436064b9a74b2d1740327dec3a5377c7",
+      "results/p1-annotation-B05-B07/ai_assisted_review/review_batch_06.md": "3c26d2cc0951ce1fd7eb1cd3dee59fbaa6b022c1e3dfd9eeec62781f19f8b324",
+      "results/p1-annotation-B05-B07/ai_assisted_review/review_batch_07.md": "1285ed59e591df7cddd907062c5ef966d64f6eae66ff597328534a400c9c742f",
+      "results/p1-annotation-B05-B07/comparison/Junlin_Yin_vs_Jingshuai_Qian_B05-B07_20261104.md": "f6707a22e469b95729900ae0d69387838ffd15bc97ed88bf85067051712a4f30",
+      "results/p1-annotation-B05-B07/completed/annotator_B/batch_05.md": "cf276810a58f192e228e745956652317eae14d6b48debfa29315c3fc83188c03",
+      "results/p1-annotation-B05-B07/completed/annotator_B/batch_06.md": "689fc748b2fb04f345f8a665131d2c88300d2ccd93869b974e95ffc109c9089a",
+      "results/p1-annotation-B05-B07/completed/annotator_B/batch_07.md": "dfd95adebfc4285cb62e2d6e681c7157d791ad3c5d8022bc72b2df336c6ffa2f",
+      "results/p1-annotation-B05-B07/final_20261104/batch_05.md": "e347a8f189c0c8d093b8999794ae9af0cd8f2dab4b0559e69de68d942eef0161",
+      "results/p1-annotation-B05-B07/final_20261104/batch_06.md": "cb8c145af180df73b0fbe2e931bb6a22042d35c8c5845c340a715e8a6fbb4631",
+      "results/p1-annotation-B05-B07/final_20261104/batch_07.md": "61057f57fe1875f2373fbeb5f04c17ecacc2eb658030df2ceec7f955901fd7f6",
+      "results/p1-annotation-B05-B07/original/batch_05.md": "e381a9663a06358c5efd1cb977e0801e9398c9085165b45ca4e67f26242111e8",
+      "results/p1-annotation-B05-B07/original/batch_06.md": "f34f0b1ff7367a334675eb97380cd9c8d0ebd25c62cc67340f5722899166ca9e",
+      "results/p1-annotation-B05-B07/original/batch_07.md": "79da474ae62abf8b6397a9a47718a478ae118bf0c380375f5c4e7c8cc47b59ca",
+      "results/p2-final-retrieval-handoff/bge-vs-rrf/ablation.csv": "88ec8a4efb0ce295a7ac356228e891ce0fe82f1907701b0a04f47740c53579fa",
+      "results/p2-final-retrieval-handoff/bge-vs-rrf/run_manifest.json": "38baf3e8da901e0ffb2e71374bdf930f8c2f57175cf02d795fc5ac2f76abc76a",
+      "results/p2-final-retrieval-handoff/bge-vs-rrf/summary.json": "2e932af2c37c61b91da5b2cac1fc8b35e274cdc0800193bf9cae48c8faea68c7",
+      "results/p2-final-retrieval-handoff/dense-vs-bm25/ablation.csv": "8e2b7fa7acdcdb98e46fb5e769ec0e8e5548d3a78b5020eb921dbbfb1605fb0a",
+      "results/p2-final-retrieval-handoff/dense-vs-bm25/run_manifest.json": "7d06c860aba952916f2731a026d9a64683c2615ee6c8b51ecfd45d4a702037c2",
+      "results/p2-final-retrieval-handoff/dense-vs-bm25/summary.json": "826bd04bab0999354c94d2ad9a11f5cc116303b3322982bdd4d81d0fe1a8d5b5",
+      "results/p2-final-retrieval-handoff/inputs/final_labels.jsonl": "902dab4c56c6c3a3d9da04859d2bfb4447f39afa6e0d1a7710e1fba8098effec",
+      "results/p2-final-retrieval-handoff/inputs/final_labels_manifest.json": "32659d952600ae4261934596b4c201b5bb920a1fbb0842f13e102941d4534572",
+      "results/p2-final-retrieval-handoff/inputs/pairs.jsonl": "2915d5b789f3adfc73487636aa26bf74b34a64c6f42c584dceeb4871330f8602",
+      "results/p2-final-retrieval-handoff/inputs/questions.jsonl": "d509010bcee647940ba22f47b3132b8f1223191239771fba0eca79b1582a5233",
+      "results/p2-final-retrieval-handoff/inputs/rankings.jsonl": "b5c04581f01693503d0a8586e24c38f76b50a54c493207e2e1e1e8ae2e9193f2",
+      "results/p2-final-retrieval-handoff/inputs/retrieval-review.json": "d3570d3e291a8f3162fda434e18da0264ed8c6a3b7de0bd2fefdc7611149359c",
+      "results/p2-final-retrieval-handoff/RESULTS.md": "eb3649ec8e138628cacbd4369a4a3f3f1d233048a0f10e24148cb3311c271409",
+      "results/p2-final-retrieval-handoff/rrf-vs-bm25/ablation.csv": "9f94473e9e377e0c208a1e5f5f68553f0bb903dd923da9157e2f87ed1058172e",
+      "results/p2-final-retrieval-handoff/rrf-vs-bm25/run_manifest.json": "805e5f195b33a753bed803e2ac669a1cbd1f59e768b9bc16f094b2023e7ea26a",
+      "results/p2-final-retrieval-handoff/rrf-vs-bm25/summary.json": "ba8ce90f3b515f746b84138fc167cc80e51fda3386a4399d175801a06c679e40",
+      "results/p2-final-retrieval-handoff/rrf-vs-dense/ablation.csv": "9ed43b970351dcd3da9abe1ffa3b3b5302f44b12a1778363518b75f2eeb5beed",
+      "results/p2-final-retrieval-handoff/rrf-vs-dense/run_manifest.json": "1b47aa7e36261db60ea8af1b05e4abaa682747667b00e28e673eb306da835a82",
+      "results/p2-final-retrieval-handoff/rrf-vs-dense/summary.json": "5064a6a3ec6cac29f76dc2ccae7feafd820f77cf5a98007cef9b7bd6dc429b87",
+      "results/p2-final-retrieval-handoff/scored/retrieval.csv": "8ca147ed74d1c19aa765c91371de33074e026c893421990e0530a1486210b9bf",
+      "results/p2-final-retrieval-handoff/scored/run_manifest.json": "6997a6f08a7699c9e4efa0a83b76ec3651f8ea1de2ca3919e0330665042ea9f2",
+      "results/p2-final-retrieval-handoff/scored/scores.jsonl": "5d74e32fbbb175c9cade7f974df70d3c55d2e76556f40c4f91d4e9fd7e450b7e",
+      "results/p2-final-retrieval-handoff/scored/summary.json": "3fcf968b3f7ad254399865793da931c3eabe4f105d4ed1d5f682333a2448455e",
+      "results/p2-final-retrieval-handoff/SHA256SUMS.json": "af2067ab48d86299d61b4fd81571c91edbaba42756f4c1a9e72eb7110f957eaa",
+      "results/p2-final-retrieval-handoff.zip": "390793afc22508c4f10fbb74d2c8d42f936b941b840a4537d08c102187d89d69"
+    },
+    "source_hashes_after": {
+      "scripts/run_p6_evaluation.py": "0dea90bb9c188de4e167d3ea74e449a69741d19cac7e8dd39f0a223a5a0919f6",
+      "src/evaluation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/evaluation/agreement.py": "e64b93293f4725e4898c8e74c0aba01734463fcf94c0bc24e58c4de23157dfcb",
+      "src/evaluation/common.py": "bc1aef91de1b6c3d6c8f744f63adeff9247eb21f8f7e4c163c34f18ab20274a8",
+      "src/evaluation/comparison.py": "38ed4e2becae862e6d5a2eea6e62a75617707669c50933a9a44e46f1b2d995fd",
+      "src/evaluation/contexts.py": "c6c91d10011f1975bc7f39b53e0972046910781b24427568e224596f0a831cf0",
+      "src/evaluation/evidence.py": "3e71445b2f39173d4c9d35f4b18558368c4a0ff5c5b37815bff15111652f41ea",
+      "src/evaluation/p3_rankings.py": "fa5ad89864d55bb2c8bae5b1215c87a6805b1cb226768ed08fe9b0218cac6148",
+      "src/evaluation/performance.py": "72cde7410fec4a16e39c0c5a2e5afbff795b284d67a23cb6356f278ae1260eaa",
+      "src/evaluation/pooling.py": "2daf5546e3eaedfa7db1952fcdbff5bd617f691d6a66e5d773988d5d687883cb",
+      "src/evaluation/qa.py": "f9148e152e1c5ef78cf4000c944d5f6f8e5b3d5477f314f106399974906f26fb",
+      "src/evaluation/ragas_runner.py": "4a703b5a66402015b3a1d42f1cc498756ec84eaaa5e574fe6ca0a5379190870a",
+      "src/evaluation/retrieval.py": "22305c2061674bd44ca65ec3a28272dac3221cc421d533c0f63a3247cc374dfc"
+    },
+    "head": "ad02d5103e28dbca2230555dd90e36c5cdc70f4f",
+    "branch": "main",
+    "status": "",
+    "local_branches": "refs/heads/main ad02d5103e28dbca2230555dd90e36c5cdc70f4f\nrefs/heads/p1/fix-retrieval-log-test ae6b48aa2a9c187a8602e36cbc35939b1574a6ef\nrefs/heads/p1/retrieval 5d3f4477f42887067bb4b3f8bd9231f1bc9289e9\nrefs/heads/p1/week3-week4 8a4a9286e27319820e324933f3ba45df28af83a3",
+    "worktrees": "worktree E:/Lenovo/Desktop/papergap-rag\nHEAD ad02d5103e28dbca2230555dd90e36c5cdc70f4f\nbranch refs/heads/main\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-b05-b07-final-push-20261104\nHEAD 197ab7c53408faa560c785e94bc86167433701b0\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-b05-b07-push-20261102\nHEAD ee9a2df22d1e2b76ab400a37cf6e0df00bc7c44a\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-main-20261017\nHEAD 6fa06b5ae89a270bc7e5e9b407b998fce3d10e8c\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-p2-20261017\nHEAD 0046e680fd361f90b608a949d2dd132d55db71aa\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p1-retrieval-log-test-20261105\nHEAD ae6b48aa2a9c187a8602e36cbc35939b1574a6ef\nbranch refs/heads/p1/fix-retrieval-log-test\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/p3-week3-week4\nHEAD 499bb6d8ea2952f10e0499bfb8eb2986d683ba06\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/pr39-main-baseline-20261105\nHEAD a56ec1a581dde40390b728b2e90173c4802001a6\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/pr39-p1-conflicts-20261105\nHEAD 1a4f8db1bf979897cc060558eaf7bb49f45c7047\ndetached\n\nworktree E:/Lenovo/Desktop/papergap-rag/.cache/pr39-teammate-review-20261105\nHEAD f7997f6fc60cf46914e83da4d09bb8b0bf41114f\ndetached",
+    "changed_protected_files": [],
+    "changed_source_files": [],
+    "git_state_unchanged": true
+  },
+  "excluded_question": {
+    "question_id": "06cc8fcafc0880cf69a2514bb7341642b9833041",
+    "paper_id": "1809.06537",
+    "reason": "No relevant passage in the judged pool (nine judged passages, zero positive labels). Both arms have null pool recall/nDCG and zero precision/MRR.",
+    "excluded_from": [
+      "pool_recall_at_k",
+      "pool_ndcg_at_k"
+    ]
+  },
+  "format_notes": [
+    "The reproduced ablation.csv is byte-for-byte identical to the P2 reference.",
+    "summary.json has exactly equal parsed data. Its raw bytes differ only because Windows writes CRLF while the supplied JSON uses LF; neither original nor generated files were normalized or overwritten.",
+    "The new run manifest records the current commit and Windows paths/source-file byte hashes. It is intentionally not expected to be byte-identical to the producer manifest.",
+    "All 13 evaluation source files match the producer Git blobs; Windows checkout line-ending conversion is separately recorded in the preflight checks."
+  ],
+  "boundaries": [
+    "This verifies the paired comparison from supplied scores, not the generation of those scores from rankings and relevance labels.",
+    "No retrieval, embedding, index building, label generation or adjudication, QA, RAGAS, or latency experiment was run.",
+    "The confidence intervals describe sampling uncertainty conditional on the supplied labels; they do not establish independent annotation or eliminate label bias.",
+    "Pool recall and pool nDCG concern the judged pool, not exhaustive paper relevance.",
+    "No dependencies were installed, no network scoring or model calls were made, and no branch, commit, push, PR, or report-review status was changed.",
+    "This is an automated verification record, not human sign-off or DONE FOR DRAFT."
+  ]
+}
+
