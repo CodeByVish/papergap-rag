@@ -2,6 +2,9 @@
 
 Update this file after the weekly meeting. Link to concrete issues, PRs, artifacts or run IDs.
 
+## P3 report integration — 2026/11/07
+
+[PR #69](https://github.com/CodeByVish/papergap-rag/pull/69) integrates Jingshuai Qian's P3 report revisions into `P6/report-prep`. The conflict resolution preserves the complete P3 report tree from `8fba5fe`; the current P6 report baseline is byte-identical to the original review baseline `e43371c`. Integration follows the team's instruction to merge members' PRs. Experiment artifacts are delivered separately in [PR #70](https://github.com/CodeByVish/papergap-rag/pull/70).
 ## P3 experiment delivery — 2026/11/07
 
 [PR #70](https://github.com/CodeByVish/papergap-rag/pull/70) integrates the four valid P3 chunk-size experiment runs into `main`, preserving the original artifact bytes from `03c2ae4`. See [the results index](../results/chunk_size/README.md) for the selected configuration, provenance, reproduction route and limitations. Integration follows the team's instruction to merge members' PRs. Report revisions are integrated separately through [PR #69](https://github.com/CodeByVish/papergap-rag/pull/69) into `P6/report-prep`.
