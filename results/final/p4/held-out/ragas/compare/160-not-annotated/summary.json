@@ -1,0 +1,50 @@
+[
+  {
+    "metric": "faithfulness",
+    "paired_questions": 152,
+    "papers": 137,
+    "mean_right_minus_left": 0.011340852130325813,
+    "ci_low": -0.0029881516488659355,
+    "ci_high": 0.031590867007843915,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static",
+    "right_arm": "adaptive",
+    "left_k": null,
+    "right_k": null
+  },
+  {
+    "metric": "answer_relevance",
+    "paired_questions": 150,
+    "papers": 136,
+    "mean_right_minus_left": -0.003754478033225106,
+    "ci_low": -0.009268976461927989,
+    "ci_high": 0.0011668318780665382,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static",
+    "right_arm": "adaptive",
+    "left_k": null,
+    "right_k": null
+  },
+  {
+    "metric": "context_precision",
+    "paired_questions": 152,
+    "papers": 137,
+    "mean_right_minus_left": -0.0024161967417660616,
+    "ci_low": -0.014187313033747427,
+    "ci_high": 0.009252527186308371,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static",
+    "right_arm": "adaptive",
+    "left_k": null,
+    "right_k": null
+  }
+]

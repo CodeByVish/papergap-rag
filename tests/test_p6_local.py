@@ -6,9 +6,11 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from scripts.p6_local import make_pipeline
 from src.generation.generators.mock import MockGenerator
 from src.generation.generators.ollama_backend import OllamaGenerator
 from src.generation.pipeline import GroundedQAPipeline
+from src.generation.prompts.grounded_qa import PromptConfig
 from src.generation.server import WARMUP_RECORD, create_app
 
 
@@ -135,3 +137,17 @@ def test_model_transport_failure_is_not_a_valid_refusal(monkeypatch):
     monkeypatch.setattr(requests, "post", unavailable)
     with pytest.raises(BackendNotAvailable, match="service down"):
         OllamaGenerator("test-model").load()
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [("2500", 2500), ("", PromptConfig().max_chars_per_passage)],
+)
+def test_local_budget_reaches_generator_and_critic_view(monkeypatch, value, expected):
+    monkeypatch.setenv("P6_MAX_CHARS_PER_PASSAGE", value)
+    generator = MockGenerator()
+
+    pipeline = make_pipeline(generator)
+
+    assert pipeline.config.prompt.max_chars_per_passage == expected
+    assert generator.prompt_config is pipeline.config.prompt

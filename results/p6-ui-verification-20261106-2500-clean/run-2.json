@@ -1,0 +1,583 @@
+{
+  "client_run_id": "bf52099a-0c3b-44d8-989f-0b4828620cc3",
+  "conversation_id": "50785cff-de8d-44b4-a4d4-5cfcc296c3fa",
+  "message_id": "aea40e98-f3ea-40c7-a0fa-a6b35f67a19a",
+  "retry_of_client_run_id": null,
+  "submission": {
+    "question": "What evaluation metric is used?",
+    "paper_id": "1911.07555"
+  },
+  "capabilities": {
+    "retrieval": true,
+    "passage_text": true,
+    "backend": "ollama",
+    "model_id": "qwen3:14b",
+    "prompt_version": "p5-grounded-qa-v7",
+    "agent": true
+  },
+  "service_mode": "ollama",
+  "submitted_at": "2026-11-06T14:18:31.703748+00:00",
+  "outcome": "completed",
+  "answer_record": {
+    "request_id": "ui-1793974711721",
+    "result": {
+      "answer": "The evaluation metric used is average classification accuracy.",
+      "citations": [
+        "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+      ],
+      "evidence_status": "SUFFICIENT",
+      "retrieval_rounds": 3,
+      "provenance": [
+        {
+          "claim": "The evaluation metric used is average classification accuracy.",
+          "passage_ids": [
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+          ],
+          "support": "direct"
+        }
+      ]
+    },
+    "validation": {
+      "final_result": {
+        "answer": "The evaluation metric used is average classification accuracy.",
+        "citations": [
+          "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 3,
+        "provenance": [
+          {
+            "claim": "The evaluation metric used is average classification accuracy.",
+            "passage_ids": [
+              "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "raw_result": {
+        "answer": "The evaluation metric used is average classification accuracy.",
+        "citations": [
+          "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 3,
+        "provenance": [
+          {
+            "claim": "The evaluation metric used is average classification accuracy.",
+            "passage_ids": [
+              "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "violations": [
+        {
+          "code": "GENERATED_WITH_INSUFFICIENT_EVIDENCE",
+          "severity": "warning",
+          "message": "the agent's critic judged the evidence insufficient, but the gap was not INSUFFICIENT_INFORMATION, so P5 generated from the available passages; the answer is kept",
+          "subject": null
+        },
+        {
+          "code": "PROVENANCE_OVERSTATED",
+          "severity": "warning",
+          "message": "claim is marked 'direct' but the text it names supports 'partial': 'The evaluation metric used is average classification accuracy.'",
+          "subject": "The evaluation metric used is average classification accuracy."
+        }
+      ],
+      "downgraded": false,
+      "downgrade_reason": null,
+      "checks_run": [
+        "R1_citation_reference",
+        "R1b_provenance_reference",
+        "R4_evidence_status",
+        "R3_numeric_grounding",
+        "R2_claim_coverage"
+      ],
+      "schema_version": "p5-answer-v1"
+    },
+    "generation": {
+      "backend": {
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "loaded": true,
+        "options": {
+          "base_url": "http://127.0.0.1:11434",
+          "num_ctx": 8192,
+          "max_new_tokens": 1024
+        },
+        "last_generation_stats": {
+          "batch_size": 1,
+          "prompt_tokens": 5253,
+          "completion_tokens": 218,
+          "batch_seconds": 64.357460916
+        },
+        "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+        "timing_policy": "Ollama total_duration; includes server load/evaluation"
+      },
+      "prompt_version": "p5-grounded-qa-v7",
+      "diagnostics": {
+        "had_code_fence": false,
+        "had_thinking_block": false,
+        "unclosed_thinking_block": false,
+        "leading_text_chars": 0,
+        "trailing_text_chars": 0,
+        "candidate_index": 0,
+        "extra_fields": [],
+        "coerced": [],
+        "repaired_invalid_escapes": false,
+        "invalid_escape_repairs": 0
+      },
+      "raw_text_excerpt": "{\n  \"answer\": \"The evaluation metric used is average classification accuracy.\",\n  \"citations\": [\"qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 3,\n  \"provenance\": [\n    {\n      \"claim\": \"The evaluation metric used is average classification accuracy.\",\n      \"passage_ids\": [\"qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+      "raw_text_chars": 494
+    },
+    "agent": {
+      "paper_id": "1911.07555",
+      "sufficient": false,
+      "gap_label": "MISSING_RESULT",
+      "rewritten_query": "What evaluation metric is used? results experimental findings accuracy score language algorithm south tasks languages training bibref8 naive",
+      "required_components": [
+        "result"
+      ],
+      "evidence_map": {
+        "result": [
+          "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+          "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+        ]
+      },
+      "retrieval_log": [
+        {
+          "round": 1,
+          "query": "What evaluation metric is used?",
+          "triggered_by": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+            "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+            "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+            "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+            "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+            "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474"
+          ],
+          "paper_ids": [
+            "1911.07555"
+          ],
+          "search_scope": "paper",
+          "section": null,
+          "scope_fallback": false,
+          "scoped_retrieval_ms": null,
+          "retrieval_ms": 33.48870898480527
+        },
+        {
+          "round": 2,
+          "query": "What evaluation metric is used? results experimental findings accuracy score",
+          "triggered_by": "MISSING_RESULT",
+          "passage_ids": [
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e"
+          ],
+          "paper_ids": [
+            "1911.07555"
+          ],
+          "search_scope": "paper",
+          "section": "Results and Analysis",
+          "scope_fallback": false,
+          "scoped_retrieval_ms": 41.8669159989804,
+          "retrieval_ms": 41.868666012305766
+        },
+        {
+          "round": 3,
+          "query": "What evaluation metric is used? results experimental findings accuracy score language algorithm south tasks languages training bibref8 naive",
+          "triggered_by": "MISSING_RESULT",
+          "passage_ids": [
+            "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+            "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+            "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+            "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+            "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+            "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1"
+          ],
+          "paper_ids": [
+            "1911.07555"
+          ],
+          "search_scope": "paper",
+          "section": null,
+          "scope_fallback": false,
+          "scoped_retrieval_ms": null,
+          "retrieval_ms": 23.551249993033707
+        }
+      ],
+      "critic_log": [
+        {
+          "round": 1,
+          "source": "llm",
+          "sufficient": false,
+          "gap_label": "MISSING_RESULT",
+          "passage_ids": [
+            "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+            "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+            "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+            "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+            "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+            "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474"
+          ],
+          "supporting_passage_ids": [],
+          "evidence_quote": "",
+          "missing_components": [
+            "evaluation metric"
+          ],
+          "reason": "The retrieved passages do not explicitly mention the evaluation metric used in the experiments. While some results are discussed, such as classification accuracy, the specific metric (e.g., F1 score, precision, recall) is not stated.",
+          "errors": [],
+          "raw_replies": [
+            "{\n  \"sufficient\": false,\n  \"gap_label\": \"MISSING_RESULT\",\n  \"supporting_passage_ids\": [],\n  \"evidence_quote\": \"\",\n  \"missing_components\": [\"evaluation metric\"],\n  \"reason\": \"The retrieved passages do not explicitly mention the evaluation metric used in the experiments. While some results are discussed, such as classification accuracy, the specific metric (e.g., F1 score, precision, recall) is not stated.\"\n}"
+          ],
+          "thinking_drift": false
+        },
+        {
+          "round": 2,
+          "source": "reused",
+          "sufficient": false,
+          "gap_label": "MISSING_RESULT",
+          "passage_ids": [
+            "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+            "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+            "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+            "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+            "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+            "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474"
+          ],
+          "supporting_passage_ids": [],
+          "evidence_quote": "",
+          "missing_components": [
+            "evaluation metric"
+          ],
+          "reason": "The retrieved passages do not explicitly mention the evaluation metric used in the experiments. While some results are discussed, such as classification accuracy, the specific metric (e.g., F1 score, precision, recall) is not stated.",
+          "errors": [],
+          "raw_replies": [],
+          "thinking_drift": false
+        },
+        {
+          "round": 3,
+          "source": "reused",
+          "sufficient": false,
+          "gap_label": "MISSING_RESULT",
+          "passage_ids": [
+            "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+            "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+            "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+            "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+            "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+            "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+            "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474"
+          ],
+          "supporting_passage_ids": [],
+          "evidence_quote": "",
+          "missing_components": [
+            "evaluation metric"
+          ],
+          "reason": "The retrieved passages do not explicitly mention the evaluation metric used in the experiments. While some results are discussed, such as classification accuracy, the specific metric (e.g., F1 score, precision, recall) is not stated.",
+          "errors": [],
+          "raw_replies": [],
+          "thinking_drift": false
+        }
+      ]
+    },
+    "search": {
+      "scope": "paper",
+      "paper_id": "1911.07555",
+      "source_papers": [
+        "1911.07555"
+      ]
+    }
+  },
+  "error": null,
+  "evidence": {
+    "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e": {
+      "text": "The average classification accuracy results are summarised in Table TABREF9. The accuracies reported are for classifying a piece of text by its specific language label. Classifying text only by language group or family is a much easier task as reported in BIBREF8.\n\nDifferent variations of the proposed classifier were evaluated. A single NB classifier (NB), a stack of two NB classifiers (NB+NB), a stack of a NB classifier and lexicon (NB+Lex) and a lexicon (Lex) by itself. A lexicon with a 50% training token dropout is also listed to show the impact of the lexicon support on the accuracy.\n\nFrom the results it seems that the DSL 2017 task might be harder than the DSL 2015 and NCHLT tasks. Also, the results for the implementation discussed in BIBREF23 might seem low, but the results reported in that paper is generated on longer pieces of text so lower scores on the shorter pieces of text derived from the NCHLT corpora is expected.\n\nThe accuracy of the proposed algorithm seems to be dependent on the support of the lexicon. Without a good lexicon a non-stacked naive Bayesian classifier might even perform better.\n\nThe execution performance of some of the LID implementations are shown in Table TABREF10. Results were generated on an early 2015 13-inch Retina MacBook Pro with a 2.9 GHz CPU (Turbo Boosted to 3.4 GHz) and 8GB RAM. The C++ implementation in BIBREF17 is the fastest. The implementation in BIBREF8 makes use of un-hashed feature representations which causes it to be slower than the proposed sklearn implementation. The execution performance of BIBREF23 might improve by a factor of five to ten when executed on a GPU.",
+      "paper_id": "1911.07555",
+      "title": "Short Text Language Identification for Under Resourced Languages",
+      "section": "Results and Analysis",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "answer_http_elapsed_ms": 100200.13641598052,
+  "citation_http_elapsed_ms": 10.192874993663281,
+  "finished_at": "2026-11-06T14:20:11.919342+00:00",
+  "evidence_error": null,
+  "progress_log": [
+    {
+      "elapsed_s": 0.0,
+      "message": "Request received.",
+      "step": "plan",
+      "active": "plan"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Planned: result question, needs result. Searching...",
+      "step": "plan",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Hybrid search: BM25 7 + dense 7 candidates, 7 in both, RRF merged 7, no reranker, top 7 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Related Works",
+          "paper_id": "1911.07555",
+          "bm25_rank": 1,
+          "dense_rank": 3,
+          "rrf_score": 0.03227,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Conclusion",
+          "paper_id": "1911.07555",
+          "bm25_rank": 4,
+          "dense_rank": 1,
+          "rrf_score": 0.03202,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Methodology",
+          "paper_id": "1911.07555",
+          "bm25_rank": 2,
+          "dense_rank": 6,
+          "rrf_score": 0.03128,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Results and Analysis",
+          "paper_id": "1911.07555",
+          "bm25_rank": 6,
+          "dense_rank": 2,
+          "rrf_score": 0.03128,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Related Works",
+          "paper_id": "1911.07555",
+          "bm25_rank": 3,
+          "dense_rank": 5,
+          "rrf_score": 0.03126,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Methodology",
+          "paper_id": "1911.07555",
+          "bm25_rank": 7,
+          "dense_rank": 4,
+          "rrf_score": 0.03055,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Introduction",
+          "paper_id": "1911.07555",
+          "bm25_rank": 5,
+          "dense_rank": 7,
+          "rrf_score": 0.03031,
+          "kept": true
+        }
+      ]
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Round 1: kept 7 passages, 7 new, 7 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Keyword match: 1 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.7,
+      "message": "Evidence check (model, 7 passages): not enough, MISSING_RESULT.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.7,
+      "message": "Rewrote the search query: What evaluation metric is used? results experimental findings accuracy score",
+      "step": "search",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Hybrid search: BM25 1 + dense 1 candidates, 1 in both, RRF merged 1, no reranker, top 1 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Results and Analysis",
+          "paper_id": "1911.07555",
+          "bm25_rank": 1,
+          "dense_rank": 1,
+          "rrf_score": 0.03279,
+          "kept": true
+        }
+      ]
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Round 2 in section 'Results and Analysis': kept 1 passages, 0 new, 7 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Keyword match: 1 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Evidence check (previous verdict reused, same passages, 7 passages): not enough, MISSING_RESULT.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Rewrote the search query: What evaluation metric is used? results experimental findings accuracy score language algorithm south tasks languages training bibref8 naive",
+      "step": "search",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Hybrid search: BM25 7 + dense 7 candidates, 7 in both, RRF merged 7, no reranker, top 7 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-a66d5aa866cf0af6c8ee48eb1b6f05a3c3337b8fd2e67ff483d378261b6062b1",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Related Works",
+          "paper_id": "1911.07555",
+          "bm25_rank": 2,
+          "dense_rank": 1,
+          "rrf_score": 0.03252,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-f0069ccb4a6a15c19e03f120b981c955c80441da6f5712d0b8154253ad0eab0e",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Results and Analysis",
+          "paper_id": "1911.07555",
+          "bm25_rank": 1,
+          "dense_rank": 3,
+          "rrf_score": 0.03227,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-c4b9b27679181c597387ef815e558f16be81f5d28644be014f9e32b1459d36e5",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Methodology",
+          "paper_id": "1911.07555",
+          "bm25_rank": 3,
+          "dense_rank": 4,
+          "rrf_score": 0.0315,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-0e3343231724dd9af8af8ae7a917cfa1e18577ea671c59c4663088515c0c0d4e",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Related Works",
+          "paper_id": "1911.07555",
+          "bm25_rank": 6,
+          "dense_rank": 2,
+          "rrf_score": 0.03128,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Introduction",
+          "paper_id": "1911.07555",
+          "bm25_rank": 4,
+          "dense_rank": 5,
+          "rrf_score": 0.03101,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-579976a704a8ea3a3a83189ce4c5914bc9092fe4e8fda7c66cf8f82b5fb82049",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Conclusion",
+          "paper_id": "1911.07555",
+          "bm25_rank": 5,
+          "dense_rank": 6,
+          "rrf_score": 0.03054,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-bd991cd9a312bf5f4e5578550d1ad4d7dd72a3426b30ca1bb775f7dd948d31e1",
+          "title": "Short Text Language Identification for Under Resourced Languages",
+          "section": "Methodology",
+          "paper_id": "1911.07555",
+          "bm25_rank": 7,
+          "dense_rank": 7,
+          "rrf_score": 0.02985,
+          "kept": true
+        }
+      ]
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Round 3: kept 7 passages, 0 new, 7 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Keyword match: 1 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Evidence check (previous verdict reused, same passages, 7 passages): not enough, MISSING_RESULT.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Stopped searching: max_rounds, budget 3 rounds.",
+      "step": "check",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 35.8,
+      "message": "Writing the answer and checking its citations...",
+      "step": "write",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 100.2,
+      "message": "Answer ready: SUFFICIENT, 1 cited, 2 validation notes.",
+      "step": "write",
+      "active": "done"
+    }
+  ]
+}

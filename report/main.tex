@@ -36,12 +36,12 @@
 Group number: 24\par\vspace{6mm}
 \begin{tabularx}{\textwidth}{Yr}\toprule
 Member name (alphabetical order) & Matriculation number\\\midrule
-Ananya Redhu & \todo{matriculation number}\\
+Ananya Redhu & G2607556D\\
 Changyan Xu & G2607680G\\
 Jingshuai Qian & G2600453A\\
 Junlin Yin & G2604768B\\
 Junyu Hu & \todo{matriculation number}\\
-Maheshwari Vishakha Praveen & \todo{matriculation number}\\\bottomrule
+Maheshwari Vishakha Praveen & G2609099E\\\bottomrule
 \end{tabularx}
 \vspace{6mm}
 \begin{review}{Submission metadata}
@@ -49,11 +49,11 @@ Members are listed alphabetically by displayed full name. Confirm official spell
 \end{review}
 \vfill
 \begin{review}{Draft status}
-The retrieval comparison uses accepted pooled relevance labels and questions excluded from recorded prior development use; agent and UI measurements remain development results. This does not establish independently held-out downstream performance. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Pending entries are not zero scores. Final QA, RAG evaluation and controlled ablations remain to be inserted.
+The retrieval comparison uses accepted pooled relevance labels and questions excluded from recorded prior development use; the agent was evaluated once on the frozen held-out question list (200 questions, 40 of which the agent developer read during annotation) and the UI measurements remain development results. This does not establish independently held-out downstream performance. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Pending entries are not zero scores. Overlap QA scores (EM and token F1) and live RAGAS scores are reported; the full factorial ablation remains to be inserted.
 \end{review}
 \end{titlepage}
 \begin{abstract}
-Our system answers questions about NLP research papers using hybrid retrieval and evidence-conditioned generation. The knowledge base contains 28,617 section-aware passages from 1,584 papers with indexed text. BM25 and BGE dense retrieval are combined through reciprocal rank fusion (RRF); a bounded critic loop can request further evidence before Qwen3-8B generates a cited answer or refuses. On 200 questions scored against accepted pooled relevance labels, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. Reranking reduces all four reported top-five metrics. A separate 32-question development analysis finds that static top-eight retrieval recovers more mapped evidence than adaptive top-five retrieval. These findings motivate a top-eight RRF configuration without reranking, but do not establish answer accuracy or independently held-out downstream performance.
+Our system answers questions about NLP research papers using hybrid retrieval and evidence-conditioned generation. The knowledge base contains 28,617 section-aware passages from 1,584 papers with indexed text. BM25 and BGE dense retrieval are combined through reciprocal rank fusion (RRF); a bounded critic loop can request further evidence before Qwen3-8B generates a cited answer or refuses. On 200 questions scored against accepted pooled relevance labels, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. Reranking reduces all four reported top-five metrics. On a 32-question development slice, static top-eight retrieval recovers more mapped evidence than adaptive top-five retrieval, which motivates a top-eight RRF configuration without reranking. On 200 held-out questions the frozen configuration reaches a mapped-evidence recall of 0.858 without the agent loop and 0.871 with it; at an equal number of passages the loop's gain is 0.001 (95\% interval $-0.014$ to $0.016$), so we do not claim that evidence-gap-driven retrieval improves recall. The agent's critic and retries add about 60\% to median latency. Token F1 of the generated answers against the QASPER references is 0.368 without the loop and 0.366 with it (difference $-0.002$, 95\% interval $-0.011$ to $0.006$), so the loop does not improve answers either. These findings do not establish independently held-out downstream performance.
 \end{abstract}
 \tableofcontents
 \input{sections/01-system}

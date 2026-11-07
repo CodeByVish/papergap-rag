@@ -1,0 +1,449 @@
+{
+  "client_run_id": "c4ad990b-febb-45a9-90b1-73076efca227",
+  "conversation_id": "4f6bbd81-84a3-4f3b-8567-5144189c0010",
+  "message_id": "209c6445-91f2-46c2-8eed-befd5fb82242",
+  "retry_of_client_run_id": null,
+  "submission": {
+    "question": "Are any experiments performed to try this approach to word embeddings?",
+    "paper_id": "1912.10167"
+  },
+  "capabilities": {
+    "retrieval": true,
+    "passage_text": true,
+    "backend": "ollama",
+    "model_id": "qwen3:14b",
+    "prompt_version": "p5-grounded-qa-v7",
+    "agent": true
+  },
+  "service_mode": "ollama",
+  "submitted_at": "2026-11-06T14:16:43.772119+00:00",
+  "outcome": "completed",
+  "answer_record": {
+    "request_id": "ui-1793974603785",
+    "result": {
+      "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+      "citations": [
+        "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+      ],
+      "evidence_status": "SUFFICIENT",
+      "retrieval_rounds": 1,
+      "provenance": [
+        {
+          "claim": "Experiments were performed to try this approach to word embeddings.",
+          "passage_ids": [
+            "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+          ],
+          "support": "direct"
+        },
+        {
+          "claim": "The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+          "passage_ids": [
+            "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+          ],
+          "support": "direct"
+        }
+      ]
+    },
+    "validation": {
+      "final_result": {
+        "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+        "citations": [
+          "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "Experiments were performed to try this approach to word embeddings.",
+            "passage_ids": [
+              "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+            ],
+            "support": "direct"
+          },
+          {
+            "claim": "The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+            "passage_ids": [
+              "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "raw_result": {
+        "answer": "Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+        "citations": [
+          "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+        ],
+        "evidence_status": "SUFFICIENT",
+        "retrieval_rounds": 1,
+        "provenance": [
+          {
+            "claim": "Experiments were performed to try this approach to word embeddings.",
+            "passage_ids": [
+              "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+            ],
+            "support": "direct"
+          },
+          {
+            "claim": "The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.",
+            "passage_ids": [
+              "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9"
+            ],
+            "support": "direct"
+          }
+        ]
+      },
+      "violations": [
+        {
+          "code": "UNCOVERED_REQUIRED_COMPONENT",
+          "severity": "warning",
+          "message": "component 'method' maps to ['qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0', 'qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7', 'qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958'], but the answer cites none of them",
+          "subject": "method"
+        },
+        {
+          "code": "PROVENANCE_OVERSTATED",
+          "severity": "warning",
+          "message": "claim is marked 'direct' but the text it names supports 'unsupported': 'Experiments were performed to try this approach to word embeddings.'",
+          "subject": "Experiments were performed to try this approach to word embeddings."
+        }
+      ],
+      "downgraded": false,
+      "downgrade_reason": null,
+      "checks_run": [
+        "R1_citation_reference",
+        "R1b_provenance_reference",
+        "R4_evidence_status",
+        "R3_numeric_grounding",
+        "R2_claim_coverage"
+      ],
+      "schema_version": "p5-answer-v1"
+    },
+    "generation": {
+      "backend": {
+        "backend": "ollama",
+        "model_id": "qwen3:14b",
+        "loaded": true,
+        "options": {
+          "base_url": "http://127.0.0.1:11434",
+          "num_ctx": 8192,
+          "max_new_tokens": 1024
+        },
+        "last_generation_stats": {
+          "batch_size": 1,
+          "prompt_tokens": 4423,
+          "completion_tokens": 384,
+          "batch_seconds": 74.144624709
+        },
+        "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+        "timing_policy": "Ollama total_duration; includes server load/evaluation"
+      },
+      "prompt_version": "p5-grounded-qa-v7",
+      "diagnostics": {
+        "had_code_fence": false,
+        "had_thinking_block": false,
+        "unclosed_thinking_block": false,
+        "leading_text_chars": 0,
+        "trailing_text_chars": 0,
+        "candidate_index": 0,
+        "extra_fields": [],
+        "coerced": [],
+        "repaired_invalid_escapes": false,
+        "invalid_escape_repairs": 0
+      },
+      "raw_text_excerpt": "{\n  \"answer\": \"Yes, experiments were performed to try this approach to word embeddings. The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.\",\n  \"citations\": [\"qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\n      \"claim\": \"Experiments were performed to try this approach to word embeddings.\",\n      \"passage_ids\": [\"qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9\"],\n      \"support\": \"direct\"\n    },\n    {\n      \"claim\": \"The process for checking the accuracy of the model involved taking a random subset of the corpus not used for training, creating predicted translated word embeddings, and comparing them to translations provided by Google Translate.\",\n      \"passage_ids\": [\"qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9\"],\n      \"support\": \"direct\"\n    }\n  ]\n}",
+      "raw_text_chars": 1139
+    },
+    "agent": {
+      "paper_id": "1912.10167",
+      "sufficient": true,
+      "gap_label": "NONE",
+      "rewritten_query": null,
+      "required_components": [
+        "method"
+      ],
+      "evidence_map": {
+        "method": [
+          "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0",
+          "qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958",
+          "qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7"
+        ]
+      },
+      "retrieval_log": [
+        {
+          "round": 1,
+          "query": "Are any experiments performed to try this approach to word embeddings?",
+          "triggered_by": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0",
+            "qasper-passage-v1-b10215d02a0843b4e6d6b8a94ac48a9e81313171d7c89dc7d438b0cef926849d",
+            "qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958",
+            "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9",
+            "qasper-passage-v1-89a415eda96552b813a79d100519f15d1d0cf0738a21e62fb0c1858435bfed29",
+            "qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7",
+            "qasper-passage-v1-865d8c7333cd7160dab42b6831f8a720fa696b582cedd7b4d126721488ce946e",
+            "qasper-passage-v1-416a79a79c9a45d7a3c9f81791bb590a50eaec036fb6f815e111929c01cdc812"
+          ],
+          "paper_ids": [
+            "1912.10167"
+          ],
+          "search_scope": "paper",
+          "section": null,
+          "scope_fallback": false,
+          "scoped_retrieval_ms": null,
+          "retrieval_ms": 39.29862499353476
+        }
+      ],
+      "critic_log": [
+        {
+          "round": 1,
+          "source": "llm",
+          "sufficient": true,
+          "gap_label": "NONE",
+          "passage_ids": [
+            "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0",
+            "qasper-passage-v1-b10215d02a0843b4e6d6b8a94ac48a9e81313171d7c89dc7d438b0cef926849d",
+            "qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958",
+            "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9",
+            "qasper-passage-v1-89a415eda96552b813a79d100519f15d1d0cf0738a21e62fb0c1858435bfed29",
+            "qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7",
+            "qasper-passage-v1-865d8c7333cd7160dab42b6831f8a720fa696b582cedd7b4d126721488ce946e",
+            "qasper-passage-v1-416a79a79c9a45d7a3c9f81791bb590a50eaec036fb6f815e111929c01cdc812"
+          ],
+          "supporting_passage_ids": [
+            "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0",
+            "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9",
+            "qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7"
+          ],
+          "evidence_quote": "The process for checking the accuracy of the model consisted of first taking a random subset of the corpus that was not used for training.",
+          "missing_components": [],
+          "reason": "The passages provide evidence that experiments were performed to evaluate the approach, including accuracy checks using a random subset of the corpus and comparing translations with Google Translate.",
+          "errors": [],
+          "raw_replies": [
+            "{\n  \"sufficient\": true,\n  \"gap_label\": \"NONE\",\n  \"supporting_passage_ids\": [\"p1\", \"p4\", \"p6\"],\n  \"evidence_quote\": \"The process for checking the accuracy of the model consisted of first taking a random subset of the corpus that was not used for training.\",\n  \"missing_components\": [],\n  \"reason\": \"The passages provide evidence that experiments were performed to evaluate the approach, including accuracy checks using a random subset of the corpus and comparing translations with Google Translate.\"\n}"
+          ],
+          "thinking_drift": false
+        }
+      ]
+    },
+    "search": {
+      "scope": "paper",
+      "paper_id": "1912.10167",
+      "source_papers": [
+        "1912.10167"
+      ]
+    }
+  },
+  "error": null,
+  "evidence": {
+    "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9": {
+      "text": "The process for checking the accuracy of the model consisted of first taking a random subset of the corpus that was not used for training. This subset consists of slightly more common words because the more common words should have more accurate word embeddings. Infrequent words (like websites and serial numbers) would not necessarily have accurate word embeddings that were generated through the word2vec model. The English word embedding was multiplied by the transformation matrix to create the predicted translated word embedding. The cosine similarity was then generated with each translated word embedding stored in the corpus. The 20 words with the highest cosine similarity were then outputted. Then the English word was translated through Google Translate and compared to the 20 outputted translated words. It was considered a match if the translated word was found in this list of 20 similar words. The reason why the translated word was not just compared to the most similar embedding was because each word could have multiple semantic meanings or have different synonyms in the other language. After running this accuracy formulation, results for different languages and objective functions are reported in Table TABREF18. In the table you can see the different results we obtained across different languages. You can notice that we increased the number of languages from the first review of our paper. In addition, the table shows the comparison between our baseline method (Least Squares) and our final one (Normalized vectors, with cosine similarity), which shows a slight improvement with respect to the first one.",
+      "paper_id": "1912.10167",
+      "title": "Machine Translation with Cross-lingual Word Embeddings",
+      "section": "Results ::: Accuracy",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "answer_http_elapsed_ms": 106850.01337499125,
+  "citation_http_elapsed_ms": 8.370374998776242,
+  "finished_at": "2026-11-06T14:18:30.633084+00:00",
+  "evidence_error": null,
+  "progress_log": [
+    {
+      "elapsed_s": 0.0,
+      "message": "Request received.",
+      "step": "plan",
+      "active": "plan"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Planned: method question, needs method. Searching...",
+      "step": "plan",
+      "active": "search"
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Hybrid search: BM25 14 + dense 14 candidates, 14 in both, RRF merged 14, no reranker, top 8 kept.",
+      "step": "search",
+      "active": "search",
+      "details": [
+        {
+          "passage_id": "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Introduction",
+          "paper_id": "1912.10167",
+          "bm25_rank": 2,
+          "dense_rank": 1,
+          "rrf_score": 0.03252,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-b10215d02a0843b4e6d6b8a94ac48a9e81313171d7c89dc7d438b0cef926849d",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Related Work",
+          "paper_id": "1912.10167",
+          "bm25_rank": 1,
+          "dense_rank": 4,
+          "rrf_score": 0.03202,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-49f0756b686bdda253a06ab29a0e0a732c56788e9d997e414bdf9de898e53958",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Methods ::: Skipgram",
+          "paper_id": "1912.10167",
+          "bm25_rank": 3,
+          "dense_rank": 3,
+          "rrf_score": 0.03175,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Results ::: Accuracy",
+          "paper_id": "1912.10167",
+          "bm25_rank": 8,
+          "dense_rank": 2,
+          "rrf_score": 0.03083,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-89a415eda96552b813a79d100519f15d1d0cf0738a21e62fb0c1858435bfed29",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Linear Mapping",
+          "paper_id": "1912.10167",
+          "bm25_rank": 4,
+          "dense_rank": 7,
+          "rrf_score": 0.03055,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-2102ccc79a58b7b03de628a191242f6a1add3c38ceca0bd4f9f2e76588e3fef7",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Methods ::: Minimizing the loss function",
+          "paper_id": "1912.10167",
+          "bm25_rank": 5,
+          "dense_rank": 6,
+          "rrf_score": 0.03054,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-865d8c7333cd7160dab42b6831f8a720fa696b582cedd7b4d126721488ce946e",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Normalization",
+          "paper_id": "1912.10167",
+          "bm25_rank": 6,
+          "dense_rank": 5,
+          "rrf_score": 0.03054,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-416a79a79c9a45d7a3c9f81791bb590a50eaec036fb6f815e111929c01cdc812",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Error Analysis ::: Google Translate",
+          "paper_id": "1912.10167",
+          "bm25_rank": 7,
+          "dense_rank": 9,
+          "rrf_score": 0.02942,
+          "kept": true
+        },
+        {
+          "passage_id": "qasper-passage-v1-b162ed5137b08f720b5f6b2a239b754433279abfba9466fc3ba70d4edb1e7087",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Dataset",
+          "paper_id": "1912.10167",
+          "bm25_rank": 9,
+          "dense_rank": 8,
+          "rrf_score": 0.0292,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-b7532766054cd6148b8dd8a732bbe7454b2331b9cfc74a3dffae9f6ab55cb4a4",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Setup Description",
+          "paper_id": "1912.10167",
+          "bm25_rank": 11,
+          "dense_rank": 10,
+          "rrf_score": 0.02837,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-a192c018ee42289e4d0b6149afd524ed2aa402b8902f1c01c20e200ee1f1f1ca",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Error Analysis ::: Chinese Translations",
+          "paper_id": "1912.10167",
+          "bm25_rank": 10,
+          "dense_rank": 14,
+          "rrf_score": 0.0278,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-033bd6b73e7218fb71f335bf056824b12b788bc795e1f1b058851845a18a1c25",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "Objective Function",
+          "paper_id": "1912.10167",
+          "bm25_rank": 13,
+          "dense_rank": 11,
+          "rrf_score": 0.02778,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-59e75d69e553ed87aa82e0fa188d81816b4cecb1d6b2ff7718e4bfb9e24f7ded",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "The Code",
+          "paper_id": "1912.10167",
+          "bm25_rank": 12,
+          "dense_rank": 13,
+          "rrf_score": 0.02759,
+          "kept": false
+        },
+        {
+          "passage_id": "qasper-passage-v1-c2603270eb84affb23fbb0237d7139ff1941d8b4b8248e21fc6b093e5aa435c0",
+          "title": "Machine Translation with Cross-lingual Word Embeddings",
+          "section": "References",
+          "paper_id": "1912.10167",
+          "bm25_rank": 14,
+          "dense_rank": 12,
+          "rrf_score": 0.0274,
+          "kept": false
+        }
+      ]
+    },
+    {
+      "elapsed_s": 0.0,
+      "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 0.1,
+      "message": "Keyword match: 1 of 1 required components found.",
+      "step": "search",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 32.7,
+      "message": "Evidence check (model, 8 passages): enough.",
+      "step": "check",
+      "active": "check"
+    },
+    {
+      "elapsed_s": 32.7,
+      "message": "Stopped searching: sufficient, budget 3 rounds.",
+      "step": "check",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 32.7,
+      "message": "Writing the answer and checking its citations...",
+      "step": "write",
+      "active": "write"
+    },
+    {
+      "elapsed_s": 106.8,
+      "message": "Answer ready: SUFFICIENT, 1 cited, 2 validation notes.",
+      "step": "write",
+      "active": "done"
+    }
+  ]
+}

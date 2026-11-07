@@ -177,15 +177,27 @@ passage containing a number, do not state the number."""
 class PromptConfig(BaseModel):
     """How much context to put in front of the model.
 
-    Defaults are sized for Qwen3-8B's 32K context: ~8 passages x ~1200 chars is
-    roughly 3-4K tokens of evidence, leaving ample room for the answer and for a
-    P6 revision that raises the budget.
+    ``max_passages`` is the number of passages rendered; ``max_chars_per_passage``
+    is the per-passage character budget. They are separate limits and only the
+    first can make an entire passage invisible.
+
+    The character budget was raised from 1,200 to 2,500 on 2026-11-06, after the
+    365-word dev corpus showed that the old cap cut the evidence rather than a
+    harmless tail: of the 45 gold passages behind the 40-item dev set, 73.3%
+    exceeded 1,195 characters and 36.8% of their text was hidden, with the
+    longest gold passage at 2,509 characters. 8 x 2,500 is roughly 5-6K tokens
+    of evidence, still comfortable inside Qwen3-8B's 32K window.
+
+    This is a *rendering* budget, not prompt text, but it changes what the
+    validator may treat as grounded (both sides read ``visible_text``). A run at
+    this value must therefore be labelled separately from the 8/1,200 v7
+    numbers, and ``run_manifest``/``*.meta.json`` must record it.
     """
 
     model_config = ConfigDict(extra="forbid")
 
     max_passages: int = 8
-    max_chars_per_passage: Optional[int] = 1200
+    max_chars_per_passage: Optional[int] = 2500
     show_scores: bool = True
     include_examples: bool = False
     #: When P4 supplies an evidence map, reserve prompt slots for the passages

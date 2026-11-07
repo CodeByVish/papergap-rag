@@ -1,0 +1,2 @@
+metric,paired_questions,papers,mean_right_minus_left,ci_low,ci_high,resamples,seed,left_only_questions,right_only_questions,left_arm,right_arm,left_k,right_k
+f1,200,174,0.0032028796784721552,-0.020473105914418335,0.02770708546157086,1000,42,0,0,adaptive,adaptive-2500,,

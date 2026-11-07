@@ -1,0 +1,14 @@
+{
+  "role": "held-out",
+  "label": "all 200 questions",
+  "questions": 200,
+  "run_dir": "/private/tmp/claude-501/-Users-ananyaredhu-PycharmProjects-papergap-rag/0d92483d-d865-4d5b-8b0a-c8e2dd6f823e/scratchpad/h51585/p4-heldout-51585/runs/p4/held-out-200",
+  "scored_with_commit": "1bfae0439e59acf1934009e47b3f0351c7a4add2",
+  "freeze": "/private/tmp/claude-501/-Users-ananyaredhu-PycharmProjects-papergap-rag/0d92483d-d865-4d5b-8b0a-c8e2dd6f823e/scratchpad/gold/p4_freeze.json",
+  "inputs": {
+    "questions": "84e909e705b44c2827c5c44f53da0a56e44a766be61b1deeda7e381e2b2f9a48",
+    "mapping": "6bfd323ac4ed86d1e33afbffefb681d3d07821070af479fdfba3001ebfb9eaf4",
+    "qa": "1515fc586dc9070a0f548ea707892333496c8e38b3fc1c4e12eab3e07af3759e",
+    "freeze": "280957f02b05150d58d60198b31a57320fd3b23ff04825976a329f9b4fac4e73"
+  }
+}

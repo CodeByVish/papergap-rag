@@ -1,0 +1,86 @@
+[
+  {
+    "number": 1,
+    "question_id": "30c6d34b878630736f819fd898319ac4e71ee50b",
+    "outcome": "completed",
+    "answer": "Yes, experiments were performed to try this approach to word embeddings.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 19657.628958986606,
+    "citation_http_ms": 57.09554103668779,
+    "citation_count": 3,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "PROVENANCE_OVERSTATED"
+    ]
+  },
+  {
+    "number": 2,
+    "question_id": "0ab3df10f0b7203e859e9b62ffa7d6d79ffbbe50",
+    "outcome": "completed",
+    "answer": "The evaluation metric used is classification accuracy.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 17134.1878749663,
+    "citation_http_ms": 130.73683402035385,
+    "citation_count": 2,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "GENERATED_WITH_INSUFFICIENT_EVIDENCE",
+      "PROVENANCE_OVERSTATED"
+    ]
+  },
+  {
+    "number": 3,
+    "question_id": "729694a9fe1e05d329b7a4078a596fe606bc5a95",
+    "outcome": "completed",
+    "answer": "The total F-1 score on the OntoNotes dataset is 88%, and the total F-1 cross-validation score on the 112 class Wiki(gold) dataset is 53%.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 16188.625832961407,
+    "citation_http_ms": 73.88445799006149,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": []
+  },
+  {
+    "number": 4,
+    "question_id": "65ad17f614b7345f0077424c04c94971c831585b",
+    "outcome": "completed",
+    "answer": "They use a BiLSTM with max-pooling to obtain sentence representations.",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 11481.983292032965,
+    "citation_http_ms": 65.54754200624302,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "UNCOVERED_REQUIRED_COMPONENT"
+    ]
+  },
+  {
+    "number": 5,
+    "question_id": "5bcc12680cf2eda2dd13ab763c42314a26f2d993",
+    "outcome": "completed",
+    "answer": "The evaluation metrics used in the experiment were accuracy and MRR (Mean Reciprocal Ranking).",
+    "evidence_status": "SUFFICIENT",
+    "answer_http_ms": 10842.070458980743,
+    "citation_http_ms": 82.35787501325831,
+    "citation_count": 1,
+    "missing_citations": [],
+    "citation_papers_match": true,
+    "citations_retrieved": true,
+    "ui_evidence_error": null,
+    "warning_codes": [
+      "UNCOVERED_REQUIRED_COMPONENT"
+    ]
+  }
+]

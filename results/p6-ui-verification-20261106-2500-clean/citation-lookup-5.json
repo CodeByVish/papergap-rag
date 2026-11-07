@@ -1,0 +1,13 @@
+{
+  "passages": {
+    "qasper-passage-v1-1d23038ed2d48fdcd3cfbfa58fdaba83b875a3ae4fed269bdcbd3269cbb484a1": {
+      "text": "We also considered a simpler task by casting our problem as a retrieval task. Specifically, in addition to a plain transcript, we also provided the model with the segmentation information which was created during the data collection phrase (See Section. SECREF3). Note that each segments corresponds to a candidate answer. Then, the task is to pick the best segment for given a query. This task is easier than Baseline1's task in that the segmentation information is provided to the model. Unlike Baseline1, however, it is unable to return an answer span at various granularities. Baseline2 is based on the attentive LSTM BIBREF17, which has been developed for the InsuranceQA task. The right diagram in Fig. FIGREF15 illustrates the Baseline2 model.\n\nModel. The two inputs, $s$ and $q$ represent the segment text and a question. The model first encodes the two inputs.\n\n$h^s$ is then re-weighted using attention weights.\n\nwhere $\\odot $ denotes the element-wise multiplication operation. The final score is computed using a one-layer feed-forward network.\n\nDuring training, the model requires negative samples. For each positive example, (question, ground-truth segment), all the other segments in the same transcript are used as negative samples. Cross entropy is used as an objective function.\n\nMetrics. We used accuracy and MRR (Mean Reciprocal Ranking) as metrics. The accuracy is\n\nWe split the ground-truth dataset to train/dev/test into the ratio of 6/2/2. The resulting size is 3,718 (train), 1,238 (dev) and 1,239 qa pairs (test).",
+      "paper_id": "1912.01046",
+      "title": "TutorialVQA: Question Answering Dataset for Tutorial Videos",
+      "section": "Baselines ::: Baseline2: Segment retrieval",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "missing": []
+}

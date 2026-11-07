@@ -107,6 +107,11 @@ def test_health_reports_what_the_ui_needs():
     assert body["papers"] == 1
     assert body["retrieval"] is False
     assert body["agent"] is False
+    # The demo must not be able to change its rendering budget invisibly.
+    assert body["prompt_budget"] == {
+        "max_passages": 8,
+        "max_chars_per_passage": 2500,
+    }
 
 
 def test_an_exported_record_is_answered_and_returned_unchanged():

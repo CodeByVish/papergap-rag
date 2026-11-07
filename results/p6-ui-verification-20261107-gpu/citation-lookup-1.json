@@ -1,0 +1,29 @@
+{
+  "passages": {
+    "qasper-passage-v1-0d51be3a791f5c9d4c4e01ab143a672b61757c65788a2d72b8047897c8f86bb0": {
+      "text": "Methods for machine translations have been studied for years, and at the same time algorithms to generate word embeddings are becoming more and more accurate. Still, there is a lot of research aiming at unifying word embeddings across multiple languages. In this experience we try a technique for machine translation that relates word embeddings between two different languages. Based on the literature we found that it is possible to infer missing dictionary entries using distributed representations of words and phrases. One way of doing it is to create a linear mapping between the two vector spaces of two different languages. In order to achieve this, we first built two dictionaries of the two different languages. Next, we learned a function that projects the first vector space to the second one. In this way, we are able to translate every word belonging to the first language into the second one. Once we obtain the translated word embedding, we output the most similar word vector as the translation. The word embeddings were learnt using the Skip Gram method proposed by (Mikolov et al., 2013a). An example of how the method would work is reported in figure 1 and figure 2. After creating the word embeddings from the two dictionaries, we plotted the numbers in the two graphs using PCA. Figure 3 reports the results after creating a linear mapping between the embeddings from the two languages. You can see how similar words are closer together.",
+      "paper_id": "1912.10167",
+      "title": "Machine Translation with Cross-lingual Word Embeddings",
+      "section": "Introduction",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    },
+    "qasper-passage-v1-a6cbc90d67a64ce46611cfb104d103c825d5d13290e64e8542fc6a02f8bac7f9": {
+      "text": "The process for checking the accuracy of the model consisted of first taking a random subset of the corpus that was not used for training. This subset consists of slightly more common words because the more common words should have more accurate word embeddings. Infrequent words (like websites and serial numbers) would not necessarily have accurate word embeddings that were generated through the word2vec model. The English word embedding was multiplied by the transformation matrix to create the predicted translated word embedding. The cosine similarity was then generated with each translated word embedding stored in the corpus. The 20 words with the highest cosine similarity were then outputted. Then the English word was translated through Google Translate and compared to the 20 outputted translated words. It was considered a match if the translated word was found in this list of 20 similar words. The reason why the translated word was not just compared to the most similar embedding was because each word could have multiple semantic meanings or have different synonyms in the other language. After running this accuracy formulation, results for different languages and objective functions are reported in Table TABREF18. In the table you can see the different results we obtained across different languages. You can notice that we increased the number of languages from the first review of our paper. In addition, the table shows the comparison between our baseline method (Least Squares) and our final one (Normalized vectors, with cosine similarity), which shows a slight improvement with respect to the first one.",
+      "paper_id": "1912.10167",
+      "title": "Machine Translation with Cross-lingual Word Embeddings",
+      "section": "Results ::: Accuracy",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    },
+    "qasper-passage-v1-416a79a79c9a45d7a3c9f81791bb590a50eaec036fb6f815e111929c01cdc812": {
+      "text": "We noticed that the model was performing worse than expected. For this reason we studied what was the main source of error. It was interesting that the model was able to always predict very close French words in French that had the same meaning as the English ones. The problem was that they did not completely match the ones obtained from Google translate. In fact, it resulted that often, the Google translated word was not the most accurate one. Table 2 reports two of these examples. The first one is represented by the word help. All the three translations are pretty accurate, especially the first one, which is the right translation for the verb \"to help\". The problem is the translation provided by Google, which literally means \"Help Me\". The second example reports the word \"fire\". In French there are different words to express the concept of a fire, the concept of an apartment \"on fire\" or the verb \"fire a gun\". All the translations provided by the model represent the different meanings that the English word has.\n\nThis problem was alleviated by translating the 20 outputted French words back into English and comparing those with the original English word. By doing this process, the accuracy of the system increased to 47%. We expected the results of the cosine similarity objective function to produce a higher accuracy, but in reality, we a achieved slightly worse results.",
+      "paper_id": "1912.10167",
+      "title": "Machine Translation with Cross-lingual Word Embeddings",
+      "section": "Error Analysis ::: Google Translate",
+      "previous_passage_id": null,
+      "next_passage_id": null
+    }
+  },
+  "missing": []
+}

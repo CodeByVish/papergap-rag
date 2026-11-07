@@ -12,7 +12,7 @@ Insert the final generator revision, precision, decoding settings, GPU model, de
 \input{review-checks/q4-1}
 
 \subsection{Preprocessing (Q4.2)}
-Cleaning retains formula and citation placeholders already present in QASPER; it cannot recover missing numbers. Retrieval preprocessing is described in Section 3.1. The encoder's 512-token limit can truncate a passage without changing its stored text. Generation receives at most eight passages, each clipped to 1,200 characters, and its structured output allows limited repair of malformed escapes. A relevant passage may therefore be retrieved while its useful sentence is absent from the prompt. The agent development analysis reports that 71\% of mapped gold passages exceed the character limit.
+Cleaning retains formula and citation placeholders already present in QASPER; it cannot recover missing numbers. Retrieval preprocessing is described in Section 3.1. The encoder's 512-token limit can truncate a passage without changing its stored text. Generation receives at most eight passages, each clipped to 1,200 characters, and its structured output allows limited repair of malformed escapes. A relevant passage may therefore be retrieved while its useful sentence is absent from the prompt. On the 40 development questions, 33 of the 45 mapped gold passages (73.3\%) exceed the 1{,}200-character limit and 36.6\% of their text lies beyond it; on the held-out questions 232 of the 347 mapped gold passages (66.9\%) exceed it. Section~\ref{sec:context} reports a post-hoc check with a 2{,}500-character limit; the shared code default has since been raised to that value and it is the budget of the final demonstration, while every other result in this report is at 1{,}200. The same limit shows in the token counts: over 200 questions the generator received 934{,}334 prompt tokens in the static arm and 934{,}460 in the 15-passage arm, so passages beyond the eighth were retrieved but not rendered.
 
 
 \input{review-checks/q4-2}
@@ -70,7 +70,7 @@ Record the judge \texttt{qwen-plus-2025-12-01}, embedding \texttt{qwen3.7-text-e
 \input{review-checks/q4-5}
 
 \subsection{Latency, cost and scaling (Q4.6)}
-The local five-query measurements in Q2.2 are the directly inspected end-to-end timing evidence. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the current laptop timings or interpreted as a controlled final speedup.
+End-to-end timing comes from two settings that must not be combined: the local five-query demonstration in Q2.2 (a laptop with a 14B model) and the frozen held-out run on one GPU reported below. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the current laptop timings or interpreted as a controlled final speedup.
 
 Per-paper exact search depends mainly on the selected paper's passages. All-papers exact vector search grows with the indexed corpus. The current service permits one active answer request and returns HTTP 429 when busy; serial demonstration throughput does not establish concurrent capacity. Local and university model serving avoids per-call API charges, but compute and energy are not free. Paid judge cost remains unmeasured.
 
@@ -79,5 +79,21 @@ Final generation timing. In job 51585, answer generation on one A40 (warm engine
 \begin{review}{Final performance measurements}
 Populate elapsed wall time, processed-question count, successful answers, latency percentiles and judge cost from a single documented final setup. Separate startup, fresh inference and cache-hit timing. Historical cluster timings summarized in the workbook lack raw local records and are not used here as final benchmark results.
 \end{review}
+
+End-to-end timing comes from the frozen held-out run (job 51585): 200 questions per arm, one NVIDIA A40, Qwen3-8B in bfloat16 through vLLM 0.11.0, retrieval on CPU, one request at a time with the engine warm and no score cache. Latency is agent time plus generation time per question; throughput divides the questions by the wall-clock time the runner measured for each arm, not by summed latencies (Table~\ref{tab:perf}). The two answers per arm that the validator downgraded after a parse error count as technical errors in the evaluation tool, so percentiles use 198 questions.
+\begin{table}[htbp]\centering\small
+\caption{Held-out end-to-end performance, 200 questions per arm, serial requests on one A40. Tokens are the generator's totals.}\label{tab:perf}
+\begin{tabular}{lrrrrrr}\toprule
+Arm & Wall time (s) & Questions/s & p50 (s) & p95 (s) & Prompt tokens & Output tokens\\\midrule
+Static (8 passages) & 2{,}519 & 0.079 & 10.1 & 21.5 & 934{,}334 & 73{,}586\\
+Adaptive & 3{,}583 & 0.055 & 16.4 & 31.5 & 928{,}803 & 74{,}598\\
+Static-wide (15 passages) & 2{,}456 & 0.081 & 10.1 & 21.2 & 934{,}460 & 73{,}573\\\bottomrule
+\end{tabular}
+\end{table}
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.92\linewidth]{images/latency-by-arm.png}
+\caption{Held-out latency per question (left; agent plus generation time, one A40, serial requests) and throughput (right) by arm, the values of Table~\ref{tab:perf}. The retry loop raises median latency by about 60\% and lowers throughput by about 30\%.}\label{fig:latency}
+\end{figure}
+Generation dominates: retrieval and fusion take 0.04\,s per question on the cluster CPU, against about 12\,s for the answer. The agent loop adds a mean 5.6\,s per question, 251 critic calls over 200 questions, and raises median latency by about 60\% (16.4 against 10.1\,s) and lowers throughput by about 30\%, for a recall gain of 0.013 (Section~\ref{sec:agent-heldout}). The critic's own token use was not recorded, so the adaptive arm's token total is a lower bound. There is no per-call monetary cost, because the model is served locally; GPU time was 2\,h 23\,min for the three arms. The RAGAS judge (Q4.5) was a paid hosted model: scoring the two arms took about 2.5 hours and cost about 0.63 Singapore dollars, as reported by the member who ran it. Concurrent throughput was not measured: calls were serial, and these figures are not a scaling benchmark.
 
 \input{review-checks/q4-6}

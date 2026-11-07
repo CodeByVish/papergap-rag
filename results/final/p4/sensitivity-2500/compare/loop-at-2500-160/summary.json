@@ -1,0 +1,18 @@
+[
+  {
+    "metric": "f1",
+    "paired_questions": 160,
+    "papers": 142,
+    "mean_right_minus_left": 0.0027751630659515873,
+    "ci_low": -0.004649424727319871,
+    "ci_high": 0.01216521770588555,
+    "resamples": 1000,
+    "seed": 42,
+    "left_only_questions": 0,
+    "right_only_questions": 0,
+    "left_arm": "static-2500",
+    "right_arm": "adaptive-2500",
+    "left_k": null,
+    "right_k": null
+  }
+]
