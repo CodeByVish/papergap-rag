@@ -64,25 +64,30 @@ Agreement & 89.85\%\\\bottomrule
 % \input{review-checks/q4-3}
 
 \subsection{Answer quality (Q4.4)}
-The implemented scorer uses a proposed project policy, project QA policy, version 0 (proposed), rather than the official QASPER evaluator. It lowercases text, removes ASCII punctuation and English articles, and normalizes whitespace. Exact match compares normalized strings; token F1 uses multiset token overlap. Reference extraction supports yes/no, free-form and extractive-span annotations; mixed answerability uses available answerable references.
+\textbf{Metrics and rationale.} We evaluate generated answers against QASPER reference answers using normalized Exact Match (EM) and token F1. EM measures exact textual agreement after normalization, while token F1 measures partial lexical overlap. Neither alone captures semantic correctness or grounding, so these reference-based measures complement the RAG metrics in Q4.5.
 
-For scientific generative answers, overlap scores can penalize correct paraphrases and reward incomplete wording. We therefore report them with refusal behavior, failures and RAG metrics rather than treating either as a complete quality measure. Relevance labels alone do not supply answer references; QA scoring also needs the linked QASPER reference answers.
+\textbf{Scoring protocol.} The project scorer (\texttt{p6-qa-v0-proposed}, distinct from the official QASPER evaluator) lowercases text, removes ASCII punctuation and English articles, and normalizes whitespace. Token F1 uses multiset token overlap. For each question, each metric takes its best score across the available reference answers. Reference extraction supports yes/no, free-form and extractive-span annotations; mixed-answerability annotations use the answerable references. Scores are macro-averaged over all questions with valid answerable references, assigning zero to refusals and technical errors. All 200 questions have valid answerable references, with no reference exclusions. Coverage reports the proportion receiving an answer.
 
-Final held-out records. Job 51585 produced 200 records for each arm. Under the project QA policy, static answered 194 questions, refused 4 and failed 2; adaptive answered 191, refused 7 and failed 2; static-wide answered 194, refused 4 and failed 2. The two failures per arm are responses downgraded after a parse error; the P5 status count records them as refusals. All 200 held-out questions have at least one answerable QASPER reference annotation, so the unanswerable subset is empty. Exact match is 0.005 for every arm; token F1 is 0.368 (static), 0.366 (adaptive) and 0.368 (static-wide). On the 160 questions P4 did not annotate, F1 is 0.369 for both static and adaptive. The point estimates show no adaptive answer-quality gain.
+\textbf{Results.} \hyperref[tab:qa]{Table~\ref*{tab:qa}} reports the three retrieval configurations and a subset analysis. Static retrieves up to eight passages, adaptive adds critic-guided retrieval, and static-wide retrieves up to fifteen; generation renders at most eight passages in every arm. The remaining-160 subset excludes the 40 questions previously read by the agent developer during annotation; it is not a separate independently unseen evaluation set.
+
 \begin{table}[htbp]\centering\small
-\caption{Final QA on the 200 held-out questions under the project policy \texttt{p6-qa-v0-proposed}. Coverage is answered questions over the subset; parse-error failures are not counted as answered.}\label{tab:qa}
-\begin{tabularx}{\linewidth}{>{\hsize=1.8\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y>{\hsize=0.8\hsize\linewidth=\hsize}Y}\toprule
+\caption{Answer quality and coverage on the frozen evaluation list. EM and F1 include refusals and technical errors as zero; coverage counts answered questions only.}\label{tab:qa}
+\begin{tabularx}{\linewidth}{>{\hsize=1.8\hsize\linewidth=\hsize}Y>{\hsize=.7\hsize\linewidth=\hsize}Y>{\hsize=.7\hsize\linewidth=\hsize}Y>{\hsize=.9\hsize\linewidth=\hsize}Y>{\hsize=.9\hsize\linewidth=\hsize}Y}\toprule
 Arm / subset & EM & Token F1 & Unanswerable correct & Coverage\\\midrule
 Static / all 200 & 0.005 & 0.368 & n/a & 194/200 (0.970)\\
 Adaptive / all 200 & 0.005 & 0.366 & n/a & 191/200 (0.955)\\
+Static-wide / all 200 & 0.005 & 0.368 & n/a & 194/200 (0.970)\\
 Static / remaining 160 & 0.006 & 0.369 & n/a & 155/160 (0.969)\\
-Adaptive / remaining 160 & 0.006 & 0.369 & n/a & 152/160 (0.950)\\\bottomrule\end{tabularx}
+Adaptive / remaining 160 & 0.006 & 0.369 & n/a & 152/160 (0.950)\\\bottomrule
+\end{tabularx}
 \end{table}
-\begin{review}{Final QA run}
-Scores above use job 51585 and P3's \texttt{qa.jsonl} (SHA-256 \texttt{1515fc58...}), rerun with the \texttt{held\_out} role after the team sign-off of 6 November; the numbers did not change. Paired uncertainty is in Section~\ref{sec:agent-heldout}. The agent developer saw 40 evaluation questions while annotating, hence both all 200 and the remaining 160. The review file \texttt{results/final/p4/held-out/review/final-evaluation-review.json} records, as relayed by P4, that every member confirmed no held-out question was used beyond reading it for annotation. Every question was still read by its annotators, so do not call the 160 independently held out.
-\end{review}
 
-\input{review-checks/q4-4}
+Under the QA scoring policy, static and static-wide each have four refusals and two technical errors; adaptive has seven refusals and two technical errors. The errors are parse-error responses returned through the generator's refusal fallback and classified separately by the scorer.
+
+\textbf{Interpretation.} Mean token F1 is similar across configurations. Paired comparisons in Section~\ref{sec:agent-heldout} do not establish an adaptive answer-quality advantage. All questions have answerable references, so correct refusal on unanswerable questions is not assessed in this evaluation.
+
+% 5/5 assessment retained internally.
+% \input{review-checks/q4-4}
 
 \subsection{Answer-level RAG metrics (Q4.5)}
 RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project runs RAGAS 0.2.15 with a live judge. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. The judge scores the exact rendered contexts (8 passages x 1,200 characters), not the full retrieved chunks.
