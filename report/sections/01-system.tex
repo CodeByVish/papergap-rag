@@ -9,9 +9,19 @@ Figure~\ref{fig:offline} shows the offline workflow from verified source archive
 \input{review-checks/q1-1}
 
 \subsection{Application and scope (Q1.2)}
-Reading scientific papers often requires locating details spread across methods and results sections. Our system supports questions about a paper's methods, data, experiments and findings. It returns an answer with inspectable passage citations, or an explicit refusal when evidence is insufficient. This follows retrieval-conditioned generation \citep{lewis2020rag}; the system implements its own retrieval, fusion, orchestration and answer validation.
+Researchers must search across many papers and piece together findings scattered across their sections to answer research questions. Finding relevant evidence, comparing approaches and tracing claims to sources is time-consuming. PaperRAG supports evidence-grounded question answering over an indexed collection of NLP papers, helping researchers identify useful papers and investigate their methods and findings.
 
-The interface supports selected-paper and all-papers search. Formal evaluation uses selected-paper search: questions containing ``they'' or ``this approach'' require a known paper. All-papers search is a broader demonstration feature and has not received equivalent quality evaluation; the five demonstration queries in Table~\ref{tab:queries} use it.
+Users enter a natural-language question and choose either a specific paper or the full collection. Selected-paper search supports detailed questions about a paper's methods, datasets, experiments and results. Collection-wide search supports topic exploration by retrieving relevant passages across papers. The system generates an answer with inspectable passage citations, or an explicit refusal when the available evidence is insufficient. Users can open the cited passages to examine the support for individual claims.
+
+Example inputs include:
+\begin{itemize}
+\item[$\bullet$] \textbf{Selected paper:} ``Which datasets are used to evaluate the proposed method?''
+\item[$\bullet$] \textbf{Selected paper:} ``How does the proposed approach differ from the baselines?''
+\item[$\bullet$] \textbf{Full collection:} ``What approaches are used for machine translation when parallel training data is limited?''
+\item[$\bullet$] \textbf{Full collection:} ``How do entity-linking models use surrounding context to resolve ambiguous names?''
+\end{itemize}
+
+The intended benefit is to reduce the effort required to locate and inspect evidence during research. Formal evaluation uses selected-paper questions; collection-wide search is demonstrated separately in Q2.2.
 
 \input{review-checks/q1-2}
 
