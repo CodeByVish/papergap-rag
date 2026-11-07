@@ -11,20 +11,21 @@ Figure~\ref{fig:offline} shows the offline workflow from verified source archive
 \subsection{Application and scope (Q1.2)}
 Reading scientific papers often requires locating details spread across methods and results sections. Our system supports questions about a paper's methods, data, experiments and findings. It returns an answer with inspectable passage citations, or an explicit refusal when evidence is insufficient. This follows retrieval-conditioned generation \citep{lewis2020rag}; the system implements its own retrieval, fusion, orchestration and answer validation.
 
-The interface supports selected-paper and all-papers search. Formal evaluation uses selected-paper search: questions containing ``they'' or ``this approach'' require a known paper. All-papers search is a broader demonstration feature and has not received equivalent quality evaluation. Table~\ref{tab:queries} gives five actual inputs.
+The interface supports selected-paper and all-papers search. Formal evaluation uses selected-paper search: questions containing ``they'' or ``this approach'' require a known paper. All-papers search is a broader demonstration feature and has not received equivalent quality evaluation; the five demonstration queries in Table~\ref{tab:queries} use it.
 
 \input{review-checks/q1-2}
 
 \subsection{Knowledge base size (Q1.3)}
 \begin{table}[htbp]\centering
-\caption{Full knowledge base statistics from the current 365/40 corpus manifest. Source words exclude overlap; passage words include it.}\label{tab:corpus}
+\caption{Full knowledge base statistics from the current 365/40 corpus manifest. Source words exclude overlap; passage words and word types are counted over passages. A type is a lowercased whitespace-delimited word, with punctuation kept attached.}\label{tab:corpus}
 \begin{tabular}{lr}\toprule
 Measure & Knowledge base\\\midrule
 Source papers & 1,585\\
 Papers with passages & 1,584\\
 Passages & 28,617\\
 Source words & 5,659,921\\
-Passage words & 5,930,961\\\bottomrule
+Passage words & 5,930,961\\
+Word types (unique words) & 210,909\\\bottomrule
 \end{tabular}
 \end{table}
 The knowledge base combines paper text from all three official QASPER splits (train, validation and test). Its 28,617 passages and 5,659,921 source words exceed the assignment's 10,000-passage and 100,000-word minimums. One source paper has no usable passages, leaving 1,584 papers represented in the knowledge base.
@@ -48,38 +49,50 @@ The knowledge base combines paper text from all three official QASPER splits (tr
 A Streamlit interface communicates with a FastAPI service. Users select a paper or all papers, enter a question, or choose an example. The answer view exposes citations, source passages, evidence status, warnings and retrieval history. Expandable details let users inspect evidence without crowding the initial answer. Refusals appear as normal outcomes rather than system failures. Each question is independent; session history is not conversational model memory.
 
 \begin{figure}[htbp]\centering
+\includegraphics[width=0.97\linewidth]{figures/ui-query-entry.png}
+\caption{The interface before submission, with query 3 of Table~\ref{tab:queries} entered and all papers in scope. Figure~\ref{fig:ui} shows the resulting answer.}\label{fig:ui-entry}
+\end{figure}
+
+\begin{figure}[htbp]\centering
 \includegraphics[width=0.97\linewidth,height=0.52\textheight,keepaspectratio]{figures/ui-answer.png}
-\caption{Existing project UI screenshot, included to illustrate the answer workflow. It is a development capture, not evidence that the final GPU configuration has been rehearsed.}\label{fig:ui}
+\caption{The interface answering query 3 of Table~\ref{tab:queries} in a browser against the live GPU service, with all papers in scope. The answer raised no validator warnings, and each source card shows its passage, rank and RRF score. Figure~\ref{fig:five-queries} shows how flagged sentences appear.}\label{fig:ui}
 \end{figure}
 \begin{review}{UI verification}
-Replace or confirm Figure~\ref{fig:ui} after a live rehearsal using the final top-eight, no-reranker GPU configuration. Verify citation expansion. The 5 November five-query script received HTTP 400 for citation text lookup, so that run does not validate the citation lookup endpoint; a repeat on 6 November resolved all seven citation identifiers without errors, but it is a laptop test, not a final GPU rehearsal. The workbook also records an unresolved all-papers critic test; confirm its current status separately.
+Figure~\ref{fig:ui} and Figure~\ref{fig:five-queries} come from the 7 November browser run on the final GPU service (Section~\ref{sec:five-queries}), driven by headless Chromium. The workbook's unresolved all-papers critic test should be closed against that run's query 5.
 \end{review}
 
 \input{review-checks/q2-1}
 
-\subsection{Five measured queries (Q2.2)}
+\subsection{Five measured queries (Q2.2)}\label{sec:five-queries}
 \begin{table}[htbp]\small\centering
-\caption{Actual local demonstration inputs. IDs identify the selected QASPER paper.}\label{tab:queries}
+\caption{The five demonstration queries, run with all papers in scope.}\label{tab:queries}
 \begin{tabularx}{\linewidth}{lY}\toprule
-Paper & Question\\\midrule
-1912.10167 & Are any experiments performed to try this approach to word embeddings?\\
-1911.07555 & What evaluation metric is used?\\
-1904.10503 & What results do they achieve using their proposed approach?\\
-1904.05584 & Which model architecture do they use to obtain representations?\\
-1912.01046 & What evaluation metrics were used in the experiment?\\\bottomrule
+\# & Question\\\midrule
+1 & How do entity-linking models use surrounding context to resolve ambiguous names?\\
+2 & How is commonsense knowledge used to improve dialogue systems?\\
+3 & What approaches are used for machine translation when parallel training data is limited?\\
+4 & What methods have researchers used to induce context-free grammars (CFGs)? Cite the papers supporting your answer.\\
+5 & What methods are used for low-resource language identification?\\\bottomrule
 \end{tabularx}
 \end{table}
 \input{tables/five-queries}
-On 5 November these five calls used an Apple M5 with 24 GB memory, Ollama \texttt{qwen3:14b}, the development corpus and top-eight RRF without reranking. They are not a Qwen3-8B GPU benchmark. Client-observed answer latency includes the agent and generation. Mean latency is 122.7 seconds, median 104.6 seconds, and total measured call time 613.3 seconds, yielding 0.0082 questions per second for serial calls. An earlier 203.9-second warm-up call is excluded. Across seven retrieval calls in the saved agent logs, median latency is 31.6 ms (range 15.2--269.2 ms). LLM work dominates this local demonstration.
+The final demonstration ran on 7 November on the school GPU (node TC2N03): \texttt{Qwen3-8B} served through vLLM, prompt \texttt{p5-grounded-qa-v7}, top-eight RRF without reranking and the 28,617-passage corpus across all 1,584 papers. Headless Chromium submitted the questions one at a time through the Streamlit interface to the live service over an SSH tunnel, and we saved a screenshot (Figure~\ref{fig:five-queries}) and the run export after each answer. The service had been up for about 2.6 hours, and no separate warm-up question was run. Latency is the answer HTTP time seen by the client; it includes the agent and generation but excludes citation lookup and rendering. Mean latency is 19.9 seconds, median 19.3 seconds and range 15.1--26.3 seconds. The five calls took 99.5 seconds in total, or 0.050 questions per second for serial calls; this is a rate derived from one pass, not a measured batch throughput, and one pass cannot support a p95. Final generation accounts for 69.9 of the 99.5 seconds. Query 5 is the slowest because it used all three rounds; its final generation took 13.8 seconds, within the 10.0--16.1 second range of the others. The interface's progress log, which has 0.1-second resolution, places each first retrieval at 0.2--0.5 seconds after submission, and each critic check took about 3--5 seconds, so LLM work dominates. Citation lookup took 92--148 ms per query. The service did not report the per-passage character budget, so this run does not fix it.
 
-A repeat of the same five questions on 6 November, through the current interface's test harness against the live service on the same laptop (local \texttt{qwen3:14b}, 8{,}192-token context, 1{,}024-token completion budget, top-eight retrieval without reranking, service already warm), returned answers identical to those of 5 November. Mean answer latency was 73.1 seconds and median 62.4 seconds; the five serial calls took 365.6 seconds in total, a serial-call rate of 0.0137 questions per second (an estimate, not a measured batch throughput). Seven retrieval calls had a median of 53.2 ms (range 13.6--260.3 ms). The two runs are separate measurements: the repeat does not correct the 5 November figures, and no cold-start comparison is available. No citation lookup errors occurred, and all seven citation identifiers resolved to passages of the selected paper that appear in the retrieval log.
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.48\linewidth]{figures/query-1.png}\hfill\includegraphics[width=0.48\linewidth]{figures/query-2.png}\\[2mm]
+\includegraphics[width=0.48\linewidth]{figures/query-3.png}\hfill\includegraphics[width=0.48\linewidth]{figures/query-4.png}\\[2mm]
+\includegraphics[width=0.48\linewidth]{figures/query-5.png}
+\caption{Answers to queries 1--5 as shown by the interface, left to right and top to bottom. Screenshots are cropped to the answer column.}\label{fig:five-queries}
+\end{figure}
 
-A third run of the same five questions on 6 November used a budget of 2{,}500 characters per passage for both the critic and the generator, set by a local override while the shared code default was still 1{,}200 characters; the shared default has since been raised to 2{,}500, which is the budget of the final demonstration. It ran through the same test harness against the live service. All five questions were answered. Query 5 now returns an answer that cites its accuracy and MRR, query 1 returned a new answer with one citation (it had four), which matches the reference and is supported by its cited passage apart from a simplification of the method; the passage does not state the answer outright, which is what the validator's overstated-provenance warning reports; the other three answers are unchanged. All citation identifiers resolved. Mean answer latency was 126.0 seconds and median 113.8 seconds, which should not be compared with the earlier runs: another local service was running and the interface had just started. Five development questions do not establish an accuracy change, and this budget differs from the 1{,}200 characters of every evaluation result in this report; the post-hoc held-out run at 2{,}500 characters (Section~\ref{sec:context}) found no measurable change in recall or answer F1.
+All five questions were answered, and all 15 citations resolved to passage text. Each query drew on five to 18 source papers. We checked each answer against its cited passages; these are topic questions without QASPER references, so this checks grounding, not completeness. Query 3 is fully grounded: its three approaches each appear in the cited passage, and it raised no warning. Query 1 is partly grounded: topical coherence is supported, but the answer omits the local-context methods its fourth source describes, and the validator flags its second sentence. Query 2 is not grounded: neither cited passage mentions dialogue or memory, so the two validator warnings are correct, and the model's \texttt{SUFFICIENT} label and the critic's verdict were both wrong. Query 4 is partly grounded: its statistical, feature-based and neural methods match paper 1906.10225, but the flagged compound-PCFG claim cites a semantic-parsing paper (1601.06068) rather than 1906.10225, which proposes them. The answer text also names no papers, as the question asked; the supporting papers appear only as source cards. Query 5 lists real methods from a passage on audio language identification, but that passage is about Indian languages rather than low-resource methods, and the x-vector claim cites two unrelated passages on translation and syntax.
 
-Two of the five outcomes show how the agent and the generator can disagree. In query 2 the critic stayed unsatisfied after its retries but the system still answered: the critic's verdict does not force a refusal, which remains with the generator, because the rule that would force it fails the gate set before the held-out run (Section~\ref{sec:agent-heldout}); the critic still reported a missing result at 2{,}500 characters, so clipping does not explain that verdict. In query 5 the generator refused although the critic had quoted passages that name accuracy and MRR. The cause is clipping: the three metric statements in query 5's passages begin at characters 1{,}298, 1{,}414 and 1{,}437, beyond the 1{,}200 characters the generator renders, while in the earlier runs the critic read each passage up to 3{,}000 characters and so could see them. A replay reproduced the same refusal, critic quote and prompt; giving the critic the generator's view alone did not produce an answer, and raising the budget to 2{,}500 characters did. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did, so they avoid the mismatch; clipping itself still affects them (Q4.2). The refusal was a missed answer to an answerable question, not a successful refusal.
+Query 5 also shows the agent and generator disagreeing. The critic reported a missing method in all three rounds, the pool grew to 20 passages, and the search stopped at the round limit, yet the model labelled its answer \texttt{SUFFICIENT}. The validator kept the answer and warned, because the critic's verdict does not force a refusal; the rule that would force it fails the gate set before the held-out run (Section~\ref{sec:agent-heldout}). Queries 2 and 5 show that an answer can look confident when all-papers retrieval returns weak evidence, so readers must rely on the warnings and sources. A topical corpus also limits answers: citations can only reach what the 1,584 papers contain.
+
+An earlier selected-paper demonstration on five QASPER questions gives separate evidence on context clipping. At 1{,}200 characters per passage on a laptop (Apple M5, 24 GB, Ollama \texttt{qwen3:14b}), an answerable question about evaluation metrics was refused because the metric statements began beyond the 1{,}200 characters the generator rendered, while the critic read each passage up to 3{,}000 characters. Raising the budget to 2{,}500 characters produced an answer. That refusal was a missed answer, not a successful refusal. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did; clipping itself still affects them (Q4.2). Those timings used a different model and must not be compared with Table~\ref{tab:five-results}.
 
 \begin{review}{Do not interpret demonstration outputs as accuracy}
-Answers in Table~\ref{tab:five-results} summarize model outputs, not verified paper facts. Check each against its cited passages and QASPER references. The two outcomes that looked inconsistent, queries 2 and 5, are explained in the text above.
+Answers in Table~\ref{tab:five-results} summarize model outputs, not verified paper facts. The check above is AI-assisted and needs P5/P4 confirmation. Record the GPU job number and per-passage budget for this run from the service log.
 \end{review}
 
 \input{review-checks/q2-2}

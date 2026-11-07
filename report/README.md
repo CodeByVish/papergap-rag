@@ -55,7 +55,8 @@ Once the report is ready, the required submission filename is **`24.pdf`**. Keep
 | Placement | Included asset | Wrapper |
 | --- | --- | --- |
 | Q1.1: collection, cleaning and storage | `images/offline-corpus-index.png` | `figures/offline-indexing.tex` |
-| Q2.1: user interface | `figures/ui-answer.png` | Included directly in `sections/01-system.tex` |
+| Q2.1: query entry (query 3, not submitted) | `figures/ui-query-entry.png` | Included directly in `sections/01-system.tex` |
+| Q2.1: user interface (query 3, final GPU run) | `figures/ui-answer.png` | Included directly in `sections/01-system.tex` |
 | Q3: hybrid retrieval | `images/online-hybrid-retrieval.png` | `figures/hybrid-retrieval.tex` |
 | Q3: recall by retrieval depth | `images/recall-by-depth.png` | Included directly in `sections/02-retrieval.tex` |
 | Q4.6: held-out latency and throughput | `images/latency-by-arm.png` | Included directly in `sections/03-evaluation.tex` |
@@ -130,12 +131,12 @@ Paths below are relative to the **repository root**, unless stated otherwise. Th
 | Assignment requirements | Original handout; takes precedence over older planning notes |
 | Corpus design, counts and chunk comparison | `docs/ASSIGNMENT_WORKBOOK.md`, `configs/p4_freeze.json` and retrieval manifest; original word/type and chunk-tuning outputs were unavailable in the inspected inputs |
 | Retrieval implementation | Repository README, `docs/P2_REPORT_CONTRIBUTION.md` and retrieval source |
-| Accepted-label top-five retrieval table | `results/p2-final-retrieval-handoff/scored/summary.json` and its run manifest; accepted label commit `f70bf95593a6b9f705674770b8c3e833ca76290c`, frozen ranking commit `1a1dc15b824590a39c80ea11a568fbe5814a926e` |
-| Paired BM25--Dense comparison | `results/p1-bm25-vs-dense-verification-20261105/comparison/ablation.csv`; one independent comparison execution reproduced the P2 CSV exactly, without rerunning retrieval or initial scoring |
+| Accepted-label top-five retrieval table | `results/final/p2/scored/summary.json` and its run manifest; accepted label commit `f70bf95593a6b9f705674770b8c3e833ca76290c`, frozen ranking commit `1a1dc15b824590a39c80ea11a568fbe5814a926e` |
+| Paired BM25--Dense comparison | `results/final/p1/comparison/ablation.csv`; one independent comparison execution reproduced the P2 CSV exactly, without rerunning retrieval or initial scoring |
 | Contrasting BM25/Dense examples | Saved questions, rankings, passage text and final labels in `results/p2-final-retrieval-handoff/inputs/`; exact identifiers in `review-checks/p1-evidence.md`; Junlin Yin approved the P1 final wording on 6 November 2026 |
 | Revised-label agreement and pairwise kappa | `results/p6/annotation-audit-verified-20261105/agreement.json` |
 | Label balance and resolution provenance | `data/gold/p6/final/final_labels_manifest.json`; 102 human-reviewed and 86 human-spot-checked resolutions. Read its historical pre-merge review note alongside subsequent P3 confirmation and PR #50 acceptance; acceptance does not independently establish annotation independence |
-| Five-query outputs, warnings and timing | `results/p6-local/five-queries-20261105.json` (5 November) and the 6 November repeat described in `docs/P6/FIVE_DEMO_VERIFICATION.md`; output summaries are not verified factual answers |
+| Five-query outputs, warnings and timing | Tracked all-papers GPU browser run `results/p6-ui-verification-20261107-gpu-all-papers/` (primary); earlier selected-paper GPU run `results/p6-ui-verification-20261107-gpu/` and laptop run `results/p6-ui-verification-20261106-2500-clean/`; earlier laptop runs are described in `docs/P6/FIVE_DEMO_VERIFICATION.md`. Output summaries are not verified factual answers |
 | Development UI capture | `output/playwright/p6-local-answer.png`; not proof of a final GPU rehearsal |
 | Adaptive/depth results, retry rates and intervals | Development: `docs/P4_REPORT_CONTRIBUTION.md` (reported cluster findings). Held-out job 51585, frozen by `configs/p4_freeze.json`: scored outputs, input hashes and checksums in `results/final/p4/` (separate pull request); the per-arm answer records stay outside Git, with their hashes in `results/final/p4/INPUTS.json` |
 | Historical reranking latency | `docs/P2_REPORT_CONTRIBUTION.md`; older 200/40 corpus, not a current benchmark |
@@ -148,16 +149,13 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 
 ## Outstanding checks before submission
 
-1. Confirm official member spellings/order and add four missing matriculation numbers. Group 24, Changyan Xu / G2607680G and Junlin Yin / G2604768B are already entered. Names are alphabetical by displayed full name.
+1. Confirm official member spellings/order. Group 24 and all six matriculation numbers are entered, including Junyu Hu / G2603713B. Names are alphabetical by displayed full name.
 2. Confirm annotation validity and preserve revised-label agreement, independence, method visibility and single-reviewer resolution disclosures. The accepted manifest records 102 human-reviewed and 86 human-spot-checked resolutions; the latter include the 66 previously unchecked suggestions. Their updated status does not demonstrate independent third-person adjudication or recover original independent submissions.
 3. Confirm the evaluation freeze, accepted gold, prior question exposure and all-200/remaining-160 reporting. Keep passage schemas and split mappings `v0-proposed` until team confirmation.
-4. Final QA and RAGAS scores are inserted with denominators and failures. Add paired QA uncertainty, controlled ablations and final performance/cost results. Record model revisions, prompts, decoding, hardware and timing policy.
-5. Obtain the raw cluster evidence and corpus/chunk-tuning outputs supporting the transcribed findings. Reviewers should verify claims against those records.
-6. Check all five demonstration answers, the critic/refusal mismatch and citation lookup. Rehearse the final GPU UI. The report uses the raw agent-log retrieval median of 31.58 ms, rounded to 31.6 ms; the workbook's 31.4 ms comes from a separate timing record.
 4. Final QA and RAGAS scores are inserted with denominators and failures (RAGAS for the 1,200-character run only). The team sign-off for the `held_out` label was given on 6 November; the held-out evidence, QA and comparison outputs carry it (`results/final/p4/`), and the RAGAS outputs can be relabelled by rerunning with the review file. The factorial ablation is a development-slice result (Q5 states what was isolated). Record model revisions, prompts, decoding, hardware and timing policy.
 5. Raw evidence for held-out job 51585 is in `results/final/p4/` and its delivery archive; attach the development jobs' outputs from the team's delivery archives and the corpus/chunk-tuning outputs. Reviewers should verify claims against those records.
-6. The critic/refusal mismatch (query 5) is explained in Q2.2 and was confirmed by a replay and by a 2,500-character run (`docs/P6/FIVE_DEMO_VERIFICATION.md`); that run was a local override made before the shared default was raised to 2,500 characters (PR 72); the final demonstration uses 2,500, and every evaluation result stays at 1,200 (reproduce them with `MAX_CHARS_PER_PASSAGE=1200` or at commit `ad02d51`). Citation lookup resolved in the 6 November repeat. Rehearse the final GPU UI. Q2.2 gives both retrieval medians (31.6 ms on 5 November, 53.2 ms on 6 November); the workbook's 31.4 ms comes from a separate timing record.
-7. Complete reserved figures and the qualitative example; confirm the supplied pipeline charts and screenshot still match the final system. Future-work proposals must remain distinct from tested improvements.
+6. Q2.2 now reports the 7 November all-papers browser run on the school GPU (node TC2N03) as the final demonstration, with screenshots in `figures/query-*.png`. Record its job number and per-passage budget from the service log; neither is in the run files. The earlier selected-paper runs remain only as clipping evidence. Every evaluation result stays at 1,200 characters (reproduce with `MAX_CHARS_PER_PASSAGE=1200` or at commit `ad02d51`).
+7. Confirm the supplied pipeline charts and screenshot still match the final system. Future-work proposals must remain distinct from tested improvements.
 8. Have all members confirm the AI-use disclosure, additional tools/purposes, actual human verification and any required course declaration format.
 9. Restore the required data/results ZIP and code/libraries ZIP links in an appropriate final location. Removing the former submission-materials section did not remove the handout requirement. Check link access and archive completeness.
 10. Resolve highlighted items, remove temporary reviewer assignments and AI editorial ratings, retain substantive disclosures, rebuild and visually inspect the final PDF. Submit **`24.pdf`** through Blackboard by **7 November 2026, 11:59 pm SGT**.

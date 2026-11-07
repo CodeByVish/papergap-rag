@@ -1,0 +1,674 @@
+{
+  "schema_version": "p6-ui-export-v1",
+  "exported_at": "2026-11-07T07:56:31.881367+00:00",
+  "timing_definition": "answer_http_elapsed_ms includes HTTP waiting/processing; excludes citations and rendering. Not model inference time.",
+  "runs": [
+    {
+      "client_run_id": "18952ec1-724c-4339-9487-7d5711b5c80d",
+      "conversation_id": "e9fc67ee-3b80-4ad5-a576-7841b6e4f696",
+      "message_id": "cd8d77a2-b95c-4d09-9abc-fa0ad22676c3",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "What methods have researchers used to induce context-free grammars (CFGs)? Cite the papers supporting your answer.",
+        "paper_id": null
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "vllm",
+        "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "vllm",
+      "submitted_at": "2026-11-07T07:56:10.642934+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1794038170933",
+        "result": {
+          "answer": "Researchers have used various methods to induce context-free grammars (CFGs), including statistical approaches with auxiliary objectives, priors, or non-parametric models, manually-engineered features, and neural network-based approaches. Additionally, latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored.",
+          "citations": [
+            "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1",
+            "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc",
+            "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "Researchers have used statistical approaches with auxiliary objectives, priors, or non-parametric models",
+              "passage_ids": [
+                "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "Manually-engineered features have been used",
+              "passage_ids": [
+                "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "Neural network-based approaches have been explored",
+              "passage_ids": [
+                "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "Latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored",
+              "passage_ids": [
+                "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Researchers have used various methods to induce context-free grammars (CFGs), including statistical approaches with auxiliary objectives, priors, or non-parametric models, manually-engineered features, and neural network-based approaches. Additionally, latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored.",
+            "citations": [
+              "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1",
+              "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc",
+              "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Researchers have used statistical approaches with auxiliary objectives, priors, or non-parametric models",
+                "passage_ids": [
+                  "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Manually-engineered features have been used",
+                "passage_ids": [
+                  "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Neural network-based approaches have been explored",
+                "passage_ids": [
+                  "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored",
+                "passage_ids": [
+                  "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "Researchers have used various methods to induce context-free grammars (CFGs), including statistical approaches with auxiliary objectives, priors, or non-parametric models, manually-engineered features, and neural network-based approaches. Additionally, latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored.",
+            "citations": [
+              "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1",
+              "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc",
+              "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Researchers have used statistical approaches with auxiliary objectives, priors, or non-parametric models",
+                "passage_ids": [
+                  "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Manually-engineered features have been used",
+                "passage_ids": [
+                  "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Neural network-based approaches have been explored",
+                "passage_ids": [
+                  "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored",
+                "passage_ids": [
+                  "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "PROVENANCE_OVERSTATED",
+              "severity": "warning",
+              "message": "claim is marked 'direct' but the text it names supports 'unsupported': 'Latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored'",
+              "subject": "Latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored"
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "vllm",
+            "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+            "loaded": true,
+            "options": {
+              "dtype": "bfloat16",
+              "gpu_memory_utilization": 0.85,
+              "max_model_len": 32768,
+              "tensor_parallel_size": 1,
+              "temperature": 0.0,
+              "top_p": 0.9,
+              "enable_thinking": false,
+              "enforce_eager": false
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 16.123887609050144
+            },
+            "kv_cache_budget_gb": 37.74
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"Researchers have used various methods to induce context-free grammars (CFGs), including statistical approaches with auxiliary objectives, priors, or non-parametric models, manually-engineered features, and neural network-based approaches. Additionally, latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored.\",\n  \"citations\": [\"qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1\", \"qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc\", \"qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\"claim\": \"Researchers have used statistical approaches with auxiliary objectives, priors, or non-parametric models\", \"passage_ids\": [\"qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1\"], \"support\": \"direct\"},\n    {\"claim\": \"Manually-engineered features have been used\", \"passage_ids\": [\"qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1\"], \"support\": \"direct\"},\n    {\"claim\": \"Neural network-based approaches have been explored\", \"passage_ids\": [\"qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc\"], \"support\": \"direct\"},\n    {\"claim\": \"Latent variable PCFGs and compound PCFGs with continuous latent vectors have been explored\", \"passage_ids\": [\"qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4\"], \"support\": \"direct\"}\n  ]\n}",
+          "raw_text_chars": 1578
+        },
+        "search": {
+          "scope": "corpus",
+          "paper_id": null,
+          "source_papers": [
+            "1601.00901",
+            "1601.06068",
+            "1606.06361",
+            "1805.02400",
+            "1906.10225"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1": {
+          "text": "Grammar induction is the task of inducing hierarchical syntactic structure from data. Statistical approaches to grammar induction require specifying a probabilistic grammar (e.g. formalism, number and shape of rules), and fitting its parameters through optimization. Early work found that it was difficult to induce probabilistic context-free grammars (PCFG) from natural language data through direct methods, such as optimizing the log likelihood with the EM algorithm BIBREF0 , BIBREF1 . While the reasons for the failure are manifold and not completely understood, two major potential causes are the ill-behaved optimization landscape and the overly strict independence assumptions of PCFGs. More successful approaches to grammar induction have thus resorted to carefully-crafted auxiliary objectives BIBREF2 , priors or non-parametric models BIBREF3 , BIBREF4 , BIBREF5 , BIBREF6 , and manually-engineered features BIBREF7 , BIBREF8 to encourage the desired structures to emerge.\n\nWe revisit these aforementioned issues in light of advances in model parameterization and inference. First, contrary to common wisdom, we find that parameterizing a PCFG's rule probabilities with neural networks over distributed representations makes it possible to induce linguistically meaningful grammars by simply optimizing log likelihood. While the optimization problem remains non-convex, recent work suggests that there are optimization benefits afforded by over-parameterized models BIBREF9 , BIBREF10 , BIBREF11 , and we indeed find that this neural PCFG is significantly easier to optimize than the traditional PCFG. Second, this factored parameterization makes it straightforward to incorporate side information into rule probabilities through a sentence-level continuous latent vector, which effectively allows different contexts in a derivation to coordinate. In this compound PCFG\u2014continuous mixture of PCFGs\u2014the context-free assumptions hold conditioned on the latent vector but not unconditionally, thereby obtaining longer-range dependencies within a tree-based generative process.\n\nTo utilize this approach, we need to efficiently optimize the log marginal likelihood of observed sentences. While compound PCFGs break efficient inference, if the latent vector is known the distribution over trees reduces to a standard PCFG. This property allows us to perform grammar induction using a collapsed approach where the latent trees are marginalized out exactly with dynamic programming. To handle the latent vector, we employ standard amortized inference using reparameterized samples from a variational posterior approximated from an inference network BIBREF12",
+          "paper_id": "1906.10225",
+          "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+          "section": "Introduction",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-af475629fc7e8e3679120851e2845ef97cfc01ac53da0a86b7e7bb342d327d10",
+          "context_before": "",
+          "context_after": " , BIBREF13 ."
+        },
+        "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc": {
+          "text": "Grammar induction has a long and rich history in natural language processing. Early work on grammar induction with pure unsupervised learning was mostly negative BIBREF0 , BIBREF1 , BIBREF74 , though BIBREF75 reported some success on partially bracketed data. BIBREF76 and BIBREF2 were some of the first successful statistical approaches to grammar induction. In particular, the constituent-context model (CCM) of BIBREF2 , which explicitly models both constituents and distituents, was the basis for much subsequent work BIBREF27 , BIBREF7 , BIBREF8 . Other works have explored imposing inductive biases through Bayesian priors BIBREF4 , BIBREF5 , BIBREF6 , modified objectives BIBREF42 , and additional constraints on recursion depth BIBREF77 , BIBREF48 .\n\nWhile the framework of specifying the structure of a grammar and learning the parameters is common, other methods exist. BIBREF43 consider a nonparametric-style approach to unsupervised parsing by using random subsets of training subtrees to parse new sentences. BIBREF46 utilize an incremental algorithm to unsupervised parsing which makes local decisions to create constituents based on a complex set of heuristics. BIBREF47 induce parse trees through cascaded applications of finite state models.\n\nMore recently, neural network-based approaches to grammar induction have shown promising results on inducing parse trees directly from words. BIBREF14 , BIBREF15 learn tree structures through soft gating layers within neural language models, while BIBREF16 combine recursive autoencoders with the inside-outside algorithm. BIBREF17 train unsupervised recurrent neural network grammars with a structured inference network to induce latent trees, and BIBREF78 utilize image captions to identify and ground constituents.\n\nOur work is also related to latent variable PCFGs BIBREF79 , BIBREF80 , BIBREF81 , which extend PCFGs to the latent variable setting by splitting nonterminal symbols into latent subsymbols. In particular, latent vector grammars BIBREF82 and compositional vector grammars BIBREF83 also employ continuous vectors within their grammars. However these approaches have been employed for learning supervised parsers on annotated treebanks, in contrast to the unsupervised setting of the current work.",
+          "paper_id": "1906.10225",
+          "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+          "section": "Related Work",
+          "previous_passage_id": null,
+          "next_passage_id": null,
+          "context_before": "",
+          "context_after": ""
+        },
+        "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4": {
+          "text": "Semantic parsers map sentences onto logical forms that can be used to query databases BIBREF0 , BIBREF1 , instruct robots BIBREF2 , extract information BIBREF3 , or describe visual scenes BIBREF4 . In this paper we consider the problem of semantically parsing questions into Freebase logical forms for the goal of question answering. Current systems accomplish this by learning task-specific grammars BIBREF5 , strongly-typed CCG grammars BIBREF6 , BIBREF7 , or neural networks without requiring any grammar BIBREF8 . These methods are sensitive to the words used in a question and their word order, making them vulnerable to unseen words and phrases. Furthermore, mismatch between natural language and Freebase makes the problem even harder. For example, Freebase expresses the fact that \u201cCzech is the official language of Czech Republic\u201d (encoded as a graph), whereas to answer a question like \u201cWhat do people in Czech Republic speak?\u201d one should infer people in Czech Republic refers to Czech Republic and What refers to the language and speak refers to the predicate official language.\n\nWe address the above problems by using paraphrases of the original question. Paraphrasing has shown to be promising for semantic parsing BIBREF9 , BIBREF10 , BIBREF11 . We propose a novel framework for paraphrasing using latent-variable PCFGs (L-PCFGs). Earlier approaches to paraphrasing used phrase-based machine translation for text-based QA BIBREF12 , BIBREF13 , or hand annotated grammars for KB-based QA BIBREF10 . We find that phrase-based statistical machine translation (MT) approaches mainly produce lexical paraphrases without much syntactic diversity, whereas our grammar-based approach is capable of producing both lexically and syntactically diverse paraphrases. Unlike MT based approaches, our system does not require aligned parallel paraphrase corpora. In addition we do not require hand annotated grammars for paraphrase generation but instead learn the grammar directly from a large scale question corpus.\n\nThe main contributions of this paper are two fold. First, we present an algorithm (\u00a7 \"Paraphrase Generation Using Grammars\" ) to generate paraphrases using latent-variable PCFGs. We use the spectral method of narayan-15 to estimate L-PCFGs on a large scale question treebank. Our grammar model leads to a robust and an efficient system for paraphrase generation in open-domain question answering. While CFGs have been",
+          "paper_id": "1601.06068",
+          "title": "Paraphrase Generation from Latent-Variable PCFGs for Semantic Parsing",
+          "section": "Introduction",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-4a10b12b11a869f7c3b55391178e163b59179228c9b83ebaacf82d00bce64794",
+          "context_before": "",
+          "context_after": " explored for paraphrasing using bilingual parallel corpus BIBREF14 , ours is the first implementation of CFG that uses only monolingual data."
+        }
+      },
+      "answer_http_elapsed_ms": 20850.138958950993,
+      "citation_http_elapsed_ms": 147.94570801313967,
+      "finished_at": "2026-11-07T07:56:31.504752+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: factual question, needs direct_answer. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 4 in both, RRF merged 36, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-eaadb98ef16f29d760c0ed1b402e027f68f4798a424244ba1f310bd13d8e24d1",
+              "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+              "section": "Introduction",
+              "paper_id": "1906.10225",
+              "bm25_rank": 4,
+              "dense_rank": 1,
+              "rrf_score": 0.03202,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-3726bfd3429d01c29f2e4964ece63f87dbf9dcdf962386ac925814494228fccc",
+              "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+              "section": "Related Work",
+              "paper_id": "1906.10225",
+              "bm25_rank": 6,
+              "dense_rank": 3,
+              "rrf_score": 0.03102,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-d23395caa782821bc3fc89d5889f2e76b01af73788f119597cf33d956b40e27b",
+              "title": "Joint learning of ontology and semantic parser from text",
+              "section": "Grammar induction",
+              "paper_id": "1601.00901",
+              "bm25_rank": 5,
+              "dense_rank": 7,
+              "rrf_score": 0.03031,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-ec17f92155dd85428564550c25e99fa4468bd21fe1c3f2bec9476a67e60e63aa",
+              "title": "Paraphrase Generation from Latent-Variable PCFGs for Semantic Parsing",
+              "section": "Paraphrases Generation Algorithm",
+              "paper_id": "1601.06068",
+              "bm25_rank": 11,
+              "dense_rank": 8,
+              "rrf_score": 0.02879,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-9a21c7c30bec23bcde9183029a5d1e3efc3faf055361224ac1fe87b7e9242344",
+              "title": "A Probabilistic Generative Grammar for Semantic Parsing",
+              "section": "Background",
+              "paper_id": "1606.06361",
+              "bm25_rank": 1,
+              "dense_rank": null,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-542da7a9f99461909fbe5e1d997d706313b4c5f199757574ac6a7239364edbb4",
+              "title": "Paraphrase Generation from Latent-Variable PCFGs for Semantic Parsing",
+              "section": "Introduction",
+              "paper_id": "1601.06068",
+              "bm25_rank": 2,
+              "dense_rank": null,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-667fc85e8929c38ab4bb874df4571f0364cdc3dffa79997a6ebea277d673ae3b",
+              "title": "Joint learning of ontology and semantic parser from text",
+              "section": "Discussion",
+              "paper_id": "1601.00901",
+              "bm25_rank": null,
+              "dense_rank": 2,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-fc1fd5be3bfa44fbf9cfe09f700f01fc0e2dd3577f1299efe3efedfa899a02df",
+              "title": "Stay On-Topic: Generating Context-specific Fake Restaurant Reviews",
+              "section": "Generative Model",
+              "paper_id": "1805.02400",
+              "bm25_rank": 3,
+              "dense_rank": null,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-74a160bee89404a3c582a6ef85c5c4ea1ea0782afb7658c9ea89266b223ddb0b",
+              "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+              "section": "Probabilistic Context-Free Grammars",
+              "paper_id": "1906.10225",
+              "bm25_rank": null,
+              "dense_rank": 4,
+              "rrf_score": 0.01562,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-55b8e487404934a1158758627c650c2aa3225d938203415a444cb7afb7805678",
+              "title": "Measuring Compositional Generalization: A Comprehensive Method on Realistic Data",
+              "section": "Generation Algorithm ::: Selecting an appropriate sample set",
+              "paper_id": "1912.09713",
+              "bm25_rank": null,
+              "dense_rank": 5,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b3fcf902f3ee04ca2265ac8878c3a2af2db9d6d3e3e2f65ca0cd77c360cb39d3",
+              "title": "Modeling Global Syntactic Variation in English Using Dialect Classification",
+              "section": "Learning the Syntactic Feature Space",
+              "paper_id": "1904.05527",
+              "bm25_rank": null,
+              "dense_rank": 6,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-abc005d035565fbc410fd31c75496af2296dd262429e399d9ddc5f562003e9d4",
+              "title": "A Probabilistic Generative Grammar for Semantic Parsing",
+              "section": "Generative semantic grammar",
+              "paper_id": "1606.06361",
+              "bm25_rank": 7,
+              "dense_rank": null,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3f7f0e315d830243d48efefa05e07031e872ee0fec65cf4540e92ee19f323563",
+              "title": "Open Information Extraction from Question-Answer Pairs",
+              "section": "Sections",
+              "paper_id": "1903.00172",
+              "bm25_rank": 8,
+              "dense_rank": null,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f7a735aa2ffba8f2c45fa865469760a9e40dcc65f18e67ac8b431670b5870734",
+              "title": "Cooperative Learning of Disjoint Syntax and Semantics",
+              "section": "Sections",
+              "paper_id": "1902.09393",
+              "bm25_rank": 9,
+              "dense_rank": null,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ea8f6250ff483cc4fe26b113ce5997d009ac34881b018cff625144f0607f0c50",
+              "title": "The Rapidly Changing Landscape of Conversational Agents",
+              "section": "Machine Learning Methods",
+              "paper_id": "1803.08419",
+              "bm25_rank": null,
+              "dense_rank": 9,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-cbc101ff1c0637017f30329b5b47f6aa093d7ec737774e5935d21a36b1c9249e",
+              "title": "Cooperative Learning of Disjoint Syntax and Semantics",
+              "section": "Acknowledgments",
+              "paper_id": "1902.09393",
+              "bm25_rank": 10,
+              "dense_rank": null,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0e8b014d70ee74e54c6ae946debcd58d24331f36b14851eef09991728bfd04e6",
+              "title": "Can neural networks understand monotonicity reasoning?",
+              "section": "Human-oriented dataset",
+              "paper_id": "1906.06448",
+              "bm25_rank": null,
+              "dense_rank": 10,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-032b335c78f2b6573fb51d8bc02556dbbba9ff033889fcd298d615f3678c787e",
+              "title": "Joint learning of ontology and semantic parser from text",
+              "section": "Grammar Induction Experiments",
+              "paper_id": "1601.00901",
+              "bm25_rank": null,
+              "dense_rank": 11,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d85402355742d7970279a285269c89c3e0cc79f59b6b7bf3086020352bfcd50a",
+              "title": "Women, politics and Twitter: Using machine learning to change the discourse",
+              "section": "ParityBOT Research Plan and Discussion Guide ::: Discussion Guide",
+              "paper_id": "1911.11025",
+              "bm25_rank": 12,
+              "dense_rank": null,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b9d2599dfe036fc711e515448763a2db57ca8e722ee5a190bdea20b235a97719",
+              "title": "Joint learning of ontology and semantic parser from text",
+              "section": "Grammar Induction Experiments",
+              "paper_id": "1601.00901",
+              "bm25_rank": null,
+              "dense_rank": 12,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-008012a00f03a49170514bfa5647fce08efcf0f271b45a1229d246bcfc80fcc6",
+              "title": "Systematic Generalization: What Is Required and Can It Be Learned?",
+              "section": "Conclusion and Discussion",
+              "paper_id": "1811.12889",
+              "bm25_rank": 13,
+              "dense_rank": null,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-72a63a715b822f13db799fad8bc4c58bd0e64f271d7f184f0d3ab6546303fbeb",
+              "title": "Measuring Compositional Generalization: A Comprehensive Method on Realistic Data",
+              "section": "Rule Format ::: Grammar rule format",
+              "paper_id": "1912.09713",
+              "bm25_rank": null,
+              "dense_rank": 13,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e5629c09ab0c60e197ecdc9ce22e487629e3802d75941b94cc87a7f46868f33a",
+              "title": "ReCoRD: Bridging the Gap between Human and Machine Commonsense Reading Comprehension",
+              "section": "Introduction",
+              "paper_id": "1810.12885",
+              "bm25_rank": 14,
+              "dense_rank": null,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ea35ce15dfa93716131859971d152e62dbd015b6d4384b0271164200e3f982c9",
+              "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+              "section": "Compound PCFGs",
+              "paper_id": "1906.10225",
+              "bm25_rank": null,
+              "dense_rank": 14,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-97f8e98e8ce97abe795436dbd470a9873097c3f9444eb4453f0b0e222e33750b",
+              "title": "The State of NLP Literature: A Diachronic Analysis of the ACL Anthology",
+              "section": "Size",
+              "paper_id": "1911.03562",
+              "bm25_rank": 15,
+              "dense_rank": null,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a326f3dfb1384666ca216d2e9b944ebe8872bcc77bdd198853ba7a313cb6978e",
+              "title": "Measuring Compositional Generalization: A Comprehensive Method on Realistic Data",
+              "section": "Rule Format",
+              "paper_id": "1912.09713",
+              "bm25_rank": null,
+              "dense_rank": 15,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3d04d575f25c136b0b577db1052524c0b9656d6eb6b8a544f454eef497e19d14",
+              "title": "Women, politics and Twitter: Using machine learning to change the discourse",
+              "section": "ParityBOT Research Plan and Discussion Guide ::: Discussion Guide",
+              "paper_id": "1911.11025",
+              "bm25_rank": 16,
+              "dense_rank": null,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c8d293dd600bd38b22c33f4f9f9fef5f7384dd391716435aa26748e854da360f",
+              "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+              "section": "Compound PCFGs",
+              "paper_id": "1906.10225",
+              "bm25_rank": null,
+              "dense_rank": 16,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-628f2d6c513fcb867ed3c1577d15381c0b28cf9a8f72fbf857ede9e72cfda4d0",
+              "title": "Directions in Abusive Language Training Data: Garbage In, Garbage Out",
+              "section": "Best Practices for training dataset creation ::: Best practice summary",
+              "paper_id": "2004.01670",
+              "bm25_rank": 17,
+              "dense_rank": null,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-2ff96387ea19f25dace8392b5afb0814b830f8aea82888989def46b709f17457",
+              "title": "Paraphrase Generation from Latent-Variable PCFGs for Semantic Parsing",
+              "section": "Paraphrase Generation Using Grammars",
+              "paper_id": "1601.06068",
+              "bm25_rank": null,
+              "dense_rank": 17,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-42cdaaa691b0f99cefdbb7f5c1b18d7744bdc97eb0967c57c521012823f23f15",
+              "title": "COSTRA 1.0: A Dataset of Complex Sentence Transformations",
+              "section": "Conclusion and Future Work",
+              "paper_id": "1912.01673",
+              "bm25_rank": 18,
+              "dense_rank": null,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-af475629fc7e8e3679120851e2845ef97cfc01ac53da0a86b7e7bb342d327d10",
+              "title": "Compound Probabilistic Context-Free Grammars for Grammar Induction",
+              "section": "Introduction",
+              "paper_id": "1906.10225",
+              "bm25_rank": null,
+              "dense_rank": 18,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f061ef24c22fb1294873d5e92f0642ed80162f577928051ad7c8c1dd8d1ddead",
+              "title": "Stay On-Topic: Generating Context-specific Fake Restaurant Reviews",
+              "section": "Generative Model",
+              "paper_id": "1805.02400",
+              "bm25_rank": 19,
+              "dense_rank": null,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ecedf3d39174dcef1f2478054146bfaa58308d09fd4c96a110e4ded8fb54d4bc",
+              "title": "Argumentation Mining in User-Generated Web Discourse",
+              "section": "Argumentation Mining",
+              "paper_id": "1601.02403",
+              "bm25_rank": null,
+              "dense_rank": 19,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-4022c0f2cc0700b4919819ece219d2d8486441fab86416311687bc9612f63e6b",
+              "title": "Conclusion-Supplement Answer Generation for Non-Factoid Questions",
+              "section": "Introduction",
+              "paper_id": "1912.00864",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-6e898a5cd2508ab4c1ad1618478e6995644f6279ea9d5c386bb4eaf497b255fa",
+              "title": "Joint learning of ontology and semantic parser from text",
+              "section": "Grammar induction",
+              "paper_id": "1601.00901",
+              "bm25_rank": null,
+              "dense_rank": 20,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.3,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 4.6,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 4.6,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 4.6,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 20.7,
+          "message": "Answer ready: SUFFICIENT, 3 cited, 1 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    }
+  ]
+}

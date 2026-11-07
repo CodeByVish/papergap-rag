@@ -1,0 +1,1 @@
+{"status":"ok","backend":"vllm","model_id":"/home/msai/changyan003/p5/models/Qwen3-8B","prompt_version":"p5-grounded-qa-v7","retrieval":true,"agent":true,"corpus_search":true,"passage_text":true,"top_k":8,"papers":1584,"passages":28617,"warmup_seconds":null,"uptime_seconds":9387.2}

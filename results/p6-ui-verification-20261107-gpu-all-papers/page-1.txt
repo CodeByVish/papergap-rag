@@ -1,0 +1,452 @@
+Skip to main content
+PaperRAG
+Service connected
+vllm · /home/msai/changyan003/p5/models/Qwen3-8B
+refresh
+
+Refresh service
+
+1,584 NLP papers · 28,617 passages indexed
+
+add
+
+New question
+
+SEARCH SCOPE
+
+All papers
+
+One paper
+
+Searching all 1,584 papers.
+
+RECENT QUESTIONS
+
+How do entity-linking models use surrounding context to resolve ambig…
+
+tune
+
+Advanced settings
+
+info
+
+How to use
+
+expand_more
+
+YOUR QUESTION
+
+How do entity-linking models use surrounding context to resolve ambiguous names?
+
+All papers1 retrieval round8 passages retrieved · 4 citedRound 1 of 3Stopped: evidence judged enough
+
+replay
+
+Re-run this question
+
+warning
+
+Evidence needs review. Validation raised 1 issue. Flagged sentences are highlighted in the answer; see the Flagged tab before relying on it.
+
+ANSWER
+
+Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document. This involves analyzing the relationships between entities and their contextual information to disambiguate mentions effectively.
+
+Checks flag risks. They don't certify accuracy. Read the cited passages.
+
+content_copy
+
+Copy
+
+expand_more
+download
+
+Run JSON
+
+Sources · 4
+
+Flagged · 1
+
+Pipeline
+
+Debug
+
+Ordered by search round, then by rank within that search (RRF score). Cited passages only; every candidate is in the Pipeline tab.
+
+[1] Entity Commonsense Representation for Neural Abstractive Summarization
+
+Search 1 · rank 2RRF 0.03128BM25 #6Dense #2
+
+Section: Entity encoding submodule
+
+After performing entity linking to the input text using the ELS, we receive a sequential list of linked entities, arranged based on their location in the text. We embed these entities to $d$ -dimensional vectors $E = \lbrace e_1, e_2, ..., e_m\rbrace $ where $e_i \in \mathbb {R}^d$ . Since these entities may still contain ambiguity, it is necessary to resolve them before applying them to the base model. Based on the idea that an ambiguous entity can be disambiguated using its neighboring entities, we introduce two kinds of disambiguating encoders below.
+
+
+One way to disambiguate an entity is by using all the other entities, putting more importance to entities that are nearer. For this purpose, we employ an RNN-based model to globally disambiguate the entities. Specifically, we use BiGRU and concatenate the forward and backward hidden state vectors as the new entity vector: \overrightarrow{h}_i &amp;= GRU(e_i, \overrightarrow{h}_{i-1}) \\
+\overleftarrow{h}_i &amp;= GRU(e_i, \overleftarrow{h}_{i+1}) \\
+e^{\prime }_i &amp;= [\overrightarrow{h}_i; \overleftarrow{h}_i] \nonumber
+
+
+
+
+Another way to disambiguate an entity is by using only the direct neighbors of the entity, putting no importance value to entities that are far. To do this, we employ a CNN-based model to locally disambiguate the entities. Specifically, we do the convolution operation using filter matrices 
+𝑊
+𝑓
+∈
+𝑅
+ℎ
+×
+𝑑
+W
+f
+	​
+
+∈R
+h×d
+ with filter size 
+ℎ
+h to a window of 
+ℎ
+h words. We do this for different sizes of 
+ℎ
+h . This produces new feature vectors 
+𝑐
+𝑖
+,
+ℎ
+c
+i,h
+	​
+
+ as shown below, where 
+𝑓
+(
+.
+)
+f(.) is a non-linear function: 
+𝑐
+𝑖
+,
+ℎ
+=
+𝑓
+(
+[
+𝑒
+𝑖
+−
+(
+ℎ
+−
+1
+)
+/
+2
+;
+.
+.
+.
+;
+𝑒
+𝑖
++
+ℎ
+(
++
+1
+)
+/
+2
+]
+⊤
+𝑊
+𝑓
++
+𝑏
+𝑓
+)
+c
+i,h
+	​
+
+=f([e
+i−(h−1)/2
+	​
+
+;...;e
+i+h(+1)/2
+	​
+
+]
+⊤
+W
+f
+	​
+
++b
+f
+	​
+
+)
+
+
+
+
+The convolution operation reduces the number of entities differently depending on the filter size 
+ℎ
+h . To prevent loss of information and to produce the same amount of feature vectors 
+𝑐
+𝑖
+,
+ℎ
+c
+i,h
+	​
+
+ , we pad the entity list dynamically such that when the filter size is 
+ℎ
+h , the number of paddings on each side is 
+(
+ℎ
+−
+1
+)
+/
+2
+(h−1)/2 . The filter size 
+ℎ
+h therefore refers to the number of entities used to disambiguate a middle entity. Finally, we concatenate all feature vectors of different 
+ℎ
+h 's for each 
+𝑖
+i as the new entity vector: 
+𝑒
+𝑖
+′
+=
+[
+𝑐
+𝑖
+,
+ℎ
+1
+;
+𝑐
+𝑖
+,
+ℎ
+2
+;
+.
+.
+.
+]
+e
+i
+′
+	​
+
+=[c
+i,h
+1
+	​
+
+	​
+
+;c
+i,h
+2
+	​
+
+	​
+
+;...]
+
+
+
+
+The question on  which disambiguating encoder is better has been a debate; some argued that using only the local context is appropriate BIBREF16 while some claimed that additionally using global context also helps BIBREF17 .
+
+Open the paper on arXiv ↗
+
+Grey text completes a sentence from the neighbouring passage.
+
+Passage qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c · Paper 1806.05504
+
+[2] Neural Collective Entity Linking
+
+Search 1 · rank 3RRF 0.03028BM25 #1Dense #12
+
+Section: Introduction
+
+This work is licensed under a Creative Commons Attribution 4.0 International License. License details: http://creativecommons.org/licenses/by/4.0/
+
+
+Entity linking (EL), mapping entity mentions in texts to a given knowledge base (KB), serves as a fundamental role in many fields, such as question answering BIBREF0 , semantic search BIBREF1 , and information extraction BIBREF2 , BIBREF3 . However, this task is non-trivial because entity mentions are usually ambiguous. As shown in Figure FIGREF1 , the mention England refers to three entities in KB, and an entity linking system should be capable of identifying the correct entity as England cricket team rather than England and England national football team.
+
+
+
+
+Entity linking is typically broken down into two main phases: (i) candidate generation obtains a set of referent entities in KB for each mention, and (ii) named entity disambiguation selects the possible candidate entity by solving a ranking problem. The key challenge lies in the ranking model that computes the relevance between candidates and the corresponding mentions based on the information both in texts and KBs BIBREF4 . In terms of the features used for ranking, we classify existing EL models into two groups: local models to resolve mentions independently relying on textual context information from the surrounding words BIBREF5 , BIBREF6 , BIBREF7 , BIBREF8 , and global (collective) models, which are the main focus of this paper, that encourage the target entities of all mentions in a document to be topically coherent BIBREF9 , BIBREF10 , BIBREF11 , BIBREF12 , BIBREF13 , BIBREF14 .
+
+
+
+
+Global models usually build an entity graph based on KBs to capture coherent entities for all identified mentions in a document, where the nodes are entities, and edges denote their relations. The graph provides highly discriminative semantic signals (e.g., entity relatedness) that are unavailable to local model BIBREF15 . For example (Figure FIGREF1 ), an EL model seemly cannot find sufficient disambiguation clues for the mention England from its surrounding words, unless it utilizes the coherence information of consistent topic “cricket" among adjacent mentions England, Hussain, and Essex. Although the global model has achieved significant improvements, its limitation is threefold:
+
+
+
+
+To mitigate the first limitation, recent EL studies introduce neural network (NN) models due  to its amazing feature abstraction and generalization ability.
+
+Open the paper on arXiv ↗
+
+Grey text completes a sentence from the neighbouring passage.
+
+Passage qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b · Paper 1811.08603
+
+[3] OpenTapioca: Lightweight Entity Linking for Wikidata
+
+Search 1 · rank 7RRF 0.01587BM25 #–Dense #3
+
+Section: Mapping coherence
+
+Entities mentioned in the same context are often topically related, therefore it is useful not to treat linking decisions in isolation but rather to try to maximize topical coherence in the chosen items. This is the issue on which entity linking systems differ the most as it is harder to model.
+
+
+First, we need to estimate the topical coherence of a sequence of linking decisions. This is often done by first defining a pairwise relatedness score between the target entities. For instance, a popular metric introduced by BIBREF20 considers the set of wiki links 
+∣
+𝑎
+∣
+,
+∣
+𝑏
+∣
+∣a∣,∣b∣ made from or to two entities 
+𝑎
+a , 
+𝑏
+b and computes their relatedness: 
+rel
+(
+𝑎
+,
+𝑏
+)
+=
+1
+−
+log
+⁡
+(
+max
+⁡
+(
+∣
+𝑎
+∣
+,
+∣
+𝑏
+∣
+)
+)
+−
+log
+⁡
+(
+∣
+𝑎
+∣
+∩
+∣
+𝑏
+∣
+)
+log
+⁡
+(
+∣
+𝐾
+∣
+)
+−
+log
+⁡
+(
+min
+⁡
+(
+∣
+𝑎
+∣
+,
+∣
+𝑏
+∣
+)
+)
+rel(a,b)=1−
+log(∣K∣)−log(min(∣a∣,∣b∣))
+log(max(∣a∣,∣b∣))−log(∣a∣∩∣b∣)
+	​
+
+
+
+
+
+where 
+∣
+𝐾
+∣
+∣K∣ is the number of entities in the knowledge base.
+
+
+
+
+When linking to Wikidata instead of Wikipedia, it is tempting to reuse these heuristics, replacing wikilinks by statements. However, Wikidata's linking structure is quite different from Wikipedia: statements are generally a lot sparser than links and they have a precise semantic meaning, as editors are restricted by the available properties when creating new statements. We propose in the next section a similarity measure that we find to perform well experimentally.
+
+
+
+
+Once a notion of semantic similarity is chosen, we need to integrate it in the inference process. Most approaches build a graph of candidate entities, where edges indicate semantic relatedness: the difference between the heuristics lie in the way this graph is used for the matching decisions. BIBREF21 use an approximate algorithm to find the densest subgraph of the semantic graph. This determines choices of entities for each mention. In other approaches, the initial evidence given by the local compatibility score is propagated along the edges of the semantic graph BIBREF14 , BIBREF22 or aggregated at a global level with a Conditional Random Field BIBREF17 .
+
+Open the paper on arXiv ↗
+
+Passage qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488 · Paper 1904.09131
+
+[4] Joint Entity Linking with Deep Reinforcement Learning
+
+Search 1 · rank 8RRF 0.01562BM25 #4Dense #–
+
+Section: Entity Linking
+
+Entity linking falls broadly into two major approaches: local and global disambiguation. Early studies use local models to resolve mentions independently, they usually disambiguate mentions based on lexical matching between the mention's surrounding words and the entity profile in the reference KB. Various methods have been proposed to model mention's local context ranging from binary classification BIBREF17 to rank models BIBREF26 , BIBREF27 . In these methods, a large number of hand-designed features are applied. For some marginal mentions that are difficult to extract features, researchers also exploit the data retrieved by search engines BIBREF28 , BIBREF29 or Wikipedia sentences BIBREF30 . However, the feature engineering and search engine methods are both time-consuming and laborious. Recently, with the popularity of deep learning models, representation learning is utilized to automatically find semantic features BIBREF31 , BIBREF32 . The learned entity representations which by jointly modeling textual contexts and knowledge base are effective in combining multiple sources of information. To make full use of the information contained in representations, we also utilize the pre-trained entity embeddings in our model.
+
+
+In recent years, with the assumption that the target entities of all mentions in a document shall be related, many novel global models for joint linking are proposed. Assuming the topical coherence among mentions, authors in BIBREF33 , BIBREF34 construct factor graph models, which represent the mention and candidate entities as variable nodes, and exploit factor nodes to denote a series of features. Two recent studies BIBREF0 , BIBREF1 use fully-connected pairwise Conditional Random Field(CRF) model and exploit loopy belief propagation to estimate the max-marginal probability. Moreover, PageRank or Random Walk BIBREF35 , BIBREF18 , BIBREF7 are utilized to select the target entity for each mention. The above probabilistic models usually need to predefine a lot of features and are difficult to calculate the max-marginal probability as the number of nodes increases. In order to automatically learn features from the data, Cao et al. BIBREF9 applies Graph Convolutional Network to flexibly encode entity graphs. However, the graph-based methods are computationally expensive because there are lots of candidate entity nodes in the graph.
+
+
+
+
+To reduce the calculation between candidate entity pairs, Globerson et al. BIBREF24 introduce a coherence model  with an attention mechanism, where each mention only focus on a fixed number of mentions.
+
+Open the paper on arXiv ↗
+
+Grey text completes a sentence from the neighbouring passage.
+
+Passage qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9 · Paper 1902.00330
+
+ASK ANOTHER QUESTION
+
+list
+
+Examples
+
+expand_more
+
+Scope · All papers
+
+Ask question
+
+Save this answer, its citations, validation and timings.

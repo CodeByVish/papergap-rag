@@ -1,14 +1,14 @@
 {
   "note": "Report source audit, not an experiment manifest. Generated/raw results remain outside Git.",
   "sources": {
+    "results/final/p2/scored/summary.json": "3fcf968b3f7ad254399865793da931c3eabe4f105d4ed1d5f682333a2448455e",
+    "results/final/p2/scored/run_manifest.json": "6997a6f08a7699c9e4efa0a83b76ec3651f8ea1de2ca3919e0330665042ea9f2",
     "results/p6/annotation-audit-verified-20261105/agreement.json": "fbf72e04a0a812634be9f1b90961323ccd0de1ec9b7fe03513cdd3ffcf22f85d",
-    "results/p6-local/five-queries-20261105.json": "e2aef11b686b051d77f20683e48d8dd98ee1f963b172c16343e459288816b58f",
-    "docs/ASSIGNMENT_WORKBOOK.md": "3273a6fef725656fe2eaa6623d58db770711a64cc6090fadf683574fc8c7c058",
-    "docs/P4_REPORT_CONTRIBUTION.md": "c297bd5ca74226c88c7b9ccca447b76eb6584109af3cb1d5611b72c5e9a53d13",
-    "configs/p4_freeze.json": "0e0889645ea1908814f1150b97e867d7be309ad08ea8975e7c2a7c180f1266cc",
-    "results/p2-final-retrieval-handoff/scored/summary.json": "3fcf968b3f7ad254399865793da931c3eabe4f105d4ed1d5f682333a2448455e",
-    "results/p2-final-retrieval-handoff/scored/run_manifest.json": "6997a6f08a7699c9e4efa0a83b76ec3651f8ea1de2ca3919e0330665042ea9f2",
-    "data/gold/p6/final/final_labels_manifest.json": "50e56effe4385e02c265ce9496fc737273dd635e77d364d55afdac71071526a1"
+    "results/p6-ui-verification-20261107-gpu/checks.json": "2c15fbad74788abae48d3226c8aae8b173dab7c059e22e798d8f4a457760a5d8",
+    "data/gold/p6/final/final_labels_manifest.json": "32659d952600ae4261934596b4c201b5bb920a1fbb0842f13e102941d4534572",
+    "docs/ASSIGNMENT_WORKBOOK.md": "b55bc21a9f85c2c912fcb8221ce7329db78baf556d83f828443739b292d15cac",
+    "docs/P4_REPORT_CONTRIBUTION.md": "00fd0c679b58e696a77580f94d0a18362148a410feedb87cb1aa40c986338747",
+    "configs/p4_freeze.json": "1df6277e0f079b6083d9927659592d10366d2d6c7f4e6be289d7bd715998a98f"
   },
   "handout_sha256": "89d71e59b62acebeff3763c27ea10088ce05e7f8b009ebb19d79c6d7dc2d5c7d",
   "p1_review_update": {
@@ -159,7 +159,7 @@
         "report/source-audit.json": "3db93ec2b0612059cfea8e2afc01ad6466af0a8a2c274b264e754f3b6141b1aa",
         "report/tables/agreement.tex": "227c1c8d07e8c6d9dd1b82a440da42231fea0f6b9b00327f72657462f0fec1b0",
         "report/tables/bm25-dense-comparison.tex": "63bf751bb1805f861a343d9304f11b9e68a8ed7c5c19dd82c399e80b22688bb0",
-        "report/tables/five-queries.tex": "8a5c686dfa0702648cd28f86693103a06c68897cb9a3cb8d24c7b994c49ab82f",
+        "report/tables/five-queries.tex": "08ad9cd83b3cd0d11b5d5110b1982a318ac5cc8f8b6745089343efb7e77b1f33",
         "report/tables/retrieval.tex": "3ee0e9cc7335474ae129c695d570379b5364f2b93617259c4b1382686c8f1d8f"
       },
       "scope": {
