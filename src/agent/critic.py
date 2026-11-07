@@ -73,7 +73,9 @@ def pool_view(state: AgentState) -> list[ViewedPassage]:
     return [
         ViewedPassage(
             hit.passage.passage_id,
-            f"section: {hit.passage.section}\n{hit.passage.text[:MAX_PASSAGE_CHARS]}",
+            (f"paper: {hit.passage.paper_id}; title: {hit.passage.title}\n"
+             if state.paper_id is None else "")
+            + f"section: {hit.passage.section}\n{hit.passage.text[:MAX_PASSAGE_CHARS]}",
         )
         for hit in state.retrieved_passages
     ]
@@ -192,7 +194,9 @@ def build_critic_messages(
     return [
         {
             "role": "system",
-            "content": _SYSTEM.format(
+            "content": (_SYSTEM if state.paper_id else _SYSTEM.replace(
+                "over one research paper.", "over a collection of research papers."
+            )).format(
                 labels=", ".join(f'"{label.value}"' for label in GapLabel),
                 label_help="\n".join(
                     f"  {k.value}: {v}" for k, v in _LABEL_HELP.items()
