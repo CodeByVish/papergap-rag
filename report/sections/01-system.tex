@@ -8,7 +8,7 @@
 
 \textbf{Storage and indexing.} Paper records, question annotations and passages are stored in separate UTF-8 JSONL files. Each passage includes a deterministic ID, source-paper ID and title, section name, chunk position, text and links to adjacent passages within the section. Companion manifests record provenance, chunking settings, counts and checksums. In the current service, BM25 is constructed from the passage file at startup, while dense FAISS indexes and their metadata are saved locally. Reference answers and evaluation evidence annotations are excluded from retrieval indexes and answering-model inputs.
 
-Figure~\ref{fig:offline} shows the offline workflow from verified source archives to the saved dense indexes.
+\hyperref[fig:offline]{Figure~\ref*{fig:offline}} shows the offline workflow from verified source archives to the saved dense indexes.
 \input{figures/offline-indexing}
 
 \subsection{Application and scope (Q1.2)}
@@ -28,7 +28,7 @@ The intended benefit is to reduce the effort required to locate and inspect evid
 
 
 \subsection{Knowledge base size (Q1.3)}
-The corpus combines paper text from QASPER's training, validation and test splits. Table~\ref{tab:corpus} summarizes its size after cleaning and chunking.
+The corpus combines paper text from QASPER's training, validation and test splits. \hyperref[tab:corpus]{Table~\ref*{tab:corpus}} summarizes its size after cleaning and chunking.
 
 \begin{table}[htbp]\centering
 \caption{Corpus size for the reported 365/40 chunking configuration.}\label{tab:corpus}
@@ -51,20 +51,20 @@ Words are counted as whitespace-delimited units. Unique types are counted after 
 
 \textbf{Implementation.} We built a web interface using Streamlit, connected to the retrieval and generation pipeline through a FastAPI service. It provides a single place to ask questions and inspect the evidence supporting an answer.
 
-\textbf{Querying.} Users select a specific paper or search across the full collection, enter a natural-language question and submit it. They can also choose an example question to get started. Figure~\ref{fig:ui-entry} shows the input screen with a question entered and the full collection selected.
+\textbf{Querying.} Users select a specific paper or search across the full collection, enter a natural-language question and submit it. They can also choose an example question to get started. \hyperref[fig:ui-entry]{Figure~\ref*{fig:ui-entry}} shows the input screen with a question entered and the full collection selected.
 
-\textbf{Inspecting results.} The interface displays the generated answer with passage citations and expandable source details. Users can inspect the cited text, evidence status and validation warnings; retrieval history provides further detail when needed. Keeping supporting information expandable makes the main answer easy to read while allowing users to investigate its evidence. Figure~\ref{fig:ui} shows a returned answer and its sources.
+\textbf{Inspecting results.} The interface displays the generated answer with passage citations and expandable source details. Users can inspect the cited text, evidence status and validation warnings; retrieval history provides further detail when needed. Keeping supporting information expandable makes the main answer easy to read while allowing users to investigate its evidence. \hyperref[fig:ui]{Figure~\ref*{fig:ui}} shows a returned answer and its sources.
 
 \textbf{Interaction scope.} When the system returns a refusal, the interface presents it as an outcome rather than a technical error. Each submitted question is processed independently; displayed session history does not provide conversational memory.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.97\linewidth]{figures/ui-query-entry.png}
-\caption{The interface before submission, with query 3 of Table~\ref{tab:queries} entered and all papers in scope. Figure~\ref{fig:ui} shows the resulting answer.}\label{fig:ui-entry}
+\caption{The interface before submission, with query 3 of \hyperref[tab:queries]{Table~\ref*{tab:queries}} entered and all papers in scope. \hyperref[fig:ui]{Figure~\ref*{fig:ui}} shows the resulting answer.}\label{fig:ui-entry}
 \end{figure}
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.97\linewidth,height=0.52\textheight,keepaspectratio]{figures/ui-answer.png}
-\caption{The interface answering query 3 of Table~\ref{tab:queries} in a browser against the live GPU service, with all papers in scope. The answer raised no validator warnings, and each source card shows its passage, rank and RRF score. Figure~\ref{fig:five-queries} shows how flagged sentences appear.}\label{fig:ui}
+\caption{The interface answering query 3 of \hyperref[tab:queries]{Table~\ref*{tab:queries}} in a browser against the live GPU service, with all papers in scope. The answer raised no validator warnings, and each source card shows its passage, rank and RRF score. \hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}} shows how flagged sentences appear.}\label{fig:ui}
 \end{figure}
 
 
@@ -81,7 +81,7 @@ Words are counted as whitespace-delimited units. Unique types are counted after 
 5 & What methods are used for low-resource language identification?\\\bottomrule\end{tabularx}
 \end{table}
 \input{tables/five-queries}
-The final demonstration ran on 7 November on the school GPU (node TC2N03): \texttt{Qwen3-8B} served through vLLM, prompt \texttt{p5-grounded-qa-v7}, top-eight RRF without reranking and the 28,617-passage corpus across all 1,584 papers. Headless Chromium submitted the questions one at a time through the Streamlit interface to the live service over an SSH tunnel, and we saved a screenshot (Figure~\ref{fig:five-queries}) and the run export after each answer. The service had been up for about 2.6 hours, and no separate warm-up question was run. Latency is the answer HTTP time seen by the client; it includes the agent and generation but excludes citation lookup and rendering. Mean latency is 19.9 seconds, median 19.3 seconds and range 15.1--26.3 seconds. The five calls took 99.5 seconds in total, or 0.050 questions per second for serial calls; this is a rate derived from one pass, not a measured batch throughput, and one pass cannot support a p95. Final generation accounts for 69.9 of the 99.5 seconds. Query 5 is the slowest because it used all three rounds; its final generation took 13.8 seconds, within the 10.0--16.1 second range of the others. The interface's progress log, which has 0.1-second resolution, places each first retrieval at 0.2--0.5 seconds after submission, and each critic check took about 3--5 seconds, so LLM work dominates. Citation lookup took 92--148 ms per query. The service did not report the per-passage character budget, so this run does not fix it.
+The final demonstration ran on 7 November on the school GPU (node TC2N03): \texttt{Qwen3-8B} served through vLLM, prompt \texttt{p5-grounded-qa-v7}, top-eight RRF without reranking and the 28,617-passage corpus across all 1,584 papers. Headless Chromium submitted the questions one at a time through the Streamlit interface to the live service over an SSH tunnel, and we saved a screenshot (\hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}}) and the run export after each answer. The service had been up for about 2.6 hours, and no separate warm-up question was run. Latency is the answer HTTP time seen by the client; it includes the agent and generation but excludes citation lookup and rendering. Mean latency is 19.9 seconds, median 19.3 seconds and range 15.1--26.3 seconds. The five calls took 99.5 seconds in total, or 0.050 questions per second for serial calls; this is a rate derived from one pass, not a measured batch throughput, and one pass cannot support a p95. Final generation accounts for 69.9 of the 99.5 seconds. Query 5 is the slowest because it used all three rounds; its final generation took 13.8 seconds, within the 10.0--16.1 second range of the others. The interface's progress log, which has 0.1-second resolution, places each first retrieval at 0.2--0.5 seconds after submission, and each critic check took about 3--5 seconds, so LLM work dominates. Citation lookup took 92--148 ms per query. The service did not report the per-passage character budget, so this run does not fix it.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.48\linewidth]{figures/query-1.png}\hfill\includegraphics[width=0.48\linewidth]{figures/query-2.png}\\[2mm]
@@ -94,10 +94,10 @@ All five questions were answered, and all 15 citations resolved to passage text.
 
 Query 5 also shows the agent and generator disagreeing. The critic reported a missing method in all three rounds, the pool grew to 20 passages, and the search stopped at the round limit, yet the model labelled its answer \texttt{SUFFICIENT}. The validator kept the answer and warned, because an unsatisfied verdict at the round limit does not automatically force refusal; the general refusal gate failed its development criterion before the held-out run (Section~\ref{sec:agent-heldout}). Queries 2 and 5 show that an answer can look confident when all-papers retrieval returns weak evidence, so readers must rely on the warnings and sources. A topical corpus also limits answers: citations can only reach what the 1,584 papers contain.
 
-An earlier selected-paper demonstration on five QASPER questions gives separate evidence on context clipping. At 1{,}200 characters per passage on a laptop (Apple M5, 24 GB, Ollama \texttt{qwen3:14b}), an answerable question about evaluation metrics was refused because the metric statements began beyond the 1{,}200 characters the generator rendered, while the critic read each passage up to 3{,}000 characters. Raising the budget to 2{,}500 characters produced an answer. That refusal was a missed answer, not a successful refusal. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did; clipping itself still affects them (Q4.2). Those timings used a different model and must not be compared with Table~\ref{tab:five-results}.
+An earlier selected-paper demonstration on five QASPER questions gives separate evidence on context clipping. At 1{,}200 characters per passage on a laptop (Apple M5, 24 GB, Ollama \texttt{qwen3:14b}), an answerable question about evaluation metrics was refused because the metric statements began beyond the 1{,}200 characters the generator rendered, while the critic read each passage up to 3{,}000 characters. Raising the budget to 2{,}500 characters produced an answer. That refusal was a missed answer, not a successful refusal. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did; clipping itself still affects them (Q4.2). Those timings used a different model and must not be compared with \hyperref[tab:five-results]{Table~\ref*{tab:five-results}}.
 
 \begin{review}{Do not interpret demonstration outputs as accuracy}
-Answers in Table~\ref{tab:five-results} summarize model outputs, not verified paper facts. The check above is AI-assisted and needs P5/P4 confirmation. Record the GPU job number and per-passage budget for this run from the service log.
+Answers in \hyperref[tab:five-results]{Table~\ref*{tab:five-results}} summarize model outputs, not verified paper facts. The check above is AI-assisted and needs P5/P4 confirmation. Record the GPU job number and per-passage budget for this run from the service log.
 \end{review}
 
 \input{review-checks/q2-2}
