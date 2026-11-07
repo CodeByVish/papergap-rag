@@ -175,3 +175,5 @@ Q2.2 internal follow-up: the demonstration grounding inspection is AI-assisted a
 ## Editorial relevance rule
 
 Write for the reader assessing the project rather than documenting the work session. Include a detail only when it answers the assignment, explains a design choice, supports a result, or materially affects interpretation or reproducibility. Put incidental execution history and internal coordination in supporting notes. Avoid repeated explanations and unsupported interpretations. Preserve measurement boundaries, actual experimental settings, failures and methodological limitations that affect the meaning of a claim.
+
+Q1–Q2.2 relevance pass: the demonstration used node TC2N03 and prompt p5-grounded-qa-v7; these provenance details remain in supporting notes rather than the application narrative. The corpus scope/counts are documented once in Q1, and QA-data separation once in Q1.1 storage. Caption prose and repeated purpose statements were shortened; numerical results, query text, timing boundaries and material caveats were preserved.
