@@ -62,7 +62,7 @@ def test_view_shows_only_the_passages_the_generator_renders():
 def test_view_cuts_each_passage_where_the_generator_does():
     state = state_with(hit(1, "x" * 5000))
     body = make_generator_view()(state)[0].body
-    assert "[...]" in body and "x" * 1200 not in body  # P5 marks the cut inside its budget
+    assert "[...]" in body and "x" * PromptConfig().max_chars_per_passage not in body  # P5 marks the cut inside its budget
     assert "x" * 1000 in body
     assert "x" * 3000 in pool_view(state)[0].body  # the diagnostic pool view is wider
 
