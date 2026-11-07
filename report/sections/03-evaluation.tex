@@ -10,6 +10,7 @@ Work on grounded generation also distinguishes answer correctness from citation 
 
 \textbf{Evidence inspection.} The generator receives retrieved passages, a closed list of citable passage IDs and an instruction to refuse when evidence is insufficient. Structured output records the answer, citations and claim provenance. Post-generation checks assess citation validity, numerical grounding and provenance consistency, making potential support issues visible to users. These checks support inspection; semantic grounding is evaluated separately through the answer-quality and RAG metrics in Q4.4--Q4.5.
 
+\noindent\begin{minipage}{\linewidth}
 \textbf{Primary evaluation configuration.}
 \begin{center}\small
 \begin{tabularx}{\linewidth}{lY}\toprule
@@ -19,6 +20,8 @@ Context & 32,768-token model limit; up to eight passages of 1,200 characters eac
 Prompt & \texttt{p5-grounded-qa-v7}\\\bottomrule
 \end{tabularx}
 \end{center}
+\end{minipage}\par
+
 
 % 5/5 assessment retained internally.
 % \input{review-checks/q4-1}
@@ -104,7 +107,9 @@ Static & 0.892 (194) & 0.854 (193) & 0.578 (194)\\
 Adaptive & 0.907 (191) & 0.854 (189) & 0.577 (191)\\\bottomrule\end{tabularx}
 \end{table}
 
-\textbf{Interpretation.} Adaptive answers have a higher mean faithfulness score on their valid subset, while answer relevance and context precision are similar. Paired differences (adaptive minus static) on jointly scored questions are $+0.012$ (95\% interval $-0.001$ to $0.026$; 191 questions) for faithfulness, $-0.003$ ($-0.008$ to $0.001$; 188) for answer relevance and $-0.002$ ($-0.015$ to $0.010$; 191) for context precision. These use 1,000 paper-cluster bootstrap resamples (seed 42). The intervals do not establish a clear difference between configurations. Paired differences use jointly valid questions and need not equal differences between the displayed means. These judge-based scores complement Q4.4 and are interpreted alongside answer coverage; they are not human verification.
+\begin{samepage}
+\textbf{Interpretation.} Adaptive answers have a higher mean faithfulness score on their valid subset, while answer relevance and context precision are similar. Paired differences (adaptive minus static) on jointly scored questions are $+0.012$ (95\% interval $-0.001$ to $0.026$; 191 questions) for faithfulness, $-0.003$ ($-0.008$ to $0.001$; 188) for answer relevance and $-0.002$ ($-0.015$ to $0.010$; 191) for context precision. These use 1,000 paper-cluster bootstrap resamples (seed 42). The intervals do not establish a clear difference between configurations. Paired differences use jointly valid questions and need not equal differences between the displayed means. These judge-based scores complement Q4.4 and are interpreted alongside answer coverage; they are not human verification.\par
+\end{samepage}
 
 % 5/5 assessment retained internally.
 % \input{review-checks/q4-5}
@@ -129,7 +134,9 @@ Static-wide (15 passages) & 2{,}456 & 0.081 & 10.6 & 22.3 & 934{,}460 & 73{,}573
 
 \textbf{Resource use and cost.} The three-arm run processed 600 question--configuration records and occupied one A40 for approximately 2 hours 23 minutes. Generation incurred no hosted-model API charge; GPU-resource cost was not monetized. The token totals in \hyperref[tab:perf]{Table~\ref*{tab:perf}} cover the generator only. The adaptive arm made 251 critic calls, but critic-token usage was not recorded, so those totals do not represent its full model usage. Separately, the member running the hosted RAGAS evaluation reported approximately SGD 0.63 and 2.5 hours for scoring the static and adaptive arms; this is evaluation cost, not per-query serving cost.
 
-\textbf{Scalability.} Selected-paper exact search operates over the selected paper's passages, while collection-wide exact vector search processes the indexed corpus; its search work therefore grows with corpus size. The current service allows one active answer request and returns HTTP 429 when busy. These measurements characterize serial operation on the evaluated corpus; startup latency, concurrent capacity and scaling across corpus sizes were not benchmarked.
+\begin{samepage}
+\textbf{Scalability.} Selected-paper exact search operates over the selected paper's passages, while collection-wide exact vector search processes the indexed corpus; its search work therefore grows with corpus size. The current service allows one active answer request and returns HTTP 429 when busy. These measurements characterize serial operation on the evaluated corpus; startup latency, concurrent capacity and scaling across corpus sizes were not benchmarked.\par
+\end{samepage}
 
 % 5/5 assessment retained internally.
 % \input{review-checks/q4-6}
