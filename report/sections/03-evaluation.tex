@@ -71,14 +71,14 @@ Agreement & 89.85\%\\\bottomrule
 \textbf{Results.} \hyperref[tab:qa]{Table~\ref*{tab:qa}} reports the three retrieval configurations and a subset analysis. Static retrieves up to eight passages, adaptive adds critic-guided retrieval, and static-wide retrieves up to fifteen; generation renders at most eight passages in every arm. The remaining-160 subset excludes the 40 questions previously read by the agent developer during annotation; it is not a separate independently unseen evaluation set.
 
 \begin{table}[htbp]\centering\small
-\caption{Answer quality and coverage on the frozen evaluation list. EM and F1 include refusals and technical errors as zero; coverage counts answered questions only.}\label{tab:qa}
+\caption{Answer quality and coverage on the frozen evaluation list. EM and F1 include refusals and technical errors as zero; coverage counts answered questions only. \emph{n/a (0/200)}: no held-out question is gold-unanswerable, so abstention correctness has an empty denominator; all refusals reported here are false refusals on answerable questions. The remaining-160 subset likewise has no gold-unanswerable question (0/160).}\label{tab:qa}
 \begin{tabularx}{\linewidth}{>{\hsize=1.8\hsize\linewidth=\hsize}Y>{\hsize=.7\hsize\linewidth=\hsize}Y>{\hsize=.7\hsize\linewidth=\hsize}Y>{\hsize=.9\hsize\linewidth=\hsize}Y>{\hsize=.9\hsize\linewidth=\hsize}Y}\toprule
 Arm / subset & EM & Token F1 & Unanswerable correct & Coverage\\\midrule
-Static / all 200 & 0.005 & 0.368 & n/a & 194/200 (0.970)\\
-Adaptive / all 200 & 0.005 & 0.366 & n/a & 191/200 (0.955)\\
-Static-wide / all 200 & 0.005 & 0.368 & n/a & 194/200 (0.970)\\
-Static / remaining 160 & 0.006 & 0.369 & n/a & 155/160 (0.969)\\
-Adaptive / remaining 160 & 0.006 & 0.369 & n/a & 152/160 (0.950)\\\bottomrule
+Static / all 200 & 0.005 & 0.368 & n/a (0/200) & 194/200 (0.970)\\
+Adaptive / all 200 & 0.005 & 0.366 & n/a (0/200) & 191/200 (0.955)\\
+Static-wide / all 200 & 0.005 & 0.368 & n/a (0/200) & 194/200 (0.970)\\
+Static / remaining 160 & 0.006 & 0.369 & n/a (0/160) & 155/160 (0.969)\\
+Adaptive / remaining 160 & 0.006 & 0.369 & n/a (0/160) & 152/160 (0.950)\\\bottomrule
 \end{tabularx}
 \end{table}
 
