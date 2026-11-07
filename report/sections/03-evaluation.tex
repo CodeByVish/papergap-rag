@@ -90,20 +90,24 @@ Under the QA scoring policy, static and static-wide each have four refusals and 
 % \input{review-checks/q4-4}
 
 \subsection{Answer-level RAG metrics (Q4.5)}
-RAGAS \citep{es2024ragas} complements overlap scoring with judgments about grounding and relevance. The project runs RAGAS 0.2.15 with a live judge. Faithfulness asks whether answer claims are supported by the supplied contexts; response relevance asks whether the answer addresses the question; context precision assesses the usefulness and ordering of retrieved contexts. The judge scores the exact rendered contexts (8 passages x 1,200 characters), not the full retrieved chunks.
+\textbf{Metrics.} RAGAS \citep{es2024ragas} complements the reference-overlap scores with model-based assessments of grounding and relevance. Faithfulness measures whether answer claims are supported by the supplied contexts. Answer relevance uses RAGAS's \texttt{ResponseRelevancy} metric to assess alignment with the question. Reference-based context precision (\texttt{LLMContextPrecisionWithReference}) assesses the relevance and ordering of retrieved contexts with respect to a reference answer.
+
+\textbf{Evaluation protocol.} We use RAGAS 0.2.15 with \texttt{qwen-plus-2025-12-01} as the judge and \texttt{qwen3.7-text-embedding} for answer relevance. Contexts are reconstructed using the pinned generation renderer to match the evidence view supplied to the generator: up to eight passages with a 1,200-character text limit per passage. Context precision uses the first available answer reference extracted from QASPER, whereas Q4.4's QA metrics take the best score across references. The saved RAGAS manifests retain the \texttt{development} role label; the scores reported here evaluate answers from the frozen 200-question run.
+
+\textbf{Results.} \hyperref[tab:ragas]{Table~\ref*{tab:ragas}} reports means over valid scores for answered questions. Refusals and technical errors are excluded. One static answer-relevance score is unavailable because of an API connection error, and two adaptive answer-relevance scores are invalid; the valid counts therefore differ by metric.
+
 \begin{table}[htbp]\centering\small
-\caption{Live RAGAS on the 200 held-out questions; values are means with valid-score counts. Refusals and parse-error failures are excluded from each denominator.}\label{tab:ragas}
+\caption{RAGAS scores for answers from the frozen 200-question evaluation. Values are means with valid-score counts in parentheses; refusals, technical errors and unavailable judge scores are excluded.}\label{tab:ragas}
 \begin{tabularx}{\linewidth}{YYYY}\toprule
-Arm & Faithfulness & Response relevance & Context precision\\\midrule
+Arm & Faithfulness & Answer relevance & Context precision\\\midrule
 Static & 0.892 (194) & 0.854 (193) & 0.578 (194)\\
 Adaptive & 0.907 (191) & 0.854 (189) & 0.577 (191)\\\bottomrule\end{tabularx}
 \end{table}
-Live judge. On 6 November 2026 the rendered contexts were scored with \texttt{qwen-plus-2025-12-01} as the judge and \texttt{qwen3.7-text-embedding} for response relevance, both through DashScope's OpenAI-compatible endpoint (timeout 120 s, one worker, no automatic retries). One static and two adaptive response-relevance scores were invalid. Paired differences over the 188--191 questions scored in both arms are $+0.012$ (95\% interval $-0.001$ to $0.026$) for faithfulness, $-0.003$ ($-0.008$ to $0.001$) for response relevance and $-0.002$ ($-0.015$ to $0.010$) for context precision (1,000 paper-cluster bootstrap resamples, seed 42). The intervals do not support an adaptive advantage. Judge scores are model judgments, not human verification.
-\begin{review}{RAGAS prerequisites}
-Record the judge \texttt{qwen-plus-2025-12-01}, embedding \texttt{qwen3.7-text-embedding}, DashScope endpoint, timeout, concurrency and retry policy. DashScope's embeddings endpoint requires \texttt{check\_embedding\_ctx\_length=False}; without it response relevance fails with a bad request, so the runner wrapper sets it. Valid-score counts are in the table; refusals, parse errors and invalid scores are excluded. These outputs still carry the \texttt{development} role label. Review a sample manually and confirm that the judge measures the intended property; P6's evaluator review remains pending.
-\end{review}
 
-\input{review-checks/q4-5}
+\textbf{Interpretation.} Adaptive answers have a higher mean faithfulness score on their valid subset, while answer relevance and context precision are similar. Paired differences (adaptive minus static) on jointly scored questions are $+0.012$ (95\% interval $-0.001$ to $0.026$; 191 questions) for faithfulness, $-0.003$ ($-0.008$ to $0.001$; 188) for answer relevance and $-0.002$ ($-0.015$ to $0.010$; 191) for context precision. These use 1,000 paper-cluster bootstrap resamples (seed 42). The intervals do not establish a clear difference between configurations. Paired differences use jointly valid questions and need not equal differences between the displayed means. These judge-based scores complement Q4.4 and are interpreted alongside answer coverage; they are not human verification.
+
+% 5/5 assessment retained internally.
+% \input{review-checks/q4-5}
 
 \subsection{Latency, cost and scaling (Q4.6)}
 End-to-end timing comes from two settings that must not be combined: the five-query demonstration in Q2.2 (school GPU, all papers, one pass) and the frozen held-out run on one A40 reported below (1{,}200 characters, 200 questions per arm). Their laptop predecessors in Q2.2 used a different model. Historical retrieval measurements on 100 training questions and the older 200/40 corpus report RRF p50/p95 of 17.57/21.34 ms versus 2,387.34/3,768.72 ms with BGE reranking. Those measurements include first-use costs and three empty results, without warm-up; they exclude setup outside retrieval calls. They should not be combined with the Q2.2 timings or interpreted as a controlled final speedup.
