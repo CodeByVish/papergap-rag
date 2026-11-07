@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Q1 Knowledge base | Done | 28,617 passages from 1,584 NLP papers; 5.66M source words; 210,909 word types |
 | Q2.1 UI | Done | Streamlit app with paper or all-papers search, citations and warnings |
-| Q2.2 Five queries | Done (school GPU) | 5 live queries, all answered; 15.1 s mean with `Qwen3-8B`; retrieval about 112 ms |
+| Q2.2 Five queries | Done (school GPU, all papers) | 5 live browser queries, all answered; 19.9 s mean with `Qwen3-8B`; first retrieval 0.2-0.5 s |
 | Q3 Retrieval | Done on draft gold | Hybrid RRF is best at MRR@5 = 0.804; reranker lowered quality, so it was dropped |
 | Q4.1-4.2 Generation, preprocessing | Done | Qwen3-8B answers only from cited passages, or refuses |
 | Q4.3 Labelled dataset | Done, team sign-off pending | 1,853 pairs; 89.85% agreement (target 80%) |
@@ -191,7 +191,30 @@ The UI calls `/health`, `/papers`, `/answer` and `/passages`. Each question is a
 
 Write five queries, get their results, and measure the speed of the querying
 
-**Status:** Done on the school GPU, run on 2026-11-07 from the UI at commit `58a3aaa` against the live P5 API.
+**Status:** Done on the school GPU, all papers, run on 2026-11-07 through the browser UI at commit `a9d2743` with the new sample questions, against the live P5 API.
+
+**Setup:** School GPU (node TC2N03; job number not in the run files), `Qwen3-8B` via vLLM, top-8 RRF, no reranker, no separate warm-up, serial, through the SSH tunnel. Raw output and screenshots are in `results/p6-ui-verification-20261107-gpu-all-papers/`.
+
+| # | Question | Grounding (checked against cited passages) | Rounds | Citations | Warnings | Time (s) |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | Entity-linking context | Partly: coherence supported, local context omitted | 1 | 4 | 1 | 19.3 |
+| 2 | Commonsense in dialogue | Not grounded: cited passages do not mention dialogue | 1 | 2 | 2 | 15.1 |
+| 3 | MT with limited parallel data | Grounded | 1 | 3 | 0 | 17.9 |
+| 4 | CFG induction | Partly: compound-PCFG claim cites the wrong paper; no papers named in the text | 1 | 3 | 1 | 20.9 |
+| 5 | Low-resource language identification | Partly: methods real but not low-resource specific; x-vector claim cites unrelated passages | 3 | 3 | 2 | 26.3 |
+
+| Speed | Value |
+| --- | --- |
+| Full answer, mean / median | 19.9 s / 19.3 s |
+| Full answer, range | 15.1-26.3 s |
+| Serial rate (not measured batch throughput) | 0.050 questions/s (5 in 99.5 s) |
+| Final generation | 69.9 of 99.5 s |
+| First retrieval after submission | 0.2-0.5 s (0.1 s log resolution) |
+| Citation lookup | 92-148 ms |
+
+**Earlier selected-paper GPU run, kept separate.**
+
+Run on 2026-11-07 from the UI at commit `58a3aaa` against the live P5 API.
 
 **Setup:** School GPU (job 51905, node TC2N01), `Qwen3-8B` via vLLM, 2,500 characters inferred, warmed service, five development questions, serial, through the SSH tunnel. Raw output is in `results/p6-ui-verification-20261107-gpu/`.
 
@@ -489,7 +512,8 @@ Discuss performance metrics, e.g., latency, records processed per second, cost, 
 | Full agent answer | Live on cluster, 5 Nov, 2 runs | about 34 s |
 | Static answer | Cluster vLLM, older corpus | 14.7 s for one answer |
 | Three-arm experiment | 40 questions, one GPU | about 9 minutes |
-| Full answer, school GPU | School GPU (job 51905, node TC2N01), `Qwen3-8B` via vLLM, 2,500 characters inferred, warmed service, five development questions, serial, through the SSH tunnel (Q2.2) | mean 15.1 s, median 16.2 s; 0.066 questions/s (serial) |
+| Full answer, school GPU, all papers | Node TC2N03, `Qwen3-8B` via vLLM, five topic questions, serial, browser, through the SSH tunnel (Q2.2) | mean 19.9 s, median 19.3 s; 0.050 questions/s (serial) |
+| Full answer, school GPU, selected paper | School GPU (job 51905, node TC2N01), `Qwen3-8B` via vLLM, 2,500 characters inferred, warmed service, five development questions, serial, through the SSH tunnel (Q2.2) | mean 15.1 s, median 16.2 s; 0.066 questions/s (serial) |
 | Full answer, local laptop | Local Apple M5, `qwen3:14b`, 2,500 characters via local setting, warmed service, five development questions, serial (Q2.2) | mean 116.0 s, median 106.9 s; 0.0086 questions/s (serial) |
 | Index startup | BM25 rebuild for 28,617 passages | 4.31 s |
 

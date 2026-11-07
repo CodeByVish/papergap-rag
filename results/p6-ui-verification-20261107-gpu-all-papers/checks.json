@@ -1,0 +1,72 @@
+[
+  {
+    "number": 1,
+    "outcome": "completed",
+    "answer_http_ms": 19265.888667025138,
+    "citation_http_ms": 104.81395904207602,
+    "final_generation_s": 15.607014142035041,
+    "rounds": 1,
+    "citation_count": 4,
+    "all_citations_resolved": true,
+    "warning_codes": [
+      "UNSUPPORTED_CLAIM"
+    ],
+    "source_papers": 7
+  },
+  {
+    "number": 2,
+    "outcome": "completed",
+    "answer_http_ms": 15143.330791965127,
+    "citation_http_ms": 92.20691700465977,
+    "final_generation_s": 9.999415265046991,
+    "rounds": 1,
+    "citation_count": 2,
+    "all_citations_resolved": true,
+    "warning_codes": [
+      "PROVENANCE_OVERSTATED",
+      "PROVENANCE_OVERSTATED"
+    ],
+    "source_papers": 6
+  },
+  {
+    "number": 3,
+    "outcome": "completed",
+    "answer_http_ms": 17948.216875025537,
+    "citation_http_ms": 121.47237500175834,
+    "final_generation_s": 14.299538217950612,
+    "rounds": 1,
+    "citation_count": 3,
+    "all_citations_resolved": true,
+    "warning_codes": [],
+    "source_papers": 7
+  },
+  {
+    "number": 4,
+    "outcome": "completed",
+    "answer_http_ms": 20850.138958950993,
+    "citation_http_ms": 147.94570801313967,
+    "final_generation_s": 16.123887609050144,
+    "rounds": 1,
+    "citation_count": 3,
+    "all_citations_resolved": true,
+    "warning_codes": [
+      "PROVENANCE_OVERSTATED"
+    ],
+    "source_papers": 5
+  },
+  {
+    "number": 5,
+    "outcome": "completed",
+    "answer_http_ms": 26295.170750003308,
+    "citation_http_ms": 115.86387496208772,
+    "final_generation_s": 13.832297920016572,
+    "rounds": 3,
+    "citation_count": 3,
+    "all_citations_resolved": true,
+    "warning_codes": [
+      "GENERATED_WITH_INSUFFICIENT_EVIDENCE",
+      "PROVENANCE_OVERSTATED"
+    ],
+    "source_papers": 18
+  }
+]

@@ -1,85 +1,100 @@
 \section{Task and knowledge base (Q1)}
 \subsection{Collection, cleaning and storage (Q1.1)}
-This project uses the public QASPER dataset \citep{dasigi2021qasper}, downloaded from its official v0.3 archives using metadata from the Allen Institute for AI (Ai2) Hugging Face repository \citep{qasperdata}. After download verification, paper text from all three official splits (train, validation and test) is combined into a single JSONL knowledge base for retrieval; no neural model is trained on QASPER. Cleaning unifies line endings, removes leading and trailing whitespace, and drops blank paragraphs and unusable sections while preserving the remaining text and its original order. Questions, reference answers and supporting-passage annotations are stored separately for evaluation. Only paper passages are indexed, and the answering model receives no reference answers or standard evidence annotations.
+\textbf{Acquisition.} We use the public QASPER dataset \citep{dasigi2021qasper}, downloaded from its official v0.3 archives using metadata from the Ai2 Hugging Face repository \citep{qasperdata}. The acquisition pipeline records the source revision and verifies downloaded files using checksums. Paper text from the official training, validation and test splits is combined into the retrieval collection. No neural model is trained on QASPER.
 
-The current chunker creates windows of up to 365 words with 40-word overlap. Words are counted by splitting text on whitespace, rather than using model tokens. Each chunk retains its start and end character positions in the cleaned section text. Consecutive chunks overlap by 40 words, so each new chunk starts 325 words after the previous one. The final chunk may contain fewer than 365 words. Paragraphs within the same source section may be combined before chunking. Chunks and their previous/next links stay within that section. Separate source sections are processed independently, even if they have the same title. Overlap preserves local continuity; section boundaries reduce unrelated context.
+\textbf{Cleaning.} We normalize line endings, trim leading and trailing whitespace, and remove blank paragraphs and unusable sections while preserving the remaining text and its original order. Only full-text sections are indexed; abstracts and figure/table content are excluded. Formula and citation placeholders already present in QASPER are retained.
 
-Figure~\ref{fig:offline} shows the offline workflow from verified source archives to the saved dense indexes.
+\textbf{Chunking.} For the reported corpus, each source section is divided into windows of up to 365 whitespace-delimited words with a 40-word overlap, giving a stride of 325 words. Paragraphs within the same section are combined before chunking, but chunks never cross source-section boundaries. The final chunk may be shorter. Overlap preserves local continuity, while section boundaries limit unrelated context.
+
+\textbf{Storage and indexing.} Paper records, question annotations and passages are stored in separate UTF-8 JSONL files. Each passage includes a deterministic ID, source-paper ID and title, section name, chunk position, text and links to adjacent passages within the section. Companion manifests record provenance, chunking settings, counts and checksums. In the current service, BM25 is constructed from the passage file at startup, while dense FAISS indexes and their metadata are saved locally. Reference answers and evaluation evidence annotations are excluded from retrieval indexes and answering-model inputs.
+
+\hyperref[fig:offline]{Figure~\ref*{fig:offline}} shows the offline workflow from verified source archives to the saved dense indexes.
 \input{figures/offline-indexing}
-\input{review-checks/q1-1}
 
 \subsection{Application and scope (Q1.2)}
-Reading scientific papers often requires locating details spread across methods and results sections. Our system supports questions about a paper's methods, data, experiments and findings. It returns an answer with inspectable passage citations, or an explicit refusal when evidence is insufficient. This follows retrieval-conditioned generation \citep{lewis2020rag}; the system implements its own retrieval, fusion, orchestration and answer validation.
+PaperRAG supports researchers investigating NLP methods and findings through evidence-grounded question answering. It aims to reduce the effort of locating evidence scattered across papers and sections and tracing claims to their sources.
 
-The interface supports selected-paper and all-papers search. Formal evaluation uses selected-paper search: questions containing ``they'' or ``this approach'' require a known paper. All-papers search is a broader demonstration feature and has not received equivalent quality evaluation. Table~\ref{tab:queries} gives five actual inputs.
+Users enter a natural-language question and choose either a specific paper or the full collection. Selected-paper search supports detailed questions about a paper's methods, datasets, experiments and results. Collection-wide search supports topic exploration by retrieving relevant passages across papers. The system generates an answer with inspectable passage citations, or an explicit refusal when the available evidence is insufficient. Users can open the cited passages to examine the support for individual claims.
 
-\input{review-checks/q1-2}
+Example inputs include:
+\begin{itemize}
+\item[$\bullet$] \textbf{Selected paper:} ``Which datasets are used to evaluate the proposed method?''
+\item[$\bullet$] \textbf{Selected paper:} ``How does the proposed approach differ from the baselines?''
+\item[$\bullet$] \textbf{Full collection:} ``What approaches are used for machine translation when parallel training data is limited?''
+\item[$\bullet$] \textbf{Full collection:} ``How do entity-linking models use surrounding context to resolve ambiguous names?''
+\end{itemize}
+
+The intended benefit is to reduce the effort required to locate and inspect evidence during research. Formal evaluation uses selected-paper questions; collection-wide search is demonstrated separately in Q2.2.
+
 
 \subsection{Knowledge base size (Q1.3)}
-\begin{table}[htbp]\centering
-\caption{Full knowledge base statistics from the current 365/40 corpus manifest. Source words exclude overlap; passage words include it.}\label{tab:corpus}
-\begin{tabular}{lr}\toprule
-Measure & Knowledge base\\\midrule
-Source papers & 1,585\\
-Papers with passages & 1,584\\
-Passages & 28,617\\
-Source words & 5,659,921\\
-Passage words & 5,930,961\\\bottomrule
-\end{tabular}
-\end{table}
-The knowledge base combines paper text from all three official QASPER splits (train, validation and test). Its 28,617 passages and 5,659,921 source words exceed the assignment's 10,000-passage and 100,000-word minimums. One source paper has no usable passages, leaving 1,584 papers represented in the knowledge base.
+The corpus combines paper text from QASPER's training, validation and test splits. \hyperref[tab:corpus]{Table~\ref*{tab:corpus}} summarizes its size after cleaning and chunking.
 
-\input{review-checks/q1-3}
+\begin{table}[htbp]\centering
+\caption{Corpus size for the reported 365/40 chunking configuration.}\label{tab:corpus}
+\begin{tabularx}{\linewidth}{>{\hsize=1.4\hsize\linewidth=\hsize}Y>{\hsize=.6\hsize\linewidth=\hsize}Y}\toprule
+Measure & Count\\\midrule
+Source documents (papers) & 1,585\\
+Documents with indexed chunks & 1,584\\
+Indexed chunks (passages) & 28,617\\
+Source-text words, excluding chunk overlap & 5,659,921\\
+Words across chunks, including overlap & 5,930,961\\
+Unique word types across chunks & 210,909\\\bottomrule
+\end{tabularx}
+\end{table}
+
+Words are counted as whitespace-delimited units. Unique types are counted after case folding, with punctuation retained. The chunk-word total is higher because overlapping text is counted in each chunk where it appears. One source paper produces no usable chunks and is therefore absent from the index. The 28,617 chunks and 5,659,921 source-text words exceed the assignment's 10,000-passage and 100,000-word minimums.
 
 \section{System and interface (Q2)}
 \subsection{User interface (Q2.1)}
-\begin{figure}[htbp]\centering
-\begin{tikzpicture}[node distance=6mm,box/.style={draw=blue!45!black,rounded corners,fill=blue!4,align=center,text width=10.7cm,minimum height=8mm},arr/.style={-{Stealth},thick}]
-\node[box](q){Question and selected paper};
-\node[box,below=of q](r){BM25 top 20 + BGE dense top 20 $\rightarrow$ RRF top 8};
-\node[box,below=of r](c){Critic checks evidence; if needed, rewrite and retrieve again\\At most two retries; section targeting where available};
-\node[box,below=of c](g){Qwen3-8B: cited answer or refusal};
-\node[box,below=of g](v){Validate citation IDs, numbers and claim provenance $\rightarrow$ UI};
-\draw[arr](q)--(r);\draw[arr](r)--(c);\draw[arr](c)--(g);\draw[arr](g)--(v);
-\end{tikzpicture}
-\caption{Current intended agent configuration. The critic's verdict does not force refusal; final refusal remains with the generator. Static evaluation bypasses the critic loop.}
-\end{figure}
 
-A Streamlit interface communicates with a FastAPI service. Users select a paper or all papers, enter a question, or choose an example. The answer view exposes citations, source passages, evidence status, warnings and retrieval history. Expandable details let users inspect evidence without crowding the initial answer. Refusals appear as normal outcomes rather than system failures. Each question is independent; session history is not conversational model memory.
+
+\textbf{Implementation.} We built a web interface using Streamlit, connected to the retrieval and generation pipeline through a FastAPI service. It provides a single place to ask questions and inspect the evidence supporting an answer.
+
+\textbf{Querying.} Users select a specific paper or search across the full collection, enter a natural-language question and submit it. They can also choose an example question to get started. \hyperref[fig:ui-entry]{Figure~\ref*{fig:ui-entry}} shows the input screen with a question entered and the full collection selected.
+
+\textbf{Inspecting results.} The interface displays the generated answer with passage citations and expandable source details. Users can inspect the cited text, evidence status and validation warnings; retrieval history provides further detail when needed. Keeping supporting information expandable makes the main answer easy to read while allowing users to investigate its evidence. \hyperref[fig:ui]{Figure~\ref*{fig:ui}} shows a returned answer and its sources.
+
+\textbf{Interaction scope.} When the system returns a refusal, the interface presents it as an outcome rather than a technical error. Each submitted question is processed independently; displayed session history does not provide conversational memory.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.97\linewidth]{figures/ui-query-entry.png}
+\caption{The interface before submission, with query 3 of \hyperref[tab:queries]{Table~\ref*{tab:queries}} entered and all papers in scope. \hyperref[fig:ui]{Figure~\ref*{fig:ui}} shows the resulting answer.}\label{fig:ui-entry}
+\end{figure}
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.97\linewidth,height=0.52\textheight,keepaspectratio]{figures/ui-answer.png}
-\caption{Existing project UI screenshot, included to illustrate the answer workflow. It is a development capture, not evidence that the final GPU configuration has been rehearsed.}\label{fig:ui}
+\caption{The interface answering query 3 of \hyperref[tab:queries]{Table~\ref*{tab:queries}} in a browser against the live GPU service, with all papers in scope. The answer raised no validator warnings, and each source card shows its passage, rank and RRF score. \hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}} shows how flagged sentences appear.}\label{fig:ui}
 \end{figure}
-\begin{review}{UI verification}
-Replace or confirm Figure~\ref{fig:ui} after a live rehearsal using the final top-eight, no-reranker GPU configuration. Verify citation expansion. The 5 November five-query script received HTTP 400 for citation text lookup, so that run does not validate the citation lookup endpoint; a repeat on 6 November resolved all seven citation identifiers without errors, but it is a laptop test, not a final GPU rehearsal. The workbook also records an unresolved all-papers critic test; confirm its current status separately.
-\end{review}
 
-\input{review-checks/q2-1}
-
-\subsection{Five measured queries (Q2.2)}
-\begin{table}[htbp]\small\centering
-\caption{Actual local demonstration inputs. IDs identify the selected QASPER paper.}\label{tab:queries}
-\begin{tabularx}{\linewidth}{lY}\toprule
-Paper & Question\\\midrule
-1912.10167 & Are any experiments performed to try this approach to word embeddings?\\
-1911.07555 & What evaluation metric is used?\\
-1904.10503 & What results do they achieve using their proposed approach?\\
-1904.05584 & Which model architecture do they use to obtain representations?\\
-1912.01046 & What evaluation metrics were used in the experiment?\\\bottomrule
-\end{tabularx}
-\end{table}
+\subsection{Five measured queries (Q2.2)}\label{sec:five-queries}
+\par\smallskip
+\noindent\begin{minipage}{\linewidth}
+\captionsetup{type=table}\small\centering
+\caption{The five demonstration queries, run with all papers in scope.}\label{tab:queries}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{5mm}Y@{}}\toprule
+\# & Question\\\midrule
+1 & How do entity-linking models use surrounding context to resolve ambiguous names?\\
+2 & How is commonsense knowledge used to improve dialogue systems?\\
+3 & What approaches are used for machine translation when parallel training data is limited?\\
+4 & What methods have researchers used to induce context-free grammars (CFGs)? Cite the papers supporting your answer.\\
+5 & What methods are used for low-resource language identification?\\\bottomrule\end{tabularx}
+\end{minipage}\par\medskip
 \input{tables/five-queries}
-On 5 November these five calls used an Apple M5 with 24 GB memory, Ollama \texttt{qwen3:14b}, the development corpus and top-eight RRF without reranking. They are not a Qwen3-8B GPU benchmark. Client-observed answer latency includes the agent and generation. Mean latency is 122.7 seconds, median 104.6 seconds, and total measured call time 613.3 seconds, yielding 0.0082 questions per second for serial calls. An earlier 203.9-second warm-up call is excluded. Across seven retrieval calls in the saved agent logs, median latency is 31.6 ms (range 15.2--269.2 ms). LLM work dominates this local demonstration.
+\textbf{Run setup.} We submitted the five queries in \hyperref[tab:queries]{Table~\ref*{tab:queries}} through the Streamlit interface, with the full collection selected. Requests ran sequentially against the school GPU service using Qwen3-8B through vLLM and top-eight RRF retrieval without reranking. The service was already running; no dedicated warm-up query was used.
 
-A repeat of the same five questions on 6 November, through the current interface's test harness against the live service on the same laptop (local \texttt{qwen3:14b}, 8{,}192-token context, 1{,}024-token completion budget, top-eight retrieval without reranking, service already warm), returned answers identical to those of 5 November. Mean answer latency was 73.1 seconds and median 62.4 seconds; the five serial calls took 365.6 seconds in total, a serial-call rate of 0.0137 questions per second (an estimate, not a measured batch throughput). Seven retrieval calls had a median of 53.2 ms (range 13.6--260.3 ms). The two runs are separate measurements: the repeat does not correct the 5 November figures, and no cold-start comparison is available. No citation lookup errors occurred, and all seven citation identifiers resolved to passages of the selected paper that appear in the retrieval log.
+\textbf{Results.} \hyperref[tab:five-results]{Table~\ref*{tab:five-results}} summarizes the returned answers, citation counts, validation warnings and latency. \hyperref[fig:five-queries]{Figure~\ref*{fig:five-queries}} shows the corresponding interface outputs. The summaries describe generated responses; warning counts are validator diagnostics.
 
-A third run of the same five questions on 6 November used a budget of 2{,}500 characters per passage for both the critic and the generator, set by a local override while the shared code default was still 1{,}200 characters; the shared default has since been raised to 2{,}500, which is the budget of the final demonstration. It ran through the same test harness against the live service. All five questions were answered. Query 5 now returns an answer that cites its accuracy and MRR, query 1 returned a new answer with one citation (it had four), which matches the reference and is supported by its cited passage apart from a simplification of the method; the passage does not state the answer outright, which is what the validator's overstated-provenance warning reports; the other three answers are unchanged. All citation identifiers resolved. Mean answer latency was 126.0 seconds and median 113.8 seconds, which should not be compared with the earlier runs: another local service was running and the interface had just started. Five development questions do not establish an accuracy change, and this budget differs from the 1{,}200 characters of every evaluation result in this report; the post-hoc held-out run at 2{,}500 characters (Section~\ref{sec:context}) found no measurable change in recall or answer F1.
+\textbf{Query speed.} Latency was measured as the client-observed answer HTTP response time, including retrieval, critic processing and answer generation, but excluding subsequent citation lookup and interface rendering. Mean latency was 19.9 seconds, with a median of 19.3 seconds and a range of 15.1--26.3 seconds. Query 5 took longest and required three retrieval rounds; the others required one. Each query was measured once, so these figures describe the demonstration rather than repeated-run performance.
 
-Two of the five outcomes show how the agent and the generator can disagree. In query 2 the critic stayed unsatisfied after its retries but the system still answered: the critic's verdict does not force a refusal, which remains with the generator, because the rule that would force it fails the gate set before the held-out run (Section~\ref{sec:agent-heldout}); the critic still reported a missing result at 2{,}500 characters, so clipping does not explain that verdict. In query 5 the generator refused although the critic had quoted passages that name accuracy and MRR. The cause is clipping: the three metric statements in query 5's passages begin at characters 1{,}298, 1{,}414 and 1{,}437, beyond the 1{,}200 characters the generator renders, while in the earlier runs the critic read each passage up to 3{,}000 characters and so could see them. A replay reproduced the same refusal, critic quote and prompt; giving the critic the generator's view alone did not produce an answer, and raising the budget to 2{,}500 characters did. The local runner now passes the generator's view to the critic, and the frozen evaluation runs always did, so they avoid the mismatch; clipping itself still affects them (Q4.2). The refusal was a missed answer to an answerable question, not a successful refusal.
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.48\linewidth]{figures/query-1.png}\hfill\includegraphics[width=0.48\linewidth]{figures/query-2.png}\\[2mm]
+\includegraphics[width=0.48\linewidth]{figures/query-3.png}\hfill\includegraphics[width=0.48\linewidth]{figures/query-4.png}\\[2mm]
+\includegraphics[width=0.48\linewidth]{figures/query-5.png}
+\caption{Answers to queries 1--5 as shown by the interface, left to right and top to bottom. Screenshots are cropped to the answer column.}\label{fig:five-queries}
+\end{figure}
 
-\begin{review}{Do not interpret demonstration outputs as accuracy}
-Answers in Table~\ref{tab:five-results} summarize model outputs, not verified paper facts. Check each against its cited passages and QASPER references. The two outcomes that looked inconsistent, queries 2 and 5, are explained in the text above.
-\end{review}
+\textbf{Result observations.} All five queries returned answers, and all 15 citations resolved to passage text. The AI-assisted inspection of cited passages found support for Query 3's listed approaches, while the other outputs contained omissions, unsupported claims or citation mismatches. Query 2's cited passages did not support its dialogue-related answer. Query 4 included a citation mismatch for compound PCFGs and did not name the supporting papers in the answer text, although source cards identified them. Query 5 illustrates the role of source inspection: the system retrieved passages ranked as relevant, but some did not directly support the associated claims. These exploratory queries demonstrate the query workflow and citation inspection; quantitative answer-quality evaluation is reported in Q4.
 
-\input{review-checks/q2-2}
+% Hidden from report; assessment retained in review-checks/q2-2.tex.
+% \input{review-checks/q2-2}

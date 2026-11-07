@@ -1,9 +1,10 @@
+% Source: results/p6-ui-verification-20261107-gpu-all-papers/; seconds are answer HTTP time.
 \begin{table}[htbp]\small\centering
-\caption{Summaries of generated outputs, not verified factual answers. Warning counts are validator diagnostics.}\label{tab:five-results}
-\begin{tabularx}{\linewidth}{rYrrrr}\toprule
-\# & Output summary & Rounds & Cites & Warnings & Seconds\\\midrule
-1 & Yes; cross-language vector mapping, checked against Google Translate & 1 & 4 & 2 & 174.2\\
-2 & Average classification accuracy & 3 & 1 & 2 & 98.7\\
-3 & F1: 88\% on OntoNotes, 53\% on Wiki(gold) & 1 & 1 & 0 & 159.5\\
-4 & BiLSTM with max pooling & 1 & 1 & 1 & 104.6\\
-5 & Refused: insufficient evidence & 1 & 0 & 0 & 76.3\\\bottomrule\end{tabularx}\end{table}
+\caption{Generated output summaries and query latency for the five collection-wide queries.}\label{tab:five-results}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{5mm}>{\hsize=2.2\hsize\linewidth=\hsize}Y>{\hsize=0.7\hsize\linewidth=\hsize}Y>{\hsize=0.7\hsize\linewidth=\hsize}Y>{\hsize=0.7\hsize\linewidth=\hsize}Y>{\hsize=0.7\hsize\linewidth=\hsize}Y}\toprule
+\# & Output summary & Rounds & Cites & Warnings & Latency (s)\\\midrule
+1 & Topical coherence among entities in the same document & 1 & 4 & 1 & 19.3\\
+2 & Commonsense knowledge as external memory & 1 & 2 & 2 & 15.1\\
+3 & Comparable corpora, back-translation, monolingual data & 1 & 3 & 0 & 17.9\\
+4 & Statistical, feature-based and neural induction; latent-variable and compound PCFGs & 1 & 3 & 1 & 20.9\\
+5 & Bottleneck features, LSTMs, CNNs, x-vectors, Ghost-VLAD & 3 & 3 & 2 & 26.3\\\bottomrule\end{tabularx}\end{table}

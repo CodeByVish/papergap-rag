@@ -7,7 +7,13 @@
 \usetikzlibrary{positioning,arrows.meta}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hypertexnames=false,colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black,citecolor=blue!45!black]{hyperref}
-\usepackage{fancyhdr}
+\usepackage{fancyhdr,caption}
+% Captions use compact blue text and bold labels, distinct from body text.
+\captionsetup{font={small,color=blue!45!black},labelfont=bf,labelsep=period,hypcap=true}
+\captionsetup[table]{position=top,skip=9pt}
+\captionsetup[figure]{position=bottom,skip=8pt}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
 \pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
 \setlength{\headheight}{14pt}
 \setlength{\emergencystretch}{2em}
@@ -29,37 +35,40 @@
 {\large Nanyang Technological University\par}
 {\large AI6127: Deep Neural Networks for Natural Language Processing\par}
 \vspace{17mm}
-{\LARGE Evidence-grounded question answering over NLP research papers\par}
+{\LARGE PaperRAG: Evidence-grounded question answering over NLP research papers\par}
 \vspace{9mm}
-{\large Assignment report --- review draft\par}
+{\large Project report\par}
 {Due: 7 November 2026\par}\vspace{8mm}
 Group number: 24\par\vspace{6mm}
+\begingroup
+\renewcommand{\arraystretch}{1}\setlength{\tabcolsep}{6pt}
 \begin{tabularx}{\textwidth}{Yr}\toprule
 Member name (alphabetical order) & Matriculation number\\\midrule
 Ananya Redhu & G2607556D\\
 Changyan Xu & G2607680G\\
 Jingshuai Qian & G2600453A\\
 Junlin Yin & G2604768B\\
-Junyu Hu & \todo{matriculation number}\\
+Junyu Hu & G2603713B\\
 Maheshwari Vishakha Praveen & G2609099E\\\bottomrule
 \end{tabularx}
+\endgroup
 \vspace{6mm}
-\begin{review}{Submission metadata}
-Members are listed alphabetically by displayed full name. Confirm official spellings and name order against university records. Names are taken from the project README and annotation audit; the audit also records Junyu Hu as ``HU JUNYU.'' Add the remaining matriculation numbers above. Select the Blackboard submitter.
-\end{review}
 \vfill
-\begin{review}{Draft status}
-The retrieval comparison uses accepted pooled relevance labels and questions excluded from recorded prior development use; the agent was evaluated once on the frozen held-out question list (200 questions, 40 of which the agent developer read during annotation) and the UI measurements remain development results. This does not establish independently held-out downstream performance. Yellow review boxes identify missing evidence, unresolved decisions and suggestions. Pending entries are not zero scores. Overlap QA scores (EM and token F1) and live RAGAS scores are reported; the full factorial ablation remains to be inserted.
-\end{review}
+
 \end{titlepage}
 \begin{abstract}
-Our system answers questions about NLP research papers using hybrid retrieval and evidence-conditioned generation. The knowledge base contains 28,617 section-aware passages from 1,584 papers with indexed text. BM25 and BGE dense retrieval are combined through reciprocal rank fusion (RRF); a bounded critic loop can request further evidence before Qwen3-8B generates a cited answer or refuses. On 200 questions scored against accepted pooled relevance labels, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. Reranking reduces all four reported top-five metrics. On a 32-question development slice, static top-eight retrieval recovers more mapped evidence than adaptive top-five retrieval, which motivates a top-eight RRF configuration without reranking. On 200 held-out questions the frozen configuration reaches a mapped-evidence recall of 0.858 without the agent loop and 0.871 with it; at an equal number of passages the loop's gain is 0.001 (95\% interval $-0.014$ to $0.016$), so we do not claim that evidence-gap-driven retrieval improves recall. The agent's critic and retries add about 60\% to median latency. Token F1 of the generated answers against the QASPER references is 0.368 without the loop and 0.366 with it (difference $-0.002$, 95\% interval $-0.011$ to $0.006$), so the loop does not improve answers either. These findings do not establish independently held-out downstream performance.
+Investigating an NLP research topic often requires searching many papers and piecing together methods and findings scattered across their sections. Researchers must locate relevant evidence, compare approaches and trace claims to their sources, making literature exploration time-consuming. PaperRAG aims to reduce this effort through a question-answering interface that helps users identify useful papers and inspect the evidence behind an answer. It retrieves passages from an indexed collection of NLP papers and generates evidence-grounded answers with inspectable citations. The system indexes 28,617 section-aware passages from 1,584 papers and combines BM25 and dense retrieval through reciprocal rank fusion (RRF). A bounded evidence-gap critic can request additional retrieval before Qwen3-8B generates a cited answer or refuses. The interface supports both selected-paper and collection-wide search; formal evaluation uses selected-paper questions. On 200 questions with pooled relevance judgments, RRF achieves MRR@5 of 0.804, compared with 0.730 for BM25 and 0.799 for dense retrieval. In the frozen downstream evaluation, adaptive retrieval increases mapped-evidence recall from 0.858 to 0.871, but shows no clear advantage at a matched passage budget. Answer token F1 is 0.368 for static retrieval and 0.366 for adaptive retrieval, providing no evidence of improved answer quality from the loop. These results support static hybrid retrieval as a practical baseline and identify critic calibration as a priority for further work.
 \end{abstract}
 \tableofcontents
 \input{sections/01-system}
 \input{sections/02-retrieval}
 \input{sections/03-evaluation}
 \input{sections/04-discussion}
+\section{Submission materials}
+\begin{description}
+\item[Data and results.] Knowledge base, queries and retrieved results, evaluation dataset, generated answers or classification results, and supporting data for Questions 3 and 5: \href{https://drive.google.com/drive/folders/1JgMAa2VR1ysmSiBmPY1e-jqtlkv8pxAx?usp=sharing}{Google Drive: data and results archive}.
+\item[Source code and libraries.] Source code and libraries, with a README explaining how to compile and run the system: \href{https://drive.google.com/drive/folders/1Sqxo20rhiv-Gn9JbQnMPjZGqjmI6b4yE?usp=sharing}{Google Drive: source code archive}.
+\end{description}
 \input{sections/05-ai-disclosure}
 \bibliographystyle{plainnat}
 \bibliography{references}

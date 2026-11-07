@@ -29,6 +29,7 @@ dist/
 !/results/p5-final-result/
 !/results/final/
 !/results/p6-ui-verification-20261107-gpu/
+!/results/p6-ui-verification-20261107-gpu-all-papers/
 !/results/p6-ui-verification-20261106-2500-clean/
 !/results/chunk_size/
 /models/

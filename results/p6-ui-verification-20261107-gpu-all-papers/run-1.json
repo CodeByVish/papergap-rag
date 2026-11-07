@@ -1,0 +1,635 @@
+{
+  "schema_version": "p6-ui-export-v1",
+  "exported_at": "2026-11-07T07:55:06.000727+00:00",
+  "timing_definition": "answer_http_elapsed_ms includes HTTP waiting/processing; excludes citations and rendering. Not model inference time.",
+  "runs": [
+    {
+      "client_run_id": "79e42f8c-9b74-46ea-be14-7ccebd07fc30",
+      "conversation_id": "e9fc67ee-3b80-4ad5-a576-7841b6e4f696",
+      "message_id": "6defba05-9b9a-4914-bc05-69d22b86a702",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "How do entity-linking models use surrounding context to resolve ambiguous names?",
+        "paper_id": null
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "vllm",
+        "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "vllm",
+      "submitted_at": "2026-11-07T07:54:46.414686+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1794038086687",
+        "result": {
+          "answer": "Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document. This involves analyzing the relationships between entities and their contextual information to disambiguate mentions effectively.",
+          "citations": [
+            "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+            "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+            "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+            "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 1,
+          "provenance": [
+            {
+              "claim": "Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document",
+              "passage_ids": [
+                "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+                "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+                "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+                "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document. This involves analyzing the relationships between entities and their contextual information to disambiguate mentions effectively.",
+            "citations": [
+              "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+              "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+              "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+              "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document",
+                "passage_ids": [
+                  "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+                  "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+                  "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+                  "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document. This involves analyzing the relationships between entities and their contextual information to disambiguate mentions effectively.",
+            "citations": [
+              "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+              "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+              "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+              "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 1,
+            "provenance": [
+              {
+                "claim": "Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document",
+                "passage_ids": [
+                  "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+                  "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+                  "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+                  "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "UNSUPPORTED_CLAIM",
+              "severity": "warning",
+              "message": "no supporting evidence found in provenance claims (best token recall 0.11 < 0.35): 'This involves analyzing the relationships between entities and their contextual information to disambiguate mentions effectively.'",
+              "subject": "This involves analyzing the relationships between entities and their contextual information to disambiguate mentions eff"
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "vllm",
+            "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+            "loaded": true,
+            "options": {
+              "dtype": "bfloat16",
+              "gpu_memory_utilization": 0.85,
+              "max_model_len": 32768,
+              "tensor_parallel_size": 1,
+              "temperature": 0.0,
+              "top_p": 0.9,
+              "enable_thinking": false,
+              "enforce_eager": false
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 15.607014142035041
+            },
+            "kv_cache_budget_gb": 37.74
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document. This involves analyzing the relationships between entities and their contextual information to disambiguate mentions effectively.\",\n  \"citations\": [\"qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c\", \"qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b\", \"qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488\", \"qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 1,\n  \"provenance\": [\n    {\"claim\": \"Entity-linking models use surrounding context to resolve ambiguous names by considering the topical coherence among referred entities within the same document\", \"passage_ids\": [\"qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c\", \"qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b\", \"qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488\", \"qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9\"], \"support\": \"direct\"}\n  ]\n}",
+          "raw_text_chars": 1309
+        },
+        "search": {
+          "scope": "corpus",
+          "paper_id": null,
+          "source_papers": [
+            "1606.06361",
+            "1704.06194",
+            "1804.03839",
+            "1806.05504",
+            "1811.08603",
+            "1902.00330",
+            "1904.09131"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c": {
+          "text": "After performing entity linking to the input text using the ELS, we receive a sequential list of linked entities, arranged based on their location in the text. We embed these entities to $d$ -dimensional vectors $E = \\lbrace e_1, e_2, ..., e_m\\rbrace $ where $e_i \\in \\mathbb {R}^d$ . Since these entities may still contain ambiguity, it is necessary to resolve them before applying them to the base model. Based on the idea that an ambiguous entity can be disambiguated using its neighboring entities, we introduce two kinds of disambiguating encoders below.\n\nOne way to disambiguate an entity is by using all the other entities, putting more importance to entities that are nearer. For this purpose, we employ an RNN-based model to globally disambiguate the entities. Specifically, we use BiGRU and concatenate the forward and backward hidden state vectors as the new entity vector: $\n\\overrightarrow{h}_i &= GRU(e_i, \\overrightarrow{h}_{i-1}) \\\\\n\\overleftarrow{h}_i &= GRU(e_i, \\overleftarrow{h}_{i+1}) \\\\\ne^{\\prime }_i &= [\\overrightarrow{h}_i; \\overleftarrow{h}_i] \\nonumber $\n\nAnother way to disambiguate an entity is by using only the direct neighbors of the entity, putting no importance value to entities that are far. To do this, we employ a CNN-based model to locally disambiguate the entities. Specifically, we do the convolution operation using filter matrices $W_f \\in \\mathbb {R}^{h \\times d}$ with filter size $h$ to a window of $h$ words. We do this for different sizes of $h$ . This produces new feature vectors $c_{i,h}$ as shown below, where $f(.)$ is a non-linear function: $\nc_{i,h} = f([e_{i-(h-1)/2}; ...; e_{i+h(+1)/2}]^\\top W_f + b_f) \\nonumber $\n\nThe convolution operation reduces the number of entities differently depending on the filter size $h$ . To prevent loss of information and to produce the same amount of feature vectors $c_{i,h}$ , we pad the entity list dynamically such that when the filter size is $h$ , the number of paddings on each side is $(h-1)/2$ . The filter size $h$ therefore refers to the number of entities used to disambiguate a middle entity. Finally, we concatenate all feature vectors of different $h$ 's for each $i$ as the new entity vector: $\ne^{\\prime }_i = [c_{i,h_1}; c_{i, h_2}; ...] \\nonumber $\n\nThe question on",
+          "paper_id": "1806.05504",
+          "title": "Entity Commonsense Representation for Neural Abstractive Summarization",
+          "section": "Entity encoding submodule",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-033287e6a7e755aa205e0e75919f911067538e32d3a7115c583dc67e93ac9129",
+          "context_before": "",
+          "context_after": " which disambiguating encoder is better has been a debate; some argued that using only the local context is appropriate BIBREF16 while some claimed that additionally using global context also helps BIBREF17 ."
+        },
+        "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b": {
+          "text": "This work is licensed under a Creative Commons Attribution 4.0 International License. License details: http://creativecommons.org/licenses/by/4.0/\n\nEntity linking (EL), mapping entity mentions in texts to a given knowledge base (KB), serves as a fundamental role in many fields, such as question answering BIBREF0 , semantic search BIBREF1 , and information extraction BIBREF2 , BIBREF3 . However, this task is non-trivial because entity mentions are usually ambiguous. As shown in Figure FIGREF1 , the mention England refers to three entities in KB, and an entity linking system should be capable of identifying the correct entity as England cricket team rather than England and England national football team.\n\nEntity linking is typically broken down into two main phases: (i) candidate generation obtains a set of referent entities in KB for each mention, and (ii) named entity disambiguation selects the possible candidate entity by solving a ranking problem. The key challenge lies in the ranking model that computes the relevance between candidates and the corresponding mentions based on the information both in texts and KBs BIBREF4 . In terms of the features used for ranking, we classify existing EL models into two groups: local models to resolve mentions independently relying on textual context information from the surrounding words BIBREF5 , BIBREF6 , BIBREF7 , BIBREF8 , and global (collective) models, which are the main focus of this paper, that encourage the target entities of all mentions in a document to be topically coherent BIBREF9 , BIBREF10 , BIBREF11 , BIBREF12 , BIBREF13 , BIBREF14 .\n\nGlobal models usually build an entity graph based on KBs to capture coherent entities for all identified mentions in a document, where the nodes are entities, and edges denote their relations. The graph provides highly discriminative semantic signals (e.g., entity relatedness) that are unavailable to local model BIBREF15 . For example (Figure FIGREF1 ), an EL model seemly cannot find sufficient disambiguation clues for the mention England from its surrounding words, unless it utilizes the coherence information of consistent topic \u201ccricket\" among adjacent mentions England, Hussain, and Essex. Although the global model has achieved significant improvements, its limitation is threefold:\n\nTo mitigate the first limitation, recent EL studies introduce neural network (NN) models due",
+          "paper_id": "1811.08603",
+          "title": "Neural Collective Entity Linking",
+          "section": "Introduction",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-94dcdd7ef4b1de06f5f61103ee068471eae2b7e7b42c28c5b76608b323006cf6",
+          "context_before": "",
+          "context_after": " to its amazing feature abstraction and generalization ability."
+        },
+        "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488": {
+          "text": "Entities mentioned in the same context are often topically related, therefore it is useful not to treat linking decisions in isolation but rather to try to maximize topical coherence in the chosen items. This is the issue on which entity linking systems differ the most as it is harder to model.\n\nFirst, we need to estimate the topical coherence of a sequence of linking decisions. This is often done by first defining a pairwise relatedness score between the target entities. For instance, a popular metric introduced by BIBREF20 considers the set of wiki links $|a|, |b|$ made from or to two entities $a$ , $b$ and computes their relatedness: $ \\text{rel}(a,b) = 1 - \\frac{\\log (\\max (|a|,|b|)) - \\log (|a| \\cap |b|)}{\\log (|K|) - \\log (\\min (|a|,|b|))}$\n\nwhere $|K|$ is the number of entities in the knowledge base.\n\nWhen linking to Wikidata instead of Wikipedia, it is tempting to reuse these heuristics, replacing wikilinks by statements. However, Wikidata's linking structure is quite different from Wikipedia: statements are generally a lot sparser than links and they have a precise semantic meaning, as editors are restricted by the available properties when creating new statements. We propose in the next section a similarity measure that we find to perform well experimentally.\n\nOnce a notion of semantic similarity is chosen, we need to integrate it in the inference process. Most approaches build a graph of candidate entities, where edges indicate semantic relatedness: the difference between the heuristics lie in the way this graph is used for the matching decisions. BIBREF21 use an approximate algorithm to find the densest subgraph of the semantic graph. This determines choices of entities for each mention. In other approaches, the initial evidence given by the local compatibility score is propagated along the edges of the semantic graph BIBREF14 , BIBREF22 or aggregated at a global level with a Conditional Random Field BIBREF17 .",
+          "paper_id": "1904.09131",
+          "title": "OpenTapioca: Lightweight Entity Linking for Wikidata",
+          "section": "Mapping coherence",
+          "previous_passage_id": null,
+          "next_passage_id": null,
+          "context_before": "",
+          "context_after": ""
+        },
+        "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9": {
+          "text": "Entity linking falls broadly into two major approaches: local and global disambiguation. Early studies use local models to resolve mentions independently, they usually disambiguate mentions based on lexical matching between the mention's surrounding words and the entity profile in the reference KB. Various methods have been proposed to model mention's local context ranging from binary classification BIBREF17 to rank models BIBREF26 , BIBREF27 . In these methods, a large number of hand-designed features are applied. For some marginal mentions that are difficult to extract features, researchers also exploit the data retrieved by search engines BIBREF28 , BIBREF29 or Wikipedia sentences BIBREF30 . However, the feature engineering and search engine methods are both time-consuming and laborious. Recently, with the popularity of deep learning models, representation learning is utilized to automatically find semantic features BIBREF31 , BIBREF32 . The learned entity representations which by jointly modeling textual contexts and knowledge base are effective in combining multiple sources of information. To make full use of the information contained in representations, we also utilize the pre-trained entity embeddings in our model.\n\nIn recent years, with the assumption that the target entities of all mentions in a document shall be related, many novel global models for joint linking are proposed. Assuming the topical coherence among mentions, authors in BIBREF33 , BIBREF34 construct factor graph models, which represent the mention and candidate entities as variable nodes, and exploit factor nodes to denote a series of features. Two recent studies BIBREF0 , BIBREF1 use fully-connected pairwise Conditional Random Field(CRF) model and exploit loopy belief propagation to estimate the max-marginal probability. Moreover, PageRank or Random Walk BIBREF35 , BIBREF18 , BIBREF7 are utilized to select the target entity for each mention. The above probabilistic models usually need to predefine a lot of features and are difficult to calculate the max-marginal probability as the number of nodes increases. In order to automatically learn features from the data, Cao et al. BIBREF9 applies Graph Convolutional Network to flexibly encode entity graphs. However, the graph-based methods are computationally expensive because there are lots of candidate entity nodes in the graph.\n\nTo reduce the calculation between candidate entity pairs, Globerson et al. BIBREF24 introduce a coherence model",
+          "paper_id": "1902.00330",
+          "title": "Joint Entity Linking with Deep Reinforcement Learning",
+          "section": "Entity Linking",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-82265948dc742bc4a1b26a07bd5a46613e39aa51fcc1cd14ba1c191e9504263d",
+          "context_before": "",
+          "context_after": " with an attention mechanism, where each mention only focus on a fixed number of mentions."
+        }
+      },
+      "answer_http_elapsed_ms": 19265.888667025138,
+      "citation_http_elapsed_ms": 104.81395904207602,
+      "finished_at": "2026-11-07T07:55:05.693937+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: method question, needs method. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.5,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 4 in both, RRF merged 36, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-5314f475195c7b8a1fbb5f6ed71e7ee1b281e77ec05b4549b34f03acf5956448",
+              "title": "Joint Entity Linking with Deep Reinforcement Learning",
+              "section": "Introduction",
+              "paper_id": "1902.00330",
+              "bm25_rank": 7,
+              "dense_rank": 1,
+              "rrf_score": 0.03132,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-87b8f787376888748399aaf27d8727d87d3fe032ee3bb38a2cefa9a07aac742c",
+              "title": "Entity Commonsense Representation for Neural Abstractive Summarization",
+              "section": "Entity encoding submodule",
+              "paper_id": "1806.05504",
+              "bm25_rank": 6,
+              "dense_rank": 2,
+              "rrf_score": 0.03128,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-3f320c6d9fb1655f35bd9f616adc0830aed97ac0fda922e4c9c03f816135a02b",
+              "title": "Neural Collective Entity Linking",
+              "section": "Introduction",
+              "paper_id": "1811.08603",
+              "bm25_rank": 1,
+              "dense_rank": 12,
+              "rrf_score": 0.03028,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-108bec916afc91b4ed1766824fadeac94286c2b4aca65cca8d4a0c041141ee03",
+              "title": "Improved Neural Relation Detection for Knowledge Base Question Answering",
+              "section": "KBQA Enhanced by Relation Detection",
+              "paper_id": "1704.06194",
+              "bm25_rank": 11,
+              "dense_rank": 7,
+              "rrf_score": 0.02901,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-23203b48af6c04989e50998a6902af87279a6c3f2561eb0fcaa606bbb8ff8a7d",
+              "title": "A Probabilistic Generative Grammar for Semantic Parsing",
+              "section": "Background",
+              "paper_id": "1606.06361",
+              "bm25_rank": 2,
+              "dense_rank": null,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-056a504cd6796b76fc22389b10af8494397b667fadccb9f25ec4a1e5ce9f8f86",
+              "title": "Generating Clues for Gender based Occupation De-biasing in Text",
+              "section": "Methodology",
+              "paper_id": "1804.03839",
+              "bm25_rank": 3,
+              "dense_rank": null,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-6d5a7b444c02a05b5e08b88638b9f85172d88a58c7a4cf86315e8652c171d488",
+              "title": "OpenTapioca: Lightweight Entity Linking for Wikidata",
+              "section": "Mapping coherence",
+              "paper_id": "1904.09131",
+              "bm25_rank": null,
+              "dense_rank": 3,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-1f906fff6957bb651924b6e2784de1770b4d9deb2d1350693c07e0bd77a9d4a9",
+              "title": "Joint Entity Linking with Deep Reinforcement Learning",
+              "section": "Entity Linking",
+              "paper_id": "1902.00330",
+              "bm25_rank": 4,
+              "dense_rank": null,
+              "rrf_score": 0.01562,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-a45609afce9948561051d9c208d2ae5550ba8e894e3fb5817e0d53dbaf31cd61",
+              "title": "Entity Commonsense Representation for Neural Abstractive Summarization",
+              "section": "Possible issues",
+              "paper_id": "1806.05504",
+              "bm25_rank": null,
+              "dense_rank": 4,
+              "rrf_score": 0.01562,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ca4ba73bbbce78ec74659346c05fac478eff35478a5610210664f83153487e84",
+              "title": "Named Entity Disambiguation for Noisy Text",
+              "section": "The WikilinksNED Dataset:             Entity Mentions in the Web",
+              "paper_id": "1706.09147",
+              "bm25_rank": 5,
+              "dense_rank": null,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d6bb75f7f6363a58dc699006ce7ac09eddcadb320a5b7aa57b58c2277a5ff007",
+              "title": "Joint Entity Linking with Deep Reinforcement Learning",
+              "section": "Preliminaries",
+              "paper_id": "1902.00330",
+              "bm25_rank": null,
+              "dense_rank": 5,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-1d608d8c7fdd7cf30f89772446e3df98de645b8e51a3aa46eefa2c3742c11ba2",
+              "title": "Building a Massive Corpus for Named Entity Recognition Using Free Open Data Sources",
+              "section": "Preprocessing ::: Semantic Model",
+              "paper_id": "1908.05758",
+              "bm25_rank": null,
+              "dense_rank": 6,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-86ae298a163246afe8ec750c8327aaf2a4db6ce80ed97767507c43b08aae887a",
+              "title": "Principles for Developing a Knowledge Graph of Interlinked Events from News Headlines on Twitter",
+              "section": "Entity Annotation",
+              "paper_id": "1808.02022",
+              "bm25_rank": 8,
+              "dense_rank": null,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ea2b080320c7eb56bcfb90b67f981d2ae252a85861f800ceb98ad8a3e69604fd",
+              "title": "Learning Concept Embeddings for Efficient Bag-of-Concepts Densification",
+              "section": "Entity Semantic Relatedness",
+              "paper_id": "1702.03342",
+              "bm25_rank": null,
+              "dense_rank": 8,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-90d4226ba9c0c2a54de004bf3f7bf39157a63eaba19ed135562da6f17b43621e",
+              "title": "Improved Neural Relation Detection for Knowledge Base Question Answering",
+              "section": "KBQA Enhanced by Relation Detection",
+              "paper_id": "1704.06194",
+              "bm25_rank": 9,
+              "dense_rank": null,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-6b0a68ec4f322ad329ee458e56a35f9c9a1a76b76d2d102d8b18c944d21a86c7",
+              "title": "Fine-Grained Named Entity Recognition using ELMo and Wikidata",
+              "section": "Entity Linking using Wikidata",
+              "paper_id": "1904.10503",
+              "bm25_rank": null,
+              "dense_rank": 9,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-52591616fd1b8ac2845f31a190e289333f570a1b20ef839c9b1899b1004d626d",
+              "title": "Multi-level Representations for Fine-Grained Typing of Knowledge Base Entities",
+              "section": "Related Work",
+              "paper_id": "1701.02025",
+              "bm25_rank": 10,
+              "dense_rank": null,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8761b5e949cb66a457c710573ec360de036b37e2893e2e23814aeb9491ccdaec",
+              "title": "Multi-level Representations for Fine-Grained Typing of Knowledge Base Entities",
+              "section": "Analysis",
+              "paper_id": "1701.02025",
+              "bm25_rank": null,
+              "dense_rank": 10,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b417fd852554affec3a0fbf12cdee73d96e9c2b6520ef8f608acc83e9fe6d4e7",
+              "title": "Multi-level Representations for Fine-Grained Typing of Knowledge Base Entities",
+              "section": "Introduction",
+              "paper_id": "1701.02025",
+              "bm25_rank": null,
+              "dense_rank": 11,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-dfd26a0e455a80cb1007d6a2a6b8e32f3b612190fd189c9f1e115f675c477b29",
+              "title": "e-QRAQ: A Multi-turn Reasoning Dataset and Simulator with Explanations",
+              "section": "The QRAQ Dataset",
+              "paper_id": "1708.01776",
+              "bm25_rank": 12,
+              "dense_rank": null,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-1b840d4e260aa85e0da350e3963235236b334afd59a60e60955be209153fbb3d",
+              "title": "Semantic Web for Machine Translation: Challenges and Directions",
+              "section": "Suggestions and Possible Directions using SW",
+              "paper_id": "1907.10676",
+              "bm25_rank": 13,
+              "dense_rank": null,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-556cb8c70653a7399ce89eb9ff128345a6e312170ff16bc608da52041cf9ff3e",
+              "title": "OpenTapioca: Lightweight Entity Linking for Wikidata",
+              "section": "Related work",
+              "paper_id": "1904.09131",
+              "bm25_rank": null,
+              "dense_rank": 13,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-329799acedda2de1b0c6ad51ff57e0c024c5c9150ced4ff57e810ce2bbb84c08",
+              "title": "Entity Commonsense Representation for Neural Abstractive Summarization",
+              "section": "Introduction",
+              "paper_id": "1806.05504",
+              "bm25_rank": 14,
+              "dense_rank": null,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a8eb11d5daae17e9a85e1428e2c0b578dac114624dcd7c04d882593cf1fdc9c5",
+              "title": "Optimizing Differentiable Relaxations of Coreference Evaluation Metrics",
+              "section": "From mention ranking to entity centricity",
+              "paper_id": "1704.04451",
+              "bm25_rank": null,
+              "dense_rank": 14,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-05ad7662ab1e8f336259f99fb4328b15b166745580661fc1935df470dec9851e",
+              "title": "Improving Fine-grained Entity Typing with Entity Linking",
+              "section": "Introduction",
+              "paper_id": "1909.12079",
+              "bm25_rank": 15,
+              "dense_rank": null,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ca9fb20c38fb2fca21f0ef55d3b58dac4f80aa025c772f467b1ab70099923f2e",
+              "title": "Remedying BiLSTM-CNN Deficiency in Modeling Cross-Context for NER.",
+              "section": "Experiments ::: Entity-Chunking",
+              "paper_id": "1908.11046",
+              "bm25_rank": null,
+              "dense_rank": 15,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a1ca645b7301c98f0022856966b11d1033d0c084c1c7c5b6eadf3a0ce44fde29",
+              "title": "Structural Scaffolds for Citation Intent Classification in Scientific Publications",
+              "section": "Analysis",
+              "paper_id": "1904.01608",
+              "bm25_rank": 16,
+              "dense_rank": null,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3b4c35ba5e02032172394fde0922d52b766f59c35a32ae4716550348ee3ab3bf",
+              "title": "Named Entity Disambiguation for Noisy Text",
+              "section": "Introduction",
+              "paper_id": "1706.09147",
+              "bm25_rank": null,
+              "dense_rank": 16,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-1ffa4230ee74c34b68e1d2c8ab5b3b4eef98a2df7757401b4c11bdeb9315cca8",
+              "title": "Multimodal Named Entity Recognition for Short Social Media Posts",
+              "section": "Introduction",
+              "paper_id": "1802.07862",
+              "bm25_rank": 17,
+              "dense_rank": null,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b18645937100ddb4ff9f00e443e1ad5f9605bf43613a150e28890a1c48f59940",
+              "title": "A Lightweight Front-end Tool for Interactive Entity Population",
+              "section": "Entity Candidate Generation",
+              "paper_id": "1708.00481",
+              "bm25_rank": null,
+              "dense_rank": 17,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0653bbbb033ab734976dce8067ef91ba33b79b67121f9ad8071620f2dfb73702",
+              "title": "Multi-level Representations for Fine-Grained Typing of Knowledge Base Entities",
+              "section": "Multi-level representations",
+              "paper_id": "1701.02025",
+              "bm25_rank": 18,
+              "dense_rank": null,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-bed7cd418574b559cb3e515ca73c489aed0aec81b6fa2de6ea1390f7e6cd6bfc",
+              "title": "Semantic Web for Machine Translation: Challenges and Directions",
+              "section": "Suggestions and Possible Directions using SW",
+              "paper_id": "1907.10676",
+              "bm25_rank": null,
+              "dense_rank": 18,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-18b591f35fc08515a92d2acbe7fabe478fd12724d4f8bdcf7c8c3c618cf2fcaf",
+              "title": "To What Extent are Name Variants Used as Named Entities in Turkish Tweets?",
+              "section": "Conclusion",
+              "paper_id": "1912.07940",
+              "bm25_rank": 19,
+              "dense_rank": null,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-fcfafc40154280ca422f27ac5e9f6a1f021629d823dc356fa83c5ad8d457e878",
+              "title": "Logician: A Unified End-to-End Neural Approach for Open-Domain Information Extraction",
+              "section": "Introduction",
+              "paper_id": "1904.12535",
+              "bm25_rank": null,
+              "dense_rank": 19,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-534c3ca7d7e7ea779f59e05e3f9196528430b0519f5a7aa9949282d8e441817a",
+              "title": "OpenTapioca: Lightweight Entity Linking for Wikidata",
+              "section": "Introduction",
+              "paper_id": "1904.09131",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-5996158af33d5c19bdc2255241c59967b28d23ac335aaab87c676964ce0bcac6",
+              "title": "Question Answering by Reasoning Across Documents with Graph Convolutional Networks",
+              "section": "Ablation study",
+              "paper_id": "1808.09920",
+              "bm25_rank": null,
+              "dense_rank": 20,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.5,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.5,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 3.6,
+          "message": "Evidence check (model, 8 passages): enough.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 3.6,
+          "message": "Stopped searching: sufficient, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 3.6,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 19.2,
+          "message": "Answer ready: SUFFICIENT, 4 cited, 1 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    }
+  ]
+}

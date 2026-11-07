@@ -1,0 +1,8 @@
+{
+  "commit": "a9d274300b6bc18c53ef4016877210de7c68c7f9",
+  "working_tree": "uncommitted: src/ui/app.py sample questions; report edits",
+  "method": "Headless Chromium driving the live Streamlit UI at 127.0.0.1:8501; SSH tunnel to node TC2N03; no mocked responses; Run JSON downloaded per query",
+  "scope": "All papers",
+  "warm_up": "none; service uptime about 2.6 h at start",
+  "selection": "Five team-written topic questions; none replaced after seeing outputs"
+}

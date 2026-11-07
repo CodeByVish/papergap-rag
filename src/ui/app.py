@@ -19,9 +19,11 @@ st.set_page_config(page_title='PaperRAG', page_icon=':material/description:', la
 
 HEALTH_POLL_SECONDS = 15
 CORPUS_SAMPLE_QUESTIONS = [
+    'How do entity-linking models use surrounding context to resolve ambiguous names?',
+    'How is commonsense knowledge used to improve dialogue systems?',
+    'What approaches are used for machine translation when parallel training data is limited?',
+    'What methods have researchers used to induce context-free grammars (CFGs)? Cite the papers supporting your answer.',
     'What methods are used for low-resource language identification?',
-    'How do studies combine character-level and word-level representations?',
-    'What approaches improve cross-lingual transfer for low-resource languages?',
 ]
 HOW_IT_WORKS = [
     ('1 · Search', 'Finds the most relevant passages across the collection or in one paper.'),

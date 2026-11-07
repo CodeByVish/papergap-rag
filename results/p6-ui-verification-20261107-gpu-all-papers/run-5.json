@@ -1,0 +1,1518 @@
+{
+  "schema_version": "p6-ui-export-v1",
+  "exported_at": "2026-11-07T07:57:08.824094+00:00",
+  "timing_definition": "answer_http_elapsed_ms includes HTTP waiting/processing; excludes citations and rendering. Not model inference time.",
+  "runs": [
+    {
+      "client_run_id": "1289c1c9-7935-47b9-815e-363eaa589527",
+      "conversation_id": "e9fc67ee-3b80-4ad5-a576-7841b6e4f696",
+      "message_id": "d48b89db-d4ec-4527-862c-6bd7eea865f6",
+      "retry_of_client_run_id": null,
+      "submission": {
+        "question": "What methods are used for low-resource language identification?",
+        "paper_id": null
+      },
+      "capabilities": {
+        "retrieval": true,
+        "passage_text": true,
+        "backend": "vllm",
+        "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+        "prompt_version": "p5-grounded-qa-v7",
+        "agent": true
+      },
+      "service_mode": "vllm",
+      "submitted_at": "2026-11-07T07:56:42.116209+00:00",
+      "outcome": "completed",
+      "answer_record": {
+        "request_id": "ui-1794038202415",
+        "result": {
+          "answer": "Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs. Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy.",
+          "citations": [
+            "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422",
+            "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+            "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b"
+          ],
+          "evidence_status": "SUFFICIENT",
+          "retrieval_rounds": 3,
+          "provenance": [
+            {
+              "claim": "Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs",
+              "passage_ids": [
+                "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422"
+              ],
+              "support": "direct"
+            },
+            {
+              "claim": "Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy",
+              "passage_ids": [
+                "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+                "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b"
+              ],
+              "support": "direct"
+            }
+          ]
+        },
+        "validation": {
+          "final_result": {
+            "answer": "Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs. Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy.",
+            "citations": [
+              "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422",
+              "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+              "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 3,
+            "provenance": [
+              {
+                "claim": "Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs",
+                "passage_ids": [
+                  "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy",
+                "passage_ids": [
+                  "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+                  "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "raw_result": {
+            "answer": "Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs. Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy.",
+            "citations": [
+              "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422",
+              "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+              "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b"
+            ],
+            "evidence_status": "SUFFICIENT",
+            "retrieval_rounds": 3,
+            "provenance": [
+              {
+                "claim": "Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs",
+                "passage_ids": [
+                  "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422"
+                ],
+                "support": "direct"
+              },
+              {
+                "claim": "Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy",
+                "passage_ids": [
+                  "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+                  "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b"
+                ],
+                "support": "direct"
+              }
+            ]
+          },
+          "violations": [
+            {
+              "code": "GENERATED_WITH_INSUFFICIENT_EVIDENCE",
+              "severity": "warning",
+              "message": "the agent's critic judged the evidence insufficient, but the gap was not INSUFFICIENT_INFORMATION, so P5 generated from the available passages; the answer is kept",
+              "subject": null
+            },
+            {
+              "code": "PROVENANCE_OVERSTATED",
+              "severity": "warning",
+              "message": "claim is marked 'direct' but the text it names supports 'unsupported': 'Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identifica'",
+              "subject": "Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identifica"
+            }
+          ],
+          "downgraded": false,
+          "downgrade_reason": null,
+          "checks_run": [
+            "R1_citation_reference",
+            "R1b_provenance_reference",
+            "R4_evidence_status",
+            "R3_numeric_grounding",
+            "R2_claim_coverage"
+          ],
+          "schema_version": "p5-answer-v1"
+        },
+        "generation": {
+          "backend": {
+            "backend": "vllm",
+            "model_id": "/home/msai/changyan003/p5/models/Qwen3-8B",
+            "loaded": true,
+            "options": {
+              "dtype": "bfloat16",
+              "gpu_memory_utilization": 0.85,
+              "max_model_len": 32768,
+              "tensor_parallel_size": 1,
+              "temperature": 0.0,
+              "top_p": 0.9,
+              "enable_thinking": false,
+              "enforce_eager": false
+            },
+            "last_generation_stats": {
+              "batch_size": 1,
+              "batch_seconds": 13.832297920016572
+            },
+            "kv_cache_budget_gb": 37.74
+          },
+          "prompt_version": "p5-grounded-qa-v7",
+          "diagnostics": {
+            "had_code_fence": false,
+            "had_thinking_block": false,
+            "unclosed_thinking_block": false,
+            "leading_text_chars": 0,
+            "trailing_text_chars": 0,
+            "candidate_index": 0,
+            "extra_fields": [],
+            "coerced": [],
+            "repaired_invalid_escapes": false,
+            "invalid_escape_repairs": 0
+          },
+          "raw_text_excerpt": "{\n  \"answer\": \"Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs. Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy.\",\n  \"citations\": [\"qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422\", \"qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272\", \"qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b\"],\n  \"evidence_status\": \"SUFFICIENT\",\n  \"retrieval_rounds\": 3,\n  \"provenance\": [\n    {\"claim\": \"Methods used for low-resource language identification include deep learning architectures such as stacked bottleneck features, LSTM-based models, and CNNs\", \"passage_ids\": [\"qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422\"], \"support\": \"direct\"},\n    {\"claim\": \"Additionally, techniques like X-vectors and Ghost-VLAD pooling strategies are explored for improving language identification accuracy\", \"passage_ids\": [\"qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272\", \"qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b\"], \"support\": \"direct\"}\n  ]\n}",
+          "raw_text_chars": 1324
+        },
+        "search": {
+          "scope": "corpus",
+          "paper_id": null,
+          "source_papers": [
+            "1602.01595",
+            "1610.00479",
+            "1708.09157",
+            "1807.00868",
+            "1808.10059",
+            "1901.10826",
+            "1905.05644",
+            "1907.03060",
+            "1908.05828",
+            "1910.04269",
+            "1910.11493",
+            "1910.11768",
+            "1912.00582",
+            "1912.01772",
+            "1912.03457",
+            "2002.01664",
+            "2002.06675",
+            "2002.07306"
+          ]
+        }
+      },
+      "error": null,
+      "evidence": {
+        "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422": {
+          "text": "The idea of language identification is to classify a given audio signal into a particular class using a classification algorithm. Commonly language identification task was done using i-vector systems [1]. A very well known approach for language identification proposed by N. Dahek et al. [1] uses the GMM-UBM model to obtain utterance level features called i-vectors. Recent advances in deep learning [15,16] have helped to improve the language identification task using many different neural network architectures which can be trained efficiently using GPUs for large scale datasets. These neural networks can be configured in various ways to obtain better accuracy for language identification task. Early work on using Deep learning for language Identification was published by Pavel Matejka et al. [2], where they used stacked bottleneck features extracted from deep neural networks for language identification task and showed that the bottleneck features learned by Deep neural networks are better than simple MFCC or PLP features. Later the work by I. Lopez-Moreno et al. [3] from Google showed how to use Deep neural networks to directly map the sequence of MFCC frames into its language class so that we can apply language identification at the frame level. Speech signals will have both spatial and temporal information, but simple DNNs are not able to capture temporal information. Work done by J. Gonzalez-Dominguez et al. [4] by Google developed an LSTM based language identification model which improves the accuracy over the DNN based models. Work done by Alicia et al. [5] used CNNs to improve upon i-vector [1] and other previously developed systems. The work done by Daniel Garcia-Romero et al. [6] has used a combination of Acoustic model trained for speech recognition with Time-delay neural networks where they train the TDNN model by feeding the stacked bottleneck features from acoustic model to predict the language labels at the frame level. Recently X-vectors [7] is proposed for speaker identification task and are shown to outperform all the previous state of the art speaker identification algorithms and are also used for language identification by David Snyder et al. [8].\n\nIn this paper, we explore multiple pooling strategies for language identification task. Mainly we propose Ghost-VLAD based pooling method for",
+          "paper_id": "2002.01664",
+          "title": "Identification of Indian Languages using Ghost-VLAD pooling",
+          "section": "INTRODUCTION",
+          "previous_passage_id": null,
+          "next_passage_id": "qasper-passage-v1-cf84afc4dc8673174c2249383f8731a1c4b261b95fc14c1fb847e1d5edb7779b",
+          "context_before": "",
+          "context_after": " language identification."
+        },
+        "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272": {
+          "text": "Neural machine translation (NMT) BIBREF0 , BIBREF1 , BIBREF2 has enabled end-to-end training of a translation system without needing to deal with word alignments, translation rules, and complicated decoding algorithms, which are the characteristics of phrase-based statistical machine translation (PBSMT) BIBREF3 . Although NMT can be significantly better than PBSMT in resource-rich scenarios, PBSMT performs better in low-resource scenarios BIBREF4 . Only by exploiting cross-lingual transfer learning techniques BIBREF5 , BIBREF6 , BIBREF7 , can the NMT performance approach PBSMT performance in low-resource scenarios.\n\nHowever, such methods usually require an NMT model trained on a resource-rich language pair like French INLINEFORM0 English (parent), which is to be fine-tuned for a low-resource language pair like Uzbek INLINEFORM1 English (child). On the other hand, multilingual approaches BIBREF8 propose to train a single model to translate multiple language pairs. However, these approaches are effective only when the parent target or source language is relatively resource-rich like English (En). Furthermore, the parents and children models should be trained on similar domains; otherwise, one has to take into account an additional problem of domain adaptation BIBREF9 .\n\nIn this paper, we work on a linguistically distant and thus challenging language pair Japanese INLINEFORM0 Russian (Ja INLINEFORM1 Ru) which has only 12k lines of news domain parallel corpus and hence is extremely resource-poor. Furthermore, the amount of indirect in-domain parallel corpora, i.e., Ja INLINEFORM2 En and Ru INLINEFORM3 En, are also small. As we demonstrate in Section SECREF4 , this severely limits the performance of prominent low-resource techniques, such as multilingual modeling, back-translation, and pivot-based PBSMT. To remedy this, we propose a novel multistage fine-tuning method for NMT that combines multilingual modeling BIBREF8 and domain adaptation BIBREF9 .\n\nWe have addressed two important research questions (RQs) in the context of extremely low-resource machine translation (MT) and our explorations have derived rational contributions (CTs) as follows:\n\nTo the best of our knowledge, we are the first to perform such an extensive evaluation of extremely low-resource MT problem and propose a novel multilingual multistage fine-tuning approach involving multilingual modeling and domain adaptation to address it.",
+          "paper_id": "1907.03060",
+          "title": "Exploiting Out-of-Domain Parallel Data through Multilingual Transfer Learning for Low-Resource Neural Machine Translation",
+          "section": "Introduction",
+          "previous_passage_id": null,
+          "next_passage_id": null,
+          "context_before": "",
+          "context_after": ""
+        },
+        "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b": {
+          "text": "Many NLP tasks utilize POS as features, but human annotated POS sequences are difficult and expensive to obtain. Thus, it is important to know if we can learn sentences-level syntactic embeddings for low-sources languages without treebanks.\n\nWe performed zero-shot transfer of the syntactic embeddings for French, Portuguese and Indonesian. French and Portuguese are simulated low-resource languages, while Indonesian is a true low-resource language. We reported the 1-NN and 5-NN accuracies for all languages using the same evaluation setting as described in the previous section. The results are shown in Table TABREF31 (top).\n\nWe also fine-tuned the learned syntactic embeddings on the low-resource language for a varying number of training data and languages. The results are shown in Table TABREF31 (bottom). In this table, the low-resource language is denoted as the `source', while the high-resource language(s) is denoted as the `target'. With this training method, no UPOS tag information was provided to the model for the `source' languages, where supervising information comes solely from parallel sentences and UPOS tags in high-resource languages.\n\nThe results show that for a new language (French and Portuguese) that is similar to the family of pre-training languages, there are two ways to achieve higher 1-NN accuracy. If the number of unique sentences in the new language is small, accuracy can be improved by increasing the size of the parallel corpora used to fine-tune. If only one parallel corpus is available, accuracy can be improved by increasing the number of unique sentence-pairs used to fine-tune.\n\nFor a new language that is dissimilar to the family of pre-training languages, e.g. Indonesian in Table TABREF31, the above methods only improved nearest neighbours accuracy slightly. This may be caused by differing data distribution or by tagger inaccuracies. The results for Indonesian do indicate that some syntactic structure can be learned by using our method, even for a dissimilar language.\n\nA future direction is to conduct a rigorous analysis of transfer learning between languages from the same versus different language families.",
+          "paper_id": "1910.11768",
+          "title": "Exploring Multilingual Syntactic Sentence Representations",
+          "section": "Experiments ::: Transfer Performance of Syntactic Embeddings",
+          "previous_passage_id": null,
+          "next_passage_id": null,
+          "context_before": "",
+          "context_after": ""
+        }
+      },
+      "answer_http_elapsed_ms": 26295.170750003308,
+      "citation_http_elapsed_ms": 115.86387496208772,
+      "finished_at": "2026-11-07T07:57:08.454693+00:00",
+      "evidence_error": null,
+      "progress_log": [
+        {
+          "elapsed_s": 0.0,
+          "message": "Request received.",
+          "step": "plan",
+          "active": "plan"
+        },
+        {
+          "elapsed_s": 0.0,
+          "message": "Planned: factual question, needs direct_answer. Searching...",
+          "step": "plan",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 0.4,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 2 in both, RRF merged 38, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-0136575629760802cfca6ba5414f26f0b99ec8e84afc433056465bd920c7a306",
+              "title": "A Resource for Computational Experiments on Mapudungun",
+              "section": "Introduction",
+              "paper_id": "1912.01772",
+              "bm25_rank": 18,
+              "dense_rank": 2,
+              "rrf_score": 0.02895,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-8fb49055af9b6253dfc85f0607a254e2180594b1f865b07922f4297788615c64",
+              "title": "The SIGMORPHON 2019 Shared Task: Morphological Analysis in Context and Cross-Lingual Transfer for Inflection",
+              "section": "Tasks and Evaluation ::: Task 1: Cross-lingual transfer for morphological inflection",
+              "paper_id": "1910.11493",
+              "bm25_rank": 16,
+              "dense_rank": 13,
+              "rrf_score": 0.02686,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b",
+              "title": "Exploring Multilingual Syntactic Sentence Representations",
+              "section": "Experiments ::: Transfer Performance of Syntactic Embeddings",
+              "paper_id": "1910.11768",
+              "bm25_rank": 1,
+              "dense_rank": null,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-78ca9f9dca3d9f381b3e6eceb591ab6e4763596c3388a2b6e6268c3f76fc6b92",
+              "title": "Exploring End-to-End Techniques for Low-Resource Speech Recognition",
+              "section": "Introduction",
+              "paper_id": "1807.00868",
+              "bm25_rank": null,
+              "dense_rank": 1,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-f463d6133fbfc20338649c99bccafc9534fdef66e0d7cefc6a18a61cf0ec840a",
+              "title": "Exploring Multilingual Syntactic Sentence Representations",
+              "section": "Introduction",
+              "paper_id": "1910.11768",
+              "bm25_rank": 2,
+              "dense_rank": null,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-95b1e3e777b795943c4c2ce426ea6bf47cc7c8854cc76facfeaae5a2ca25836a",
+              "title": "Additive Margin SincNet for Speaker Recognition",
+              "section": "Introduction",
+              "paper_id": "1901.10826",
+              "bm25_rank": 3,
+              "dense_rank": null,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-e9e338e39aadb0ba1d75cfb6c72a4728de6b2be66ae756d06f342811e0ba80c9",
+              "title": "Unsung Challenges of Building and Deploying Language Technologies for Low Resource Language Communities",
+              "section": "Information Exchange ::: Access ::: Making NLP models more accessible to low resource languages",
+              "paper_id": "1912.03457",
+              "bm25_rank": null,
+              "dense_rank": 3,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-3e23e35deb6e7a144f9926582692c93d32229c12d71de044371497375ba0fd3f",
+              "title": "Meta-Learning for Low-resource Natural Language Generation in Task-oriented Dialogue Systems",
+              "section": "Introduction",
+              "paper_id": "1905.05644",
+              "bm25_rank": 4,
+              "dense_rank": null,
+              "rrf_score": 0.01562,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-d235941b51dbdfe5a4976f013338d1549ee90af6e0c6d393225e07dd3359b3ce",
+              "title": "Classifying topics in speech when all you have is crummy translations.",
+              "section": "Conclusions and future work",
+              "paper_id": "1908.11425",
+              "bm25_rank": null,
+              "dense_rank": 4,
+              "rrf_score": 0.01562,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a1de741d82fc404f6e02c6ff8c1f263931c7e9703703b3a06cb6fd3a92af1e57",
+              "title": "Casting a Wide Net: Robust Extraction of Potentially Idiomatic Expressions",
+              "section": "Coverage of Idiom Inventories ::: Background",
+              "paper_id": "1911.08829",
+              "bm25_rank": 5,
+              "dense_rank": null,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e54b01eb22da7b6d9986acb7e94992e85ba8e5e57edc7e94ed0e99648ff613dc",
+              "title": "Multilingual and Unsupervised Subword Modeling for Zero-Resource Languages",
+              "section": "Background and Motivation",
+              "paper_id": "1811.04791",
+              "bm25_rank": null,
+              "dense_rank": 5,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b4ac83cb1112f4cb3d14ecfcdad3a5b87ea00681a16862df8243009d34c4d6a8",
+              "title": "Language Transfer of Audio Word2Vec: Learning Audio Segment Representations without Target Language Data",
+              "section": "Introduction",
+              "paper_id": "1707.06519",
+              "bm25_rank": 6,
+              "dense_rank": null,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-7600ecc2b55e58085dfef33819ddab377d0e3d3ed7af6741138b1498326b9fa3",
+              "title": "Exploring End-to-End Techniques for Low-Resource Speech Recognition",
+              "section": "Related work",
+              "paper_id": "1807.00868",
+              "bm25_rank": null,
+              "dense_rank": 6,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-268ece980eaffaa4bfad9c99d4225116c4da52263364c9b0e56b3486df4b672e",
+              "title": "Cross-Lingual Adaptation Using Universal Dependencies",
+              "section": "Introduction",
+              "paper_id": "2003.10816",
+              "bm25_rank": 7,
+              "dense_rank": null,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c5df1c4ff78c63803bc6e78035ac8289967174f25f5188cadf98cef4faff8835",
+              "title": "Multilingual and Unsupervised Subword Modeling for Zero-Resource Languages",
+              "section": "Introduction",
+              "paper_id": "1811.04791",
+              "bm25_rank": null,
+              "dense_rank": 7,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c131f018e383bf32ca5b652c583027bcb2b51d1d1b43de3937558ee4f5f0f43f",
+              "title": "Unsupervised Cross-lingual Representation Learning at Scale",
+              "section": "Model and Data ::: Scaling the Amount of Training Data.",
+              "paper_id": "1911.02116",
+              "bm25_rank": 8,
+              "dense_rank": null,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e99e9f8056437f79793945e0af0d04782be8b25cddf6dbcd08f9ffc583019183",
+              "title": "Small and Practical BERT Models for Sequence Labeling",
+              "section": "Low Resource Languages",
+              "paper_id": "1909.00100",
+              "bm25_rank": null,
+              "dense_rank": 8,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c1cf1cfde8de197351b973aae0f8c4ca8b068a024b3128ea2343cbfaa2551406",
+              "title": "Cross-lingual Pre-training Based Transfer for Zero-shot Neural Machine Translation",
+              "section": "Related Work",
+              "paper_id": "1912.01214",
+              "bm25_rank": 9,
+              "dense_rank": null,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e7aac2c4cf418dbbe463bb330352a0874c0d2ae737079e96cdd17acf124c412d",
+              "title": "Classifying topics in speech when all you have is crummy translations.",
+              "section": "Introduction",
+              "paper_id": "1908.11425",
+              "bm25_rank": null,
+              "dense_rank": 9,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3cc506ad4a3a7597204777d9f5d9b0d584d040e5e11d5de9693131ab84d0cc1a",
+              "title": "Multi-task Learning for Low-resource Second Language Acquisition Modeling",
+              "section": "Introduction",
+              "paper_id": "1908.09283",
+              "bm25_rank": 10,
+              "dense_rank": null,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Introduction",
+              "paper_id": "1911.07555",
+              "bm25_rank": null,
+              "dense_rank": 10,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0d9cbd00e008d18ab01644c640d27a75530e3edd25c29a20d532ded841b2e69d",
+              "title": "Overcoming the Rare Word Problem for Low-Resource Language Pairs in Neural Machine Translation",
+              "section": "Experiments ::: Results",
+              "paper_id": "1910.03467",
+              "bm25_rank": 11,
+              "dense_rank": null,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422",
+              "title": "Identification of Indian Languages using Ghost-VLAD pooling",
+              "section": "INTRODUCTION",
+              "paper_id": "2002.01664",
+              "bm25_rank": null,
+              "dense_rank": 11,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-91e031e1a1c87417a1813bc8771aa1c469efd44d65d848c16284d835e7d094bf",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Introduction",
+              "paper_id": "1708.09157",
+              "bm25_rank": 12,
+              "dense_rank": null,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0b268c3bbda3c95c41bdb331f48a0345e6333c6756dea42db6061ffcb1b0de8a",
+              "title": "Automatic Language Identification in Texts: A Survey",
+              "section": "Introduction",
+              "paper_id": "1804.08186",
+              "bm25_rank": null,
+              "dense_rank": 12,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+              "title": "Exploiting Out-of-Domain Parallel Data through Multilingual Transfer Learning for Low-Resource Neural Machine Translation",
+              "section": "Introduction",
+              "paper_id": "1907.03060",
+              "bm25_rank": 13,
+              "dense_rank": null,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-feb14ae296bce91e9c69da5e0e81c739f0a28db71c342fa96e37fd6e003a56b0",
+              "title": "A system for the 2019 Sentiment, Emotion and Cognitive State Task of DARPAs LORELEI project",
+              "section": "Introduction",
+              "paper_id": "1905.00472",
+              "bm25_rank": 14,
+              "dense_rank": null,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f328cbf60639e14a2f19abfbdc60dee15d08b355f48cf2583268fec26ccfaa1c",
+              "title": "Revisiting Low-Resource Neural Machine Translation: A Case Study",
+              "section": "Conclusions",
+              "paper_id": "1905.11901",
+              "bm25_rank": null,
+              "dense_rank": 14,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-082c4d7d40e72ad0f8191ef9178af44ce87870bfe471811fb4ad30fd2aa6670b",
+              "title": "CoVoST: A Diverse Multilingual Speech-To-Text Translation Corpus",
+              "section": "Baseline Results ::: Machine Translation (MT)",
+              "paper_id": "2002.01320",
+              "bm25_rank": 15,
+              "dense_rank": null,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-743f4ddf835d6dfee5ff3a182dc2480d0944664ffb1390a6efdf688b1824527c",
+              "title": "Multilingual Speech Recognition with Corpus Relatedness Sampling",
+              "section": "Introduction",
+              "paper_id": "1908.01060",
+              "bm25_rank": null,
+              "dense_rank": 15,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d4a343a487fc5cd4f93196f69ca9d870aa3cbf82ea292796702501d871c31805",
+              "title": "ASR-free CNN-DTW keyword spotting using multilingual bottleneck features for almost zero-resource languages",
+              "section": "Bottleneck and Autoencoder Features",
+              "paper_id": "1807.08666",
+              "bm25_rank": null,
+              "dense_rank": 16,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8b2856ebea1b3e1f8fd32662ff5d6b77777ed5e05cdb5c1c0fb465d550b586b4",
+              "title": "Neural Factor Graph Models for Cross-lingual Morphological Tagging",
+              "section": "Dataset",
+              "paper_id": "1805.04570",
+              "bm25_rank": 17,
+              "dense_rank": null,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-67b0ff9f67791837e41c4289fd19738b782267a9ad578086de6a9da054debe9c",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Experiments",
+              "paper_id": "1708.09157",
+              "bm25_rank": null,
+              "dense_rank": 17,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ee9a8b34fa48845afb8bb1f194d3980ac934ae5fa4651196e63eef7a57af215d",
+              "title": "Feature-Dependent Confusion Matrices for Low-Resource NER Labeling with Noisy Labels",
+              "section": "Experiments",
+              "paper_id": "1910.06061",
+              "bm25_rank": null,
+              "dense_rank": 18,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-74e2bbf6ff545182bff0e9bde3fc05b2488d39380fb44a118ddeadc8041e8d4f",
+              "title": "Automatic Language Identification in Texts: A Survey",
+              "section": "Supporting Low-Resource Languages",
+              "paper_id": "1804.08186",
+              "bm25_rank": 19,
+              "dense_rank": null,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c9a98bc5367b9bd1fe0dcceeb8b6681d59a1d8c3fc3b945918f2fe5a622a21bf",
+              "title": "Unsung Challenges of Building and Deploying Language Technologies for Low Resource Language Communities",
+              "section": "Information Exchange ::: Access ::: Making more digital content available",
+              "paper_id": "1912.03457",
+              "bm25_rank": null,
+              "dense_rank": 19,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-1efc11ba9f19abd02a902bb9ff0dc10cc487435ea9f04703fc4179c19c39f785",
+              "title": "Massively Multilingual Neural Grapheme-to-Phoneme Conversion",
+              "section": "Low Resource g2p",
+              "paper_id": "1708.01464",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-9a57a486a6aac08c4b517cf46bb229d7712b74f4b03ad9c03ef3f08b61323758",
+              "title": "Phonetic Temporal Neural Model for Language Identification",
+              "section": "Databases and configurations",
+              "paper_id": "1705.03151",
+              "bm25_rank": null,
+              "dense_rank": 20,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 0.4,
+          "message": "Round 1: kept 8 passages, 8 new, 8 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 0.4,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 4.3,
+          "message": "Evidence check (model, 8 passages): not enough, MISSING_METHOD.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 4.3,
+          "message": "Rewrote the search query: What methods are used for low-resource language identification? method approach architecture we propose",
+          "step": "search",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 4.7,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 1 in both, RRF merged 39, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-27dc7a8949c37575adad088f81e8b2739c7183c87b2f384dc54602d53987f422",
+              "title": "Identification of Indian Languages using Ghost-VLAD pooling",
+              "section": "INTRODUCTION",
+              "paper_id": "2002.01664",
+              "bm25_rank": 10,
+              "dense_rank": 13,
+              "rrf_score": 0.02798,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+              "title": "Exploiting Out-of-Domain Parallel Data through Multilingual Transfer Learning for Low-Resource Neural Machine Translation",
+              "section": "Introduction",
+              "paper_id": "1907.03060",
+              "bm25_rank": 1,
+              "dense_rank": null,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-78ca9f9dca3d9f381b3e6eceb591ab6e4763596c3388a2b6e6268c3f76fc6b92",
+              "title": "Exploring End-to-End Techniques for Low-Resource Speech Recognition",
+              "section": "Introduction",
+              "paper_id": "1807.00868",
+              "bm25_rank": null,
+              "dense_rank": 1,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-cf84afc4dc8673174c2249383f8731a1c4b261b95fc14c1fb847e1d5edb7779b",
+              "title": "Identification of Indian Languages using Ghost-VLAD pooling",
+              "section": "INTRODUCTION",
+              "paper_id": "2002.01664",
+              "bm25_rank": 2,
+              "dense_rank": null,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-0136575629760802cfca6ba5414f26f0b99ec8e84afc433056465bd920c7a306",
+              "title": "A Resource for Computational Experiments on Mapudungun",
+              "section": "Introduction",
+              "paper_id": "1912.01772",
+              "bm25_rank": null,
+              "dense_rank": 2,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-190e69ff61619f0e5a5a51e252f0f2a2c71873b084e8c4d5886e1b525f4e3a9a",
+              "title": "Named Entity Recognition for Nepali Language",
+              "section": "Introduction",
+              "paper_id": "1908.05828",
+              "bm25_rank": 3,
+              "dense_rank": null,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-2f9d1010d3ebe5813ba10e8da4ba5a5d497e769f606effe5c13b28aba49e9298",
+              "title": "Speech Corpus of Ainu Folklore and End-to-end Speech Recognition for Ainu Language",
+              "section": "End-to-end Speech Recognition",
+              "paper_id": "2002.06675",
+              "bm25_rank": null,
+              "dense_rank": 3,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-5fd43fd86e9d086366e0e31a4e52c939c757bfb7970f75b39a377fdc13891f07",
+              "title": "Many Languages, One Parser",
+              "section": "Introduction",
+              "paper_id": "1602.01595",
+              "bm25_rank": 4,
+              "dense_rank": null,
+              "rrf_score": 0.01562,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-d235941b51dbdfe5a4976f013338d1549ee90af6e0c6d393225e07dd3359b3ce",
+              "title": "Classifying topics in speech when all you have is crummy translations.",
+              "section": "Conclusions and future work",
+              "paper_id": "1908.11425",
+              "bm25_rank": null,
+              "dense_rank": 4,
+              "rrf_score": 0.01562,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b",
+              "title": "Exploring Multilingual Syntactic Sentence Representations",
+              "section": "Experiments ::: Transfer Performance of Syntactic Embeddings",
+              "paper_id": "1910.11768",
+              "bm25_rank": 5,
+              "dense_rank": null,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-67b0ff9f67791837e41c4289fd19738b782267a9ad578086de6a9da054debe9c",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Experiments",
+              "paper_id": "1708.09157",
+              "bm25_rank": null,
+              "dense_rank": 5,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f463d6133fbfc20338649c99bccafc9534fdef66e0d7cefc6a18a61cf0ec840a",
+              "title": "Exploring Multilingual Syntactic Sentence Representations",
+              "section": "Introduction",
+              "paper_id": "1910.11768",
+              "bm25_rank": 6,
+              "dense_rank": null,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c5df1c4ff78c63803bc6e78035ac8289967174f25f5188cadf98cef4faff8835",
+              "title": "Multilingual and Unsupervised Subword Modeling for Zero-Resource Languages",
+              "section": "Introduction",
+              "paper_id": "1811.04791",
+              "bm25_rank": null,
+              "dense_rank": 6,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3e23e35deb6e7a144f9926582692c93d32229c12d71de044371497375ba0fd3f",
+              "title": "Meta-Learning for Low-resource Natural Language Generation in Task-oriented Dialogue Systems",
+              "section": "Introduction",
+              "paper_id": "1905.05644",
+              "bm25_rank": 7,
+              "dense_rank": null,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ee9a8b34fa48845afb8bb1f194d3980ac934ae5fa4651196e63eef7a57af215d",
+              "title": "Feature-Dependent Confusion Matrices for Low-Resource NER Labeling with Noisy Labels",
+              "section": "Experiments",
+              "paper_id": "1910.06061",
+              "bm25_rank": null,
+              "dense_rank": 7,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-95b1e3e777b795943c4c2ce426ea6bf47cc7c8854cc76facfeaae5a2ca25836a",
+              "title": "Additive Margin SincNet for Speaker Recognition",
+              "section": "Introduction",
+              "paper_id": "1901.10826",
+              "bm25_rank": 8,
+              "dense_rank": null,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d4a343a487fc5cd4f93196f69ca9d870aa3cbf82ea292796702501d871c31805",
+              "title": "ASR-free CNN-DTW keyword spotting using multilingual bottleneck features for almost zero-resource languages",
+              "section": "Bottleneck and Autoencoder Features",
+              "paper_id": "1807.08666",
+              "bm25_rank": null,
+              "dense_rank": 8,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3cc506ad4a3a7597204777d9f5d9b0d584d040e5e11d5de9693131ab84d0cc1a",
+              "title": "Multi-task Learning for Low-resource Second Language Acquisition Modeling",
+              "section": "Introduction",
+              "paper_id": "1908.09283",
+              "bm25_rank": 9,
+              "dense_rank": null,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e54b01eb22da7b6d9986acb7e94992e85ba8e5e57edc7e94ed0e99648ff613dc",
+              "title": "Multilingual and Unsupervised Subword Modeling for Zero-Resource Languages",
+              "section": "Background and Motivation",
+              "paper_id": "1811.04791",
+              "bm25_rank": null,
+              "dense_rank": 9,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e99e9f8056437f79793945e0af0d04782be8b25cddf6dbcd08f9ffc583019183",
+              "title": "Small and Practical BERT Models for Sequence Labeling",
+              "section": "Low Resource Languages",
+              "paper_id": "1909.00100",
+              "bm25_rank": null,
+              "dense_rank": 10,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-71e521a955e049e555d5257cc545cca99c0ae62d57b806a6578fdccb0a7defc5",
+              "title": "Humor Detection: A Transformer Gets the Last Laugh",
+              "section": "Conclusion",
+              "paper_id": "1909.00252",
+              "bm25_rank": 11,
+              "dense_rank": null,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e9e338e39aadb0ba1d75cfb6c72a4728de6b2be66ae756d06f342811e0ba80c9",
+              "title": "Unsung Challenges of Building and Deploying Language Technologies for Low Resource Language Communities",
+              "section": "Information Exchange ::: Access ::: Making NLP models more accessible to low resource languages",
+              "paper_id": "1912.03457",
+              "bm25_rank": null,
+              "dense_rank": 11,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-91e031e1a1c87417a1813bc8771aa1c469efd44d65d848c16284d835e7d094bf",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Introduction",
+              "paper_id": "1708.09157",
+              "bm25_rank": 12,
+              "dense_rank": null,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-7600ecc2b55e58085dfef33819ddab377d0e3d3ed7af6741138b1498326b9fa3",
+              "title": "Exploring End-to-End Techniques for Low-Resource Speech Recognition",
+              "section": "Related work",
+              "paper_id": "1807.00868",
+              "bm25_rank": null,
+              "dense_rank": 12,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-411a96dae6f73f74fb30e54da514427213a89449a10db1d001b0bd758b20ac42",
+              "title": "An Empirical Comparison of Simple Domain Adaptation Methods for Neural Machine Translation",
+              "section": "Introduction",
+              "paper_id": "1701.03214",
+              "bm25_rank": 13,
+              "dense_rank": null,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-fd1d95a6cd8ba1dc28df7e44acd43b3c78e1f55384a67a3ac9645ce7fb1bfaaf",
+              "title": "Learning Multilingual Word Embeddings Using Image-Text Data",
+              "section": "Introduction",
+              "paper_id": "1905.12260",
+              "bm25_rank": 14,
+              "dense_rank": null,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8fb49055af9b6253dfc85f0607a254e2180594b1f865b07922f4297788615c64",
+              "title": "The SIGMORPHON 2019 Shared Task: Morphological Analysis in Context and Cross-Lingual Transfer for Inflection",
+              "section": "Tasks and Evaluation ::: Task 1: Cross-lingual transfer for morphological inflection",
+              "paper_id": "1910.11493",
+              "bm25_rank": null,
+              "dense_rank": 14,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c131f018e383bf32ca5b652c583027bcb2b51d1d1b43de3937558ee4f5f0f43f",
+              "title": "Unsupervised Cross-lingual Representation Learning at Scale",
+              "section": "Model and Data ::: Scaling the Amount of Training Data.",
+              "paper_id": "1911.02116",
+              "bm25_rank": 15,
+              "dense_rank": null,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-55d79f8edf40c20a2590b38f5e399cddce99deabd2a408c1426da4301f838474",
+              "title": "Short Text Language Identification for Under Resourced Languages",
+              "section": "Introduction",
+              "paper_id": "1911.07555",
+              "bm25_rank": null,
+              "dense_rank": 15,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f79e5d3a60b1ee70831e1e010100f32e9fea893b3d0cdf5d3b7efec986f35da7",
+              "title": "Transfer Learning for Low-Resource Neural Machine Translation",
+              "section": "Introduction",
+              "paper_id": "1604.02201",
+              "bm25_rank": 16,
+              "dense_rank": null,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f328cbf60639e14a2f19abfbdc60dee15d08b355f48cf2583268fec26ccfaa1c",
+              "title": "Revisiting Low-Resource Neural Machine Translation: A Case Study",
+              "section": "Conclusions",
+              "paper_id": "1905.11901",
+              "bm25_rank": null,
+              "dense_rank": 16,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-30a26d3e9f9201dbe6af59c54809677db6cac389f2be7b5561fc70f974cbd72e",
+              "title": "Pivot-based Transfer Learning for Neural Machine Translation between Non-English Languages",
+              "section": "Pivot-based Transfer Learning",
+              "paper_id": "1909.09524",
+              "bm25_rank": 17,
+              "dense_rank": null,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-9357e4a3c47a80d7a0a3b14b9996843f92ebd02813b9a4cd31fc38d949792189",
+              "title": "Identification of Indian Languages using Ghost-VLAD pooling",
+              "section": "RESULTS ::: Comparison with different pooling techniques",
+              "paper_id": "2002.01664",
+              "bm25_rank": null,
+              "dense_rank": 17,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0f567e71301c087aad13eae9e48f278056ed3c8ab6faa1bc84046424eb25d7be",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Alignment-Based Distant Supervision.",
+              "paper_id": "1708.09157",
+              "bm25_rank": 18,
+              "dense_rank": null,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8a542d4632ff6fcc743648d8df3227afe83107f918474ba60a696e38c9f460bf",
+              "title": "Exploring End-to-End Techniques for Low-Resource Speech Recognition",
+              "section": "Conclusions and future work",
+              "paper_id": "1807.00868",
+              "bm25_rank": null,
+              "dense_rank": 18,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-268ece980eaffaa4bfad9c99d4225116c4da52263364c9b0e56b3486df4b672e",
+              "title": "Cross-Lingual Adaptation Using Universal Dependencies",
+              "section": "Introduction",
+              "paper_id": "2003.10816",
+              "bm25_rank": 19,
+              "dense_rank": null,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-743f4ddf835d6dfee5ff3a182dc2480d0944664ffb1390a6efdf688b1824527c",
+              "title": "Multilingual Speech Recognition with Corpus Relatedness Sampling",
+              "section": "Introduction",
+              "paper_id": "1908.01060",
+              "bm25_rank": null,
+              "dense_rank": 19,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b3121c9d51d04a4826eca1afe0ca3db01d9ceb6f742953e27b6ca93c3035c809",
+              "title": "Copenhagen at CoNLL--SIGMORPHON 2018: Multilingual Inflection in Context with Explicit Morphosyntactic Decoding",
+              "section": "Ablation Study",
+              "paper_id": "1809.01541",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-4f37ef0905c16ce2f8cc61ad690135b0edcb5daa41c8f6cb3b6a2e88713a0028",
+              "title": "Multi-task Learning for Low-resource Second Language Acquisition Modeling",
+              "section": "Introduction",
+              "paper_id": "1908.09283",
+              "bm25_rank": null,
+              "dense_rank": 20,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 4.7,
+          "message": "Round 2: kept 8 passages, 6 new, 14 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 4.7,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 7.9,
+          "message": "Evidence check (model, 8 passages): not enough, MISSING_METHOD.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 7.9,
+          "message": "Rewrote the search query: What methods are used for low-resource language identification? method approach architecture we propose languages model tasks bibref1 models recent train neural",
+          "step": "search",
+          "active": "search"
+        },
+        {
+          "elapsed_s": 8.4,
+          "message": "Hybrid search: BM25 20 + dense 20 candidates, 1 in both, RRF merged 39, no reranker, top 8 kept.",
+          "step": "search",
+          "active": "search",
+          "details": [
+            {
+              "passage_id": "qasper-passage-v1-ad895dfe380dc108745b36e047adf76cef6c46ea2861c3af5df0c97d8496c7dd",
+              "title": "From English To Foreign Languages: Transferring Pre-trained Language Models",
+              "section": "Introduction",
+              "paper_id": "2002.07306",
+              "bm25_rank": 6,
+              "dense_rank": 20,
+              "rrf_score": 0.02765,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-190e69ff61619f0e5a5a51e252f0f2a2c71873b084e8c4d5886e1b525f4e3a9a",
+              "title": "Named Entity Recognition for Nepali Language",
+              "section": "Introduction",
+              "paper_id": "1908.05828",
+              "bm25_rank": 1,
+              "dense_rank": null,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-16d3816c6469e63349202c5174bb1e689f3ca0c019d0ec2bd1e97bf95adba67e",
+              "title": "Zero-Shot Adaptive Transfer for Conversational Language Understanding",
+              "section": "Related Work",
+              "paper_id": "1808.10059",
+              "bm25_rank": null,
+              "dense_rank": 1,
+              "rrf_score": 0.01639,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-91e031e1a1c87417a1813bc8771aa1c469efd44d65d848c16284d835e7d094bf",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Introduction",
+              "paper_id": "1708.09157",
+              "bm25_rank": 2,
+              "dense_rank": null,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-b44f810f6f8b3e9e54b136894bf15b965fb98e99f6101fa90abd4f815992d0a5",
+              "title": "Spoken Language Identification using ConvNets",
+              "section": "Related Work",
+              "paper_id": "1910.04269",
+              "bm25_rank": null,
+              "dense_rank": 2,
+              "rrf_score": 0.01613,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-f463d6133fbfc20338649c99bccafc9534fdef66e0d7cefc6a18a61cf0ec840a",
+              "title": "Exploring Multilingual Syntactic Sentence Representations",
+              "section": "Introduction",
+              "paper_id": "1910.11768",
+              "bm25_rank": 3,
+              "dense_rank": null,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-e8789f4b2bc18546267d6ef5edfbb32749f7a84bc9072194b105fd9f39eedad5",
+              "title": "BLiMP: A Benchmark of Linguistic Minimal Pairs for English",
+              "section": "Background & Related Work ::: Language Models",
+              "paper_id": "1912.00582",
+              "bm25_rank": null,
+              "dense_rank": 3,
+              "rrf_score": 0.01587,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-34d85e494579c6858ca5ff53680fefc33a63b9f6328a62936622fa302f1cb318",
+              "title": "Nonsymbolic Text Representation",
+              "section": "End-to-end Models",
+              "paper_id": "1610.00479",
+              "bm25_rank": null,
+              "dense_rank": 4,
+              "rrf_score": 0.01562,
+              "kept": true
+            },
+            {
+              "passage_id": "qasper-passage-v1-5fd43fd86e9d086366e0e31a4e52c939c757bfb7970f75b39a377fdc13891f07",
+              "title": "Many Languages, One Parser",
+              "section": "Introduction",
+              "paper_id": "1602.01595",
+              "bm25_rank": 4,
+              "dense_rank": null,
+              "rrf_score": 0.01562,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3e23e35deb6e7a144f9926582692c93d32229c12d71de044371497375ba0fd3f",
+              "title": "Meta-Learning for Low-resource Natural Language Generation in Task-oriented Dialogue Systems",
+              "section": "Introduction",
+              "paper_id": "1905.05644",
+              "bm25_rank": 5,
+              "dense_rank": null,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8316711f53225c7aa3b506b5bd21f775e0d742984c8444241b634f602fd9778f",
+              "title": "BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions",
+              "section": "Training Yes/No QA Models",
+              "paper_id": "1905.10044",
+              "bm25_rank": null,
+              "dense_rank": 5,
+              "rrf_score": 0.01538,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b1888e1a0dccff9df4e3ab355f5d54bff35fa2569026b4d8bb3e0b7f8b8e2b39",
+              "title": "Pre-trained Language Model Representations for Language Generation",
+              "section": "Introduction",
+              "paper_id": "1903.09722",
+              "bm25_rank": null,
+              "dense_rank": 6,
+              "rrf_score": 0.01515,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-268ece980eaffaa4bfad9c99d4225116c4da52263364c9b0e56b3486df4b672e",
+              "title": "Cross-Lingual Adaptation Using Universal Dependencies",
+              "section": "Introduction",
+              "paper_id": "2003.10816",
+              "bm25_rank": 7,
+              "dense_rank": null,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-e54b01eb22da7b6d9986acb7e94992e85ba8e5e57edc7e94ed0e99648ff613dc",
+              "title": "Multilingual and Unsupervised Subword Modeling for Zero-Resource Languages",
+              "section": "Background and Motivation",
+              "paper_id": "1811.04791",
+              "bm25_rank": null,
+              "dense_rank": 7,
+              "rrf_score": 0.01493,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3e30f965c5c8c775df754db356614be404ae31ffe95b4db76e8ce51b7d169855",
+              "title": "Cross-lingual, Character-Level Neural Morphological Tagging",
+              "section": "Neural Cross-lingual Transfer in NLP.",
+              "paper_id": "1708.09157",
+              "bm25_rank": 8,
+              "dense_rank": null,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-bfe85727085ef1dcb565979a0dce6a097895649f926077cb60e7975bafeca954",
+              "title": "To Tune or Not To Tune? How About the Best of Both Worlds?",
+              "section": "Introduction",
+              "paper_id": "1907.05338",
+              "bm25_rank": null,
+              "dense_rank": 8,
+              "rrf_score": 0.01471,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-f79e5d3a60b1ee70831e1e010100f32e9fea893b3d0cdf5d3b7efec986f35da7",
+              "title": "Transfer Learning for Low-Resource Neural Machine Translation",
+              "section": "Introduction",
+              "paper_id": "1604.02201",
+              "bm25_rank": 9,
+              "dense_rank": null,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-b1839674b29cf4a4ac413d443587823181786043b9284624d5fd7519437c28a2",
+              "title": "Correcting Length Bias in Neural Machine Translation",
+              "section": "Data and settings",
+              "paper_id": "1808.10006",
+              "bm25_rank": null,
+              "dense_rank": 9,
+              "rrf_score": 0.01449,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-95b1e3e777b795943c4c2ce426ea6bf47cc7c8854cc76facfeaae5a2ca25836a",
+              "title": "Additive Margin SincNet for Speaker Recognition",
+              "section": "Introduction",
+              "paper_id": "1901.10826",
+              "bm25_rank": 10,
+              "dense_rank": null,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a2655a6ab82746cdaf6ffebe40f379844e49ffca4a336d1afee9e67022cb0fc2",
+              "title": "Natural Language Interactions in Autonomous Vehicles: Intent Detection and Slot Filling from Passenger Utterances",
+              "section": "Background",
+              "paper_id": "1904.10500",
+              "bm25_rank": null,
+              "dense_rank": 10,
+              "rrf_score": 0.01429,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-919bc8afd744129d00920c032970f16bdc902f32b03e15256f2686c0fc418272",
+              "title": "Exploiting Out-of-Domain Parallel Data through Multilingual Transfer Learning for Low-Resource Neural Machine Translation",
+              "section": "Introduction",
+              "paper_id": "1907.03060",
+              "bm25_rank": 11,
+              "dense_rank": null,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-7c905eff07e0aacd15239babd49834b0506eff5ef296223392e7129de8f282ff",
+              "title": "Progress and Tradeoffs in Neural Language Models",
+              "section": "Background and Related Work",
+              "paper_id": "1811.00942",
+              "bm25_rank": null,
+              "dense_rank": 11,
+              "rrf_score": 0.01408,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-cf84afc4dc8673174c2249383f8731a1c4b261b95fc14c1fb847e1d5edb7779b",
+              "title": "Identification of Indian Languages using Ghost-VLAD pooling",
+              "section": "INTRODUCTION",
+              "paper_id": "2002.01664",
+              "bm25_rank": 12,
+              "dense_rank": null,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-c0ce51f66e3546dddf29b842773d87d7834796ff3b5853266046f324b95f8d3f",
+              "title": "Feature-Dependent Confusion Matrices for Low-Resource NER Labeling with Noisy Labels",
+              "section": "Experiments ::: Data",
+              "paper_id": "1910.06061",
+              "bm25_rank": null,
+              "dense_rank": 12,
+              "rrf_score": 0.01389,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-ea1d1e5e899498571d9637c44f8dd3a3ba74d9c95c88605b6ede81b552ba5244",
+              "title": "A Resource for Studying Chatino Verbal Morphology",
+              "section": "Introduction",
+              "paper_id": "2004.02083",
+              "bm25_rank": 13,
+              "dense_rank": null,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d2511d212f4e2c58302704bf759da974c085ba68c709ed769f66f8cbc6186fbb",
+              "title": "Generating Descriptions from Structured Data Using a Bifocal Attention Mechanism and Gated Orthogonalization",
+              "section": "Models compared",
+              "paper_id": "1804.07789",
+              "bm25_rank": null,
+              "dense_rank": 13,
+              "rrf_score": 0.0137,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d2e477b9fbdb53962ae5780d63474b558ab0e6178af9c4882928ae8bd39efbf2",
+              "title": "UniSent: Universal Adaptable Sentiment Lexica for 1000+ Languages",
+              "section": "Introduction",
+              "paper_id": "1904.09678",
+              "bm25_rank": 14,
+              "dense_rank": null,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-2e70a30955c0263d4503a009fe8e16f4ca0cb6ec78aca389cf5c4d5c105c241c",
+              "title": "Future Word Contexts in Neural Network Language Models",
+              "section": "Experiments",
+              "paper_id": "1708.05592",
+              "bm25_rank": null,
+              "dense_rank": 14,
+              "rrf_score": 0.01351,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-0136575629760802cfca6ba5414f26f0b99ec8e84afc433056465bd920c7a306",
+              "title": "A Resource for Computational Experiments on Mapudungun",
+              "section": "Introduction",
+              "paper_id": "1912.01772",
+              "bm25_rank": 15,
+              "dense_rank": null,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-af89e235c648eff46e56d0a8063ed7a0c96f00fe6c2deb1709ca8507b694a2e8",
+              "title": "Neural Language Modeling with Visual Features",
+              "section": "Introduction",
+              "paper_id": "1903.02930",
+              "bm25_rank": null,
+              "dense_rank": 15,
+              "rrf_score": 0.01333,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-3cc506ad4a3a7597204777d9f5d9b0d584d040e5e11d5de9693131ab84d0cc1a",
+              "title": "Multi-task Learning for Low-resource Second Language Acquisition Modeling",
+              "section": "Introduction",
+              "paper_id": "1908.09283",
+              "bm25_rank": 16,
+              "dense_rank": null,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-d4ff64503c43a8bbc73e7b7b25581f0592e5fcdd9f3ccf57520d3211adf58820",
+              "title": "Multi-task learning to improve natural language understanding",
+              "section": "Related Work",
+              "paper_id": "1812.06876",
+              "bm25_rank": null,
+              "dense_rank": 16,
+              "rrf_score": 0.01316,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-8204de05973ed922381a9f5d61c4a69e9cdefb46be463d359e9cf4edf3b5c8fd",
+              "title": "Representation Learning for Discovering Phonemic Tone Contours",
+              "section": "Introduction",
+              "paper_id": "1910.08987",
+              "bm25_rank": 17,
+              "dense_rank": null,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a92db205c34a976f9beee9a4ae8a6d224dbfead84795ce869af2cddf1605e4b3",
+              "title": "A Constructive Prediction of the Generalization Error Across Scales",
+              "section": "Experimental Setup ::: Tasks, Models, and Datasets",
+              "paper_id": "1909.12673",
+              "bm25_rank": null,
+              "dense_rank": 17,
+              "rrf_score": 0.01299,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-207e1dba2f708f8f38f99ed3b1ee0707ab7a3e15ce49b270f9cdff3d1a9dcdeb",
+              "title": "ALL-IN-1: Short Text Classification with One Model for All Languages",
+              "section": "All-In-1: One Model for All",
+              "paper_id": "1710.09589",
+              "bm25_rank": 18,
+              "dense_rank": null,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-41d2291e58db163485381e7ae77b91deaf516cd3ce84c616d268c42dc08cb62f",
+              "title": "Multilingual sequence-to-sequence speech recognition: architecture, transfer learning, and language modeling",
+              "section": "Multilingual experiments",
+              "paper_id": "1810.03459",
+              "bm25_rank": null,
+              "dense_rank": 18,
+              "rrf_score": 0.01282,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-87593f47f6bb3af5914669c5ab2d6ae7de97d36107535abc6405b1fbf75dbe8b",
+              "title": "Exploring Multilingual Syntactic Sentence Representations",
+              "section": "Experiments ::: Transfer Performance of Syntactic Embeddings",
+              "paper_id": "1910.11768",
+              "bm25_rank": 19,
+              "dense_rank": null,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-a2258495e4d41ba63fffd6942f0e48484d07929bef9c9dd31af0cf03a102b0d0",
+              "title": "End-to-End Trainable Non-Collaborative Dialog System",
+              "section": "Related Work",
+              "paper_id": "1911.10742",
+              "bm25_rank": null,
+              "dense_rank": 19,
+              "rrf_score": 0.01266,
+              "kept": false
+            },
+            {
+              "passage_id": "qasper-passage-v1-db5467d758f201210774208d0f4bd7902961ebfad0867519257c5da28146770c",
+              "title": "Morfessor EM+Prune: Improved Subword Segmentation with Expectation Maximization and Pruning",
+              "section": "Introduction",
+              "paper_id": "2003.03131",
+              "bm25_rank": 20,
+              "dense_rank": null,
+              "rrf_score": 0.0125,
+              "kept": false
+            }
+          ]
+        },
+        {
+          "elapsed_s": 8.4,
+          "message": "Round 3: kept 8 passages, 6 new, 20 in the evidence pool. Checking the evidence...",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 8.4,
+          "message": "Keyword match: 1 of 1 required components found.",
+          "step": "search",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 12.3,
+          "message": "Evidence check (model, 8 passages): not enough, MISSING_METHOD.",
+          "step": "check",
+          "active": "check"
+        },
+        {
+          "elapsed_s": 12.3,
+          "message": "Stopped searching: max_rounds, budget 3 rounds.",
+          "step": "check",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 12.3,
+          "message": "Writing the answer and checking its citations...",
+          "step": "write",
+          "active": "write"
+        },
+        {
+          "elapsed_s": 26.2,
+          "message": "Answer ready: SUFFICIENT, 3 cited, 2 validation notes.",
+          "step": "write",
+          "active": "done"
+        }
+      ]
+    }
+  ]
+}
