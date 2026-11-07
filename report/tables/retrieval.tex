@@ -1,9 +1,9 @@
 % Source: results/final/p2/scored/summary.json; accepted label commit f70bf95593a6b9f705674770b8c3e833ca76290c.
 \begin{table}[htbp]\centering
 \caption{Retrieval at $K=5$ on accepted relevance labels. Recall and nDCG are relative to the judged pool. Precision and MRR use 200 questions; pool recall and nDCG use 199.}\label{tab:retrieval}
-\begin{tabular}{lrrrr}\toprule
+\begin{tabularx}{\linewidth}{YYYYY}\toprule
 Method & P@5 & Pool R@5 & MRR@5 & Pool nDCG@5\\\midrule
 BM25 & 0.482 & 0.607 & 0.730 & 0.636\\
 Dense & 0.527 & 0.698 & 0.799 & 0.719\\
 Hybrid RRF & 0.539 & 0.714 & 0.804 & 0.731\\
-RRF + reranker & 0.509 & 0.659 & 0.718 & 0.663\\\bottomrule\end{tabular}\end{table}
+RRF + reranker & 0.509 & 0.659 & 0.718 & 0.663\\\bottomrule\end{tabularx}\end{table}

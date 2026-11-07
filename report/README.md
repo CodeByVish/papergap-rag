@@ -2,7 +2,7 @@
 
 Editable LaTeX review draft for AI6127, **Group 24**. The report title is **Evidence-grounded question answering over NLP research papers**. It uses no product name or running headers; the due date, **7 November 2026**, appears on the title page. The handout specifies 11:59 pm SGT.
 
-This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA and RAGAS scores are inserted; controlled ablations remain pending. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
+This is a review draft, not a submission-ready report. Retrieval results use the accepted pooled relevance labels; agent and UI measurements remain development findings. Final QA and RAGAS scores and a development-only rewriting/reranking factorial are inserted; no held-out reranker arm was run. Highlighted notes identify missing evidence, provisional AI assessments and temporary review assignments.
 
 ## Files and report structure
 
@@ -163,3 +163,7 @@ The 200-question relevance pool and 40-question agent-development slice have dif
 ## P2 draft contribution — 6 November 2026
 
 P2 added the three paired fusion/reranking comparisons (12 metric rows) and a traceable NCEL reranking failure example in Q3. All differences and intervals were reproduced from saved per-question scores. See `review-checks/p2-evidence.md`. This does not mark the full report or human owner review complete. The cover now includes Maheshwari Vishakha Praveen / G2609099E, as supplied by the member.
+
+## Editorial review (7 November 2026)
+
+The current review table, applied replacements, unresolved grading risks and reassessed ratings are in [review-checks/editorial-review-20261107.md](review-checks/editorial-review-20261107.md). The post-review build has 36 pages and no unresolved references or overfull/underfull box warnings. All pages were rendered for layout inspection. This is a review copy with editorial boxes, not the submission copy. The data/results archive and runnable code archive links remain missing. Q4.6 is now 3/5 because timing summaries require a common-record recomputation; other evidence-based ratings are unchanged. Historical scoped owner approvals were preserved, not extended to the new edits.
