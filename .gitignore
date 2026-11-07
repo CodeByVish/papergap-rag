@@ -25,6 +25,8 @@ dist/
 !/data/README.md
 /results/*
 !/results/README.md
+# The curated P5 final-result directory is integrated, unlike other run output.
+!/results/p5-final-result/
 !/results/final/
 !/results/p6-ui-verification-20261107-gpu/
 !/results/p6-ui-verification-20261107-gpu-all-papers/
