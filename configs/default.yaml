@@ -1,4 +1,7 @@
-# Proposal only: no application currently consumes this file.
+# Shared configuration record, updated 7 November 2026. The frozen held-out settings are in
+# configs/p4_freeze.json, which governs wherever the two differ. No application loads this file:
+# tests/data/test_split_policy.py checks its split policy and held_out_manifest, and
+# src/agent/nodes.py keeps MAX_RETRIES in sync with agent.max_retries by hand.
 seed: 42
 data:
   dataset: allenai/qasper
@@ -6,7 +9,7 @@ data:
   qa_path: data/processed/qa.jsonl
   qasper_export_manifest: data/processed/qasper_export.manifest.json
   passages_path: data/processed/passages.jsonl
-  chunk_words: 200
+  chunk_words: 365  # final corpus (P3): 365-word chunks, 40-word overlap; 28,617 passages from 1,584 papers
   overlap_words: 40
   normalization_version: text-normalization-v1
   chunking_version: word-chunking-v1
@@ -30,17 +33,21 @@ retrieval:
   paper_scoped: true
   dense_model: BAAI/bge-small-en-v1.5
   reranker_model: BAAI/bge-reranker-base
+  reranker_enabled: false  # off in the final configuration: it lowered all four top-five metrics
   sparse_candidates: 20
   dense_candidates: 20
   top_k: 8  # frozen evaluation depth (configs/p4_freeze.json)
-  rrf_k: 60  # starting value; tune on development only
+  rrf_k: 60  # as run on the held-out questions (configs/p4_freeze.json)
 agent:
   max_retries: 2  # initial retrieval + two retries = at most three rounds
 generation:
   model: Qwen/Qwen3-8B
-  backend: null  # pending compute feasibility
-  model_revision: null
+  backend: vllm  # vLLM 0.11.0, bfloat16, one NVIDIA A40 (results/final/p5/README.md)
+  model_revision: null  # the Hugging Face revision pin for Qwen3-8B remains open (report, Q4.1)
+  max_passages: 8
+  max_chars_per_passage: 2500  # code default since PR 72 and the final demo; the primary held-out run used 1200
   abstain_on_insufficient_evidence: true
 evaluation:
-  judge_model: null
-  held_out_manifest: null  # Final held-out question pool is not frozen or created.
+  judge_model: qwen-plus-2025-12-01  # RAGAS judge through DashScope; embedding model qwen3.7-text-embedding
+  held_out_freeze_record: configs/p4_freeze.json  # pins the 200 held-out questions (SHA-256) and the run settings
+  held_out_manifest: null  # kept null on purpose: the split policy stays v0-proposed and tests assert this value
