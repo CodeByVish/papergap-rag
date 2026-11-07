@@ -1,8 +1,18 @@
-# Evaluation protocol — Week 1 proposal
+# Evaluation protocol
+
+*Written in Week 1 as the proposed protocol; updated on 7 November 2026 with what was done. The original text is kept as the protocol the team worked towards; where the delivered work differs, the difference is stated below and in the report.*
+
+## Status (7 November 2026)
+
+- **Annotation (delivered, with departures).** The proposal was 100 questions and 1,000 pairs, three fixed annotator pairs and a third-member adjudicator. Delivered: 200 questions from 174 papers, 1,853 pooled query–passage pairs (top five from BM25, Dense, Hybrid RRF and Hybrid RRF + BGE rerank), two annotators, 89.854% agreement on the submitted labels, and 188 disagreements. One reviewer resolved all 188, including 73 pairs they had annotated, with AI suggestions possibly visible and 176 resolutions lacking written reasons. This is **not** the independent third-person adjudication proposed below. Details and Cohen's kappa are in the report (Q4.3).
+- **Retrieval metrics (delivered).** Pool-based Precision, pool recall, MRR and nDCG at K = 5 (P2 also K = 1 and 3), macro-averaged over questions, with the judged-pool limits stated; paired bootstrap resamples papers (1,000 resamples, seed 42). The agent is scored on mapped-evidence recall (P3's evidence-to-passage mapping; question-level bootstrap, 2,000 resamples, seed 0).
+- **Experiments (partly run).** See the status column of the ladder below.
+- **Held-out freeze (done).** The configuration was fixed on 6 November 2026 at commit `ad02d5103e28dbca2230555dd90e36c5cdc70f4f` and recorded in `configs/p4_freeze.json` and `docs/P4_FREEZE_RECORD.md`; the 200 held-out questions were run once (job 51585). A later run at a larger context budget is reported as a post-hoc sensitivity analysis, not as the primary result. The agent developer had read 40 of the 200 questions during annotation; both all-200 and the remaining-160 results are reported.
+- **QA and RAGAS (delivered).** Exact match and token F1 under the proposed `p6-qa-v0-proposed` normalisation (ROUGE-L was not computed); live RAGAS faithfulness, response relevance and context precision with `qwen-plus-2025-12-01` as judge. See `results/final/`.
 
 ## Annotation and held-out data
 
-The team confirmed that query–passage pairs count as evaluation records; the proposed design is 100 questions / 1,000 unique pairs. Freeze the chunker before mapping evidence or creating the final annotation pool. Select disjoint development pilot records in Week 2, run a 30–50-record pilot in Week 3, and resolve guideline ambiguity before the Week 5 held-out pool.
+The team confirmed that query–passage pairs count as evaluation records; the proposed design was 100 questions / 1,000 unique pairs (the delivered pool is 200 questions / 1,853 pairs; see Status above). Freeze the chunker before mapping evidence or creating the final annotation pool. Select disjoint development pilot records in Week 2, run a 30–50-record pilot in Week 3, and resolve guideline ambiguity before the Week 5 held-out pool.
 
 Use two independent, blinded judgments per record. Proposed labels are binary relevance (0/1); P3/P5/P6 must define how partial evidence is treated before annotation. Hide retrieval system, score and other annotator's label. Include varied question types, hard negatives and unanswerable examples where practical. Deduplicate by question ID and passage ID. Ten distinct passages may not exist for every paper: validate this before selecting questions; never duplicate records to reach 1,000.
 
@@ -18,19 +28,19 @@ A pool of ten judged passages per question is incomplete relevance coverage. Rep
 
 ## Minimal experiment ladder
 
-| ID | Configuration | Evaluation |
-| --- | --- | --- |
-| R1 | BM25 | Rank-aware retrieval metrics and latency |
-| R2 | Dense | Same |
-| R3 | Hybrid RRF | Same |
-| R4 | Hybrid RRF + reranker | Same |
-| G0 | Generator without retrieval | QA baseline; evidence faithfulness is not applicable |
-| G1 | BM25 RAG | QA, RAGAS and latency |
-| G2 | Dense RAG | Same |
-| G3 | Hybrid RAG | Same |
-| G4 | Static hybrid + reranker RAG | Same; primary static baseline |
-| G5 | Adaptive hybrid + reranker, single critic | Same plus retries, recovery and abstention |
-| Optional | Gold-evidence reference, dual critic, NLI, citation-validator ablation | Only after required runs complete |
+| ID | Configuration | Evaluation | Status (7 Nov 2026) |
+| --- | --- | --- | --- |
+| R1 | BM25 | Rank-aware retrieval metrics and latency | Done (K = 5, accepted pooled labels) |
+| R2 | Dense | Same | Done |
+| R3 | Hybrid RRF | Same | Done |
+| R4 | Hybrid RRF + reranker | Same | Done; it lowered all four top-five metrics and is off in the final configuration |
+| G0 | Generator without retrieval | QA baseline; evidence faithfulness is not applicable | Not run |
+| G1 | BM25 RAG | QA, RAGAS and latency | Not run |
+| G2 | Dense RAG | Same | Not run |
+| G3 | Hybrid RAG | Same | Done on the held-out run as the `static` arm (top eight, no reranker), plus the `static-wide` arm (top 15) |
+| G4 | Static hybrid + reranker RAG | Same; primary static baseline | Development slice only (the "reranking only" cell of the 40-question ablation); the held-out static baseline is G3 |
+| G5 | Adaptive hybrid + reranker, single critic | Same plus retries, recovery and abstention | Held-out: the `adaptive` arm without a reranker; with a reranker on the development slice only (the "both" cell) |
+| Optional | Gold-evidence reference, dual critic, NLI, citation-validator ablation | Only after required runs complete | Not done |
 
 Use the same frozen generator, answer prompt, decoding settings, question set and context budget for static/adaptive comparisons; report additional retrieval/model calls and token cost. Retain citation validation in both G4 and G5. A separate validator ablation changes only the validator. The original E/F and G/H comparisons otherwise overlap or mix factors.
 
@@ -48,11 +58,11 @@ Tune only on development/validation data. Freeze all prompts, retrieval settings
 
 The observed official QASPER splits are paper-disjoint, but their mapping to the project roles remains the proposal recorded as `P3-D004` and is pending team review. The current safe default is `train -> development`, `validation -> validation`, and `test -> held_out`; this mapping must not be treated as confirmed until reviewed by the affected owners.
 
-Use only `development` and `validation` assets to choose among the `$150`/`$200`/`$250` chunk sizes, overlap and boundary settings, retrieval rules, model settings, prompts, few-shot examples, and stopping rules. Keep the held-out paper text available only through the approved inference index, and do not use held-out questions, answers, evidence, or labels to make these choices.
+Use only `development` and `validation` assets to choose among the `$150`/`$200`/`$250` chunk sizes (the final corpus uses 365-word chunks with 40-word overlap), overlap and boundary settings, retrieval rules, model settings, prompts, few-shot examples, and stopping rules. Keep the held-out paper text available only through the approved inference index, and do not use held-out questions, answers, evidence, or labels to make these choices.
 
 Before reading any held-out question, record the final Git commit and configuration, then freeze the chunker, prompts, retrieval settings, model settings, and evaluation protocol. After that freeze, run the held-out questions as final evaluation queries; read held-out answers and labels only afterward for scoring and reporting.
 
-The final question pool must be kept separate from development experiments. `evaluation.held_out_manifest: null` remains unchanged until the question and annotation pool is actually frozen under `P3-D005`. The post-freeze bug-fix and rerun rule remains the proposal in `P3-D006`: a genuine bug fix must record its cause and rerun every affected configuration consistently; a held-out result must never drive a targeted improvement.
+The final question pool must be kept separate from development experiments. `evaluation.held_out_manifest: null` remains unchanged until the question and annotation pool is actually frozen under `P3-D005`. As of 7 November 2026 the 200 held-out questions are pinned by SHA-256 in `configs/p4_freeze.json`, but `P3-D005` is still `pending team review` and the field stays `null`. The post-freeze bug-fix and rerun rule remains the proposal in `P3-D006`: a genuine bug fix must record its cause and rerun every affected configuration consistently; a held-out result must never drive a targeted improvement.
 
 ## Unified QA export and access boundary
 
