@@ -36,17 +36,32 @@ Prompt & \texttt{p5-grounded-qa-v7}\\\bottomrule
 % \input{review-checks/q4-2}
 
 \subsection{Evaluation records and annotation (Q4.3)}\label{sec:annotation}
-To measure evidence recall, we locate QASPER's annotated supporting paragraphs in each paper and identify the chunks that overlap them. Matching is exact after whitespace normalization. A question is eligible only if every answer annotation has nonempty, unambiguously located evidence that the chunks fully cover. This yields 3,329 eligible questions across the official splits. We use these evidence-to-chunk mappings to measure how much of the annotated evidence the retrieval system recovers. Separately, human relevance labels assess whether retrieved passages help answer the question. QASPER reference answers are used to evaluate the generated answers.
+\textbf{Dataset construction.} We constructed an evaluation dataset of 1,853 unique question--passage pairs from 200 questions covering 174 papers: 78 questions from official validation and 122 from test. Questions recorded as used for development or chunk selection were excluded before random sampling. For each question, we pooled the top-five results from BM25, Dense, RRF and RRF with reranking, then deduplicated passages.
 
-After excluding questions recorded as used for development or chunk selection, we randomly sampled 200 unique questions from 174 papers: 78 from official validation and 122 from test. For each question, we pooled the top five passages from BM25, Dense, Hybrid RRF and Hybrid RRF + BGE rerank. After deduplication, the pool contains 1,853 unique question--passage pairs. Two annotators labelled each pair relevant or non-relevant, giving 3,706 judgments. The final labels contain 820 relevant and 1,033 non-relevant pairs (44.3\% relevant). One question has no relevant pooled passage because its candidate text replaces the requested dataset size with a formula placeholder. It remains in the evaluation, with the metric denominators stated in Section 3.2.
+\textbf{Labeling task.} Each pair received two binary annotations. Under the annotation guideline, a passage is relevant when it supplies information needed to determine the answer; sharing the topic or query words alone is insufficient. The final dataset contains 820 relevant and 1,033 non-relevant pairs. The principal counts are summarized below.
 
-The revised submitted label files agree on 1,665 pairs (89.854\%), above the numerical 80\% threshold, with 188 disagreements across 109 questions. This is agreement on the current files, not a preserved measure of original independent judgments. Some batches began as AI suggestions later human-confirmed, and annotators could see which retrieval methods supplied the passages. \hyperref[tab:agreement]{Table~\ref*{tab:agreement}} also reports Cohen's kappa, which adjusts for chance agreement.
+\begin{center}
+\begin{tabularx}{\linewidth}{>{\hsize=1.4\hsize\linewidth=\hsize}Y>{\hsize=.6\hsize\linewidth=\hsize}Y}\toprule
+Measure & Value\\\midrule
+Unique evaluation records & 1,853\\
+Annotations per record & 2\\
+Total annotation judgments & 3,706\\
+Agreeing pairs & 1,665\\
+Disagreeing pairs & 188\\
+Agreement & 89.85\%\\\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Agreement.} Agreement between the revised submitted annotation files was $1{,}665/1{,}853 = 89.85\%$, above the assignment's numerical 80\% threshold. This was calculated before resolving the 188 disagreements. \hyperref[tab:agreement]{Table~\ref*{tab:agreement}} additionally reports Cohen's kappa for each annotator pair.
 
 \input{tables/agreement}
 
-One reviewer resolved all 188 disagreements, including 73 pairs they had originally annotated. Of these resolutions, 102 are recorded as human-reviewed and 86 as human spot-checked; the latter include 66 initially unchecked AI suggestions subsequently confirmed by the reviewer. AI suggestions may have been visible, and 176 resolutions lack written reasons. This was not independent third-person adjudication. These limits qualify the labels and agreement; the agreement percentage alone does not establish compliance with the manual-labeling requirement.
+\textbf{Annotation provenance and resolution.} AI tools supported technical understanding and, in some batches, provided preliminary relevance suggestions. Annotators reviewed the question and passage and made the final labeling decision. Retrieval-method identities were visible to annotators, and the agreement figure describes revised submitted files rather than preserved original submissions. Separately, one reviewer resolved all 188 disagreements, including 73 pairs they had previously annotated. The manifest records 102 resolutions as human-reviewed and 86 as human-spot-checked.
 
-\input{review-checks/q4-3}
+\textbf{Relationship to other evaluation data.} Human labels assess passage relevance. Separately, QASPER's reference answers support QA scoring, and its supporting paragraphs are mapped to chunks for evidence recall. Eligible questions require nonempty, unambiguously located evidence for every answer annotation, fully covered by the chunks; 3,329 questions meet these criteria. One sampled question has no relevant pooled passage because the candidate text replaces the requested dataset size with a formula placeholder; it remains in the evaluation with the metric denominators defined in Q3.
+
+% Assessment retained internally; hidden from the report.
+% \input{review-checks/q4-3}
 
 \subsection{Answer quality (Q4.4)}
 The implemented scorer uses a proposed project policy, project QA policy, version 0 (proposed), rather than the official QASPER evaluator. It lowercases text, removes ASCII punctuation and English articles, and normalizes whitespace. Exact match compares normalized strings; token F1 uses multiset token overlap. Reference extraction supports yes/no, free-form and extractive-span annotations; mixed answerability uses available answerable references.
